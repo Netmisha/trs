@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "TRSManager.h"
 
 TRSManager::TRSManager()
@@ -10,7 +11,7 @@ TRSManager::~TRSManager()
 
 }
 
-bool TRSManager::Init(char* path, char* name, char* tag)
+bool TRSManager::Init()
 {
 	return false;
 }
