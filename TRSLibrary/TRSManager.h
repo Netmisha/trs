@@ -10,6 +10,12 @@
 
 TRSManager_API int func();
 
+#include <windows.h>
+#include <tchar.h> 
+#include <stdio.h>
+#include <iostream>
+#include <strsafe.h>
+
 class TRSManager_API TRSManager
 {
 public:
