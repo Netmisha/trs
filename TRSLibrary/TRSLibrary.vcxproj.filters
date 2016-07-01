@@ -39,6 +39,9 @@
     <ClInclude Include="TinyXML\tinyxml.h">
       <Filter>Header Files\TinyXML</Filter>
     </ClInclude>
+    <ClInclude Include="FunctionalityForXML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -64,6 +67,9 @@
     </ClCompile>
     <ClCompile Include="TinyXML\tinyxmlparser.cpp">
       <Filter>Resource Files\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionalityForXML.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

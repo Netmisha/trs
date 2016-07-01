@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #define TRSManager_EXPORT
 #include "TRSManager.h"
-
+#include "FunctionalityForXML.h"
 #include <iostream>
 
 TRSManager Manager;
@@ -78,7 +78,20 @@ bool TRSManager::List(char* path, char* name, char* tag)
 			else
 			{
 				_tprintf(TEXT("  %s   <FILE>\n"), ffd.cFileName);//write file name if it was found in current folder
-
+				std::wstring name(ffd.cFileName);//used for validating file name(checks if there is .xml in the end
+				if (Validate(name))//validating function
+				{
+					TCHAR fileDir[MAX_PATH];//buffer which contains a path to an xml file
+					StringCchCopy(fileDir, MAX_PATH, hzDir);//some moves to save path
+					StringCchCat(fileDir, MAX_PATH, TEXT("\\"));
+					StringCchCat(fileDir, MAX_PATH, ffd.cFileName);
+					TiXmlDocument doc(convert(name, fileDir));//try to open such document wuth tinyXML parser
+					bool loadOk = doc.LoadFile();//check if opening was successfull
+					if (loadOk)
+					{
+						dump_to_stdout(&doc);//parse through XML and output all it's options
+					}
+				}
 			}
 		} while (FindNextFile(hFind, &ffd) != 0);//repeat
 	}
