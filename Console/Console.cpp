@@ -3,15 +3,20 @@
 
 #include "stdafx.h"
 #include "spdlog/spdlog.h"
+#include "TRSLibrary\TRSManager.h"
+
 #include <windows.h>
 #include <tchar.h>
 #include <strsafe.h>
 #include <stdio.h>
+#include <iostream>
+
+using namespace std;
+
 namespace spd = spdlog;
-void DisplayErrorBox(LPTSTR lpszFunction);
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	return 0;
-
 }
 

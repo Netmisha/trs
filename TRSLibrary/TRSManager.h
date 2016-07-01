@@ -1,9 +1,21 @@
+﻿#ifndef TRSManager_HEADER
+#define TRSManager_HEADER
 
-class TRSManager
+#ifdef TRSManager_EXPORT
+#define TRSManager_API  __declspec(dllexport) 
+#else
+#define TRSManager_API  __declspec(dllimport) 
+#endif
+
+
+TRSManager_API int func();
+
+class TRSManager_API TRSManager
 {
 public:
 	TRSManager();
 	~TRSManager();
+
 	bool Init();
 	bool Verify(char* path, char* name, char* tag);
 	bool Run(char* path, char* name, char* tag);
@@ -14,3 +26,7 @@ public:
 	bool Info(char* path, char* name, char* tag);
 	bool Destroy(char* path, char* name, char* tag);
 };
+
+extern TRSManager_API TRSManager Manager;
+
+#endif

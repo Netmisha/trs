@@ -1,8 +1,14 @@
+#include "stdafx.h"
+#define TRSManager_EXPORT
 #include "TRSManager.h"
+
+#include <iostream>
+
+TRSManager Manager;
 
 TRSManager::TRSManager()
 {
-
+	std::cout << "created" << std::endl;
 }
 
 TRSManager::~TRSManager()
@@ -10,7 +16,7 @@ TRSManager::~TRSManager()
 
 }
 
-bool TRSManager::Init(char* path, char* name, char* tag)
+bool TRSManager::Init()
 {
 	return false;
 }
