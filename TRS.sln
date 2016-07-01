@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Console", "Console\Console.vcxproj", "{9072C8D4-AF7C-4C58-BFBF-0FC494CD5177}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TRSLibrary", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{EEDF2C34-E171-4DD5-926D-E36CD517FAD4}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "UnitTest\UnitTest.vcxproj", "{D77323F1-AEDE-4AF1-AC83-BE0E9A0EE253}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{9072C8D4-AF7C-4C58-BFBF-0FC494CD5177}.Debug|Win32.Build.0 = Debug|Win32
 		{9072C8D4-AF7C-4C58-BFBF-0FC494CD5177}.Release|Win32.ActiveCfg = Release|Win32
 		{9072C8D4-AF7C-4C58-BFBF-0FC494CD5177}.Release|Win32.Build.0 = Release|Win32
-		{EEDF2C34-E171-4DD5-926D-E36CD517FAD4}.Debug|Win32.ActiveCfg = Debug|Win32
-		{EEDF2C34-E171-4DD5-926D-E36CD517FAD4}.Debug|Win32.Build.0 = Debug|Win32
-		{EEDF2C34-E171-4DD5-926D-E36CD517FAD4}.Release|Win32.ActiveCfg = Release|Win32
-		{EEDF2C34-E171-4DD5-926D-E36CD517FAD4}.Release|Win32.Build.0 = Release|Win32
 		{D77323F1-AEDE-4AF1-AC83-BE0E9A0EE253}.Debug|Win32.ActiveCfg = Debug|Win32
 		{D77323F1-AEDE-4AF1-AC83-BE0E9A0EE253}.Debug|Win32.Build.0 = Debug|Win32
 		{D77323F1-AEDE-4AF1-AC83-BE0E9A0EE253}.Release|Win32.ActiveCfg = Release|Win32
