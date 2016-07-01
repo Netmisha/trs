@@ -8,7 +8,7 @@ TRSManager Manager;
 
 TRSManager::TRSManager()
 {
-	std::cout << "created" << std::endl;
+
 }
 
 TRSManager::~TRSManager()
