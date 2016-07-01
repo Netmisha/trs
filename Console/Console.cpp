@@ -2,7 +2,9 @@
 //
 
 #include "stdafx.h"
+#include "spdlog/spdlog.h"
 
+namespace spd = spdlog;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
