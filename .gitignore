@@ -2,6 +2,7 @@ TRS.sdf
 
 TRS.opensdf
 
+*.vcxproj.user
 TRSLibrary/Debug/
 
 UnitTest/Debug/
