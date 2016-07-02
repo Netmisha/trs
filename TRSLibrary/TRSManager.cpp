@@ -4,6 +4,7 @@
 #include "FunctionalityForXML.h"
 #include <iostream>
 
+using namespace std;
 TRSManager Manager;
 
 TRSManager::TRSManager()
@@ -28,6 +29,29 @@ bool TRSManager::Verify(char* path, char* name, char* tag)
 
 bool TRSManager::Run(char* path, char* name, char* tag)
 {
+	if (path != nullptr)
+	{
+		cout << "path: ";
+		for (int i = 0; path[i] != 0; ++i)
+			cout << path[i];
+		cout << endl;
+	}
+
+	if (name != nullptr)
+	{
+		cout << "name: ";
+		for (int i = 0; name[i] != 0; ++i)
+			cout << name[i];
+		cout << endl;
+	}
+
+	if (tag != nullptr)
+	{
+		cout << "tag: ";
+		for (int i = 0; tag[i] != 0; ++i)
+			cout << tag[i];
+		cout << endl;
+	}
 	return false;
 }
 
