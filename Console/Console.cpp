@@ -17,11 +17,11 @@
 namespace spd = spdlog;
 
 
-typedef bool (TRSManager::*Func)(char*, char*, char*);
+typedef bool (TRSManager::*Routine)(char*, char*, char*);
 
 // returned poiner to member function which was indicated at the command line
 // Otherwise - return nullptr
-Func ParseFunction()
+Routine ParseFunction()
 {
 	if (__argc < 2)
 		return nullptr;
@@ -48,23 +48,31 @@ Func ParseFunction()
 		return &TRSManager::Info;
 
 	else
+	{
+		spd::get("logger")->info("Incorrect function name");
 		return nullptr;
+	}
 }
 
 // taking references to pointer and assign them to appropriate console paramer
 // or to nullptr otherwise
-bool ParseArguments(char* &name, char* &tag, char* &path)
+// returning pointer to member function if it was specified correctly
+// or nullptr othewise
+Routine ParseArguments(char* &name, char* &tag, char* &path)
 {
+	auto logger = spd::get("logger");
 	name = tag = path = nullptr;
 
 	// check whether user input neccessary information ( path and function) &&
 	// it is not overflow maximum parameter's amount && 
-	// that amount of parameters is even ( each parameters specifyer must be followed by string
+	// that amount of parameters is even ( each parameters specifier must be followed by string
 	// except for firs two parameters which is .exe name and function name )
 	//	cout << ____argc << endl;
 	if (__argc < 4 || __argc > MAX_PARAMETERS || __argc % 2 == 1)
-		return false;
-
+	{
+		logger->info("Incorrect amount of parameters");
+		return nullptr;
+	}
 	for (int i = 2; i < __argc; i += 2)
 	{
 		if (_stricmp(__argv[i], "-n") == 0)
@@ -85,27 +93,58 @@ bool ParseArguments(char* &name, char* &tag, char* &path)
 		{
 			// this mean that there was not a identifier at the place
 			// where it was expected to be
-			return false;
+			logger->info("Incorrect order of parameters, [-p, -n, -t] was expected");
+			return nullptr;
 		}
 	}
 
-	// checking whether neccessary argument "path" was indicated
-	return path != nullptr;
+	// checking whether necessary argument "path" was indicated
+	if (path == nullptr)
+	{
+		logger->info("Necessary path (-p) parameter was not specified");
+		return nullptr;
+	}
+	return ParseFunction();
 }
+
+#include <vector>
 
 int main(int argc, char* argv[])
 {
 	char *name, *path, *tag;
 	name = path = tag = nullptr;
-	if (!ParseArguments(name, tag, path))
-		return 1;
+	Routine parsed_func = nullptr;
 
-	Func parsed_func = ParseFunction();
+	// This code will be hide inside TRSManager constructor as soon as I will have access to my working place
+	// **************************************************************************************************
+	try
+	{
+		std::vector<spd::sink_ptr> sinks;
+		sinks.push_back(std::make_shared<spd::sinks::simple_file_sink_mt>("../Console/Logs/logs.txt"));
+		sinks.push_back(std::make_shared<spd::sinks::stderr_sink_mt>());
+
+		auto logger = std::make_shared<spd::logger>("logger", begin(sinks), end(sinks));
+		//register it if you need to access it globally
+		spdlog::register_logger(logger);
+
+		parsed_func = ParseArguments(name, tag, path);
+	}
+	catch (const spd::spdlog_ex& ex)
+	{
+		std::cout << "Log failed: " << ex.what() << std::endl;
+	}
+
+	// **************************************************************************************************
 	if (parsed_func == nullptr)
+	{
 		return 1;
+	}
 	else
+	{
 		(Manager.*parsed_func)(path, name, tag);
+	}
 
+	spdlog::drop_all();
 	return 0;
 }
 
