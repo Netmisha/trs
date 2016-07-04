@@ -1,0 +1,4 @@
+[2016-07-04 09:16:49.802] [logger] [info] Incorrect amount of parameters
+[2016-07-04 09:17:46.194] [logger] [info] Necessary path (-p) parameter was not specified
+[2016-07-04 09:17:50.718] [logger] [info] Incorrect amount of parameters
+[2016-07-04 09:17:57.277] [logger] [info] Incorrect function name
