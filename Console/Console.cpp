@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <iostream>
 
-#define MAX_PARAMETERS 8
+#define MAX_PARAMETERS 7
 
 
 namespace spd = spdlog;
@@ -69,12 +69,24 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 	// that amount of parameters is even ( each parameters specifier must be followed by string
 	// except for firs two parameters which is .exe name and function name )
 	//	cout << ____argc << endl;
-	if (__argc < 4 || __argc > MAX_PARAMETERS || __argc % 2 == 1)
+	if (__argc < 3 || __argc > MAX_PARAMETERS || __argc % 2 == 0)
 	{
 		logger->info("Incorrect amount of parameters");
 		return nullptr;
 	}
-	for (int i = 2; i < __argc; i += 2)
+
+	// checking path parameter
+	path = __argv[2];
+
+	DWORD dwAttrib = GetFileAttributesA(path);
+
+	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
+	{
+		logger->info("Specified path is not exist");
+		return nullptr;
+	}
+
+	for (int i = 3; i < __argc; i += 2)
 	{
 		if (_stricmp(__argv[i], "-n") == 0)
 		{
@@ -85,10 +97,6 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 		{
 			tag = __argv[i + 1];
 			continue;
-		}
-		else if (_stricmp(__argv[i], "-p") == 0)
-		{
-			path = __argv[i + 1];
 		}
 		else
 		{
@@ -116,7 +124,6 @@ int main(int argc, char* argv[])
 	name = path = tag = nullptr;
 	Routine parsed_func = nullptr;
 
-	// This code will be hide inside TRSManager constructor as soon as I will have access to my working place
 	// **************************************************************************************************
 	try
 	{
