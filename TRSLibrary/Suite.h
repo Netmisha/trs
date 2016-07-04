@@ -1,11 +1,19 @@
 #ifndef SUITE_H_
 #define SUITE_H_
+
 #include "TRSInfo.h"
 #include "TRSTest.h"
 #include <list>
 #include <istream>
 
-class Suite:public TRSInfo
+#ifdef TRSLibrary_EXPORT
+#define Suite_API  __declspec(dllexport) 
+#else
+#define Suite_API  __declspec(dllimport) 
+#endif
+
+
+class Suite_API Suite : public TRSInfo
 {
 	std::list<TRSTest> testList;
 public:
@@ -15,6 +23,6 @@ public:
 	bool removeTest(char*name);
 	std::list<TRSTest>& getList();
 
-	friend std::ostream& operator<<(std::ostream &, Suite);
+	friend Suite_API std::ostream& operator<<(std::ostream &, Suite);
 };
 #endif

@@ -1,5 +1,6 @@
 
 #include"stdafx.h"
+#define TRSLibrary_EXPORT
 #include "Suite.h"
 
 using std::ostream;
@@ -44,4 +45,5 @@ ostream& operator<<(ostream& out, Suite instance)
 	std::list<TRSTest> list = instance.getList();
 	for each(auto val in list)
 		out << val.getName()<<" ";
+	return out;
 }

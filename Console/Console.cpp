@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "spdlog/spdlog.h"
 #include "TRSLibrary\TRSManager.h"
+#include "TRSLibrary\Suite.h"
 
 #include <windows.h>
 #include <tchar.h>
@@ -123,7 +124,7 @@ bool ParseArguments(char* &name, char* &tag, char* &path)
 
 int main(int argc, char* argv[])
 {
-	/*
+
 	Manager.Init();
 
 
@@ -132,19 +133,7 @@ int main(int argc, char* argv[])
 
 	if (!ParseArguments(name, tag, path))
 		return 1;
-<<<<<<< HEAD
-	}
-	else
-	{
-		(Manager.*parsed_func)(path, name, tag);
-	}*/
-	TRSManager manager;
-	manager.List(argv[1],"","");
-	system("pause");
-	return 0;
-=======
 
 	return ProcessFunction(name,tag,path);
->>>>>>> 0910fac2b6234ceda348f7d3a79ddc81112158b7
 }
 

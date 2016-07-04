@@ -1,14 +1,13 @@
 ﻿#ifndef TRSManager_HEADER
 #define TRSManager_HEADER
 
-#ifdef TRSManager_EXPORT
+#ifdef TRSLibrary_EXPORT
 #define TRSManager_API  __declspec(dllexport) 
 #else
 #define TRSManager_API  __declspec(dllimport) 
 #endif
 
-
-TRSManager_API int func();
+#include "Suite.h"
 
 #include "spdlog\spdlog.h"
 #include <windows.h>
