@@ -49,7 +49,7 @@ Routine ParseFunction()
 
 	else
 	{
-		spd::get("logger")->info("Incorrect function name");
+		logger<<"Incorrect function name";
 		return nullptr;
 	}
 }
@@ -60,7 +60,6 @@ Routine ParseFunction()
 // or nullptr othewise
 Routine ParseArguments(char* &name, char* &tag, char* &path)
 {
-	auto logger = spd::get("logger");
 	name = tag = path = nullptr;
 
 	// check whether user input neccessary information ( path and function) &&
@@ -70,7 +69,7 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 	//	cout << ____argc << endl;
 	if (__argc < 3 || __argc > MAX_PARAMETERS || __argc % 2 == 0)
 	{
-		logger->info("Incorrect amount of parameters");
+		logger<<"Incorrect amount of parameters";
 		return nullptr;
 	}
 
@@ -81,7 +80,7 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 
 	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
 	{
-		logger->info("Specified path is not exist");
+		logger<<"Specified path is not exist";
 		return nullptr;
 	}
 
@@ -101,7 +100,7 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 		{
 			// this mean that there was not a identifier at the place
 			// where it was expected to be
-			logger->info("Incorrect order of parameters, [-p, -n, -t] was expected");
+			logger<<"Incorrect order of parameters, [-p, -n, -t] was expected";
 			return nullptr;
 		}
 	}
@@ -109,39 +108,21 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 	// checking whether necessary argument "path" was indicated
 	if (path == nullptr)
 	{
-		logger->info("Necessary path (-p) parameter was not specified");
+		logger<<"Necessary path (-p) parameter was not specified";
 		return nullptr;
 	}
 	return ParseFunction();
 }
 
-#include <vector>
 
 int main(int argc, char* argv[])
 {
+	logger.Init();
 	char *name, *path, *tag;
 	name = path = tag = nullptr;
-	Routine parsed_func = nullptr;
+	Routine parsed_func = ParseArguments(name, tag, path);
 
-	// **************************************************************************************************
-	try
-	{
-		std::vector<spd::sink_ptr> sinks;
-		sinks.push_back(std::make_shared<spd::sinks::simple_file_sink_mt>("../Console/Logs/logs.txt"));
-		sinks.push_back(std::make_shared<spd::sinks::stderr_sink_mt>());
 
-		auto logger = std::make_shared<spd::logger>("logger", begin(sinks), end(sinks));
-		//register it if you need to access it globally
-		spdlog::register_logger(logger);
-
-		parsed_func = ParseArguments(name, tag, path);
-	}
-	catch (const spd::spdlog_ex& ex)
-	{
-		std::cout << "Log failed: " << ex.what() << std::endl;
-	}
-
-	// **************************************************************************************************
 	if (parsed_func == nullptr)
 	{
 		return 1;
@@ -151,7 +132,6 @@ int main(int argc, char* argv[])
 		(Manager.*parsed_func)(path, name, tag);
 	}
 
-	spdlog::drop_all();
 	return 0;
 }
 

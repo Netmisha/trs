@@ -10,11 +10,13 @@
 
 TRSManager_API int func();
 
+#include "spdlog\spdlog.h"
 #include <windows.h>
 #include <tchar.h> 
 #include <stdio.h>
 #include <iostream>
 #include <strsafe.h>
+#include <memory>
 
 class TRSManager_API TRSManager
 {
@@ -32,6 +34,19 @@ public:
 	bool Info(char* path, char* name, char* tag);
 	bool Destroy(char* path, char* name, char* tag);
 };
+
+class TRSManager_API Logger
+{
+public:
+	bool Init();
+	~Logger();
+
+	void operator<<(char* mes);
+private:
+	 std::shared_ptr<spdlog::logger> log_;
+};
+
+extern TRSManager_API Logger logger;
 
 extern TRSManager_API TRSManager Manager;
 

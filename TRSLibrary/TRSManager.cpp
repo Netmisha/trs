@@ -2,14 +2,48 @@
 #define TRSManager_EXPORT
 #include "TRSManager.h"
 #include "FunctionalityForXML.h"
+#include "spdlog\spdlog.h"
 #include <iostream>
+#include <memory>
+#include <memory>
 
 using namespace std;
+namespace spd = spdlog;
+
 TRSManager Manager;
+Logger logger;
+
+void Logger::operator<<(char* mess)
+{
+	log_->info(mess);
+}
+
+bool Logger::Init()
+{
+	try
+	{
+		std::vector<spd::sink_ptr> sinks;
+		sinks.push_back(std::make_shared<spd::sinks::simple_file_sink_mt>("../Logs/logs.txt"));
+		sinks.push_back(std::make_shared<spd::sinks::stderr_sink_mt>());
+
+		 log_ = std::make_shared<spd::logger>("logger", begin(sinks), end(sinks));
+	}
+	catch (const spd::spdlog_ex& ex)
+	{
+		std::cerr << "Log failed: " << ex.what() << std::endl;
+		return false;
+	}
+	return true;
+}
+
+Logger::~Logger()
+{
+	spd::drop_all();
+}
 
 TRSManager::TRSManager()
 {
-
+//	auto console = spd::stdout_logger_mt("some_unique_name");
 }
 
 TRSManager::~TRSManager()
@@ -29,6 +63,7 @@ bool TRSManager::Verify(char* path, char* name, char* tag)
 
 bool TRSManager::Run(char* path, char* name, char* tag)
 {
+	logger << "Log in Run";
 	if (path != nullptr)
 	{
 		cout << "path: ";
