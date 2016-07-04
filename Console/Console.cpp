@@ -46,7 +46,10 @@ int ProcessFunction(char* name, char* tag, char* path)
 
 	else if (!_stricmp(__argv[1], "List"))
 	{
-		Manager.List(path, name, tag);
+		std::list<Suite> list =  Manager.List(path, name, tag);
+		for each (auto x in list)
+			std::cout << x << std::endl;
+
 		return 0;
 	}
 

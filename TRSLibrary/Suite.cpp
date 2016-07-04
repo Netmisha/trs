@@ -2,6 +2,8 @@
 #include"stdafx.h"
 #include "Suite.h"
 
+using std::ostream;
+
 Suite::Suite(char*TestName, char*Description,char* DirName) :TRSInfo(TestName,Description,DirName)
 {
 
@@ -35,4 +37,11 @@ bool Suite::removeTest(char*testName)
 std::list<TRSTest>& Suite::getList()
 {
 	return testList;
+}
+
+ostream& operator<<(ostream& out, Suite instance)
+{
+	std::list<TRSTest> list = instance.getList();
+	for each(auto val in list)
+		out << val.getName()<<" ";
 }
