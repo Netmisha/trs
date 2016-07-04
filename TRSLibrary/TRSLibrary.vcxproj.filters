@@ -48,6 +48,12 @@
     <ClInclude Include="Metadata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Suite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TRSTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -81,6 +87,12 @@
       <Filter>Resource Files</Filter>
     </ClCompile>
     <ClCompile Include="TRSInfo.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Suite.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TRSTest.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>
