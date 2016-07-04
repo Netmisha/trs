@@ -63,7 +63,9 @@ int dump_attribs_to_stdout(TiXmlElement* pElement, unsigned int indent)//search 
 	return i;
 }
 
-void dump_to_stdout(TiXmlNode* pParent, unsigned int indent)//check all XML-file tags and output everything
+
+
+void dump_to_stdout(TiXmlNode* pParent,  unsigned int indent)//check all XML-file tags and output everything
 {
 	if (!pParent) return;
 
@@ -84,9 +86,13 @@ void dump_to_stdout(TiXmlNode* pParent, unsigned int indent)//check all XML-file
 		num = dump_attribs_to_stdout(pParent->ToElement(), indent + 1);
 		switch (num)
 		{
-		case 0:  printf(" (No attributes)"); break;
-		case 1:  printf("%s1 attribute", getIndentAlt(indent)); break;
-		default: printf("%s%d attributes", getIndentAlt(indent), num); break;
+		case 0:  printf(" (No attributes)");  break;
+		case 1:  printf("%s1 attribute", getIndentAlt(indent)); 
+			
+			break;
+		default: printf("%s%d attributes", getIndentAlt(indent), num);
+			
+			break;
 		}
 		break;
 
@@ -112,11 +118,11 @@ void dump_to_stdout(TiXmlNode* pParent, unsigned int indent)//check all XML-file
 	printf("\n");
 	for (pChild = pParent->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
 	{
-		dump_to_stdout(pChild, indent + 1);
+		dump_to_stdout(pChild);
 	}
 }
 
-char* convert(std::wstring s, TCHAR*path)//create buffer to set info to tinyXML doc constructor
+char* convertToChar( TCHAR*path)//create buffer to set info to tinyXML doc constructor
 {
 	char* buf = new char[MAX_PATH];
 	char help = path[0];
@@ -129,4 +135,22 @@ char* convert(std::wstring s, TCHAR*path)//create buffer to set info to tinyXML 
 	}
 	buf[i] = '\0';
 	return buf;
+}
+
+void convertToTCHAR(TCHAR*dest,char* path)
+{
+	if (dest != nullptr)
+	{
+		
+		TCHAR help = path[0];
+		int i = 0;
+		while (help)
+		{
+			dest[i] = help;
+			++i;
+			help = path[i];
+		}
+		dest[i] = '\0';
+	}
+	
 }

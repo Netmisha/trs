@@ -4,8 +4,11 @@
 #include "FunctionalityForXML.h"
 #include <iostream>
 
+
 using namespace std;
 TRSManager Manager;
+
+
 
 TRSManager::TRSManager()
 {
@@ -71,12 +74,17 @@ bool TRSManager::List(char* path, char* name, char* tag)
 	HANDLE hFind;
 	TCHAR szDir[MAX_PATH];//buffer that holds file path
 	TCHAR hzDir[MAX_PATH];//help buffer that holds root path
+	char buffer[BUF_SIZE];//buffer for new XML-file
+	TiXmlDocument newDoc;//new XML-document
 
-	StringCchCopy(szDir, MAX_PATH, (TCHAR*)path);//copy path from line to buffer for recursive use
-	StringCchCopy(hzDir, MAX_PATH, (TCHAR*)path);//and to help buffer
+	
+	convertToTCHAR(szDir, path);//converting input parameters from char* to TCHAR*
+	convertToTCHAR(hzDir, path);
 	StringCchCat(szDir, MAX_PATH, TEXT("\\*"));//add end symbol to search in this directory
 
 	hFind = FindFirstFile(szDir, &ffd);//open first Folder
+
+
 	if (hFind == INVALID_HANDLE_VALUE)
 	{
 		std::cout << "FindFirstFile failed\n";
@@ -96,7 +104,7 @@ bool TRSManager::List(char* path, char* name, char* tag)
 					StringCchCat(subDir, MAX_PATH, TEXT("\\"));//additional slash))
 					StringCchCat(subDir, MAX_PATH, ffd.cFileName);//name of last folder to search in
 					std::cout << "\n\t";
-					List((char*)subDir,"","");//workin' only for path,not for names or tags yet
+					List(convertToChar(subDir), "", "");//workin' only for path,not for names or tags yet
 				}
 			}
 			else
@@ -105,15 +113,18 @@ bool TRSManager::List(char* path, char* name, char* tag)
 				std::wstring name(ffd.cFileName);//used for validating file name(checks if there is .xml in the end
 				if (Validate(name))//validating function
 				{
+					
+
 					TCHAR fileDir[MAX_PATH];//buffer which contains a path to an xml file
 					StringCchCopy(fileDir, MAX_PATH, hzDir);//some moves to save path
 					StringCchCat(fileDir, MAX_PATH, TEXT("\\"));
 					StringCchCat(fileDir, MAX_PATH, ffd.cFileName);
-					TiXmlDocument doc(convert(name, fileDir));//try to open such document wuth tinyXML parser
+					TiXmlDocument doc(convertToChar( fileDir));//try to open such document wuth tinyXML parser
 					bool loadOk = doc.LoadFile();//check if opening was successfull
 					if (loadOk)
 					{
 						dump_to_stdout(&doc);//parse through XML and output all it's options
+						
 					}
 				}
 			}

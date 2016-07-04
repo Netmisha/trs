@@ -15,6 +15,11 @@ TRSManager_API int func();
 #include <stdio.h>
 #include <iostream>
 #include <strsafe.h>
+#include <list>
+
+#define BUF_SIZE 512
+
+
 
 class TRSManager_API TRSManager
 {
