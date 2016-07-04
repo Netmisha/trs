@@ -132,8 +132,14 @@ int main(int argc, char* argv[])
 	name = tag = path = nullptr;
 
 	if (!ParseArguments(name, tag, path))
+	{
 		return 1;
 
+	}
+
+
+
 	return ProcessFunction(name,tag,path);
+
 }
 

@@ -158,12 +158,14 @@ std::list<Suite>& TRSManager::List(char* path, char* name, char* tag)
 						TCHAR fileDir[MAX_PATH];//buffer which contains a path to an xml file
 						StringCchCopy(fileDir, MAX_PATH, hzDir);//some moves to save path
 						StringCchCat(fileDir, MAX_PATH, TEXT("\\"));
+						TCHAR currentDir[MAX_PATH];
+						StringCchCopy(currentDir, MAX_PATH, fileDir);
 						StringCchCat(fileDir, MAX_PATH, ffd.cFileName);
 						TiXmlDocument doc(convertToChar(fileDir));//try to open such document wuth tinyXML parser
 						bool loadOk = doc.LoadFile();//check if opening was successfull
 						if (loadOk)
 						{
-							dump_to_stdout(&doc);//parse through XML and output all it's options
+							dump_to_stdout(&doc,suiteCollection,convertToChar(currentDir));//parse through XML and output all it's options
 						}
 					}
 				}
