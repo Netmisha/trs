@@ -1,3 +1,5 @@
+#ifndef METADATA_H_
+#define METADATA_H_
 #include <string>
 
 class Metadata
@@ -25,3 +27,4 @@ public:
 	char* getLicense();
 	char* getInfo();
 };
+#endif
