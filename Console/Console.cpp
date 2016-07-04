@@ -120,7 +120,7 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 
 int main(int argc, char* argv[])
 {
-	/*char *name, *path, *tag;
+	char *name, *path, *tag;
 	name = path = tag = nullptr;
 	Routine parsed_func = nullptr;
 
@@ -152,10 +152,8 @@ int main(int argc, char* argv[])
 		(Manager.*parsed_func)(path, name, tag);
 	}
 
-	spdlog::drop_all();*/
-	TRSManager manager;
-	manager.List(argv[1], "", "");
-	system("pause");
+	spdlog::drop_all();
+	
 	return 0;
 }
 
