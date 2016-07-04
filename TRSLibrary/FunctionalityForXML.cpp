@@ -65,12 +65,13 @@ int dump_attribs_to_stdout(TiXmlElement* pElement, unsigned int indent)//search 
 
 
 
-void dump_to_stdout(TiXmlNode* pParent,  unsigned int indent)//check all XML-file tags and output everything
+void dump_to_stdout(TiXmlNode* pParent, std::list<Suite>&suitList, char* dirName,unsigned int indent)//check all XML-file tags and output everything
 {
 	if (!pParent) return;
 
 	TiXmlNode* pChild;
 	TiXmlText* pText;
+	Suite* currentSuite;
 	int t = pParent->Type();
 	printf("%s", getIndent(indent));
 	int num;
@@ -83,6 +84,16 @@ void dump_to_stdout(TiXmlNode* pParent,  unsigned int indent)//check all XML-fil
 
 	case TiXmlNode::TINYXML_ELEMENT:
 		printf("Element [%s]", pParent->Value());
+		if (pParent->Value() == "suite")
+		{
+			TiXmlAttribute*atr = pParent->ToElement()->FirstAttribute();
+			char*name = new char[strlen(atr->Value())];
+			strncpy_s(name, strlen(atr->Value()), atr->Value(), strlen(atr->Value()));
+			atr = atr->Next();
+			char*desc = new char[strlen(atr->Value())];
+			strncpy_s(desc, strlen(atr->Value()), atr->Value(), strlen(atr->Value()));
+			currentSuite = new Suite(name, desc, dirName);
+		}
 		num = dump_attribs_to_stdout(pParent->ToElement(), indent + 1);
 		switch (num)
 		{
@@ -118,7 +129,7 @@ void dump_to_stdout(TiXmlNode* pParent,  unsigned int indent)//check all XML-fil
 	printf("\n");
 	for (pChild = pParent->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
 	{
-		dump_to_stdout(pChild);
+		dump_to_stdout(pChild,suitList,dirName);
 	}
 }
 

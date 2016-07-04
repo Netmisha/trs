@@ -2,9 +2,9 @@
 #include"stdafx.h"
 #include "Suite.h"
 
-Suite::Suite(char*TestName, char*Description,char* DirName) :TRSInfo(TestName,Description,DirName)
+Suite::Suite(char*TestName, char*Description,char* DirName_) :TRSInfo(TestName,Description)
 {
-
+	directoryName = DirName_;
 }
 
 Suite::~Suite()

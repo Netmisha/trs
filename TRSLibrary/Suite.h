@@ -7,6 +7,7 @@
 class Suite:public TRSInfo
 {
 	std::list<TRSTest> testList;
+	char* directoryName = nullptr;
 public:
 	Suite(char*TestName,char*Description,char*DirName);
 	~Suite();

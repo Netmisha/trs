@@ -5,7 +5,7 @@
 class TRSTest :public TRSInfo
 {
 public:
-	TRSTest(char*Name,char*Description,char*DirName);
+	TRSTest(char*Name,char*Description);
 	~TRSTest();
 	bool Run();
 };

@@ -120,7 +120,7 @@ bool ParseArguments(char* &name, char* &tag, char* &path)
 
 int main(int argc, char* argv[])
 {
-	/*
+	
 	Manager.Init();
 
 
@@ -128,20 +128,12 @@ int main(int argc, char* argv[])
 	name = tag = path = nullptr;
 
 	if (!ParseArguments(name, tag, path))
-		return 1;
-<<<<<<< HEAD
-	}
-	else
 	{
-		(Manager.*parsed_func)(path, name, tag);
-	}*/
-	TRSManager manager;
-	manager.List(argv[1],"","");
-	system("pause");
-	return 0;
-=======
+		return 1;
+
+	}
 
 	return ProcessFunction(name,tag,path);
->>>>>>> 0910fac2b6234ceda348f7d3a79ddc81112158b7
+
 }
 
