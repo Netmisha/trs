@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#define TRSLibrary_EXPORT
 #include "TRSInfo.h"
 
 TRSInfo::TRSInfo(char*TestName, char*Description) 

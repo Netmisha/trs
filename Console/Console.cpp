@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "spdlog/spdlog.h"
 #include "TRSLibrary\TRSManager.h"
+#include "TRSLibrary\Suite.h"
 
 #include <windows.h>
 #include <tchar.h>
@@ -46,7 +47,10 @@ int ProcessFunction(char* name, char* tag, char* path)
 
 	else if (!_stricmp(__argv[1], "List"))
 	{
-		Manager.List(path, name, tag);
+		std::list<Suite> list =  Manager.List(path, name, tag);
+		for each (auto x in list)
+			std::cout << x << std::endl;
+
 		return 0;
 	}
 
@@ -120,7 +124,7 @@ bool ParseArguments(char* &name, char* &tag, char* &path)
 
 int main(int argc, char* argv[])
 {
-	
+
 	Manager.Init();
 
 
@@ -132,6 +136,8 @@ int main(int argc, char* argv[])
 		return 1;
 
 	}
+
+
 
 	return ProcessFunction(name,tag,path);
 

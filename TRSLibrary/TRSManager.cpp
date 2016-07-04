@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#define TRSManager_EXPORT
+#define TRSLibrary_EXPORT
 #include "TRSManager.h"
 #include "FunctionalityForXML.h"
 #include "spdlog\spdlog.h"
