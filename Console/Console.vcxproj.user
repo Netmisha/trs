@@ -4,13 +4,6 @@
     <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-<<<<<<< HEAD
-    <LocalDebuggerCommandArguments>
-    </LocalDebuggerCommandArguments>
-=======
-    <LocalDebuggerCommandArguments>Run  D:\Repository\trs</LocalDebuggerCommandArguments>
-    <LocalDebuggerCommandArguments>D:\Oleh</LocalDebuggerCommandArguments>
->>>>>>> fa77c17138e39742111c750573d5d614623006ff
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

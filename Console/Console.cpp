@@ -118,20 +118,6 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 
 int main(int argc, char* argv[])
 {
-<<<<<<< HEAD
-	char *name, *path, *tag;
-	name = path = tag = nullptr;
-	Routine parsed_func = nullptr;
-
-	// **************************************************************************************************
-	try
-	{
-		std::vector<spd::sink_ptr> sinks;
-		sinks.push_back(std::make_shared<spd::sinks::simple_file_sink_mt>("../Console/Logs/logs.txt"));
-		sinks.push_back(std::make_shared<spd::sinks::stderr_sink_mt>());
-=======
->>>>>>> fa77c17138e39742111c750573d5d614623006ff
-
 	Manager.Init();
 	char *name, *path, *tag;
 	name = path = tag = nullptr;
@@ -146,12 +132,6 @@ int main(int argc, char* argv[])
 	{
 		(Manager.*parsed_func)(path, name, tag);
 	}
-
-<<<<<<< HEAD
-	spdlog::drop_all();
-	
-=======
->>>>>>> fa77c17138e39742111c750573d5d614623006ff
 	return 0;
 }
 
