@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "TRSInfo.h"
 
-TRSInfo::TRSInfo(char*TestName, char*Description, char*Tag, char*Repeat, char*MaxTime, char*MaxThreads, char* Name, char* Date, char* Version, char* Mail, char* Copyright, char* License, char* Info) :meta(Name,Date,Version,Mail,Copyright,License,Info)
+TRSInfo::TRSInfo(char*TestName, char*Description, char*Tag, char*Repeat, char*MaxTime, char*MaxThreads, char* Name) :meta(Name)
 {
 	testName = new char[strlen(TestName)];
 	strncpy_s(testName, strlen(TestName),TestName, strlen(TestName));

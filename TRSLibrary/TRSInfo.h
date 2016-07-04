@@ -10,5 +10,5 @@ class TRSInfo
 	char* maxThreads;
 	Metadata meta;
 public:
-	TRSInfo(char*, char*, char*, char*, char*, char*, char* , char* , char* , char* , char* , char* , char* );
+	TRSInfo(char*, char*, char*, char*, char*, char*, char*  );
 };

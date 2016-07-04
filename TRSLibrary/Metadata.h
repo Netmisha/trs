@@ -10,6 +10,6 @@ class Metadata
 	char* license;
 	char* info;
 public:
-	Metadata(char*,char*,char*,char*,char*,char*,char*);
+	Metadata(char*Name);
 	~Metadata();
 };

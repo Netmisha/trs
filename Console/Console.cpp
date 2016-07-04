@@ -132,6 +132,7 @@ int main(int argc, char* argv[])
 	{
 		(Manager.*parsed_func)(path, name, tag);
 	}
+	system("pause");
 	return 0;
 }
 
