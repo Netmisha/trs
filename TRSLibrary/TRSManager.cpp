@@ -14,6 +14,12 @@ namespace spd = spdlog;
 TRSManager Manager;
 Logger logger;
 
+
+void TestRunner::Execute(char* command)
+{
+	system(command);
+}
+
 void Logger::operator<<(char* mess)
 {
 	log_->info(mess);
@@ -39,7 +45,6 @@ bool Logger::Init()
 
 Logger::~Logger()
 {
-	spd::drop_all();
 }
 
 TRSManager::TRSManager()
@@ -48,7 +53,6 @@ TRSManager::TRSManager()
 
 TRSManager::~TRSManager()
 {
-
 }
 
 bool TRSManager::Init()

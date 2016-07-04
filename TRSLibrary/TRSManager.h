@@ -51,6 +51,12 @@ private:
 	 std::shared_ptr<spdlog::logger> log_;
 };
 
+class TRSManager_API TestRunner
+{
+public:
+	void Execute(char*);
+};
+
 extern TRSManager_API Logger logger;
 
 extern TRSManager_API TRSManager Manager;
