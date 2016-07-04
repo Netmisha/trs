@@ -23,6 +23,7 @@ void TestRunner::Execute(char* command)
 void Logger::operator<<(char* mess)
 {
 	log_->info(mess);
+	system("pause");
 }
 
 bool Logger::Init()
