@@ -10,10 +10,28 @@ Metadata::Metadata(char* Name)
 Metadata::~Metadata()
 {
 	delete[] autorName;
-	delete[] date;
-	delete[] version;
-	delete[] mail;
-	delete[] copyright;
-	delete[] license;
-	delete[] info;
+	if (date)
+	{
+		delete[] date;
+	}
+	if (version)
+	{
+		delete[] version;
+	}
+	if (mail)
+	{
+		delete[] mail;
+	}
+	if (copyright)
+	{
+		delete[] copyright;
+	}
+	if (license)
+	{
+		delete[] license;
+	}
+	if (info)
+	{
+		delete[] info;
+	}
 }

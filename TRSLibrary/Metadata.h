@@ -3,13 +3,25 @@
 class Metadata
 {
 	char* autorName;
-	char* date;
-	char* version;
-	char* mail;
-	char* copyright;
-	char* license;
-	char* info;
+	char* date=nullptr;
+	char* version=nullptr;
+	char* mail=nullptr;
+	char* copyright=nullptr;
+	char* license=nullptr;
+	char* info=nullptr;
 public:
 	Metadata(char*Name);
 	~Metadata();
+	bool setDate(char*date_);
+	bool setVersion(char*version_);
+	bool setMail(char*mail_);
+	bool setCopyright(char*copyright_);
+	bool setLicense(char*license_);
+	bool setInfo(char*info_);
+	char* getDate();
+	char* getVersion();
+	char* getMail();
+	char* getCopyright();
+	char* getLicense();
+	char* getInfo();
 };

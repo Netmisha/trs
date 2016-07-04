@@ -126,6 +126,7 @@ int main(int argc, char* argv[])
 
 	if (parsed_func == nullptr)
 	{
+		system("pause");
 		return 1;
 	}
 	else

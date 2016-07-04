@@ -4,11 +4,20 @@ class TRSInfo
 {
 	char* testName;
 	char* description;
-	char* tag;
-	char* repeat;
-	char* maxTime;
-	char* maxThreads;
+	char* tag=nullptr;
+	char* repeat=nullptr;
+	char* maxTime=nullptr;
+	char* maxThreads=nullptr;
 	Metadata meta;
 public:
-	TRSInfo(char*, char*, char*, char*, char*, char*, char*  );
+	TRSInfo(char*Name, char*Description,char*metaName);
+	~TRSInfo();
+	bool setTag(char*tag_);
+	bool setRepeat(char*repeat_);
+	bool setMaxTime(char*maxTime_);
+	bool setMaxThreads(char*maxThreads_);
+	char* getTag();
+	char* getRepeat();
+	char* getMaxTime();
+	char* getMaxThreads();
 };
