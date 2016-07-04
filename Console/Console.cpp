@@ -52,6 +52,7 @@ Routine ParseFunction()
 		logger<<"Incorrect function name";
 		return nullptr;
 	}
+	
 }
 
 // taking references to pointer and assign them to appropriate console paramer
@@ -117,6 +118,7 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 
 int main(int argc, char* argv[])
 {
+
 	logger.Init();
 	char *name, *path, *tag;
 	name = path = tag = nullptr;

@@ -6,7 +6,8 @@
 const unsigned int NUM_INDENTS_PER_SPACE = 2;
 
 bool Validate(std::wstring&);
-char* convert(std::wstring s, TCHAR*);
+char* convertToChar( TCHAR*);
+void convertToTCHAR(TCHAR*,char*);
 void dump_to_stdout(TiXmlNode* pParent, unsigned int indent = 0);
 const char * getIndent(unsigned int numIndents);
 const char * getIndentAlt(unsigned int numIndents);
