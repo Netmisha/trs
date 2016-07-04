@@ -12,5 +12,6 @@ public:
 	~Suite();
 	bool addTest(TRSTest&);
 	bool removeTest(char*name);
+	std::list<TRSTest>& getList();
 };
 #endif

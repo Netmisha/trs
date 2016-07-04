@@ -31,3 +31,8 @@ bool Suite::removeTest(char*testName)
 	}
 	return false;
 }
+
+std::list<TRSTest>& Suite::getList()
+{
+	return testList;
+}

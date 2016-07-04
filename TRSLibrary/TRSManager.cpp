@@ -100,11 +100,13 @@ bool TRSManager::Stop(char* path, char* name, char* tag)
 	return false;
 }
 
-bool TRSManager::List(char* path, char* name, char* tag)
+std::list<Suite>& TRSManager::List(char* path, char* name, char* tag)
 {
 	DWORD fFile = GetFileAttributesA(path);
 	if (fFile& FILE_ATTRIBUTE_DIRECTORY)
 	{
+		std::list<Suite> suiteCollection;
+		TRSInfo* info;
 		WIN32_FIND_DATA ffd;//variable that contains file info(if such is open with it)
 		HANDLE hFind;
 		TCHAR szDir[MAX_PATH];//buffer that holds file path
@@ -123,7 +125,7 @@ bool TRSManager::List(char* path, char* name, char* tag)
 		if (hFind == INVALID_HANDLE_VALUE)
 		{
 			std::cout << "FindFirstFile failed\n";
-			return false;
+			
 		}
 		else
 		{
@@ -148,8 +150,6 @@ bool TRSManager::List(char* path, char* name, char* tag)
 					std::wstring name(ffd.cFileName);//used for validating file name(checks if there is .xml in the end
 					if (Validate(name))//validating function
 					{
-
-
 						TCHAR fileDir[MAX_PATH];//buffer which contains a path to an xml file
 						StringCchCopy(fileDir, MAX_PATH, hzDir);//some moves to save path
 						StringCchCat(fileDir, MAX_PATH, TEXT("\\"));
@@ -159,17 +159,16 @@ bool TRSManager::List(char* path, char* name, char* tag)
 						if (loadOk)
 						{
 							dump_to_stdout(&doc);//parse through XML and output all it's options
-
 						}
 					}
 				}
 			} while (FindNextFile(hFind, &ffd) != 0);//repeat
 		}
-		return true;
+		return suiteCollection;
 	}
 	else
 	{
-		return false;
+		//place for exception
 	}
 }
 

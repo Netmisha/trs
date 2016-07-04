@@ -2,6 +2,7 @@
 #include <string>
 #include "TinyXML\tinyxml.h"
 #include <Windows.h>
+#include "Suite.h"
 
 const unsigned int NUM_INDENTS_PER_SPACE = 2;
 

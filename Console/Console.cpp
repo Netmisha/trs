@@ -118,6 +118,7 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 
 int main(int argc, char* argv[])
 {
+	/*
 	Manager.Init();
 	char *name, *path, *tag;
 	name = path = tag = nullptr;
@@ -132,7 +133,9 @@ int main(int argc, char* argv[])
 	else
 	{
 		(Manager.*parsed_func)(path, name, tag);
-	}
+	}*/
+	TRSManager manager;
+	manager.List(argv[1],"","");
 	system("pause");
 	return 0;
 }
