@@ -10,6 +10,7 @@
 #include <strsafe.h>
 #include <stdio.h>
 #include <iostream>
+#include <list>
 
 #define MAX_PARAMETERS 7
 
@@ -17,64 +18,71 @@
 namespace spd = spdlog;
 
 
-typedef bool (TRSManager::*Routine)(char*, char*, char*);
-
-// returned poiner to member function which was indicated at the command line
-// Otherwise - return nullptr
-Routine ParseFunction()
+int ProcessFunction(char* name, char* tag, char* path)
 {
 	if (__argc < 2)
-		return nullptr;
+		return 1;
 
 	if (!_stricmp(__argv[1], "Verify"))
-		return &TRSManager::Verify;
-
+	{
+		Manager.Verify(path, name, tag);
+		return 0;
+	}
 	else if (!_stricmp(__argv[1], "Run"))
-		return &TRSManager::Run;
-
+	{
+		Manager.Run(path, name, tag);
+		return 0;
+	}
 	else if (!_stricmp(__argv[1], "Pause"))
-		return &TRSManager::Pause;
-
+	{
+		Manager.Pause(path, name, tag);
+		return 0;
+	}
 	else if (!_stricmp(__argv[1], "Stop"))
-		return &TRSManager::Stop;
+	{
+		Manager.Stop(path, name, tag);
+		return 0;
+	}
 
 	else if (!_stricmp(__argv[1], "List"))
-		return &TRSManager::List;
+	{
+		Manager.List(path, name, tag);
+		return 0;
+	}
 
 	else if (!_stricmp(__argv[1], "Status"))
-		return &TRSManager::Status;
+	{
+		Manager.Status(path, name, tag);
+		return 0;
+	}
 
 	else if (!_stricmp(__argv[1], "Info"))
-		return &TRSManager::Info;
+	{
+		Manager.Info(path, name, tag);
+		return 0;
+	}
 
 	else
 	{
 		logger<<"Incorrect function name";
-		return nullptr;
+		return 1;
 	}
 	
 }
 
-// taking references to pointer and assign them to appropriate console paramer
-// or to nullptr otherwise
-// returning pointer to member function if it was specified correctly
-// or nullptr othewise
-Routine ParseArguments(char* &name, char* &tag, char* &path)
+// taking references to pointer and assign them to appropriate console parameter
+bool ParseArguments(char* &name, char* &tag, char* &path)
 {
 	name = tag = path = nullptr;
 
-	// check whether user input neccessary information ( path and function) &&
-	// it is not overflow maximum parameter's amount && 
-	// that amount of parameters is even ( each parameters specifier must be followed by string
-	// except for firs two parameters which is .exe name and function name )
-	//	cout << ____argc << endl;
+	// checking whether amount of parameters is correct
 	if (__argc < 3 || __argc > MAX_PARAMETERS || __argc % 2 == 0)
 	{
 		logger<<"Incorrect amount of parameters";
-		return nullptr;
+		return false;
 	}
 
-	// checking path parameter
+	// checking if path parameter is valid
 	path = __argv[2];
 
 	DWORD dwAttrib = GetFileAttributesA(path);
@@ -82,9 +90,10 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
 	{
 		logger<<"Specified path is not exist";
-		return nullptr;
+		return false;
 	}
 
+	// checking optional parameters
 	for (int i = 3; i < __argc; i += 2)
 	{
 		if (_stricmp(__argv[i], "-n") == 0)
@@ -101,18 +110,11 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 		{
 			// this mean that there was not a identifier at the place
 			// where it was expected to be
-			logger<<"Incorrect order of parameters, [-p, -n, -t] was expected";
-			return nullptr;
+			logger<<"Incorrect order of parameters,  (-n or -t) was expected";
+			return false;
 		}
 	}
-
-	// checking whether necessary argument "path" was indicated
-	if (path == nullptr)
-	{
-		logger<<"Necessary path (-p) parameter was not specified";
-		return nullptr;
-	}
-	return ParseFunction();
+	return true;
 }
 
 
@@ -120,15 +122,14 @@ int main(int argc, char* argv[])
 {
 	/*
 	Manager.Init();
+
+
 	char *name, *path, *tag;
-	name = path = tag = nullptr;
-	Routine parsed_func = ParseArguments(name, tag, path);
+	name = tag = path = nullptr;
 
-
-	if (parsed_func == nullptr)
-	{
-		system("pause");
+	if (!ParseArguments(name, tag, path))
 		return 1;
+<<<<<<< HEAD
 	}
 	else
 	{
@@ -138,5 +139,9 @@ int main(int argc, char* argv[])
 	manager.List(argv[1],"","");
 	system("pause");
 	return 0;
+=======
+
+	return ProcessFunction(name,tag,path);
+>>>>>>> 0910fac2b6234ceda348f7d3a79ddc81112158b7
 }
 
