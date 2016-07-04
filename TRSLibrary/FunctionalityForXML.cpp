@@ -141,7 +141,6 @@ void convertToTCHAR(TCHAR*dest,char* path)
 {
 	if (dest != nullptr)
 	{
-		
 		TCHAR help = path[0];
 		int i = 0;
 		while (help)
@@ -152,5 +151,4 @@ void convertToTCHAR(TCHAR*dest,char* path)
 		}
 		dest[i] = '\0';
 	}
-	
 }

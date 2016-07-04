@@ -42,6 +42,12 @@
     <ClInclude Include="FunctionalityForXML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TRSInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Metadata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -70,6 +76,12 @@
     </ClCompile>
     <ClCompile Include="FunctionalityForXML.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Metadata.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TRSInfo.cpp">
+      <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
