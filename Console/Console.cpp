@@ -119,7 +119,7 @@ Routine ParseArguments(char* &name, char* &tag, char* &path)
 int main(int argc, char* argv[])
 {
 
-	logger.Init();
+	Manager.Init();
 	char *name, *path, *tag;
 	name = path = tag = nullptr;
 	Routine parsed_func = ParseArguments(name, tag, path);

@@ -24,7 +24,7 @@ bool Logger::Init()
 	try
 	{
 		std::vector<spd::sink_ptr> sinks;
-		sinks.push_back(std::make_shared<spd::sinks::simple_file_sink_mt>("../Logs/logs.txt"));
+		sinks.push_back(std::make_shared<spd::sinks::simple_file_sink_mt>("logs.txt"));
 		sinks.push_back(std::make_shared<spd::sinks::stderr_sink_mt>());
 
 		 log_ = std::make_shared<spd::logger>("logger", begin(sinks), end(sinks));
@@ -53,6 +53,7 @@ TRSManager::~TRSManager()
 
 bool TRSManager::Init()
 {
+	logger.Init();
 	return false;
 }
 
@@ -63,7 +64,6 @@ bool TRSManager::Verify(char* path, char* name, char* tag)
 
 bool TRSManager::Run(char* path, char* name, char* tag)
 {
-	logger << "Log in Run";
 	if (path != nullptr)
 	{
 		cout << "path: ";
