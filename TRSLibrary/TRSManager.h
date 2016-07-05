@@ -8,7 +8,7 @@
 #endif
 
 #include "Suite.h"
-
+#include "TRSResult.h"
 #include "spdlog\spdlog.h"
 #include <windows.h>
 #include <tchar.h> 
@@ -18,10 +18,9 @@
 #include <memory>
 #include "Suite.h"
 #include <list>
+#include <vector>
 
 #define BUF_SIZE 512
-
-
 
 class TRSManager_API TRSManager
 {
@@ -32,24 +31,25 @@ public:
 
 	bool Init();
 	bool Verify(char* path, char* name, char* tag);
-	bool Run(char* path, char* name, char* tag);
+	std::vector<TRSResult> Run(char* path, char* name, char* tag);
 	bool Pause(char* path, char* name, char* tag);
 	bool Stop(char* path, char* name, char* tag);
 	std::list<Suite*>* List(char* path, char* name, char* tag);
 	bool Status(char* path, char* name, char* tag);
 	bool Info(char* path, char* name, char* tag);
-	bool Destroy(char* path, char* name, char* tag);
+	bool Destroy();
 };
 
 class TRSManager_API Logger
 {
 public:
 	bool Init();
-	~Logger();
+	void Destroy();
 
 	void operator<<(char* mes);
 private:
-	 std::shared_ptr<spdlog::logger> log_;
+	std::shared_ptr<spdlog::logger> text_log_;
+	std::shared_ptr<spdlog::logger> console_log_;
 };
 
 class TRSManager_API TestRunner

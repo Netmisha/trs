@@ -17,7 +17,7 @@
 		<info></info>
 	</metadata>
 
-	<test name="Test 1" description="Test description">
+	<test name="Test 6" description="Test description">
 <priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
