@@ -96,7 +96,8 @@ std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 			strcat_s(executable_directory, exe_path_size + 1, test_path);
 			strcat_s(executable_directory, exe_path_size + 1, test->get_executableName());
 
-			int expected_result = test->get_expectedResult();
+			int expected_result = atoi(test->get_expectedResult());
+			
 			result = (expected_result == TestRunner::Execute(executable_directory));
 
 			result_vector.push_back(TRSResult(test_path, test_name, result));

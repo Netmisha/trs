@@ -40,31 +40,54 @@ namespace UnitTest
 		{
 			std::list<Suite*> list = *Manager.List(R"(../TestData/TestStrcuture)", nullptr, nullptr);
 
-			Assert::AreEqual(list.size(), AMOUNT_OF_TESTS);
+			unsigned int testsAmount = 0;
+
+			std::list<Suite*>::iterator it = list.begin();
+
+			for (it; it != list.end(); ++it)
+			{
+				testsAmount += (*it)->getList().size();
+			}
+
+			Assert::AreEqual(testsAmount, AMOUNT_OF_TESTS);
 			
 			char name[MAX_TEST_NAME_LENGHT];
 
 			std::list<Suite*>::iterator iter = list.begin();
+			
 			int i = 1;
-			for (; i <= FIRST_BRANCH_AMOUNT; ++iter, ++i)
+			for (; i <= FIRST_BRANCH_AMOUNT; ++iter)
 			{
-				sprintf(name, "Test %d", i);
-				int cmp_result = strcmp(name, (*iter)->getName());
-				Assert::IsTrue(cmp_result == 0);
+				
+				std::list<TRSTest*>::iterator testIt = (*iter)->getList().begin();
+				for (testIt; testIt != (*iter)->getList().end(); ++testIt, ++i)
+				{
+					sprintf(name, "Test %d", i);
+					int cmp_result = strcmp(name, (*testIt)->getName());
+					Assert::IsTrue(cmp_result == 0);
+				}
 			}
 
-			for (i = 1; i <= SECOND_BRANCH_AMOUNT; ++iter, ++i)
+			for (i = 1; i <= SECOND_BRANCH_AMOUNT; ++iter)
 			{
-				sprintf(name, "Test %d", i);
-				int cmp_result = strcmp(name, (*iter)->getName());
-				Assert::IsTrue(cmp_result == 0);
+				std::list<TRSTest*>::iterator testIt = (*iter)->getList().begin();
+				for (testIt; testIt != (*iter)->getList().end(); ++testIt, ++i)
+				{
+					sprintf(name, "Test %d", i);
+					int cmp_result = strcmp(name, (*testIt)->getName());
+					Assert::IsTrue(cmp_result == 0);
+				}
 			}
 
-			for (i = 1; i <= THIRD_BRANCH_AMOUNT; ++iter, ++i)
+			for (i = 1; i <= THIRD_BRANCH_AMOUNT; ++iter)
 			{
-				sprintf(name, "Test %d", i);
-				int cmp_result = strcmp(name, (*iter)->getName());
-				Assert::IsTrue(cmp_result == 0);
+				std::list<TRSTest*>::iterator testIt = (*iter)->getList().begin();
+				for (testIt; testIt != (*iter)->getList().end(); ++testIt, ++i)
+				{
+					sprintf(name, "Test %d", i);
+					int cmp_result = strcmp(name, (*testIt)->getName());
+					Assert::IsTrue(cmp_result == 0);
+				}
 			}
 		}
 

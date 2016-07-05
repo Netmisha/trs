@@ -20,12 +20,5 @@ TRSTest::~TRSTest()
 
 bool TRSTest::Parse(TiXmlNode*pParent)
 {
-	if (TRSInfo::Parse(pParent))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return TRSInfo::Parse(pParent);
 }

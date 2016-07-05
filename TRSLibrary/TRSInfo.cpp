@@ -215,6 +215,28 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			}
 			break;
 		}
+		if ((strncmp(pParent->Value(), "execution", strlen("execution")) == 0))
+		{
+			TiXmlNode* child = pParent->FirstChild();
+			if (child->Type() == TiXmlNode::TINYXML_TEXT)
+			{
+				char*executableName = new char[strlen(child->Value()) + 1];
+				strncpy_s(executableName, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+				setExecutableName(executableName);
+			}
+			break;
+		}
+		if ((strncmp(pParent->Value(), "result", strlen("result")) == 0))
+		{
+			TiXmlNode* child = pParent->FirstChild();
+			if (child->Type() == TiXmlNode::TINYXML_TEXT)
+			{
+				char*Res = new char[strlen(child->Value()) + 1];
+				strncpy_s(Res, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+				setExpectedResult(Res);
+			}
+			break;
+		}
 		if ((strncmp(pParent->Value(), "metadata", strlen("metadata")) == 0))
 		{
 			
@@ -384,6 +406,52 @@ bool TRSInfo::setMaxTime(char*maxTime_)
 		if (maxTime = new char[strlen(maxTime_) + 1])
 		{
 			strncpy_s(maxTime, strlen(maxTime_) + 1, maxTime_, strlen(maxTime_));
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+bool TRSInfo::setExecutableName(char*exeName)
+{
+	if (executableName)
+	{
+		delete[] executableName;
+		executableName = new char[strlen(exeName) + 1];
+		strncpy_s(executableName, strlen(exeName) + 1, exeName, strlen(exeName));
+		return true;
+	}
+	else
+	{
+		if (executableName = new char[strlen(exeName) + 1])
+		{
+			strncpy_s(executableName, strlen(exeName) + 1, exeName, strlen(exeName));
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+bool TRSInfo::setExpectedResult(char* res)
+{
+	if (expectedResult)
+	{
+		delete[] expectedResult;
+		expectedResult = new char[strlen(res) + 1];
+		strncpy_s(expectedResult, strlen(res) + 1, res, strlen(res));
+		return true;
+	}
+	else
+	{
+		if (expectedResult = new char[strlen(res) + 1])
+		{
+			strncpy_s(expectedResult, strlen(res) + 1, res, strlen(res));
 			return true;
 		}
 		else

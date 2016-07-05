@@ -21,8 +21,8 @@ class TRSInfo_API TRSInfo
 	char* repeat=nullptr;
 	char* maxTime=nullptr;
 	char* maxThreads=nullptr;
-	int expectedResult;
-	char* executableName;
+	char* expectedResult=nullptr;
+	char* executableName=nullptr;
 	
 	Metadata* metadata;
 public:
@@ -34,20 +34,19 @@ public:
 	bool setRepeat(char*repeat_);
 	bool setMaxTime(char*maxTime_);
 	bool setMaxThreads(char*maxThreads_);
-
+	bool setExecutableName(char* name_);
 	inline char* get_executableName()
 	{
 		return executableName;
 	}
-	inline int get_expectedResult()
+	inline char* get_expectedResult()
 	{
 		return expectedResult;
 	}
-
 	bool setName(char*Name_);
 	bool setDescription(char*Desc_);
 	bool setMetadata(Metadata* metadata_);
-
+	bool setExpectedResult(char* res_);
 	char* getName();
 	char* getDescription();
 	char* getTag();
