@@ -139,14 +139,11 @@ int main(int argc, char* argv[])
 	}
 	int ret_val = ProcessFunction(name,tag,path);
 
-<<<<<<< HEAD
+
 
 
 	return ProcessFunction(name, tag, path);
 	system("pause");
-=======
-	Manager.Destroy();
-	return ret_val;
->>>>>>> 6baebcb310888804e24293d79fe47aa09c0b7ff5
+
 }
 
