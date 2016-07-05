@@ -24,6 +24,7 @@
 
 class TRSManager_API TRSManager
 {
+	std::list<Suite*>* suiteCollection;
 public:
 	TRSManager();
 	~TRSManager();
@@ -33,7 +34,7 @@ public:
 	std::vector<TRSResult> Run(char* path, char* name, char* tag);
 	bool Pause(char* path, char* name, char* tag);
 	bool Stop(char* path, char* name, char* tag);
-	std::list<Suite>& List(char* path, char* name, char* tag);
+	std::list<Suite*>* List(char* path, char* name, char* tag);
 	bool Status(char* path, char* name, char* tag);
 	bool Info(char* path, char* name, char* tag);
 	bool Destroy();

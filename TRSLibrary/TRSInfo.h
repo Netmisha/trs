@@ -15,8 +15,8 @@
 
 class TRSInfo_API TRSInfo
 {
-	char* Name;
-	char* description;
+	char* Name=nullptr;
+	char* description=nullptr;
 	char* tag=nullptr;
 	char* repeat=nullptr;
 	char* maxTime=nullptr;
@@ -27,6 +27,7 @@ class TRSInfo_API TRSInfo
 	Metadata* metadata;
 public:
 	TRSInfo(char*Name, char*Description);
+	TRSInfo();
 	~TRSInfo();
 
 	bool setTag(char*tag_);
@@ -42,12 +43,18 @@ public:
 	{
 		return expectedResult;
 	}
+
+	bool setName(char*Name_);
+	bool setDescription(char*Desc_);
+	bool setMetadata(Metadata* metadata_);
+
 	char* getName();
 	char* getDescription();
 	char* getTag();
 	char* getRepeat();
 	char* getMaxTime();
 	char* getMaxThreads();
-	bool Parse(TiXmlDocument& doc);
+	Metadata* getMetadata();
+	bool Parse(TiXmlNode* pParent);
 };
 #endif

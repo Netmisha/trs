@@ -1,6 +1,7 @@
 #ifndef SUITE_H_
 #define SUITE_H_
 
+
 #ifdef TRSLibrary_EXPORT
 #define Suite_API  __declspec(dllexport) 
 #else
@@ -15,19 +16,26 @@
 
 class Suite_API Suite : public TRSInfo
 {
-	std::list<TRSTest> testList;
+	std::list<TRSTest*> testList;
 	char* directoryName = nullptr;
+	bool ParseSuit(TiXmlNode* pParent);
 public:
 	Suite(char*TestName,char*Description,char*DirName);
+	Suite();
 	~Suite();
 	bool addTest(TRSTest&);
 	bool removeTest(char*name);
-	std::list<TRSTest>& getList();
+
 
 	inline char* get_path()
 	{
 		return directoryName;
 	}
+
+	std::list<TRSTest*>& getList();
+	bool Parse(TiXmlNode*pParent);
+	bool setDir(char*dir_);
+	bool setList(std::list<TRSTest*>& testList_);
 
 	friend Suite_API std::ostream& operator<<(std::ostream &, Suite);
 };

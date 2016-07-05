@@ -12,8 +12,10 @@ class TRSTest_API TRSTest : public TRSInfo
 {
 public:
 	TRSTest(char*Name,char*Description);
+	TRSTest();
 	~TRSTest();
 	bool Run();
+	bool Parse(TiXmlNode*pParent);
 };
 
 #endif
