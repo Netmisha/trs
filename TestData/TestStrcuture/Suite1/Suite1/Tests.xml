@@ -30,7 +30,7 @@
 	</test>
 	<test name="Test 4" description="Test description">
 <priority>4</priority>
-		<tag>Release</tag>
+		<tag>Single</tag>
 		<disable>false</disable>
 <execution>test.exe</execution>
 <parameters repeat = "32" >123</parameters>

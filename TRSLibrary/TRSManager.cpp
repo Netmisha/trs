@@ -5,8 +5,7 @@
 #include "spdlog\spdlog.h"
 #include <iostream>
 #include <memory>
-#include <memory>
-
+#include <vector>
 
 using namespace std;
 namespace spd = spdlog;
@@ -75,7 +74,7 @@ bool TRSManager::Verify(char* path, char* name, char* tag)
 	return false;
 }
 
-bool TRSManager::Run(char* path, char* name, char* tag)
+std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 {
 	if (path != nullptr)
 	{
@@ -100,7 +99,7 @@ bool TRSManager::Run(char* path, char* name, char* tag)
 			cout << tag[i];
 		cout << endl;
 	}
-	return false;
+	return std::vector<TRSResult>();
 }
 
 bool TRSManager::Pause(char* path, char* name, char* tag)

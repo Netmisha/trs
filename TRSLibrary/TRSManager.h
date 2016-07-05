@@ -8,7 +8,7 @@
 #endif
 
 #include "Suite.h"
-
+#include "TRSResult.h"
 #include "spdlog\spdlog.h"
 #include <windows.h>
 #include <tchar.h> 
@@ -18,10 +18,9 @@
 #include <memory>
 #include "Suite.h"
 #include <list>
+#include <vector>
 
 #define BUF_SIZE 512
-
-
 
 class TRSManager_API TRSManager
 {
@@ -31,7 +30,7 @@ public:
 
 	bool Init();
 	bool Verify(char* path, char* name, char* tag);
-	bool Run(char* path, char* name, char* tag);
+	std::vector<TRSResult> Run(char* path, char* name, char* tag);
 	bool Pause(char* path, char* name, char* tag);
 	bool Stop(char* path, char* name, char* tag);
 	std::list<Suite>& List(char* path, char* name, char* tag);
