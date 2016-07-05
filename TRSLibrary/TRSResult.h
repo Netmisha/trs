@@ -13,17 +13,18 @@ class TRSResult_API TRSResult
 {
 public:
 	TRSResult(char* path, char* name, bool);
+	TRSResult(const TRSResult&);
 	~TRSResult();
 
-	inline char* get_path()
+	inline char* get_path() const
 	{
 		return path_;
 	}
-	inline char* get_name()
+	inline char* get_name() const
 	{
 		return name_;
 	}
-	inline bool get_result()
+	inline bool get_result() const
 	{
 		return result_;
 	}

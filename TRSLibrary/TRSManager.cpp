@@ -93,6 +93,7 @@ std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 	
 			int exe_path_size = strlen(test_path) + strlen(test->get_executableName());
 			char* executable_directory = new char[exe_path_size + 1];
+			executable_directory[0] = 0;
 			strcat_s(executable_directory, exe_path_size + 1, test_path);
 			strcat_s(executable_directory, exe_path_size + 1, test->get_executableName());
 
