@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #define TRSLibrary_EXPORT
 #include "TRSResult.h"
+//#include <iomanip>
 
 TRSResult::TRSResult(char* path, char* name, bool result) : result_(result)
 {
@@ -18,4 +19,11 @@ TRSResult::~TRSResult()
 	// no harm will be if either of this pointers is nullptr
 	delete[] name_;
 	delete[] path_;
+}
+
+std::ostream& operator<<(std::ostream& out, TRSResult& instance)
+{
+	out << instance.get_path() << "  " << instance.get_name() << "  " << std::boolalpha << instance.get_result();
+
+	return out;
 }

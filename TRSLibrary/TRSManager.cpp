@@ -78,7 +78,7 @@ bool TRSManager::Verify(char* path, char* name, char* tag)
 
 std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 {
-	std::list<Suite*> arr;// = List(path, name, tag);
+	std::list<Suite*> arr = *List(path, name, tag);
 
 	char* test_name, *test_path;
 	bool result;
