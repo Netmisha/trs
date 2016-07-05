@@ -20,9 +20,10 @@ void TestRunner::Execute(char* command)
 	system(command);
 }
 
-void Logger::operator<<(char* mess)
+void Logger::operator<<(char* message)
 {
-	log_->info(mess);
+	text_log_->info(message);
+	console_log_->info(message);
 	system("pause");
 }
 
@@ -30,11 +31,11 @@ bool Logger::Init()
 {
 	try
 	{
-		std::vector<spd::sink_ptr> sinks;
-		sinks.push_back(std::make_shared<spd::sinks::simple_file_sink_mt>("logs.txt"));
-		sinks.push_back(std::make_shared<spd::sinks::stderr_sink_mt>());
-
-		 log_ = std::make_shared<spd::logger>("logger", begin(sinks), end(sinks));
+		auto sink = std::make_shared<spd::sinks::simple_file_sink_mt>("logs.txt");
+		text_log_ = std::make_shared<spdlog::logger>("file_logger", sink);
+		
+		console_log_ = spd::stderr_logger_mt("console_logger");
+		console_log_->set_pattern(">>>>>>>>> %v <<<<<<<<<");
 	}
 	catch (const spd::spdlog_ex& ex)
 	{
@@ -44,8 +45,9 @@ bool Logger::Init()
 	return true;
 }
 
-Logger::~Logger()
+void Logger::Destroy()
 {
+	spd::drop_all();
 }
 
 TRSManager::TRSManager()
@@ -59,6 +61,12 @@ TRSManager::~TRSManager()
 bool TRSManager::Init()
 {
 	logger.Init();
+	return false;
+}
+
+bool TRSManager::Destroy()
+{
+	logger.Destroy();
 	return false;
 }
 
@@ -185,11 +193,6 @@ bool TRSManager::Status(char* path, char* name, char* tag)
 }
 
 bool TRSManager::Info(char* path, char* name, char* tag)
-{
-	return false;
-}
-
-bool TRSManager::Destroy(char* path, char* name, char* tag)
 {
 	return false;
 }

@@ -133,13 +133,12 @@ int main(int argc, char* argv[])
 
 	if (!ParseArguments(name, tag, path))
 	{
+		Manager.Destroy();
 		return 1;
-
 	}
+	int ret_val = ProcessFunction(name,tag,path);
 
-
-
-	return ProcessFunction(name,tag,path);
-
+	Manager.Destroy();
+	return ret_val;
 }
 

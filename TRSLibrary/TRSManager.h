@@ -37,18 +37,19 @@ public:
 	std::list<Suite>& List(char* path, char* name, char* tag);
 	bool Status(char* path, char* name, char* tag);
 	bool Info(char* path, char* name, char* tag);
-	bool Destroy(char* path, char* name, char* tag);
+	bool Destroy();
 };
 
 class TRSManager_API Logger
 {
 public:
 	bool Init();
-	~Logger();
+	void Destroy();
 
 	void operator<<(char* mes);
 private:
-	 std::shared_ptr<spdlog::logger> log_;
+	std::shared_ptr<spdlog::logger> text_log_;
+	std::shared_ptr<spdlog::logger> console_log_;
 };
 
 class TRSManager_API TestRunner
