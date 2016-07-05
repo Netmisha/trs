@@ -34,6 +34,8 @@ namespace UnitTest
 
 		//========================================================================================
 		//========================================================================================
+
+
 		TEST_METHOD(ListTest_NamesChecking)
 		{
 			std::list<Suite> list = Manager.List(R"(../TestData/TestStrcuture)", nullptr, nullptr);
@@ -66,6 +68,31 @@ namespace UnitTest
 			}
 		}
 
+		// **************************************************************************************************************
+		TEST_METHOD(ListTest_NameAmount_TestStrcuture)
+		{
+			std::list<Suite> list;
+			for (int i = 1; i <= 5; ++i)
+			{
+				char name[MAX_TEST_NAME_LENGHT];
+				sprintf(name, "Test %d", i);
+
+				list = Manager.List(R"(../TestData/TestStrcuture)", name, nullptr);
+
+				Assert::AreEqual(list.size(), 3U);
+			}
+
+
+			list = Manager.List(R"(../TestData/TestStrcuture)", "Test 6", nullptr);
+
+			Assert::AreEqual(list.size(), 2U);
+
+			list = Manager.List(R"(../TestData/TestStrcuture)", "Test 7", nullptr);
+
+			Assert::AreEqual(list.size(), 1U);
+		}
+
+		// **************************************************************************************************************
 		//_________________________________________________________________________________________________________________
 		TEST_METHOD(ListTest_ReleaseTagAmount_TestStrcuture)
 		{
@@ -144,6 +171,31 @@ namespace UnitTest
 			}
 			Assert::AreEqual(succeed_counter, SUCCEED_TESTS);
 		}
+		// **************************************************************************************************************
+		TEST_METHOD(RunTest_NameAmount_TestStrcuture)
+		{
+			std::vector<TRSResult> run_result;
+			for (int i = 1; i <= 5; ++i)
+			{
+				char name[MAX_TEST_NAME_LENGHT];
+				sprintf(name, "Test %d", i);
+
+				run_result = Manager.Run(R"(../TestData/TestStrcuture)", name, nullptr);
+
+				Assert::AreEqual(run_result.size(), 3U);
+			}
+
+
+			run_result = Manager.Run(R"(../TestData/TestStrcuture)", "Test 6", nullptr);
+
+			Assert::AreEqual(run_result.size(), 2U);
+
+			run_result = Manager.Run(R"(../TestData/TestStrcuture)", "Test 7", nullptr);
+
+			Assert::AreEqual(run_result.size(), 1U);
+		}
+
+		// **************************************************************************************************************
 		//_________________________________________________________________________________________________________________
 		TEST_METHOD(RunTest_ReleaseTagAmount_TestStrcuture)
 		{
