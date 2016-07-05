@@ -35,7 +35,7 @@ TRSResult::~TRSResult()
 
 std::ostream& operator<<(std::ostream& out, TRSResult& instance)
 {
-	out << instance.get_path() << "  " << instance.get_name() << "  " << std::boolalpha << instance.get_result();
+	out << instance.get_name() << "  " << std::boolalpha << instance.get_result() << "  " << instance.get_path() ;
 
 	return out;
 
