@@ -11,6 +11,7 @@
 #include <strsafe.h>
 #include <stdio.h>
 #include <iostream>
+#include <vector>
 #include <list>
 #include "TRSLibrary\TinyXML\tinyxml.h"
 #define MAX_PARAMETERS 7
@@ -31,7 +32,9 @@ int ProcessFunction(char* name, char* tag, char* path)
 	}
 	else if (!_stricmp(__argv[1], "Run"))
 	{
-		Manager.Run(path, name, tag);
+		std::vector<TRSResult> arr = Manager.Run(path, name, tag);
+		for each(auto var in arr)
+			std::cout << var << std::endl;
 		return 0;
 	}
 	else if (!_stricmp(__argv[1], "Pause"))
@@ -51,7 +54,6 @@ int ProcessFunction(char* name, char* tag, char* path)
 		for each (auto x in list)
 			std::cout << *x << std::endl;
 
-		system("pause");
 		return 0;
 	}
 
@@ -139,11 +141,8 @@ int main(int argc, char* argv[])
 	}
 	int ret_val = ProcessFunction(name,tag,path);
 
-
-
-
-	return ProcessFunction(name, tag, path);
+	Manager.Destroy();
 	system("pause");
-
+	return ret_val;
 }
 

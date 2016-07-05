@@ -7,6 +7,8 @@
 #define TRSResult_API  __declspec(dllimport) 
 #endif
 
+#include <iostream>
+
 class TRSResult_API TRSResult
 {
 public:
@@ -25,6 +27,8 @@ public:
 	{
 		return result_;
 	}
+
+	friend TRSResult_API std::ostream& operator<<(std::ostream&, TRSResult&);
 private:
 	char* path_;
 	char* name_;
