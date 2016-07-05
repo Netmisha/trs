@@ -50,10 +50,12 @@ Logger::~Logger()
 
 TRSManager::TRSManager()
 {
+	suiteCollection = new std::list<Suite*>;
 }
 
 TRSManager::~TRSManager()
 {
+	
 }
 
 bool TRSManager::Init()
@@ -105,12 +107,12 @@ bool TRSManager::Stop(char* path, char* name, char* tag)
 	return false;
 }
 
-std::list<Suite>& TRSManager::List(char* path, char* name, char* tag)
+std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 {
 	DWORD fFile = GetFileAttributesA(path);
 	if (fFile& FILE_ATTRIBUTE_DIRECTORY)
 	{
-		std::list<Suite> suiteCollection;
+		
 		TRSInfo* info;
 		WIN32_FIND_DATA ffd;//variable that contains file info(if such is open with it)
 		HANDLE hFind;
@@ -138,20 +140,20 @@ std::list<Suite>& TRSManager::List(char* path, char* name, char* tag)
 			{
 				if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)//check if it's a folder or not
 				{
-					_tprintf(TEXT("  %s   <DIR>\n"), ffd.cFileName);
+					
 					if (*ffd.cFileName != (WCHAR)'.')//not to enter '.' and '..' folders
 					{
 						TCHAR subDir[MAX_PATH];//create additional buffer for recursive traverse
 						StringCchCopy(subDir, MAX_PATH, hzDir);//fill additional buffer with this folder's path
 						StringCchCat(subDir, MAX_PATH, TEXT("\\"));//additional slash))
 						StringCchCat(subDir, MAX_PATH, ffd.cFileName);//name of last folder to search in
-						std::cout << "\n\t";
+						
 						List(convertToChar(subDir), "", "");//workin' only for path,not for names or tags yet
 					}
 				}
 				else
 				{
-					_tprintf(TEXT("  %s   <FILE>\n"), ffd.cFileName);//write file name if it was found in current folder
+					
 					std::wstring name(ffd.cFileName);//used for validating file name(checks if there is .xml in the end
 					if (Validate(name))//validating function
 					{
@@ -165,7 +167,10 @@ std::list<Suite>& TRSManager::List(char* path, char* name, char* tag)
 						bool loadOk = doc.LoadFile();//check if opening was successfull
 						if (loadOk)
 						{
-							dump_to_stdout(&doc,suiteCollection,convertToChar(currentDir));//parse through XML and output all it's options
+							Suite* currentSuite=new Suite();
+							currentSuite->Parse(&doc);
+							currentSuite->setDir(convertToChar(currentDir));
+							suiteCollection->push_back(currentSuite);
 						}
 					}
 				}

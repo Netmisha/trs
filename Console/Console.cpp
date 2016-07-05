@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <list>
-
+#include "TRSLibrary\TinyXML\tinyxml.h"
 #define MAX_PARAMETERS 7
 
 
@@ -47,10 +47,11 @@ int ProcessFunction(char* name, char* tag, char* path)
 
 	else if (!_stricmp(__argv[1], "List"))
 	{
-		std::list<Suite> list =  Manager.List(path, name, tag);
+		std::list<Suite*> list =  *Manager.List(path, name, tag);
 		for each (auto x in list)
-			std::cout << x << std::endl;
+			std::cout << *x << std::endl;
 
+		system("pause");
 		return 0;
 	}
 
@@ -139,7 +140,7 @@ int main(int argc, char* argv[])
 
 
 
-	return ProcessFunction(name,tag,path);
-
+	return ProcessFunction(name, tag, path);
+	system("pause");
 }
 

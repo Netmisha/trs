@@ -4,7 +4,7 @@
 
 class Metadata
 {
-	char* autorName;
+	char* autorName=nullptr;
 	char* date=nullptr;
 	char* version=nullptr;
 	char* mail=nullptr;
@@ -13,6 +13,7 @@ class Metadata
 	char* info=nullptr;
 public:
 	Metadata(char*Name);
+	Metadata();
 	~Metadata();
 	bool setDate(char*date_);
 	bool setVersion(char*version_);
@@ -20,6 +21,7 @@ public:
 	bool setCopyright(char*copyright_);
 	bool setLicense(char*license_);
 	bool setInfo(char*info_);
+	bool setName(char*name_);
 	char* getDate();
 	char* getVersion();
 	char* getMail();
