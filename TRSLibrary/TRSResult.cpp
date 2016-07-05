@@ -16,6 +16,6 @@ TRSResult::TRSResult(char* path, char* name, bool result) : result_(result)
 TRSResult::~TRSResult()
 {
 	// no harm will be if either of this pointers is nullptr
-	delete[] name_;
-	delete[] path_;
+	//delete[] name_;
+	//delete[] path_;
 }
