@@ -54,7 +54,7 @@ private:
 class TRSManager_API TestRunner
 {
 public:
-	void Execute(char*);
+	static int Execute(char*);
 };
 
 extern TRSManager_API Logger logger;

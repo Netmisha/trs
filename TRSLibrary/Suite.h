@@ -1,17 +1,17 @@
 #ifndef SUITE_H_
 #define SUITE_H_
 
-#include "TRSInfo.h"
-#include "TRSTest.h"
-#include <list>
-#include <istream>
-
 #ifdef TRSLibrary_EXPORT
 #define Suite_API  __declspec(dllexport) 
 #else
 #define Suite_API  __declspec(dllimport) 
 #endif
 
+
+#include "TRSInfo.h"
+#include "TRSTest.h"
+#include <list>
+#include <istream>
 
 class Suite_API Suite : public TRSInfo
 {
@@ -23,6 +23,11 @@ public:
 	bool addTest(TRSTest&);
 	bool removeTest(char*name);
 	std::list<TRSTest>& getList();
+
+	inline char* get_path()
+	{
+		return directoryName;
+	}
 
 	friend Suite_API std::ostream& operator<<(std::ostream &, Suite);
 };

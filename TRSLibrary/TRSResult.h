@@ -10,7 +10,8 @@
 class TRSResult_API TRSResult
 {
 public:
-	TRSResult(char*, char*, bool);
+	TRSResult(char* path, char* name, bool);
+	~TRSResult();
 
 	inline char* get_path()
 	{

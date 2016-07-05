@@ -14,9 +14,9 @@ TRSManager Manager;
 Logger logger;
 
 
-void TestRunner::Execute(char* command)
+int TestRunner::Execute(char* command)
 {
-	system(command);
+	return system(command);
 }
 
 void Logger::operator<<(char* message)
@@ -76,30 +76,33 @@ bool TRSManager::Verify(char* path, char* name, char* tag)
 
 std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 {
-	if (path != nullptr)
+	std::list<Suite*> arr;// = List(path, name, tag);
+
+	char* test_name, *test_path;
+	bool result;
+	std::vector<TRSResult> result_vector;
+
+	for each(Suite* var in arr)
 	{
-		cout << "path: ";
-		for (int i = 0; path[i] != 0; ++i)
-			cout << path[i];
-		cout << endl;
+		test_path = var->get_path();
+		for each (auto test in var->getList())
+		{
+			test_name = test.getName();
+	
+			int exe_path_size = strlen(test_path) + strlen(test.get_executableName());
+			char* executable_directory = new char[exe_path_size + 1];
+			strcat_s(executable_directory, exe_path_size + 1, test_path);
+			strcat_s(executable_directory, exe_path_size + 1, test.get_executableName());
+
+			int expected_result = test.get_expectedResult();
+			result = (expected_result == TestRunner::Execute(executable_directory));
+
+			result_vector.push_back(TRSResult(test_path, test_name, result));
+		}
 	}
 
-	if (name != nullptr)
-	{
-		cout << "name: ";
-		for (int i = 0; name[i] != 0; ++i)
-			cout << name[i];
-		cout << endl;
-	}
 
-	if (tag != nullptr)
-	{
-		cout << "tag: ";
-		for (int i = 0; tag[i] != 0; ++i)
-			cout << tag[i];
-		cout << endl;
-	}
-	return std::vector<TRSResult>();
+	return result_vector;
 }
 
 bool TRSManager::Pause(char* path, char* name, char* tag)

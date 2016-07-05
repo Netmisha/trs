@@ -12,3 +12,5 @@ ipch/
 Console/Debug/
 Debug/
 Console/logs.txt
+.gitattributes
+tatus
