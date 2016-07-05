@@ -17,7 +17,7 @@
 		<info></info>
 	</metadata>
 
-	<test name="Test 1" description="Test description">
+	<test name="Test 8" description="Test description">
 <priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
@@ -28,7 +28,7 @@
             <maxTime>10h50m</maxTime>
 	<waitFor>Test 5</waitFor>
 	</test>
-	<test name="Test 2" description="Test description">
+	<test name="Test 9" description="Test description">
 <priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
@@ -39,7 +39,7 @@
             <maxTime>10h50m</maxTime>
 	<waitFor>Test 5</waitFor>
 	</test>
-	<test name="Test 3" description="Test description">
+	<test name="Test 10" description="Test description">
 <priority>4</priority>
 		<tag>Debug</tag>
 		<disable>false</disable>
