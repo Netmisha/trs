@@ -57,6 +57,9 @@
     <ClInclude Include="TRSResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Erorrs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -92,13 +95,13 @@
     <ClCompile Include="TRSInfo.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="Suite.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
     <ClCompile Include="TRSTest.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
     <ClCompile Include="TRSResult.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Suite.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>

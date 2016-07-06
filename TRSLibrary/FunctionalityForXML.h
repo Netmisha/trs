@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#ifndef FUNCTIONALITYFORXLM_H_
+#define FUNCTIONALITYFORXLM_H_
 #include <string>
 #include "TinyXML\tinyxml.h"
 #include <Windows.h>
@@ -13,3 +15,4 @@ void dump_to_stdout(TiXmlNode* pParent, std::list<Suite>& suiteList,char*dir,uns
 const char * getIndent(unsigned int numIndents);
 const char * getIndentAlt(unsigned int numIndents);
 int dump_attribs_to_stdout(TiXmlElement* pElement, Suite*curSuite,unsigned int indent);
+#endif

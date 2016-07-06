@@ -114,7 +114,47 @@ bool TRSManager::Destroy()
 
 bool TRSManager::Verify(char* path, char* name, char* tag)
 {
-	return false;
+	List(path, name, tag);
+	if (suiteCollection->size() != 0)
+	{
+		std::list<Suite*>::iterator it = suiteCollection->begin();
+		for (it; it != suiteCollection->end(); ++it)
+		{
+			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+			for (iter; iter != (*it)->getList().end(); ++iter)
+			{
+				if (!((*iter)->getName()))
+				{
+					return 1;
+				}
+				if ((!(*iter)->get_executableName()))
+				{
+					return 2;
+				}
+				if ((!(*iter)->get_expectedResult()))
+				{
+					return 3;
+				}
+				char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
+				strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
+				strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
+				DWORD fFile = GetFileAttributesA(buf);
+				if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
+				{
+					delete[] buf;
+					return 6;
+				}
+				else
+				{
+					delete[] buf;
+					
+				}
+			}
+			
+		}
+		return 4;
+	}
+	return 5;
 }
 
 

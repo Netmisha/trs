@@ -208,3 +208,4 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
 	}
 	return true;
 }
+
