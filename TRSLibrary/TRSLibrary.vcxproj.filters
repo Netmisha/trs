@@ -60,6 +60,12 @@
     <ClInclude Include="Erorrs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TRSReport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -102,6 +108,9 @@
       <Filter>Resource Files</Filter>
     </ClCompile>
     <ClCompile Include="TRSResult.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportManager.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>
