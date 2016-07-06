@@ -3,6 +3,7 @@
 #include "TRSLibrary\TRSManager.h"
 #include <list>
 #include <vector>
+#include "TRSLibrary\Erorrs.h"
 
 #define AMOUNT_OF_TESTS 18U
 #define FIRST_BRANCH_AMOUNT 6U
@@ -95,24 +96,40 @@ namespace UnitTest
 		TEST_METHOD(ListTest_NameAmount_TestStrcuture)
 		{
 			std::list<Suite*> list;
+			unsigned int count = 0;
+			std::list<Suite*>::iterator it;
 			for (int i = 1; i <= 5; ++i)
 			{
 				char name[MAX_TEST_NAME_LENGHT];
 				sprintf(name, "Test %d", i);
 
 				list = *Manager.List(R"(../TestData/TestStrcuture)", name, nullptr);
-
-				Assert::AreEqual(list.size(), 3U);
+				
+				 it= list.begin();
+				for (it; it != list.end(); ++it)
+				{
+					count += (*it)->getList().size();
+				}
+				Assert::AreEqual(count, 3U);
+				count = 0;
 			}
 
-
+			count = 0;
 			list = *Manager.List(R"(../TestData/TestStrcuture)", "Test 6", nullptr);
-
-			Assert::AreEqual(list.size(), 2U);
-
+			it = list.begin();
+			for (it; it != list.end(); ++it)
+			{
+				count += (*it)->getList().size();
+			}
+			Assert::AreEqual(count, 2U);
+			count = 0;
 			list = *Manager.List(R"(../TestData/TestStrcuture)", "Test 7", nullptr);
-
-			Assert::AreEqual(list.size(), 1U);
+			it = list.begin();
+			for (it; it != list.end(); ++it)
+			{
+				count += (*it)->getList().size();
+			}
+			Assert::AreEqual(count, 1U);
 		}
 
 		// **************************************************************************************************************
@@ -121,21 +138,62 @@ namespace UnitTest
 		{
 			std::list<Suite*> list = *Manager.List(R"(../TestData/TestStrcuture)", nullptr, "Release");
 
-			Assert::AreEqual(list.size(), TOTAL_AMOUNT_OF_RELEASE_TAGS);
+			unsigned int count = 0;
+			std::list<Suite*>::iterator it = list.begin();
+			for (it; it != list.end(); ++it)
+			{
+				std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+				for (iter; iter != (*it)->getList().end(); ++iter)
+				{
+					if (!strcmp((*iter)->getTag(), "Release"))
+					{
+						++count;
+					}
+				}
+			}
+			Assert::AreEqual(count, TOTAL_AMOUNT_OF_RELEASE_TAGS);
 		}
 
 		TEST_METHOD(ListTest_DebugTagAmount_TestStrcuture)
 		{
 			std::list<Suite*> list = *Manager.List(R"(../TestData/TestStrcuture)", nullptr, "Debug");
 
-			Assert::AreEqual(list.size(), TOTAL_AMOUNT_OF_DEBUG_TAGS);
+			unsigned int count = 0;
+			std::list<Suite*>::iterator it = list.begin();
+			for (it; it != list.end(); ++it)
+			{
+				std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+				for (iter; iter != (*it)->getList().end(); ++iter)
+				{
+					if (!strcmp((*iter)->getTag(), "Debug"))
+					{
+						++count;
+					}
+				}
+			}
+
+			Assert::AreEqual(count, TOTAL_AMOUNT_OF_DEBUG_TAGS);
 		}
 
 		TEST_METHOD(ListTest_SingleTagAmount_TestStrcuture)
 		{
 			std::list<Suite*> list = *Manager.List(R"(../TestData/TestStrcuture)", nullptr, "Single");
 
-			Assert::AreEqual(list.size(), 1U);
+			unsigned int count = 0;
+			std::list<Suite*>::iterator it = list.begin();
+			for (it; it != list.end(); ++it)
+			{
+				std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+				for (iter; iter != (*it)->getList().end(); ++iter)
+				{
+					if (!strcmp((*iter)->getTag(), "Single"))
+					{
+						++count;
+					}
+				}
+			}
+
+			Assert::AreEqual(count, 1U);
 		}
 
 		//_________________________________________________________________________________________________________________
@@ -143,40 +201,83 @@ namespace UnitTest
 		{
 			std::list<Suite*> list = *Manager.List(R"(../TestData/TestStrcuture)", nullptr, nullptr);
 		
-			Assert::AreEqual(list.size(), AMOUNT_OF_TESTS);
+			unsigned int count = 0;
+			std::list<Suite*>::iterator it = list.begin();
+			for (it; it != list.end(); ++it)
+			{
+				count += (*it)->getList().size();
+			}
+
+			Assert::AreEqual(count, AMOUNT_OF_TESTS);
 		}
 
 		TEST_METHOD(ListTest_TotalAmount_Suite1)
 		{
 			std::list<Suite*> list = *Manager.List(R"(../TestData/TestStrcuture/Suite1)", nullptr, nullptr);
 
-			Assert::AreEqual(list.size(), FIRST_BRANCH_AMOUNT);
+			unsigned int count = 0;
+			std::list<Suite*>::iterator it = list.begin();
+			for (it; it != list.end(); ++it)
+			{
+				count += (*it)->getList().size();
+			}
+
+			Assert::AreEqual(count, FIRST_BRANCH_AMOUNT);
 		}
 		TEST_METHOD(ListTest_TotalAmount_Suite11)
 		{
 			std::list<Suite*> list = *Manager.List(R"(../TestData/TestStrcuture/Suite1/Suite1)", nullptr, nullptr);
 
-			Assert::AreEqual(list.size(), 5U);
+			unsigned int count = 0;
+			std::list<Suite*>::iterator it = list.begin();
+			for (it; it != list.end(); ++it)
+			{
+				count += (*it)->getList().size();
+			}
+
+
+			Assert::AreEqual(count, 5U);
 		}
 		TEST_METHOD(ListTest_TotalAmount_Suite111)
 		{
 			std::list<Suite*> list = *Manager.List(R"(../TestData/TestStrcuture/Suite1/Suite1/Suite1)", nullptr, nullptr);
 
-			Assert::AreEqual(list.size(), 2U);
+			unsigned int count = 0;
+			std::list<Suite*>::iterator it = list.begin();
+			for (it; it != list.end(); ++it)
+			{
+				count += (*it)->getList().size();
+			}
+
+			Assert::AreEqual(count, 2U);
 		}
 
 		TEST_METHOD(ListTest_TotalAmount_Suite2)
 		{
 			std::list<Suite*> list = *Manager.List(R"(../TestData/TestStrcuture/Suite2)", nullptr, nullptr);
 
-			Assert::AreEqual(list.size(), SECOND_BRANCH_AMOUNT);
+			unsigned int count = 0;
+			std::list<Suite*>::iterator it = list.begin();
+			for (it; it != list.end(); ++it)
+			{
+				count += (*it)->getList().size();
+			}
+
+			Assert::AreEqual(count, SECOND_BRANCH_AMOUNT);
 		}
 
 		TEST_METHOD(ListTest_TotalAmount_Suite3)
 		{
 			std::list<Suite*> list = *Manager.List(R"(../TestData/TestStrcuture/Suite3)", nullptr, nullptr);
 
-			Assert::AreEqual(list.size(), THIRD_BRANCH_AMOUNT);
+			unsigned int count = 0;
+			std::list<Suite*>::iterator it = list.begin();
+			for (it; it != list.end(); ++it)
+			{
+				count += (*it)->getList().size();
+			}
+
+			Assert::AreEqual(count, THIRD_BRANCH_AMOUNT);
 		}
 		//=============================================================================================================
 		//=============================================================================================================
@@ -282,6 +383,11 @@ namespace UnitTest
 			std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture/Suite3)", nullptr, nullptr);
 
 			Assert::AreEqual(run_result.size(), THIRD_BRANCH_AMOUNT);
+		}
+
+		TEST_METHOD(Verify_Name_absent)
+		{
+			Assert::AreEqual((int)Manager.Verify(R"(../TestData/TestStrcuture/)", nullptr, nullptr), INVALID_NAME);
 		}
 	};
 }

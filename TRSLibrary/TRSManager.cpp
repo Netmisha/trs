@@ -91,7 +91,7 @@ void Logger::Destroy()
 
 TRSManager::TRSManager()
 {
-	suiteCollection = new std::list<Suite*>;
+	
 }
 
 TRSManager::~TRSManager()
@@ -113,9 +113,8 @@ bool TRSManager::Destroy()
 
 bool TRSManager::Verify(char* path, char* name, char* tag)
 {
-	List(path, name, tag);
-	if (suiteCollection->size() != 0)
-	{
+		std::list<Suite*>* suiteCollection=List(path, name, tag);
+	
 		std::list<Suite*>::iterator it = suiteCollection->begin();
 		for (it; it != suiteCollection->end(); ++it)
 		{
@@ -149,11 +148,8 @@ bool TRSManager::Verify(char* path, char* name, char* tag)
 					
 				}
 			}
-			
 		}
 		return 4;
-	}
-	return 5;
 }
 
 
@@ -212,12 +208,11 @@ bool TRSManager::Stop(char* path, char* name, char* tag)
 	return false;
 }
 
-std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
+bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suiteCollection)
 {
 	DWORD fFile = GetFileAttributesA(path);
 	if (fFile& FILE_ATTRIBUTE_DIRECTORY)
 	{
-		
 		TRSInfo* info;
 		WIN32_FIND_DATA ffd;//variable that contains file info(if such is open with it)
 		HANDLE hFind;
@@ -237,7 +232,7 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 		if (hFind == INVALID_HANDLE_VALUE)
 		{
 			std::cout << "FindFirstFile failed\n";
-			
+
 		}
 		else
 		{
@@ -245,20 +240,20 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 			{
 				if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)//check if it's a folder or not
 				{
-					
+
 					if (*ffd.cFileName != (WCHAR)'.')//not to enter '.' and '..' folders
 					{
 						TCHAR subDir[MAX_PATH];//create additional buffer for recursive traverse
 						StringCchCopy(subDir, MAX_PATH, hzDir);//fill additional buffer with this folder's path
 						StringCchCat(subDir, MAX_PATH, TEXT("\\"));//additional slash))
 						StringCchCat(subDir, MAX_PATH, ffd.cFileName);//name of last folder to search in
-						
-						List(convertToChar(subDir), name, tag);//workin' only for path,not for names or tags yet
+
+						FillList(convertToChar(subDir), name, tag,suiteCollection);//workin' only for path,not for names or tags yet
 					}
 				}
 				else
 				{
-					
+
 					std::wstring name_(ffd.cFileName);//used for validating file name(checks if there is .xml in the end
 					if (Validate(name_))//validating function
 					{
@@ -272,8 +267,8 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 						bool loadOk = doc.LoadFile();//check if opening was successfull
 						if (loadOk)
 						{
-							Suite* currentSuite=new Suite();
-							currentSuite->Parse(&doc,name,tag);
+							Suite* currentSuite = new Suite();
+							currentSuite->Parse(&doc, name, tag);
 							currentSuite->setDir(convertToChar(currentDir));
 							suiteCollection->push_back(currentSuite);
 						}
@@ -281,12 +276,19 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 				}
 			} while (FindNextFile(hFind, &ffd) != 0);//repeat
 		}
-		return suiteCollection;
+		return true;
 	}
 	else
 	{
 		//place for exception
 	}
+}
+
+std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
+{
+	std::list<Suite*>*suiteCollection = new std::list<Suite*>;
+	FillList(path, name, tag, suiteCollection);
+	return suiteCollection;
 }
 
 bool TRSManager::Status(char* path, char* name, char* tag)

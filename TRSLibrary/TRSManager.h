@@ -24,7 +24,7 @@
 
 class TRSManager_API TRSManager
 {
-	std::list<Suite*>* suiteCollection;
+	bool FillList(char*path, char*name, char*tag, std::list<Suite*>*curList);
 public:
 	TRSManager();
 	~TRSManager();

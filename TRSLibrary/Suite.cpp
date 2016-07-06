@@ -136,6 +136,7 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
 					{
 						if (strlen(tag_) > 0)
 						{
+							if (currentTest->getName() && currentTest->getTag())
 							if (!strncmp(currentTest->getName(), name_, strlen(name_)) && !strncmp(currentTest->getTag(), tag_, strlen(tag_)))
 							{
 								getList().push_back(currentTest);
@@ -143,6 +144,7 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
 						}
 						else
 						{
+							if (currentTest->getName())
 							if (!strncmp(currentTest->getName(), name_, strlen(name_)))
 							{
 								getList().push_back(currentTest);
@@ -151,6 +153,7 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
 					}
 					else
 					{
+						if (currentTest->getName())
 						if (!strncmp(currentTest->getName(), name_, strlen(name_)))
 						{
 							getList().push_back(currentTest);
@@ -163,6 +166,7 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
 					{
 						if (strlen(tag_) > 0)
 						{
+							if (currentTest->getName() && currentTest->getTag())
 							if (!strncmp(currentTest->getName(), name_, strlen(name_)) && !strncmp(currentTest->getTag(), tag_, strlen(tag_)))
 							{
 								getList().push_back(currentTest);
@@ -171,6 +175,7 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
 					}
 					else
 					{
+						if (currentTest->getName())
 						if (!strncmp(currentTest->getName(), name_, strlen(name_)))
 						{
 							getList().push_back(currentTest);
@@ -184,6 +189,7 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
 				{
 					if (strlen(tag_) > 0)
 					{
+						if (currentTest->getTag())
 						if (!strncmp(currentTest->getTag(),tag_,strlen(tag_)))
 						{
 							getList().push_back(currentTest);
