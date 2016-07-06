@@ -46,6 +46,11 @@ char* TRSInfo::getName()
 {
 	return Name;
 }
+char* TRSInfo::getWaitFor()
+{
+	return waitfor;
+}
+
 
 char* TRSInfo::getDescription()
 {
@@ -76,6 +81,26 @@ bool TRSInfo::setTag(char*Tag)
 		if (tag = new char[strlen(Tag)+1])
 		{
 			strncpy_s(tag, strlen(Tag)+1, Tag, strlen(Tag));
+			return true;
+		}
+	}
+	return false;
+}
+
+bool TRSInfo::setWaitFor(char* wait_)
+{
+	if (waitfor)
+	{
+		delete[] waitfor;
+		waitfor = new char[strlen(wait_) + 1];
+		strncpy_s(tag, strlen(wait_) + 1, wait_, strlen(wait_));
+		return true;
+	}
+	else
+	{
+		if (waitfor = new char[strlen(wait_) + 1])
+		{
+			strncpy_s(waitfor, strlen(wait_) + 1, wait_, strlen(wait_));
 			return true;
 		}
 	}
@@ -204,6 +229,23 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 						char*Tag = new char[strlen(child->Value()) + 1];
 						strncpy_s(Tag, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
 						setTag(Tag);
+					}
+				}
+			}
+			break;
+		}
+		if ((strncmp(pParent->Value(), "waitFor", strlen("waitFor")) == 0))
+		{
+			TiXmlNode* child = pParent->FirstChild();
+			if (child->Type() == TiXmlNode::TINYXML_TEXT)
+			{
+				if (child)
+				{
+					if (strlen(child->Value()) > 0)
+					{
+						char*wait = new char[strlen(child->Value()) + 1];
+						strncpy_s(wait, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+						setWaitFor(wait);
 					}
 				}
 			}

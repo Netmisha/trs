@@ -23,7 +23,8 @@ class TRSInfo_API TRSInfo
 	char* maxThreads=nullptr;
 	char* expectedResult=nullptr;
 	char* executableName=nullptr;
-	
+	char* waitfor = nullptr;
+
 	Metadata* metadata;
 public:
 	TRSInfo(char*Name, char*Description);
@@ -47,6 +48,8 @@ public:
 	bool setDescription(char*Desc_);
 	bool setMetadata(Metadata* metadata_);
 	bool setExpectedResult(char* res_);
+	bool setWaitFor(char* wait_);
+	char* getWaitFor();
 	char* getName();
 	char* getDescription();
 	char* getTag();
