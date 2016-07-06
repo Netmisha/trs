@@ -8,11 +8,14 @@
 #endif
 
 #include <iostream>
+#include <chrono>
+using namespace std::chrono;
+
 
 class TRSResult_API TRSResult
 {
 public:
-	TRSResult(char* path, char* name, bool);
+	TRSResult(char* path, char* name, bool, duration<long long, std::milli>);
 	TRSResult(const TRSResult&);
 	~TRSResult();
 
@@ -28,9 +31,14 @@ public:
 	{
 		return result_;
 	}
+	inline duration<long long, std::milli> get_duration() const
+	{
+		return duration_;
+	}
 
 	friend TRSResult_API std::ostream& operator<<(std::ostream&, TRSResult&);
 private:
+	duration<long long, std::milli>  duration_;
 	char* path_;
 	char* name_;
 	bool result_;

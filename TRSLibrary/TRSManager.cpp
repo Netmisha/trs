@@ -6,9 +6,11 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <chrono>
 
 using namespace std;
 namespace spd = spdlog;
+using namespace std::chrono;
 
 TRSManager Manager;
 Logger logger;
@@ -24,7 +26,6 @@ int TestRunner::Execute(wchar_t* command)
 
 	startup_info.cb = sizeof(startup_info);
 
-	//TCHAR* cmd = TEXT("D:\\Repository\\trs\\TestData\\TestStrcuture\\Suite1\\test.exe");
 	LPTSTR szCmdline = _tcsdup(command);
 
 	bool create_result = CreateProcess(NULL, szCmdline, NULL, NULL, FALSE, 0,
@@ -185,10 +186,15 @@ std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 	
 
 			int expected_result = atoi(test->get_expectedResult());
+			high_resolution_clock::time_point t1 = high_resolution_clock::now();
 			
 			result = (expected_result == TestRunner::Execute(executable_directory_W));
 
-			result_vector.push_back(TRSResult(test_path, test_name, result));
+			high_resolution_clock::time_point t2 = high_resolution_clock::now();
+
+			auto duration = duration_cast<milliseconds>(t2 - t1);
+			
+			result_vector.push_back(TRSResult(test_path, test_name, result, duration));
 
 //			delete[] executable_directory;
 		}
