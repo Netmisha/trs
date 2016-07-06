@@ -28,7 +28,7 @@ class TRSInfo_API TRSInfo
 public:
 	TRSInfo(char*Name, char*Description);
 	TRSInfo();
-	~TRSInfo();
+	virtual ~TRSInfo();
 
 	bool setTag(char*tag_);
 	bool setRepeat(char*repeat_);

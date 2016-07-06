@@ -160,14 +160,14 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 						StringCchCat(subDir, MAX_PATH, TEXT("\\"));//additional slash))
 						StringCchCat(subDir, MAX_PATH, ffd.cFileName);//name of last folder to search in
 						
-						List(convertToChar(subDir), "", "");//workin' only for path,not for names or tags yet
+						List(convertToChar(subDir), name, tag);//workin' only for path,not for names or tags yet
 					}
 				}
 				else
 				{
 					
-					std::wstring name(ffd.cFileName);//used for validating file name(checks if there is .xml in the end
-					if (Validate(name))//validating function
+					std::wstring name_(ffd.cFileName);//used for validating file name(checks if there is .xml in the end
+					if (Validate(name_))//validating function
 					{
 						TCHAR fileDir[MAX_PATH];//buffer which contains a path to an xml file
 						StringCchCopy(fileDir, MAX_PATH, hzDir);//some moves to save path
@@ -180,7 +180,7 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 						if (loadOk)
 						{
 							Suite* currentSuite=new Suite();
-							currentSuite->Parse(&doc);
+							currentSuite->Parse(&doc,name,tag);
 							currentSuite->setDir(convertToChar(currentDir));
 							suiteCollection->push_back(currentSuite);
 						}

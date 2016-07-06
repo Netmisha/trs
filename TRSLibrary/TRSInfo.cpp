@@ -39,6 +39,7 @@ TRSInfo::~TRSInfo()
 	{
 		delete[] maxThreads;
 	}
+	
 }
 
 char* TRSInfo::getName()
@@ -54,6 +55,11 @@ char* TRSInfo::getDescription()
 char* TRSInfo::getMaxThreads()
 {
 	return maxThreads;
+}
+
+char* TRSInfo::getTag()
+{
+	return tag;
 }
 
 bool TRSInfo::setTag(char*Tag)
@@ -177,7 +183,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
 				char*Tag = new char[strlen(child->Value())+1];
-				strncpy_s(Tag, strlen(child->Value()), child->Value()+1, strlen(child->Value()));
+				strncpy_s(Tag, strlen(child->Value())+1, child->Value(), strlen(child->Value()));
 				setTag(Tag);
 			}
 			break;
