@@ -14,9 +14,49 @@ TRSManager Manager;
 Logger logger;
 
 
-int TestRunner::Execute(char* command)
+int TestRunner::Execute(wchar_t* command)
 {
-	return system(command);
+	PROCESS_INFORMATION process_information;
+	ZeroMemory(&process_information, sizeof(process_information));
+
+	STARTUPINFO startup_info; 
+	ZeroMemory(&startup_info, sizeof(startup_info));
+
+	startup_info.cb = sizeof(startup_info);
+
+	//TCHAR* cmd = TEXT("D:\\Repository\\trs\\TestData\\TestStrcuture\\Suite1\\test.exe");
+	LPTSTR szCmdline = _tcsdup(command);
+
+	bool create_result = CreateProcess(NULL, szCmdline, NULL, NULL, FALSE, 0,
+		NULL, NULL, &startup_info, &process_information);
+
+	if (!create_result)
+	{
+		logger << "Create process failed with error";
+		cout << GetLastError() << endl;
+		return -1;
+	}
+
+	// Successfully created the process.  Wait for it to finish.
+	WaitForSingleObject(process_information.hProcess, INFINITE);
+
+	DWORD ret_val;
+
+	// Get the exit code.
+	bool get_result = GetExitCodeProcess(process_information.hProcess, &ret_val);
+
+	// Close the handles.
+	CloseHandle(process_information.hProcess);
+	CloseHandle(process_information.hThread);
+
+	if (!get_result)
+	{
+		logger << "Process executed but an error occured while getting its exit code";
+		cout << GetLastError() << endl;
+		return -1;
+	}
+
+	return ret_val;
 }
 
 void Logger::operator<<(char* message)
@@ -76,6 +116,7 @@ bool TRSManager::Verify(char* path, char* name, char* tag)
 	return false;
 }
 
+
 std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 {
 	std::list<Suite*> arr = *List(path, name, tag);
@@ -92,16 +133,33 @@ std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 			test_name = test->getName();
 	
 			// alternative version
-//			int exe_path_size = strlen(test_path) + strlen(test->get_executableName());
-//			char* executable_directory = new char[exe_path_size + 1];
-			const int exe_path_size = MAX_PATH;
-			char executable_directory[exe_path_size + 1];
+			int exe_path_size = strlen(test_path) + strlen(test->get_executableName());
+			wchar_t* executable_directory = new wchar_t[exe_path_size + 1];
+	//		const int exe_path_size = MAX_PATH;
+	//		char executable_directory[exe_path_size + 1];
 
+			TCHAR help = test_path[0];
+			int i = 0;
+			while (help)
+			{
+				executable_directory[i] = help;
+				++i;
+				help = test_path[i];
+			}
+			help = test->get_executableName()[0];
+			int j = 0;
+			while (help)
+			{
+				executable_directory[i] = help;
+				++i; ++j;
+				help = test->get_executableName()[j];
+			}
 
+			executable_directory[i] = '\0';
 
-			executable_directory[0] = 0;
-			strcat_s(executable_directory, exe_path_size + 1, test_path);
-			strcat_s(executable_directory, exe_path_size + 1, test->get_executableName());
+			/*executable_directory[0] = 0;
+			wcscat_s(executable_directory, exe_path_size + 1, test_path);
+			strcat_s(executable_directory, exe_path_size + 1, test->get_executableName());*/
 
 			int expected_result = atoi(test->get_expectedResult());
 			
@@ -109,7 +167,7 @@ std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 
 			result_vector.push_back(TRSResult(test_path, test_name, result));
 
-//			delete[] executable_directory;
+			delete[] executable_directory;
 		}
 	}
 
