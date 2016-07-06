@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "FunctionalityForXML.h"
 
+const unsigned int NUM_INDENTS_PER_SPACE = 2;
+
 bool Validate(std::wstring& name)//just check ;last 3 letters
 {
 	if (name[name.length() - 1] == 'l')

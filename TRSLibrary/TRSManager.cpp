@@ -133,41 +133,28 @@ std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 			test_name = test->getName();
 	
 			// alternative version
-			int exe_path_size = strlen(test_path) + strlen(test->get_executableName());
-			wchar_t* executable_directory = new wchar_t[exe_path_size + 1];
-	//		const int exe_path_size = MAX_PATH;
-	//		char executable_directory[exe_path_size + 1];
+		//	int exe_path_size = strlen(test_path) + strlen(test->get_executableName());
+		//	wchar_t* executable_directory = new wchar_t[exe_path_size + 1];
+			
+			wchar_t executable_directory_W[MAX_PATH + 1];
 
-			TCHAR help = test_path[0];
-			int i = 0;
-			while (help)
-			{
-				executable_directory[i] = help;
-				++i;
-				help = test_path[i];
-			}
-			help = test->get_executableName()[0];
-			int j = 0;
-			while (help)
-			{
-				executable_directory[i] = help;
-				++i; ++j;
-				help = test->get_executableName()[j];
-			}
-
-			executable_directory[i] = '\0';
-
-			/*executable_directory[0] = 0;
-			wcscat_s(executable_directory, exe_path_size + 1, test_path);
-			strcat_s(executable_directory, exe_path_size + 1, test->get_executableName());*/
+			char executable_directory_A[MAX_PATH + 1];
+			
+			executable_directory_A[0] = 0;
+			strcat_s(executable_directory_A, MAX_PATH + 1, test_path);
+			strcat_s(executable_directory_A, MAX_PATH + 1, test->get_executableName());
+		
+			
+			convertToTCHAR(executable_directory_W, executable_directory_A);
+	
 
 			int expected_result = atoi(test->get_expectedResult());
 			
-			result = (expected_result == TestRunner::Execute(executable_directory));
+			result = (expected_result == TestRunner::Execute(executable_directory_W));
 
 			result_vector.push_back(TRSResult(test_path, test_name, result));
 
-			delete[] executable_directory;
+//			delete[] executable_directory;
 		}
 	}
 
