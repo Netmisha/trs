@@ -167,14 +167,29 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		if ((strncmp(pParent->Value(), "suite", strlen("suite")) == 0) || (strncmp(pParent->Value(), "test", strlen("test")) == 0))
 		{
 			TiXmlAttribute*atr = pParent->ToElement()->FirstAttribute();
+
+			if (!strncmp(atr->Name(),"name",strlen("name")))
+			{
 				char*name = new char[strlen(atr->Value()) + 1];
 				strncpy_s(name, strlen(atr->Value()) + 1, atr->Value(), strlen(atr->Value()));
 				setName(name);
 				atr = atr->Next();
+				if (atr)
+				{
+					if (!strncmp(atr->Name(), "description", strlen("description")))
+					{
+						char*desc = new char[strlen(atr->Value()) + 1];
+						strncpy_s(desc, strlen(atr->Value()) + 1, atr->Value(), strlen(atr->Value()));
+						setDescription(desc);
+					}
+				}
+			}	
+			if (!strncmp(atr->Name(), "description", strlen("description")))
+			{
 				char*desc = new char[strlen(atr->Value()) + 1];
 				strncpy_s(desc, strlen(atr->Value()) + 1, atr->Value(), strlen(atr->Value()));
 				setDescription(desc);
-			
+			}
 			break;
 		}
 		if ((strncmp(pParent->Value(), "tag", strlen("tag")) == 0))
@@ -182,9 +197,15 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
-				char*Tag = new char[strlen(child->Value())+1];
-				strncpy_s(Tag, strlen(child->Value())+1, child->Value(), strlen(child->Value()));
-				setTag(Tag);
+				if (child)
+				{
+					if (strlen(child->Value()) > 0)
+					{
+						char*Tag = new char[strlen(child->Value()) + 1];
+						strncpy_s(Tag, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+						setTag(Tag);
+					}
+				}
 			}
 			break;
 		}
@@ -193,9 +214,15 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
-				char*Repeat = new char[strlen(child->Value())+1];
-				strncpy_s(Repeat, strlen(child->Value())+1, child->Value(), strlen(child->Value()));
-				setRepeat(Repeat);
+				if (child)
+				{
+					if (strlen(child->Value()) > 0)
+					{
+						char*Repeat = new char[strlen(child->Value()) + 1];
+						strncpy_s(Repeat, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+						setRepeat(Repeat);
+					}
+				}
 			}
 			break;
 		}
@@ -204,9 +231,15 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
-				char*MaxTime = new char[strlen(child->Value())+1];
-				strncpy_s(MaxTime, strlen(child->Value())+1, child->Value(), strlen(child->Value()));
-				setMaxTime(MaxTime);
+				if (child)
+				{
+					if (strlen(child->Value()) > 0)
+					{
+						char*MaxTime = new char[strlen(child->Value()) + 1];
+						strncpy_s(MaxTime, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+						setMaxTime(MaxTime);
+					}
+				}
 			}
 			break;
 		}
@@ -215,9 +248,15 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
-				char*MaxThreads = new char[strlen(child->Value())+1];
-				strncpy_s(MaxThreads, strlen(child->Value())+1, child->Value(), strlen(child->Value()));
-				setMaxThreads(MaxThreads);
+				if (child)
+				{
+					if (strlen(child->Value()) > 0)
+					{
+						char*MaxThreads = new char[strlen(child->Value()) + 1];
+						strncpy_s(MaxThreads, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+						setMaxThreads(MaxThreads);
+					}
+				}
 			}
 			break;
 		}
@@ -226,9 +265,15 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
-				char*executableName = new char[strlen(child->Value()) + 1];
-				strncpy_s(executableName, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
-				setExecutableName(executableName);
+				if (child)
+				{
+					if (strlen(child->Value()) > 0)
+					{
+						char*executableName = new char[strlen(child->Value()) + 1];
+						strncpy_s(executableName, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+						setExecutableName(executableName);
+					}
+				}
 			}
 			break;
 		}
@@ -237,9 +282,15 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
-				char*Res = new char[strlen(child->Value()) + 1];
-				strncpy_s(Res, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
-				setExpectedResult(Res);
+				if (child)
+				{
+					if (strlen(child->Value()) > 0)
+					{
+						char*Res = new char[strlen(child->Value()) + 1];
+						strncpy_s(Res, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+						setExpectedResult(Res);
+					}
+				}
 			}
 			break;
 		}
@@ -258,9 +309,12 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 						{
 							if (subChild->Type() == TiXmlNode::TINYXML_TEXT)
 							{
-								char* name = new char[strlen(subChild->Value()) + 1];
-								strncpy_s(name, strlen(subChild->Value()) + 1, subChild->Value(), strlen(subChild->Value()));
-								metadata->setName(name);
+								if (strlen(subChild->Value()) > 0)
+								{
+									char* name = new char[strlen(subChild->Value()) + 1];
+									strncpy_s(name, strlen(subChild->Value()) + 1, subChild->Value(), strlen(subChild->Value()));
+									metadata->setName(name);
+								}
 							}
 						}
 					}
