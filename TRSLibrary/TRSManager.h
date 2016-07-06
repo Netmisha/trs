@@ -19,8 +19,14 @@
 #include "Suite.h"
 #include <list>
 #include <vector>
+#include <fstream>
+#include "TRSReport.h"
+#include "ReportManager.h"
 
 #define BUF_SIZE 512
+
+
+
 
 class TRSManager_API TRSManager
 {
@@ -31,13 +37,14 @@ public:
 
 	bool Init();
 	bool Verify(char* path, char* name, char* tag);
-	std::vector<TRSResult> Run(char* path, char* name, char* tag);
+	std::vector<TRSResult> Run(char* path, char* name, char* tag,ReportManager* pReport=nullptr);
 	bool Pause(char* path, char* name, char* tag);
 	bool Stop(char* path, char* name, char* tag);
 	std::list<Suite*>* List(char* path, char* name, char* tag);
 	bool Status(char* path, char* name, char* tag);
 	bool Info(char* path, char* name, char* tag);
 	bool Destroy();
+	bool SetReport(char* path,char* name,char* tag);
 };
 
 class TRSManager_API Logger
@@ -51,6 +58,8 @@ private:
 	std::shared_ptr<spdlog::logger> text_log_;
 	std::shared_ptr<spdlog::logger> console_log_;
 };
+
+
 
 class TRSManager_API TestRunner
 {

@@ -83,6 +83,8 @@
     <ClInclude Include="Erorrs.h" />
     <ClInclude Include="FunctionalityForXML.h" />
     <ClInclude Include="Metadata.h" />
+    <ClInclude Include="ReportManager.h" />
+    <ClInclude Include="TRSReport.h" />
     <ClInclude Include="TRSResult.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Suite.h" />
@@ -104,6 +106,7 @@
     </ClCompile>
     <ClCompile Include="FunctionalityForXML.cpp" />
     <ClCompile Include="Metadata.cpp" />
+    <ClCompile Include="ReportManager.cpp" />
     <ClCompile Include="TRSResult.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

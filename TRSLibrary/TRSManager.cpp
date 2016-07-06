@@ -154,7 +154,7 @@ bool TRSManager::Verify(char* path, char* name, char* tag)
 }
 
 
-std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
+std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag,ReportManager* pResult)
 {
 	std::list<Suite*> arr = *List(path, name, tag);
 
@@ -186,15 +186,25 @@ std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 	
 
 			int expected_result = atoi(test->get_expectedResult());
+			if (pResult)
+			{
+				pResult->beforeExecution(test);
+			}
 			high_resolution_clock::time_point t1 = high_resolution_clock::now();
 			
+			
 			result = (expected_result == TestRunner::Execute(executable_directory_W));
-
+			
 			high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
 			auto duration = duration_cast<milliseconds>(t2 - t1);
+			TRSResult resultInfo = TRSResult(test_path, test_name, result, duration);
+			if (pResult)
+			{
 			
-			result_vector.push_back(TRSResult(test_path, test_name, result, duration));
+				pResult->afterExecution(test, &resultInfo);
+			}
+			result_vector.push_back(resultInfo);
 
 //			delete[] executable_directory;
 		}
@@ -306,3 +316,41 @@ bool TRSManager::Info(char* path, char* name, char* tag)
 {
 	return false;
 }
+
+bool TRSManager::SetReport(char* path,char* name,char* tag)
+{
+	std::ofstream output("Report.hmtl");
+
+	output << R"(<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 5px;
+}
+th {
+    text-align: left;
+}
+</style>
+</head>
+<body>)";
+	std::vector<TRSResult> res_vector = Run(path, name, tag);
+	output << R"(<table style="width:100%">
+  <tr>
+    <th>Test name</th>
+    <th>Result</th>
+    <th>Path</th>
+  </tr>)";
+	for each(auto x in res_vector)
+	{
+		output << "<tr>\n\t<th>" << x.get_name() << "</th>\n\t" <<
+			"<th>" << x.get_result() << "</th>";
+
+	}
+	return false;
+}
+
