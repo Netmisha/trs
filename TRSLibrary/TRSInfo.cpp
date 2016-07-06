@@ -42,27 +42,27 @@ TRSInfo::~TRSInfo()
 	
 }
 
-char* TRSInfo::getName()
+char* TRSInfo::getName() const
 {
 	return Name;
 }
-char* TRSInfo::getWaitFor()
+char* TRSInfo::getWaitFor() const
 {
 	return waitfor;
 }
 
 
-char* TRSInfo::getDescription()
+char* TRSInfo::getDescription() const
 {
 	return description;
 }
 
-char* TRSInfo::getMaxThreads()
-{
+char* TRSInfo::getMaxThreads() const
+{ 
 	return maxThreads;
 }
 
-char* TRSInfo::getTag()
+char* TRSInfo::getTag() const
 {
 	return tag;
 }
@@ -450,7 +450,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 	return true;
 }
 
-Metadata* TRSInfo::getMetadata()
+Metadata* TRSInfo::getMetadata()  const
 {
 	return metadata;
 }
@@ -461,12 +461,12 @@ bool TRSInfo::setMetadata(Metadata*metadata_)
 	return true;
 }
 
-char* TRSInfo::getRepeat()
+char* TRSInfo::getRepeat()  const
 {
 	return repeat;
 }
 
-char* TRSInfo::getMaxTime()
+char* TRSInfo::getMaxTime()  const
 {
 	return maxTime;
 }

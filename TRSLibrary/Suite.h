@@ -27,12 +27,12 @@ public:
 	bool removeTest(char*name);
 
 
-	inline char* get_path()
+	inline char* get_path() const
 	{
 		return directoryName;
 	}
-
 	std::list<TRSTest*>& getList();
+	std::list<TRSTest*> getList() const;
 	bool Parse(TiXmlNode*pParent,char*name_,char*tag_);
 	bool setDir(char*dir_);
 	bool setList(std::list<TRSTest*>& testList_);

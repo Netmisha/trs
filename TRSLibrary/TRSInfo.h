@@ -36,27 +36,30 @@ public:
 	bool setMaxTime(char*maxTime_);
 	bool setMaxThreads(char*maxThreads_);
 	bool setExecutableName(char* name_);
-	inline char* get_executableName()
-	{
-		return executableName;
-	}
-	inline char* get_expectedResult()
-	{
-		return expectedResult;
-	}
 	bool setName(char*Name_);
 	bool setDescription(char*Desc_);
 	bool setMetadata(Metadata* metadata_);
 	bool setExpectedResult(char* res_);
 	bool setWaitFor(char* wait_);
-	char* getWaitFor();
-	char* getName();
-	char* getDescription();
-	char* getTag();
-	char* getRepeat();
-	char* getMaxTime();
-	char* getMaxThreads();
-	Metadata* getMetadata();
+
+
+	inline char* get_executableName() const
+	{
+		return executableName;
+	}
+	inline char* get_expectedResult() const
+	{
+		return expectedResult;
+	}
+	char* getWaitFor() const;
+	char* getName() const;
+	char* getDescription() const;
+	char* getTag() const;
+	char* getRepeat() const;
+	char* getMaxTime() const;
+	char* getMaxThreads() const;
+	Metadata* getMetadata() const;
+
 	bool Parse(TiXmlNode* pParent);
 };
 #endif
