@@ -6,7 +6,7 @@
 #include <Windows.h>
 #include "Suite.h"
 
-const unsigned int NUM_INDENTS_PER_SPACE = 2;
+extern const unsigned int NUM_INDENTS_PER_SPACE;
 
 bool Validate(std::wstring&);
 char* convertToChar( TCHAR*);
