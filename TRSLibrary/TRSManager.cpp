@@ -102,6 +102,8 @@ std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 			result = (expected_result == TestRunner::Execute(executable_directory));
 
 			result_vector.push_back(TRSResult(test_path, test_name, result));
+
+			delete[] executable_directory;
 		}
 	}
 
