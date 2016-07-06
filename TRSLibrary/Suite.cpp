@@ -141,6 +141,33 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
 								getList().push_back(currentTest);
 							}
 						}
+						else
+						{
+							if (!strncmp(currentTest->getName(), name_, strlen(name_)))
+							{
+								getList().push_back(currentTest);
+							}
+						}
+					}
+					else
+					{
+						if (!strncmp(currentTest->getName(), name_, strlen(name_)))
+						{
+							getList().push_back(currentTest);
+						}
+					}
+				}
+				else
+				{
+					if (tag_)
+					{
+						if (strlen(tag_) > 0)
+						{
+							if (!strncmp(currentTest->getName(), name_, strlen(name_)) && !strncmp(currentTest->getTag(), tag_, strlen(tag_)))
+							{
+								getList().push_back(currentTest);
+							}
+						}
 					}
 					else
 					{
@@ -162,6 +189,14 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
 							getList().push_back(currentTest);
 						}
 					}
+					else
+					{
+						getList().push_back(currentTest);
+					}
+				}
+				else
+				{
+					getList().push_back(currentTest);
 				}
 			}
 			
