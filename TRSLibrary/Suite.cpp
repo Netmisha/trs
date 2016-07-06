@@ -16,8 +16,9 @@ Suite::Suite() : TRSInfo()
 }
 
 
-Suite::~Suite()
+Suite::~Suite() 
 {
+	
 
 }
 
@@ -54,11 +55,11 @@ ostream& operator<<(ostream& out, Suite instance)
 	return out;
 }
 
-bool Suite::Parse(TiXmlNode*pParent)
+bool Suite::Parse(TiXmlNode*pParent,char*name_,char*tag_)
 {
 	if (TRSInfo::Parse(pParent))
 	{
-		ParseSuit(pParent);
+		ParseSuit(pParent,name_,tag_);
 		return true;
 	}
 	else
@@ -109,7 +110,7 @@ bool Suite::setList(std::list<TRSTest*>& testList_)
 	}
 }
 
-bool Suite::ParseSuit(TiXmlNode* pParent)
+bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
 {
 	if (!pParent) return false;
 
@@ -127,12 +128,83 @@ bool Suite::ParseSuit(TiXmlNode* pParent)
 			
 			TRSTest* currentTest = new TRSTest;
 			currentTest->Parse(pParent);
-			getList().push_back(currentTest);
+			if (name_)
+			{
+				if (strlen(name_) > 0)
+				{
+					if (tag_)
+					{
+						if (strlen(tag_) > 0)
+						{
+							if (!strncmp(currentTest->getName(), name_, strlen(name_)) && !strncmp(currentTest->getTag(), tag_, strlen(tag_)))
+							{
+								getList().push_back(currentTest);
+							}
+						}
+						else
+						{
+							if (!strncmp(currentTest->getName(), name_, strlen(name_)))
+							{
+								getList().push_back(currentTest);
+							}
+						}
+					}
+					else
+					{
+						if (!strncmp(currentTest->getName(), name_, strlen(name_)))
+						{
+							getList().push_back(currentTest);
+						}
+					}
+				}
+				else
+				{
+					if (tag_)
+					{
+						if (strlen(tag_) > 0)
+						{
+							if (!strncmp(currentTest->getName(), name_, strlen(name_)) && !strncmp(currentTest->getTag(), tag_, strlen(tag_)))
+							{
+								getList().push_back(currentTest);
+							}
+						}
+					}
+					else
+					{
+						if (!strncmp(currentTest->getName(), name_, strlen(name_)))
+						{
+							getList().push_back(currentTest);
+						}
+					}
+				}
+			}
+			else
+			{
+				if (tag_)
+				{
+					if (strlen(tag_) > 0)
+					{
+						if (!strncmp(currentTest->getTag(),tag_,strlen(tag_)))
+						{
+							getList().push_back(currentTest);
+						}
+					}
+					else
+					{
+						getList().push_back(currentTest);
+					}
+				}
+				else
+				{
+					getList().push_back(currentTest);
+				}
+			}
+			
 		}
 	}
 	for (pChild = pParent->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
 	{
-		ParseSuit(pChild);
+		ParseSuit(pChild,name_,tag_);
 	}
 	return true;
 }
