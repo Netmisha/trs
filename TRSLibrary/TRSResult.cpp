@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #define TRSLibrary_EXPORT
 #include "TRSResult.h"
-//#include <iomanip>
 
-TRSResult::TRSResult(char* path, char* name, bool result) : result_(result)
+TRSResult::TRSResult(char* path, char* name, bool result, duration<long long, std::milli> duration) 
+: result_(result), duration_(duration)
 {
 	size_t path_size = strlen(path);
 	path_ = new char[path_size + 1];
@@ -14,7 +14,7 @@ TRSResult::TRSResult(char* path, char* name, bool result) : result_(result)
 	strcpy_s(name_, name_size + 1, name);
 }
 
-TRSResult::TRSResult(const TRSResult& instance) : result_(instance.get_result())
+TRSResult::TRSResult(const TRSResult& instance) : result_(instance.get_result()), duration_(instance.get_duration())
 {
 	size_t path_size = strlen(instance.get_path());
 	path_ = new char[path_size + 1];
@@ -35,8 +35,6 @@ TRSResult::~TRSResult()
 
 std::ostream& operator<<(std::ostream& out, TRSResult& instance)
 {
-	out << instance.get_name() << "  " << std::boolalpha << instance.get_result() << "  " << instance.get_path() ;
-
+	out << instance.get_name() << "  " << std::boolalpha << instance.get_result() << "  "<<instance.get_duration().count() << " msec  " << instance.get_path() ;
 	return out;
-
 }

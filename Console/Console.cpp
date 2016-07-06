@@ -5,6 +5,7 @@
 #include "spdlog/spdlog.h"
 #include "TRSLibrary\TRSManager.h"
 #include "TRSLibrary\Suite.h"
+#include "TRSLibrary\TinyXML\tinyxml.h"
 
 #include <windows.h>
 #include <tchar.h>
@@ -13,12 +14,11 @@
 #include <iostream>
 #include <vector>
 #include <list>
-#include "TRSLibrary\TinyXML\tinyxml.h"
 #define MAX_PARAMETERS 7
 
 
 namespace spd = spdlog;
-
+using std::cout;
 
 int ProcessFunction(char* name, char* tag, char* path)
 {
@@ -33,8 +33,21 @@ int ProcessFunction(char* name, char* tag, char* path)
 	else if (!_stricmp(__argv[1], "Run"))
 	{
 		std::vector<TRSResult> arr = Manager.Run(path, name, tag);
+		long long total_time = 0;
+	
 		for each(auto var in arr)
-			std::cout << var << std::endl;
+		{
+			cout << var.get_name() << " ";
+			if (var.get_result())
+				cout << "Succeeded" << " ";
+			else
+				cout << "Failed" << " ";
+			cout<< var.get_duration().count() << " msec ";
+			cout << var.get_path() << std::endl;
+
+			total_time += var.get_duration().count();
+		}
+		cout << "\nTotal execution time of tests:" << total_time << " msec" << std::endl;
 		return 0;
 	}
 	else if (!_stricmp(__argv[1], "Pause"))
