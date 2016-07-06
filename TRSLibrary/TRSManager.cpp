@@ -91,8 +91,14 @@ std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 		{
 			test_name = test->getName();
 	
-			int exe_path_size = strlen(test_path) + strlen(test->get_executableName());
-			char* executable_directory = new char[exe_path_size + 1];
+			// alternative version
+//			int exe_path_size = strlen(test_path) + strlen(test->get_executableName());
+//			char* executable_directory = new char[exe_path_size + 1];
+			const int exe_path_size = MAX_PATH;
+			char executable_directory[exe_path_size + 1];
+
+
+
 			executable_directory[0] = 0;
 			strcat_s(executable_directory, exe_path_size + 1, test_path);
 			strcat_s(executable_directory, exe_path_size + 1, test->get_executableName());
@@ -103,7 +109,7 @@ std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag)
 
 			result_vector.push_back(TRSResult(test_path, test_name, result));
 
-			delete[] executable_directory;
+//			delete[] executable_directory;
 		}
 	}
 
