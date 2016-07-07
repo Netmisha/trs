@@ -1,129 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Header Files\TinyXML">
-      <UniqueIdentifier>{629d354d-0da4-4f5e-b487-0a5fb5c89a27}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files\TinyXML">
-      <UniqueIdentifier>{4a35f903-f6dd-460e-8f18-bb77bb91162f}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="FunctionalityForXML.cpp" />
+    <ClCompile Include="Metadata.cpp" />
+    <ClCompile Include="ReportManager.cpp" />
+    <ClCompile Include="ProcessCollection.cpp" />
+    <ClCompile Include="TRSResult.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Suite.cpp" />
+    <ClCompile Include="TinyXML\tinystr.cpp" />
+    <ClCompile Include="TinyXML\tinyxml.cpp" />
+    <ClCompile Include="TinyXML\tinyxmlerror.cpp" />
+    <ClCompile Include="TinyXML\tinyxmlparser.cpp" />
+    <ClCompile Include="TRSInfo.cpp" />
+    <ClCompile Include="TRSLibrary.cpp" />
+    <ClCompile Include="TRSManager.cpp" />
+    <ClCompile Include="TRSTest.cpp" />
+    <ClCompile Include="TRSReport.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Erorrs.h" />
+    <ClInclude Include="FunctionalityForXML.h" />
+    <ClInclude Include="Metadata.h" />
+    <ClInclude Include="ReportManager.h" />
+    <ClInclude Include="TRSReport.h" />
+    <ClInclude Include="ProcessInfo.h" />
+    <ClInclude Include="ProcessCollection.h" />
+    <ClInclude Include="TRSResult.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Suite.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="TinyXML\tinystr.h" />
+    <ClInclude Include="TinyXML\tinyxml.h" />
+    <ClInclude Include="TRSInfo.h" />
+    <ClInclude Include="TRSManager.h" />
+    <ClInclude Include="TRSTest.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TRSManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TinyXML\tinystr.h">
-      <Filter>Header Files\TinyXML</Filter>
-    </ClInclude>
-    <ClInclude Include="TinyXML\tinyxml.h">
-      <Filter>Header Files\TinyXML</Filter>
-    </ClInclude>
-    <ClInclude Include="FunctionalityForXML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TRSInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Metadata.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Suite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TRSTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TRSResult.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Erorrs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="TRSReport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReportManager.h">
-=======
-    <ClInclude Include="ProcessInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProcessCollection.h">
->>>>>>> 6855fc9fd43c45db2520c4f4f2ccf3fefc22a67d
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TRSLibrary.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TRSManager.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TinyXML\tinystr.cpp">
-      <Filter>Resource Files\TinyXML</Filter>
-    </ClCompile>
-    <ClCompile Include="TinyXML\tinyxml.cpp">
-      <Filter>Resource Files\TinyXML</Filter>
-    </ClCompile>
-    <ClCompile Include="TinyXML\tinyxmlerror.cpp">
-      <Filter>Resource Files\TinyXML</Filter>
-    </ClCompile>
-    <ClCompile Include="TinyXML\tinyxmlparser.cpp">
-      <Filter>Resource Files\TinyXML</Filter>
-    </ClCompile>
-    <ClCompile Include="FunctionalityForXML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Metadata.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TRSInfo.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TRSTest.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TRSResult.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="ReportManager.cpp">
-      <Filter>Resource Files</Filter>
-=======
-    <ClCompile Include="Suite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ProcessCollection.cpp">
-      <Filter>Source Files</Filter>
->>>>>>> 6855fc9fd43c45db2520c4f4f2ccf3fefc22a67d
-    </ClCompile>
   </ItemGroup>
 </Project>

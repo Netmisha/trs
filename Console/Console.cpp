@@ -8,6 +8,7 @@
 #include "TRSLibrary\TinyXML\tinyxml.h"
 #include "ConsoleReport.h"
 #include "TRSLibrary\ReportManager.h"
+#include "HTMLReport.h"
 
 #include <windows.h>
 #include <tchar.h>
@@ -36,7 +37,11 @@ int ProcessFunction(char* name, char* tag, char* path)
 	{
 		ReportManager reportManager;
 		ConsoleReport cReport;
+		HTMLReport htmlReport;
+		
 		reportManager.addReporter(&cReport);
+		reportManager.addReporter(&htmlReport);
+		reportManager.Begin();
 		std::vector<TRSResult> arr = Manager.Run(path, name, tag,&reportManager);
 		long long total_time = 0;
 	

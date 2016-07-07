@@ -35,3 +35,21 @@ void ReportManager::afterExecution(TRSInfo* pInfo, TRSResult* pResult)
 		(*it)->AfterExecution(pInfo,pResult);
 	}
 }
+
+void ReportManager::Begin()
+{
+	std::list<TRSReport*>::iterator it = reportList.begin();
+	for (it; it != reportList.end(); ++it)
+	{
+		(*it)->Begin();
+	}
+}
+
+void ReportManager::End()
+{
+	std::list<TRSReport*>::iterator it = reportList.begin();
+	for (it; it != reportList.end(); ++it)
+	{
+		(*it)->End();
+	}
+}
