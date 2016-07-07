@@ -18,7 +18,7 @@ class ProcessCollection
 	std::list<TRSResult> RunAll();
 private:
 	// if name == nullptr - return false
-	bool IsDone(char* name){ return false; }
+	bool IsDone(char* name);
 
 private:
 	int undone_tests_;

@@ -51,28 +51,45 @@ list<TRSResult> ProcessCollection::RunAll()
 		{
 			if (var.get_status() == Status::Running && var.ReleaseResources())
 			{
+				// this test is already"Done", so decrement the counter
+				--undone_tests_;
 				break;
 			}
 			else if (var.get_status() == Status::Waiting)
 			{
 				char* name = var.ProcessTest();
+			    if (name == nullptr)
+				{
+					// test was not waiting for anything and it is running now
+					break;
+				}
 				// if this test is waiting for test, which is already done 
-				if (IsDone(name))
+				else if(IsDone(name))
 				{
 					// one more iteration will be if this test is already done but we do not release its resources
 					// its made in order to simplify code
 					var.ProcessTest(true);
 					break;
 				}
-				else if (name == nullptr)
-				{
-					// test was not wasiting for anything and it is running now
-					break;
-				}
-				// this test is wating fo another test which is still runnig.
-				// so it was not a test, which signaled to maint thread. Continue searching
+				
+				// So, this test is wating fo another test which is still runnig.
+				// so it was not a test, which signaled to main thread. Continue searching
 			}
 		}
 	}
+
 	return list<TRSResult>(tests_.begin(), tests_.end());
+}
+
+bool ProcessCollection::IsDone(char* name)
+{
+	for each(auto var in tests_)
+	{
+		if (!strcmp(name, var.get_name()))
+		{
+			return var.get_status() == Status::Done;
+		}
+	}
+
+	return false;
 }

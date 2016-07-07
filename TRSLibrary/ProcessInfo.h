@@ -21,6 +21,10 @@ public:
 	{
 		return suite_path_;
 	}
+	inline char* get_name() const
+	{
+		return test_.getName();
+	}
 
 	char* ProcessTest(bool ignore_wait = false){ return 0; }
 
