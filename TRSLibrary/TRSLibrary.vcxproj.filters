@@ -60,10 +60,17 @@
     <ClInclude Include="Erorrs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
+    <ClInclude Include="TRSReport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportManager.h">
+=======
     <ClInclude Include="ProcessInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ProcessCollection.h">
+>>>>>>> 6855fc9fd43c45db2520c4f4f2ccf3fefc22a67d
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -107,11 +114,16 @@
     <ClCompile Include="TRSResult.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
+    <ClCompile Include="ReportManager.cpp">
+      <Filter>Resource Files</Filter>
+=======
     <ClCompile Include="Suite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProcessCollection.cpp">
       <Filter>Source Files</Filter>
+>>>>>>> 6855fc9fd43c45db2520c4f4f2ccf3fefc22a67d
     </ClCompile>
   </ItemGroup>
 </Project>
