@@ -83,6 +83,9 @@ list<TRSResult> ProcessCollection::RunAll()
 
 bool ProcessCollection::IsDone(char* name)
 {
+	if (name == nullptr)
+		return false;
+
 	for each(auto var in tests_)
 	{
 		if (!strcmp(name, var.get_name()))
