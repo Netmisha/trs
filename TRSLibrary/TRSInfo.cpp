@@ -14,6 +14,69 @@ TRSInfo::TRSInfo(char*TestName, char*Description)
 	}
 }
 
+TRSInfo::TRSInfo(const TRSInfo& val)
+{
+	if (val.metadata != nullptr)
+	{
+		// code which i do not need 
+	}
+
+	if (val.executableName != nullptr)
+	{
+		int size = strlen(val.executableName);
+		executableName = new char[size + 1];
+		strcpy_s(executableName, size + 1, val.executableName);
+	}
+	if (val.description != nullptr)
+	{
+		int size = strlen(val.description);
+		description = new char[size + 1];
+		strcpy_s(description, size + 1, val.description);
+	}
+	if (val.expectedResult != nullptr)
+	{
+		int size = strlen(val.expectedResult);
+		expectedResult = new char[size + 1];
+		strcpy_s(expectedResult, size + 1, val.expectedResult);
+	}
+	if (val.maxThreads != nullptr)
+	{
+		int size = strlen(val.maxThreads);
+		maxThreads = new char[size + 1];
+		strcpy_s(maxThreads, size + 1, val.maxThreads);
+	}
+	if (val.maxTime != nullptr)
+	{
+		int size = strlen(val.maxTime);
+		maxTime = new char[size + 1];
+		strcpy_s(maxTime, size + 1, val.maxTime);
+	}
+	if (val.Name != nullptr)
+	{
+		int size = strlen(val.Name);
+		Name = new char[size + 1];
+		strcpy_s(Name, size + 1, val.Name);
+	}
+	if (val.repeat != nullptr)
+	{
+		int size = strlen(val.repeat);
+		repeat = new char[size + 1];
+		strcpy_s(repeat, size + 1, val.repeat);
+	}
+	if (val.tag != nullptr)
+	{
+		int size = strlen(val.tag);
+		tag = new char[size + 1];
+		strcpy_s(tag, size + 1, val.tag);
+	}
+	if (val.waitfor != nullptr)
+	{
+		int size = strlen(val.waitfor);
+		waitfor = new char[size + 1];
+		strcpy_s(waitfor, size + 1, val.waitfor);
+	}
+}
+
 TRSInfo::TRSInfo()
 {
 	metadata = new Metadata;
@@ -237,15 +300,18 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		if ((strncmp(pParent->Value(), "waitFor", strlen("waitFor")) == 0))
 		{
 			TiXmlNode* child = pParent->FirstChild();
-			if (child->Type() == TiXmlNode::TINYXML_TEXT)
+			if (child)
 			{
-				if (child)
+				if (child->Type() == TiXmlNode::TINYXML_TEXT)
 				{
-					if (strlen(child->Value()) > 0)
+					if (child)
 					{
-						char*wait = new char[strlen(child->Value()) + 1];
-						strncpy_s(wait, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
-						setWaitFor(wait);
+						if (strlen(child->Value()) > 0)
+						{
+							char*wait = new char[strlen(child->Value()) + 1];
+							strncpy_s(wait, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+							setWaitFor(wait);
+						}
 					}
 				}
 			}

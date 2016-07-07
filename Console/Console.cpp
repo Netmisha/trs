@@ -34,13 +34,15 @@ int ProcessFunction(char* name, char* tag, char* path)
 	}
 	else if (!_stricmp(__argv[1], "Run"))
 	{
-		ReportManager reportManager;
-		ConsoleReport cReport;
-		reportManager.addReporter(&cReport);
-		std::vector<TRSResult> arr = Manager.Run(path, name, tag,&reportManager);
+		//ReportManager reportManager;
+		//ConsoleReport cReport;
+		//reportManager.addReporter(&cReport);
+		//std::vector<TRSResult> arr = Manager.Run(path, name, tag,&reportManager);
+		//long long total_time = 0;
+
+		std::vector<TRSResult> arr = Manager.Run(path, name, tag);
 		long long total_time = 0;
-	
-	/*	for each(auto var in arr)
+		for each(auto var in arr)
 		{
 			cout << var.get_name() << " ";
 			if (var.get_result())
@@ -52,7 +54,7 @@ int ProcessFunction(char* name, char* tag, char* path)
 
 			total_time += var.get_duration().count();
 		}
-		cout << "\nTotal execution time of tests:" << total_time << " msec" << std::endl;*/
+		cout << "\nTotal execution time of tests:" << total_time << " msec" << std::endl;
 		return 0;
 	}
 	else if (!_stricmp(__argv[1], "Pause"))

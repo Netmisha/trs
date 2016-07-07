@@ -26,7 +26,6 @@
 <result>1</result>
 <repeat pause="100">120</repeat>
             <maxTime>10h50m</maxTime>
-	<waitFor>Test 5</waitFor>
 	</test>
 		<test name="Test 2" description="Test description">
 <priority>4</priority>
@@ -37,6 +36,5 @@
 <result>0</result>
 <repeat pause="100">120</repeat>
             <maxTime>10h50m</maxTime>
-	<waitFor>Test 5</waitFor>
 	</test>
 </suite>

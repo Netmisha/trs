@@ -21,7 +21,7 @@ ProcessCollection::ProcessCollection(const Suite& suite)
 	strcpy_s(path_, path_len + 1, suite.get_path());
 
 	for each (TRSTest* var in suite.getList())
-		tests_.push_back(ProcessInfo(*var, path_));
+		tests_.push_back(ProcessInfo(*var, path_, semaphore_));
 
 	undone_tests_ = tests_.size();
 }
@@ -47,17 +47,18 @@ list<TRSResult> ProcessCollection::RunAll()
 			return list<TRSResult>();
 		}
 
-		for each(ProcessInfo var in tests_)
+		for (auto var = tests_.begin(); var != tests_.end(); ++var)
 		{
-			if (var.get_status() == Status::Running && var.ReleaseResources())
+			if (var->get_status() == Status::Running && var->ReleaseResources())
 			{
-				// this test is already"Done", so decrement the counter
+				// this test is already "Done", so decrement the counter
 				--undone_tests_;
 				break;
 			}
-			else if (var.get_status() == Status::Waiting)
+			else if (var->get_status() == Status::Waiting)
 			{
-				char* name = var.ProcessTest();
+				// ProcessInfo owns the name resource so it must properly create and release it
+				char* name = var->ProcessTest();
 			    if (name == nullptr)
 				{
 					// test was not waiting for anything and it is running now
@@ -68,7 +69,7 @@ list<TRSResult> ProcessCollection::RunAll()
 				{
 					// one more iteration will be if this test is already done but we do not release its resources
 					// its made in order to simplify code
-					var.ProcessTest(true);
+					var->ProcessTest(true);
 					break;
 				}
 				

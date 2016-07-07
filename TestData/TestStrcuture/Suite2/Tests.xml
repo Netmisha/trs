@@ -26,6 +26,6 @@
 <result>0</result>
 <repeat pause="100">120</repeat>
             <maxTime>10h50m</maxTime>
-	<waitFor>Test 5</waitFor>
+	<waitFor/>
 	</test>
 </suite>

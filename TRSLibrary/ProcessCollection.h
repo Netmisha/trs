@@ -12,6 +12,7 @@
 
 class ProcessCollection
 {
+public:
 	ProcessCollection(const Suite&);
 	~ProcessCollection();
 
