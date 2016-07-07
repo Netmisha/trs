@@ -201,3 +201,33 @@ bool Metadata::setLicense(char*license_)
 		}
 	}
 }
+
+char* Metadata::getDate()
+{
+	return date;
+}
+
+char* Metadata::getVersion()
+{
+	return version;
+}
+
+char* Metadata::getMail()
+{
+	return mail;
+}
+
+char* Metadata::getCopyright()
+{
+	return copyright;
+}
+
+char* Metadata::getLicense()
+{
+	return license;
+}
+
+char* Metadata::getInfo()
+{
+	return info;
+}

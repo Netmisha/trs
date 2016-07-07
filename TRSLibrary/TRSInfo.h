@@ -24,8 +24,8 @@ class TRSInfo_API TRSInfo
 	char* expectedResult=nullptr;
 	char* executableName=nullptr;
 	char* waitfor = nullptr;
-
 	Metadata* metadata;
+
 public:
 	TRSInfo(char*Name, char*Description);
 	TRSInfo();

@@ -37,6 +37,6 @@ public:
 	bool setDir(char*dir_);
 	bool setList(std::list<TRSTest*>& testList_);
 
-	friend Suite_API std::ostream& operator<<(std::ostream &, Suite);
+	friend Suite_API std::ostream& operator<<(std::ostream &, Suite&);
 };
 #endif

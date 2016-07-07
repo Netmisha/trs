@@ -21,6 +21,26 @@ ConsoleReport::~ConsoleReport()
 	std::cout << "Total time:\t" << (int)time << "ms\n";
 }
 
+double ConsoleReport::getTime()
+{
+	return time;
+}
+
+double ConsoleReport::getAmount()
+{
+	return amount;
+}
+
+double ConsoleReport::getPassedAmount()
+{
+	return passedAmount;
+}
+
+double ConsoleReport::getFailedAmount()
+{
+	return failedAmount;
+}
+
 void ConsoleReport::BeforeExecution(TRSInfo* pInfo)
 {
 
