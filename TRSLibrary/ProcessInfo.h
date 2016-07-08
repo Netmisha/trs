@@ -40,12 +40,14 @@ public:
 
 	operator TRSResult() const;
 private:
+	bool RecordDuration();
 	static DWORD WINAPI StartThread(LPVOID);
 private:
 	bool result_;
 	TRSTest test_;
 	Status status_;
 	HANDLE semaphore_;
+	HANDLE work_thread_;
 	char* path_;
 	wchar_t* command_line_;
 	PROCESS_INFORMATION process_information_;
