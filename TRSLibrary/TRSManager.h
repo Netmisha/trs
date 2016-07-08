@@ -44,7 +44,7 @@ public:
 	bool Status(char* path, char* name, char* tag);
 	bool Info(char* path, char* name, char* tag);
 	bool Destroy();
-	bool SetReport(char* path,char* name,char* tag);
+	bool SetReport(char* path,char* name,char* tag,ReportManager* manager=nullptr);
 };
 
 class TRSManager_API Logger

@@ -28,7 +28,9 @@ TRSInfo::~TRSInfo()
 	delete[] repeat;
 	delete[] maxTime;
 	delete[] maxThreads;
-
+	delete[] waitfor;
+	delete[] expectedResult;
+	delete[] executableName;
 }
 
 char* TRSInfo::getName() const

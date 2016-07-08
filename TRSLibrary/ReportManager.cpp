@@ -10,7 +10,11 @@ ReportManager::ReportManager()
 
 ReportManager::~ReportManager()
 {
-
+	std::list<TRSReport*>::iterator it = reportList.begin();
+	for (it; it != reportList.end(); ++it)
+	{
+		(*it)->~TRSReport();
+	}
 }
 
 void ReportManager::addReporter(TRSReport* reporter)
