@@ -28,6 +28,7 @@ class TRSInfo_API TRSInfo
 
 public:
 	TRSInfo(char*Name, char*Description);
+	TRSInfo(const TRSInfo&);
 	TRSInfo();
 	virtual ~TRSInfo();
 

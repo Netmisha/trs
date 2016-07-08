@@ -5,40 +5,50 @@
 #include "TRSTest.h"
 #include "TRSResult.h"
 
-enum class Status{Done, Waiting, Running };
+#include <chrono>
+
+enum class Status{ Waiting, Done, Running };
+
+struct ProcessData
+{
+	ProcessData(wchar_t*, PROCESS_INFORMATION*, HANDLE);
+	~ProcessData();
+
+	wchar_t* command_line;
+	PROCESS_INFORMATION* process_information;
+	HANDLE semaphore;
+};
 
 class ProcessInfo
 {
 public:
-	ProcessInfo(const TRSTest&, char*){}
-	ProcessInfo(const ProcessInfo&){}
+	ProcessInfo(const TRSTest&, char*, HANDLE);
+	ProcessInfo(const ProcessInfo&);
+	~ProcessInfo();
 
 	inline Status get_status() const
 	{
 		return status_;
-	}
-	inline char* get_suite_path() const
-	{
-		return suite_path_;
 	}
 	inline char* get_name() const
 	{
 		return test_.getName();
 	}
 
-	char* ProcessTest(bool ignore_wait = false){ return 0; }
+	char* ProcessTest(bool ignore_wait = false);
+	bool ReleaseResources();
 
-	bool ReleaseResources(){ return false; }
-	operator TRSResult() const{
-#include <chrono>
-		std::chrono::duration<long long, std::milli> ar;
-		return TRSResult(NULL, NULL, NULL, ar); 
-	}
+	operator TRSResult() const;
 private:
+	static DWORD WINAPI StartThread(LPVOID);
+private:
+	bool result_;
 	TRSTest test_;
 	Status status_;
-	char* suite_path_;
-	wchar_t* executable_path_;
+	HANDLE semaphore_;
+	char* path_;
+	wchar_t* command_line_;
 	PROCESS_INFORMATION process_information_;
+	std::chrono::duration<long long, std::milli> duration_;
 };
 #endif

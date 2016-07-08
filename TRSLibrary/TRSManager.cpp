@@ -3,6 +3,8 @@
 #include "TRSManager.h"
 #include "FunctionalityForXML.h"
 #include "spdlog\spdlog.h"
+#include "ProcessCollection.h"
+
 #include <iostream>
 #include <memory>
 #include "Erorrs.h"
@@ -17,6 +19,29 @@ TRSManager Manager;
 Logger logger;
 
 
+std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag, ReportManager* pResult)
+{
+	std::list<Suite*> arr = *List(path, name, tag);
+
+	char* test_name, *test_path;
+	bool result;
+	std::vector<TRSResult> result_vector;
+
+	for each(Suite* var in arr)
+	{
+		ProcessCollection suite_collection(*var);
+		std::list<TRSResult> ret_list = suite_collection.RunAll();
+		for each (auto elem in ret_list)
+		{
+			result_vector.push_back(elem);
+		}
+	}
+
+
+	return result_vector;
+}
+
+
 int TestRunner::Execute(wchar_t* command)
 {
 	PROCESS_INFORMATION process_information;
@@ -29,7 +54,7 @@ int TestRunner::Execute(wchar_t* command)
 
 	LPTSTR szCmdline = _tcsdup(command);
 
-	bool create_result = CreateProcess(NULL, szCmdline, NULL, NULL, FALSE, 0,
+	bool create_result = CreateProcess(NULL, szCmdline, NULL, NULL, FALSE, CREATE_NO_WINDOW,
 		NULL, NULL, &startup_info, &process_information);
 
 	if (!create_result)
@@ -155,64 +180,66 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 }
 
 
-std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag,ReportManager* pResult)
-{
-	std::list<Suite*> arr = *List(path, name, tag);
-
-	char* test_name, *test_path;
-	bool result;
-	std::vector<TRSResult> result_vector;
-
-	for each(Suite* var in arr)
-	{
-		test_path = var->get_path();
-		for each (auto test in var->getList())
-		{
-			test_name = test->getName();
-	
-			// alternative version
-		//	int exe_path_size = strlen(test_path) + strlen(test->get_executableName());
-		//	wchar_t* executable_directory = new wchar_t[exe_path_size + 1];
-			
-			wchar_t executable_directory_W[MAX_PATH + 1];
-
-			char executable_directory_A[MAX_PATH + 1];
-			
-			executable_directory_A[0] = 0;
-			strcat_s(executable_directory_A, MAX_PATH + 1, test_path);
-			strcat_s(executable_directory_A, MAX_PATH + 1, test->get_executableName());
-		
-			
-			convertToTCHAR(executable_directory_W, executable_directory_A);
-	
-
-			int expected_result = atoi(test->get_expectedResult());
-			if (pResult)
-			{
-				pResult->beforeExecution(test);
-			}
-			high_resolution_clock::time_point t1 = high_resolution_clock::now();
-			
-			
-			result = (expected_result == TestRunner::Execute(executable_directory_W));
-			
-			high_resolution_clock::time_point t2 = high_resolution_clock::now();
-
-			auto duration = duration_cast<milliseconds>(t2 - t1);
-			TRSResult resultInfo = TRSResult(test_path, test_name, result, duration);
-			if (pResult)
-			{
-				pResult->afterExecution(test, &resultInfo);
-			}
-			result_vector.push_back(resultInfo);
-
-//			delete[] executable_directory;
-		}
-	}
-
-
-	return result_vector;
-}
+// OLD RUN FUNCTION
+//std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag,ReportManager* pResult)
+//{
+//	std::list<Suite*> arr = *List(path, name, tag);
+//
+//	char* test_name, *test_path;
+//	bool result;
+//	std::vector<TRSResult> result_vector;
+//
+//	for each(Suite* var in arr)
+//	{
+//		test_path = var->get_path();
+//		for each (auto test in var->getList())
+//		{
+//			test_name = test->getName();
+//	
+//			// alternative version
+//		//	int exe_path_size = strlen(test_path) + strlen(test->get_executableName());
+//		//	wchar_t* executable_directory = new wchar_t[exe_path_size + 1];
+//			
+//			wchar_t executable_directory_W[MAX_PATH + 1];
+//
+//			char executable_directory_A[MAX_PATH + 1];
+//			
+//			executable_directory_A[0] = 0;
+//			strcat_s(executable_directory_A, MAX_PATH + 1, test_path);
+//			strcat_s(executable_directory_A, MAX_PATH + 1, test->get_executableName());
+//		
+//			
+//			convertToTCHAR(executable_directory_W, executable_directory_A);
+//	
+//
+//			int expected_result = atoi(test->get_expectedResult());
+//			if (pResult)
+//			{
+//				pResult->beforeExecution(test);
+//			}
+//			high_resolution_clock::time_point t1 = high_resolution_clock::now();
+//			
+//			
+//			result = (expected_result == TestRunner::Execute(executable_directory_W));
+//			
+//			high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//
+//			auto duration = duration_cast<milliseconds>(t2 - t1);
+//			TRSResult resultInfo = TRSResult(test_path, test_name, result, duration);
+//			if (pResult)
+//			{
+//			
+//				pResult->afterExecution(test, &resultInfo);
+//			}
+//			result_vector.push_back(resultInfo);
+//
+////			delete[] executable_directory;
+//		}
+//	}
+//
+//
+//	return result_vector;
+//}
 
 bool TRSManager::Pause(char* path, char* name, char* tag)
 {

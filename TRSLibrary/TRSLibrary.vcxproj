@@ -108,6 +108,7 @@
     </ClCompile>
     <ClCompile Include="FunctionalityForXML.cpp" />
     <ClCompile Include="Metadata.cpp" />
+    <ClCompile Include="ProcessInfo.cpp" />
     <ClCompile Include="ReportManager.cpp" />
     <ClCompile Include="ProcessCollection.cpp" />
     <ClCompile Include="TRSReport.cpp" />

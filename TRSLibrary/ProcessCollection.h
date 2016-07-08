@@ -12,13 +12,14 @@
 
 class ProcessCollection
 {
+public:
 	ProcessCollection(const Suite&);
 	~ProcessCollection();
 
 	std::list<TRSResult> RunAll();
 private:
-	// if name == nullptr - return false
-	bool IsDone(char* name);
+	// if name == nullptr - return 0
+	int IsDone(char* name);
 
 private:
 	int undone_tests_;
