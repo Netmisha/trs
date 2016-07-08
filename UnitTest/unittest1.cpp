@@ -1,10 +1,14 @@
 #include "stdafx.h"
+#define _CRTDBG_MAP_ALLOC
 #include "CppUnitTest.h"
 #include "TRSLibrary\TRSManager.h"
 #include <list>
 #include <vector>
 #include "TRSLibrary\Erorrs.h"
 #include "TRSLibrary\FunctionalityForXML.h"
+#include <stdlib.h>
+#include <crtdbg.h>
+#include "TRSLibrary\Metadata.h"
 
 #define AMOUNT_OF_TESTS 18U
 #define FIRST_BRANCH_AMOUNT 6U
@@ -405,6 +409,21 @@ namespace UnitTest
 		TEST_METHOD(Verify_SUCCSEED)
 		{
 			Assert::IsTrue((int)Manager.Verify(R"(../TestData/TestStrcuture)", nullptr, nullptr) == (int)SUCCSEED);
+		}
+		TEST_METHOD(Memory_leak_for_List_function_detecting)
+		{
+			_CrtMemState s1;
+			_CrtMemCheckpoint(&s1);
+			{
+				std::list<Suite*>* coll = Manager.List("(../TestData/TestStrcuture)", nullptr, nullptr);
+				delete coll;
+			}
+			_CrtMemState s2;
+			_CrtMemCheckpoint(&s2);
+			_CrtMemState s3;
+			_CrtMemCheckpoint(&s3);
+			bool const no_leaks = 0 == _CrtMemDifference(&s3, &s1, &s2);
+			Assert::IsTrue(no_leaks);
 		}
 	};
 }
