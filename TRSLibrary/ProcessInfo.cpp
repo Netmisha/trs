@@ -4,7 +4,9 @@
 #include "TRSManager.h"
 #include "TRSTest.h"
 
-#include <windows.h> 
+#include <chrono>
+using namespace std::chrono;
+
 ProcessData::ProcessData(wchar_t* cmd, PROCESS_INFORMATION* pi, HANDLE h) : process_information(pi), semaphore(h)
 {
 	int cmd_len = wcslen(cmd);
@@ -13,14 +15,14 @@ ProcessData::ProcessData(wchar_t* cmd, PROCESS_INFORMATION* pi, HANDLE h) : proc
 }
 ProcessData::~ProcessData()
 {
-//	delete[] command_line;
+	delete[] command_line;
 }
 
-#include <iostream>
-using namespace std;
+
 ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphore) : 
 test_(test), semaphore_(semaphore), status_(Status::Waiting), result_(false), duration_(0)
 {
+	work_thread_ = NULL;
 
 	int path_len = strlen(path);
 	path_ = new char[path_len + 1];
@@ -42,8 +44,8 @@ test_(test), semaphore_(semaphore), status_(Status::Waiting), result_(false), du
 }
 
 ProcessInfo::ProcessInfo(const ProcessInfo& instance):
-	test_(instance.test_), semaphore_(instance.semaphore_), status_(instance.status_),
-	result_(instance.result_), process_information_(instance.process_information_), duration_(0)
+test_(instance.test_), semaphore_(instance.semaphore_), status_(instance.status_), work_thread_(instance.work_thread_),
+	result_(instance.result_), process_information_(instance.process_information_), duration_(instance.duration_)
 {
 	int path_len = strlen(instance.path_);
 	path_ = new char[path_len + 1];
@@ -63,6 +65,8 @@ ProcessInfo::~ProcessInfo()
 
 DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 {
+	high_resolution_clock::time_point t1 = high_resolution_clock::now();
+
 	ProcessData data = *((ProcessData*)parameters);
 
 	STARTUPINFO startup_info;
@@ -77,7 +81,7 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 	{
 		delete parameters;
 		logger << "Create process failed";
-		return 1;
+		return -1;
 	}
 
 	// Successfully created the process.  Wait for it to finish.
@@ -86,18 +90,21 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 	{
 		delete parameters;
 		logger << "Waiting for the process failed";
-		return 1;
+		return -1;
 	}
 
 
 	if (!ReleaseSemaphore(data.semaphore, 1, NULL))
 	{
 		logger << "Incrementing semaphore count is failed";
-		return 1;
+		return -1;
 	}
 
 	delete parameters;
-	return 0;
+
+	high_resolution_clock::time_point t2 = high_resolution_clock::now();
+	
+	return duration_cast<milliseconds>(t2 - t1).count();
 }
 
 
@@ -111,16 +118,11 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 
 	ProcessData* parameters = new ProcessData( command_line_, &process_information_, semaphore_ );
 
-	HANDLE work_thread = CreateThread(NULL, NULL, &ProcessInfo::StartThread, parameters, NULL, NULL);
-	if (work_thread == NULL)
+	work_thread_ = CreateThread(NULL, NULL, &ProcessInfo::StartThread, parameters, NULL, NULL);
+	if (work_thread_ == NULL)
 	{
 		logger << "Creating thread in ProcessTest failded";
 		return nullptr;
-	}
-
-	if (!CloseHandle(work_thread))
-	{
-		logger << "Closing thread in ProcessTest handle failed";
 	}
 
 	status_ = Status::Running;
@@ -132,16 +134,15 @@ bool ProcessInfo::ReleaseResources()
 	if (status_ != Status::Running)
 		return status_ == Status::Done;
 
-
-	int wait_result = WaitForSingleObject(process_information_.hProcess, NULL);
+	int wait_process = WaitForSingleObject(process_information_.hProcess, NULL);
 
 	// how to write this if blocks more readable?
-	if (wait_result == WAIT_FAILED && process_information_.hProcess != 0)
+	if (wait_process == WAIT_FAILED && process_information_.hProcess != 0)
 	{
 		logger << "Wait for process termination failed";
 		return false;
 	}
-	if (wait_result == WAIT_OBJECT_0)
+	if (wait_process == WAIT_OBJECT_0)
 	{
 		DWORD returned_value;
 
@@ -161,6 +162,9 @@ bool ProcessInfo::ReleaseResources()
 			int expected_value = atoi(test_.get_expectedResult());
 			result_ = (expected_value == returned_value);
 			status_ = Status::Done;
+
+			RecordDuration();
+
 			return true;
 		}
 	}
@@ -175,4 +179,42 @@ bool ProcessInfo::ReleaseResources()
 ProcessInfo::operator TRSResult() const
 {
 	return TRSResult(path_, test_.getName(), result_, duration_);
+}
+
+bool ProcessInfo::RecordDuration()
+{
+	int wait_thread = WaitForSingleObject(work_thread_, INFINITE);
+	
+	if (wait_thread == WAIT_FAILED && work_thread_ != NULL)
+	{
+		logger << "Wait for thread termination failed";
+		return false;
+	}
+	if (wait_thread == WAIT_OBJECT_0)
+	{
+		DWORD returned_value;
+
+		bool get_result = GetExitCodeThread(work_thread_, &returned_value);
+
+		CloseHandle(work_thread_);
+
+		ZeroMemory(&work_thread_, sizeof(work_thread_));
+
+		if (!get_result)
+		{
+			logger << "Thread terminated but an error occured while getting its exit code";
+			return false;
+		}
+		else
+		{
+			duration<long long, std::milli> test_duration(returned_value);
+			duration_ = test_duration;
+			return true;
+		}
+	}
+	else
+	{
+		// thread is still running
+		return false;
+	}
 }

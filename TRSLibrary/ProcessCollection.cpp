@@ -6,15 +6,13 @@
 
 using std::list;
 
-#include <windows.h> 
 
-
-#include <iostream>
-using namespace std;
 // futher implementation of priority will be added
 ProcessCollection::ProcessCollection(const Suite& suite)
 {
 	int max_threads =  atoi(suite.getMaxThreads());
+	if (max_threads < 0)
+		logger << "Negative value in max_threas field";
 
 	semaphore_ = CreateSemaphore(NULL, max_threads, max_threads , NULL);
 	if (semaphore_ == NULL)
