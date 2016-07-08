@@ -17,6 +17,11 @@
 #include <iostream>
 #include <vector>
 #include <list>
+
+#define CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 #define MAX_PARAMETERS 7
 
 
@@ -82,10 +87,16 @@ int ProcessFunction(char* name, char* tag, char* path)
 
 	else if (!_stricmp(__argv[1], "List"))
 	{
-		std::list<Suite*> list =  *Manager.List(path, name, tag);
-		for each (auto x in list)
+		std::list<Suite*>* list =  Manager.List(path, name, tag);
+		for each (auto x in *list)
 			std::cout << *x << std::endl;
-
+		std::list<Suite*>::iterator it = list->begin();
+		for (it; it != list->end(); ++it)
+		{
+			delete (*it);
+		}
+		delete list;
+		
 		return 0;
 	}
 
@@ -174,6 +185,7 @@ int main(int argc, char* argv[])
 	int ret_val = ProcessFunction(name,tag,path);
 
 	Manager.Destroy();
+	_CrtDumpMemoryLeaks();
 	system("pause");
 	return ret_val;
 }

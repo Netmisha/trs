@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <memory>
+#include "Erorrs.h"
 #include <vector>
 #include <chrono>
 
@@ -137,7 +138,7 @@ bool TRSManager::Destroy()
 	return false;
 }
 
-bool TRSManager::Verify(char* path, char* name, char* tag)
+int TRSManager::Verify(char* path, char* name, char* tag)
 {
 		std::list<Suite*>* suiteCollection=List(path, name, tag);
 	
@@ -149,15 +150,15 @@ bool TRSManager::Verify(char* path, char* name, char* tag)
 			{
 				if (!((*iter)->getName()))
 				{
-					return 1;
+					return INVALID_NAME;
 				}
 				if ((!(*iter)->get_executableName()))
 				{
-					return 2;
+					return INVALID_EXECUTION_NAME;
 				}
 				if ((!(*iter)->get_expectedResult()))
 				{
-					return 3;
+					return INVALID_RESULT;
 				}
 				char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
 				strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
@@ -166,7 +167,7 @@ bool TRSManager::Verify(char* path, char* name, char* tag)
 				if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
 				{
 					delete[] buf;
-					return 6;
+					return INVALID_EXE_FILE;
 				}
 				else
 				{
@@ -175,8 +176,9 @@ bool TRSManager::Verify(char* path, char* name, char* tag)
 				}
 			}
 		}
-		return 4;
+		return SUCCSEED;
 }
+
 
 // OLD RUN FUNCTION
 //std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag,ReportManager* pResult)
@@ -288,8 +290,9 @@ bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suit
 						StringCchCopy(subDir, MAX_PATH, hzDir);//fill additional buffer with this folder's path
 						StringCchCat(subDir, MAX_PATH, TEXT("\\"));//additional slash))
 						StringCchCat(subDir, MAX_PATH, ffd.cFileName);//name of last folder to search in
-
-						FillList(convertToChar(subDir), name, tag,suiteCollection);//workin' only for path,not for names or tags yet
+						char* way = convertToChar(subDir);
+						FillList(way, name, tag,suiteCollection);//workin' only for path,not for names or tags yet
+						delete[] way;
 					}
 				}
 				else
@@ -304,15 +307,19 @@ bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suit
 						TCHAR currentDir[MAX_PATH];
 						StringCchCopy(currentDir, MAX_PATH, fileDir);
 						StringCchCat(fileDir, MAX_PATH, ffd.cFileName);
-						TiXmlDocument doc(convertToChar(fileDir));//try to open such document wuth tinyXML parser
+						char* way = convertToChar(fileDir);
+						TiXmlDocument doc(way);//try to open such document wuth tinyXML parser
 						bool loadOk = doc.LoadFile();//check if opening was successfull
 						if (loadOk)
 						{
 							Suite* currentSuite = new Suite();
 							currentSuite->Parse(&doc, name, tag);
-							currentSuite->setDir(convertToChar(currentDir));
+							char*SuiteWay = convertToChar(currentDir);
+							currentSuite->setDir(SuiteWay);
+							delete[] SuiteWay;
 							suiteCollection->push_back(currentSuite);
 						}
+						delete[] way;
 					}
 				}
 			} while (FindNextFile(hFind, &ffd) != 0);//repeat

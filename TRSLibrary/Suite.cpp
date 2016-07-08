@@ -15,11 +15,14 @@ Suite::Suite() : TRSInfo()
 
 }
 
-
 Suite::~Suite() 
 {
-	
-
+	delete[] directoryName;
+	std::list<TRSTest*>::iterator it = testList.begin();
+	for (it; it != testList.end(); ++it)
+	{
+		delete (*it);
+	}
 }
 
 bool Suite::addTest(TRSTest& currentTest)
@@ -52,7 +55,7 @@ std::list<TRSTest*>& Suite::getList()
 	return testList;
 }
 
-ostream& operator<<(ostream& out, Suite instance)
+ostream& operator<<(ostream& out, Suite& instance)
 {
 	std::list<TRSTest*> list = instance.getList();
 	for each(auto val in list)
@@ -105,14 +108,12 @@ bool Suite::setDir(char*dir_)
 bool Suite::setList(std::list<TRSTest*>& testList_)
 {
 	testList = testList_;
-	if (testList.size() == testList_.size())
+	std::list<TRSTest*>::iterator it = testList_.begin();
+	for (it; it != testList_.end(); ++it)
 	{
-		return true;
+		delete (*it);
 	}
-	else
-	{
-		return false;
-	}
+	return testList.size() == testList_.size();
 }
 
 bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)

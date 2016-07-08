@@ -18,7 +18,7 @@ TRSInfo::TRSInfo(const TRSInfo& val)
 {
 	if (val.metadata != nullptr)
 	{
-		// code which i do not need 
+		metadata = new Metadata(*val.metadata);
 	}
 
 	if (val.executableName != nullptr)
@@ -84,25 +84,14 @@ TRSInfo::TRSInfo()
 
 TRSInfo::~TRSInfo()
 {
+	delete metadata;
 	delete[] Name;
 	delete[] description;
-	if (tag)
-	{
-		delete[] tag;
-	}
-	if (repeat)
-	{
-		delete[] repeat;
-	}
-	if (maxTime)
-	{
-		delete[] maxTime;
-	}
-	if (maxThreads)
-	{
-		delete[] maxThreads;
-	}
-	
+	delete[] tag;
+	delete[] repeat;
+	delete[] maxTime;
+	delete[] maxThreads;
+
 }
 
 char* TRSInfo::getName() const
@@ -254,6 +243,10 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		
 		if ((strncmp(pParent->Value(), "suite", strlen("suite")) == 0) || (strncmp(pParent->Value(), "test", strlen("test")) == 0))
 		{
+			if (getName())
+			{
+				return true;
+			}
 			TiXmlAttribute*atr = pParent->ToElement()->FirstAttribute();
 
 			if (!strncmp(atr->Name(),"name",strlen("name")))
@@ -261,6 +254,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 				char*name = new char[strlen(atr->Value()) + 1];
 				strncpy_s(name, strlen(atr->Value()) + 1, atr->Value(), strlen(atr->Value()));
 				setName(name);
+				delete[] name;
 				atr = atr->Next();
 				if (atr)
 				{
@@ -269,6 +263,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 						char*desc = new char[strlen(atr->Value()) + 1];
 						strncpy_s(desc, strlen(atr->Value()) + 1, atr->Value(), strlen(atr->Value()));
 						setDescription(desc);
+						delete[] desc;
 					}
 				}
 			}	
@@ -277,6 +272,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 				char*desc = new char[strlen(atr->Value()) + 1];
 				strncpy_s(desc, strlen(atr->Value()) + 1, atr->Value(), strlen(atr->Value()));
 				setDescription(desc);
+				delete[] desc;
 			}
 			break;
 		}
@@ -292,6 +288,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 						char*Tag = new char[strlen(child->Value()) + 1];
 						strncpy_s(Tag, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
 						setTag(Tag);
+						delete[] Tag;
 					}
 				}
 			}
@@ -300,19 +297,14 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		if ((strncmp(pParent->Value(), "waitFor", strlen("waitFor")) == 0))
 		{
 			TiXmlNode* child = pParent->FirstChild();
-			if (child)
+			if (child && child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
-				if (child->Type() == TiXmlNode::TINYXML_TEXT)
+				if (strlen(child->Value()) > 0)
 				{
-					if (child)
-					{
-						if (strlen(child->Value()) > 0)
-						{
-							char*wait = new char[strlen(child->Value()) + 1];
-							strncpy_s(wait, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
-							setWaitFor(wait);
-						}
-					}
+					char *wait = new char[strlen(child->Value()) + 1];
+					strncpy_s(wait, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+					setWaitFor(wait);
+					delete[] wait;
 				}
 			}
 			break;
@@ -329,6 +321,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 						char*Repeat = new char[strlen(child->Value()) + 1];
 						strncpy_s(Repeat, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
 						setRepeat(Repeat);
+						delete[] Repeat;
 					}
 				}
 			}
@@ -346,6 +339,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 						char*MaxTime = new char[strlen(child->Value()) + 1];
 						strncpy_s(MaxTime, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
 						setMaxTime(MaxTime);
+						delete[] MaxTime;
 					}
 				}
 			}
@@ -363,6 +357,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 						char*MaxThreads = new char[strlen(child->Value()) + 1];
 						strncpy_s(MaxThreads, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
 						setMaxThreads(MaxThreads);
+						delete[] MaxThreads;
 					}
 				}
 			}
@@ -380,6 +375,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 						char*executableName = new char[strlen(child->Value()) + 1];
 						strncpy_s(executableName, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
 						setExecutableName(executableName);
+						delete[] executableName;
 					}
 				}
 			}
@@ -397,6 +393,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 						char*Res = new char[strlen(child->Value()) + 1];
 						strncpy_s(Res, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
 						setExpectedResult(Res);
+						delete[] Res;
 					}
 				}
 			}
@@ -422,6 +419,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 									char* name = new char[strlen(subChild->Value()) + 1];
 									strncpy_s(name, strlen(subChild->Value()) + 1, subChild->Value(), strlen(subChild->Value()));
 									metadata->setName(name);
+									delete[] name;
 								}
 							}
 						}
@@ -436,6 +434,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 								char* Date = new char[strlen(subChild->Value()) + 1];
 								strncpy_s(Date, strlen(subChild->Value()) + 1, subChild->Value(), strlen(subChild->Value()));
 								metadata->setDate(Date);
+								delete[] Date;
 							}
 						}
 					}
@@ -449,6 +448,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 								char* Version = new char[strlen(subChild->Value()) + 1];
 								strncpy_s(Version, strlen(subChild->Value()) + 1, subChild->Value(), strlen(subChild->Value()));
 								metadata->setVersion(Version);
+								delete[] Version;
 							}
 						}
 					}
@@ -462,6 +462,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 								char* Mail = new char[strlen(subChild->Value()) + 1];
 								strncpy_s(Mail, strlen(subChild->Value()) + 1, subChild->Value(), strlen(subChild->Value()));
 								metadata->setMail(Mail);
+								delete[] Mail;
 							}
 						}
 					}
@@ -475,6 +476,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 								char* Copyright = new char[strlen(subChild->Value()) + 1];
 								strncpy_s(Copyright, strlen(subChild->Value()) + 1, subChild->Value(), strlen(subChild->Value()));
 								metadata->setCopyright(Copyright);
+								delete[] Copyright;
 							}
 						}
 					}
@@ -488,6 +490,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 								char* License = new char[strlen(subChild->Value()) + 1];
 								strncpy_s(License, strlen(subChild->Value()) + 1, subChild->Value(), strlen(subChild->Value()));
 								metadata->setLicense(License);
+								delete[] License;
 							}
 						}
 					}
@@ -501,6 +504,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 								char* Info = new char[strlen(subChild->Value()) + 1];
 								strncpy_s(Info, strlen(subChild->Value()) + 1, subChild->Value(), strlen(subChild->Value()));
 								metadata->setInfo(Info);
+								delete[] Info;
 							}
 						}
 					}

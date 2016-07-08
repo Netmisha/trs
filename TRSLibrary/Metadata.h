@@ -13,6 +13,7 @@ class Metadata
 	char* info=nullptr;
 public:
 	Metadata(char*Name);
+	Metadata(const Metadata&);
 	Metadata();
 	~Metadata();
 	bool setDate(char*date_);

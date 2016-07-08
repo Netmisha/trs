@@ -36,7 +36,7 @@ public:
 	~TRSManager();
 
 	bool Init();
-	bool Verify(char* path, char* name, char* tag);
+	int Verify(char* path, char* name, char* tag);
 	std::vector<TRSResult> Run(char* path, char* name, char* tag,ReportManager* pReport=nullptr);
 	bool Pause(char* path, char* name, char* tag);
 	bool Stop(char* path, char* name, char* tag);

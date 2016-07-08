@@ -4,6 +4,7 @@
 #include <list>
 #include <vector>
 #include "TRSLibrary\Erorrs.h"
+#include "TRSLibrary\FunctionalityForXML.h"
 
 #define AMOUNT_OF_TESTS 18U
 #define FIRST_BRANCH_AMOUNT 6U
@@ -387,7 +388,23 @@ namespace UnitTest
 
 		TEST_METHOD(Verify_Name_absent)
 		{
-			Assert::AreEqual((int)Manager.Verify(R"(../TestData/TestStrcuture/)", nullptr, nullptr), INVALID_NAME);
+			Assert::IsFalse((int)Manager.Verify(R"(../TestData/TestStrcuture)",nullptr,nullptr)==(int)INVALID_NAME);
+		}
+		TEST_METHOD(Verify_INVALID_EXECUTION_NAME_absent)
+		{
+			Assert::IsFalse((int)Manager.Verify(R"(../TestData/TestStrcuture)", nullptr, nullptr) == (int)INVALID_EXECUTION_NAME);
+		}
+		TEST_METHOD(Verify_INVALID_RESULT_absent)
+		{
+			Assert::IsFalse((int)Manager.Verify(R"(../TestData/TestStrcuture)", nullptr, nullptr) == (int)INVALID_RESULT);
+		}
+		TEST_METHOD(Verify_INVALID_EXE_FILE_absent)
+		{
+			Assert::IsFalse((int)Manager.Verify(R"(../TestData/TestStrcuture)", nullptr, nullptr) == (int)INVALID_EXE_FILE);
+		}
+		TEST_METHOD(Verify_SUCCSEED)
+		{
+			Assert::IsTrue((int)Manager.Verify(R"(../TestData/TestStrcuture)", nullptr, nullptr) == (int)SUCCSEED);
 		}
 	};
 }

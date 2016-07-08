@@ -13,6 +13,10 @@ public:
 	virtual void AfterExecution(TRSInfo* pInfo, TRSResult* pResult);
 	virtual void Begin();
 	virtual void End();
+	double getTime();
+	double getAmount();
+	double getPassedAmount();
+	double getFailedAmount();
 private:
 	double time=0;
 	double amount=0;

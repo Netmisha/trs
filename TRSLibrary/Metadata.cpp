@@ -7,6 +7,54 @@ Metadata::Metadata(char* Name)
 	strncpy_s(autorName, strlen(Name), Name, strlen(Name));
 }
 
+Metadata::Metadata(const Metadata& val)
+{
+	int len;
+	if (val.autorName)
+	{
+
+		len = strlen(val.autorName);
+		autorName = new char[len + 1];
+		strcpy_s(autorName, len + 1, val.autorName);
+	}
+	if (val.date)
+	{
+		len = strlen(val.date);
+		date = new char[len + 1];
+		strcpy_s(date, len + 1, val.date);
+	}
+	if (val.version)
+	{
+		len = strlen(val.version);
+		version = new char[len + 1];
+		strcpy_s(version, len + 1, val.version);
+	}
+	if (val.mail)
+	{
+		len = strlen(val.mail);
+		mail = new char[len + 1];
+		strcpy_s(mail, len + 1, val.mail);
+	}
+	if (val.copyright)
+	{
+		len = strlen(val.copyright);
+		copyright = new char[len + 1];
+		strcpy_s(copyright, len + 1, val.copyright);
+	}
+	if (val.license)
+	{
+		len = strlen(val.license);
+		license = new char[len + 1];
+		strcpy_s(license, len + 1, val.license);
+	}
+	if (val.info)
+	{
+		len = strlen(val.info);
+		info = new char[len + 1];
+		strcpy_s(info, len + 1, val.info);
+	}
+}
+
 Metadata::Metadata()
 {
 
@@ -200,4 +248,34 @@ bool Metadata::setLicense(char*license_)
 			return false;
 		}
 	}
+}
+
+char* Metadata::getDate()
+{
+	return date;
+}
+
+char* Metadata::getVersion()
+{
+	return version;
+}
+
+char* Metadata::getMail()
+{
+	return mail;
+}
+
+char* Metadata::getCopyright()
+{
+	return copyright;
+}
+
+char* Metadata::getLicense()
+{
+	return license;
+}
+
+char* Metadata::getInfo()
+{
+	return info;
 }
