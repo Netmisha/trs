@@ -15,6 +15,8 @@ class ReportManager_API ReportManager
 public:
 	ReportManager();
 	~ReportManager();
+	void Begin();
+	void End();
 	void addReporter(TRSReport* pReporter);
 	void beforeExecution(TRSInfo* pInfo);
 	void afterExecution(TRSInfo* pInfo,TRSResult* pResult);

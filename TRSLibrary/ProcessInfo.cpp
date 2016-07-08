@@ -4,6 +4,7 @@
 #include "TRSManager.h"
 #include "TRSTest.h"
 
+#include <windows.h> 
 ProcessData::ProcessData(wchar_t* cmd, PROCESS_INFORMATION* pi, HANDLE h) : process_information(pi), semaphore(h)
 {
 	int cmd_len = wcslen(cmd);
@@ -12,10 +13,11 @@ ProcessData::ProcessData(wchar_t* cmd, PROCESS_INFORMATION* pi, HANDLE h) : proc
 }
 ProcessData::~ProcessData()
 {
-	delete[] command_line;
+//	delete[] command_line;
 }
 
-
+#include <iostream>
+using namespace std;
 ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphore) : 
 test_(test), semaphore_(semaphore), status_(Status::Waiting), result_(false), duration_(0)
 {
@@ -87,12 +89,14 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 		return 1;
 	}
 
-	delete parameters;
+
 	if (!ReleaseSemaphore(data.semaphore, 1, NULL))
 	{
 		logger << "Incrementing semaphore count is failed";
 		return 1;
 	}
+
+	delete parameters;
 	return 0;
 }
 
@@ -126,12 +130,13 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 bool ProcessInfo::ReleaseResources()
 {
 	if (status_ != Status::Running)
-		return false;
+		return status_ == Status::Done;
+
 
 	int wait_result = WaitForSingleObject(process_information_.hProcess, NULL);
 
 	// how to write this if blocks more readable?
-	if (wait_result == WAIT_FAILED &&process_information_.hProcess != 0)
+	if (wait_result == WAIT_FAILED && process_information_.hProcess != 0)
 	{
 		logger << "Wait for process termination failed";
 		return false;
@@ -144,6 +149,7 @@ bool ProcessInfo::ReleaseResources()
 
 		CloseHandle(process_information_.hProcess);
 		CloseHandle(process_information_.hThread);
+		ZeroMemory(&process_information_, sizeof(process_information_));
 
 		if (!get_result)
 		{

@@ -6,6 +6,8 @@
     <ClCompile Include="Metadata.cpp" />
     <ClCompile Include="ReportManager.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="TRSResult.cpp" />
+    <ClCompile Include="Suite.cpp" />
     <ClCompile Include="TinyXML\tinystr.cpp" />
     <ClCompile Include="TinyXML\tinyxml.cpp" />
     <ClCompile Include="TinyXML\tinyxmlerror.cpp" />
@@ -30,6 +32,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProcessInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TRSReport.cpp" />
+    <ClCompile Include="ProcessCollection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,5 +81,8 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{c9b60643-4919-46dd-954c-3a680f87acfa}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
 </Project>

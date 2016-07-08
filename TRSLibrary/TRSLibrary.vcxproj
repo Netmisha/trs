@@ -111,6 +111,7 @@
     <ClCompile Include="ProcessInfo.cpp" />
     <ClCompile Include="ReportManager.cpp" />
     <ClCompile Include="ProcessCollection.cpp" />
+    <ClCompile Include="TRSReport.cpp" />
     <ClCompile Include="TRSResult.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

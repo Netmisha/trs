@@ -3,7 +3,7 @@
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
 	<maxTime>10h50m</maxTime>
-	<maxThreads>3</maxThreads>
+	<maxThreads>1</maxThreads>
 <priority>4</priority>
 <disable>false</disable>
 	<metadata>
@@ -26,6 +26,7 @@
 <result>1</result>
 <repeat pause="100">120</repeat>
             <maxTime>10h50m</maxTime>
+		<waitFor>Test 2</waitFor>
 	</test>
 		<test name="Test 2" description="Test description">
 <priority>4</priority>
