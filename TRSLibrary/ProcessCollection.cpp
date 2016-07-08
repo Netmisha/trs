@@ -3,50 +3,64 @@
 #include "TRSManager.h"
 
 #include <list>
+#include <iostream>
 
 using std::list;
 
 
 // futher implementation of priority will be added
-ProcessCollection::ProcessCollection(const Suite& suite)
+ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore)
 {
 	int max_threads =  atoi(suite.getMaxThreads());
 	if (max_threads < 0)
 		logger << "Negative value in max_threas field";
 
-	semaphore_ = CreateSemaphore(NULL, max_threads, max_threads , NULL);
-	if (semaphore_ == NULL)
+	semaphores_[OWNED_SEMAPHORE] = CreateSemaphore(NULL, max_threads, max_threads, NULL);
+	if (semaphores_[OWNED_SEMAPHORE] == NULL)
 	{
 		logger << "Creation of semaphore failed";
 	}
+	semaphores_[MANAGING_SEMAPHORE] = semaphore;
 
 	int path_len = strlen(suite.get_path());
 	path_ = new char[path_len + 1];
 	strcpy_s(path_, path_len + 1, suite.get_path());
 
 	for each (TRSTest* var in suite.getList())
-		tests_.push_back(ProcessInfo(*var, path_, semaphore_));
+		tests_.push_back(ProcessInfo(*var, path_, semaphores_));
 
 	undone_tests_ = tests_.size();
 }
 
+
+ProcessCollection::ProcessCollection(const ProcessCollection& var) : undone_tests_(var.undone_tests_), tests_(var.tests_)
+{
+	// TODO: made all operation with array in loops && made all unclear indexes initialized by macros
+	semaphores_[OWNED_SEMAPHORE] = var.semaphores_[OWNED_SEMAPHORE];
+	semaphores_[MANAGING_SEMAPHORE] = var.semaphores_[MANAGING_SEMAPHORE];
+
+
+	int path_len = strlen(var.path_);
+	path_ = new char[path_len + 1];
+	strcpy_s(path_, path_len + 1, var.path_);
+}
+
 ProcessCollection::~ProcessCollection()
 {
-	if (!CloseHandle(semaphore_))
-		logger << "Closing semaphore's handle failed";
-
 	delete[] path_;
 }
 
-list<TRSResult> ProcessCollection::RunAll()
+bool ProcessCollection::TryRun()
 {
-	while (undone_tests_)
-	{
-		int wait_result = WaitForSingleObject(semaphore_, INFINITE);
+	if (!undone_tests_)
+		return false;
+	
+	int wait_result = WaitForSingleObject(semaphores_[OWNED_SEMAPHORE], NULL);
 	
 		if (wait_result == WAIT_OBJECT_0)
 		{
-			for (auto var = tests_.begin(); var != tests_.end(); ++var)
+			std::list<ProcessInfo>::iterator var = tests_.begin();
+			for (; var != tests_.end(); ++var)
 			{
 				if (var->get_status() == Status::Running && var->ReleaseResources())
 				{
@@ -80,23 +94,24 @@ list<TRSResult> ProcessCollection::RunAll()
 					else if (result < 0)
 					{
 						logger << "Waitfor name is not exist in current namespace";
-						return list<TRSResult>();
+						return false;
 					}
 
 					// So, this test is wating fo another test which is still runnig.
 					// so it was not a test, which signaled to main thread. Continue searching
 				}
 			}
+			return var != tests_.end();
+		}
+		else if (wait_result == WAIT_TIMEOUT)
+		{
+			return false;
 		}
 		else 
 		{
-			logger << "Wait for semaphore failed";
-			return list<TRSResult>();
+			logger << "Wait for semaphore failed _2";
+			return false;
 		}
-
-	}
-
-	return list<TRSResult>(tests_.begin(), tests_.end());
 }
 
 // returns:

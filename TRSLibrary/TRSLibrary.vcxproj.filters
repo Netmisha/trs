@@ -38,6 +38,9 @@
     <ClCompile Include="ProcessCollection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SuiteCollection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Erorrs.h" />
@@ -68,6 +71,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TRSTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SuiteCollection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

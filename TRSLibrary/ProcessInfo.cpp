@@ -7,8 +7,11 @@
 #include <chrono>
 using namespace std::chrono;
 
-ProcessData::ProcessData(wchar_t* cmd, PROCESS_INFORMATION* pi, HANDLE h) : process_information(pi), semaphore(h)
+ProcessData::ProcessData(wchar_t* cmd, PROCESS_INFORMATION* pi, HANDLE h[2]) : process_information(pi)
 {
+	semaphores[OWNED_SEMAPHORE] = h[OWNED_SEMAPHORE];
+	semaphores[MANAGING_SEMAPHORE] = h[MANAGING_SEMAPHORE];
+
 	int cmd_len = wcslen(cmd);
 	command_line = new wchar_t[cmd_len + 1];
 	wcscpy_s(command_line, cmd_len + 1, cmd);
@@ -19,9 +22,12 @@ ProcessData::~ProcessData()
 }
 
 
-ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphore) : 
-test_(test), semaphore_(semaphore), status_(Status::Waiting), result_(false), duration_(0)
+ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphores[2]) : 
+test_(test), status_(Status::Waiting), result_(false), duration_(0)
 {
+	semaphores_[OWNED_SEMAPHORE] = semaphores[OWNED_SEMAPHORE];
+	semaphores_[MANAGING_SEMAPHORE] = semaphores[MANAGING_SEMAPHORE];
+
 	work_thread_ = NULL;
 
 	int path_len = strlen(path);
@@ -44,9 +50,13 @@ test_(test), semaphore_(semaphore), status_(Status::Waiting), result_(false), du
 }
 
 ProcessInfo::ProcessInfo(const ProcessInfo& instance):
-test_(instance.test_), semaphore_(instance.semaphore_), status_(instance.status_), work_thread_(instance.work_thread_),
+test_(instance.test_), status_(instance.status_), work_thread_(instance.work_thread_),
 	result_(instance.result_), process_information_(instance.process_information_), duration_(instance.duration_)
 {
+	semaphores_[OWNED_SEMAPHORE] = instance.semaphores_[OWNED_SEMAPHORE];
+	semaphores_[MANAGING_SEMAPHORE] = instance.semaphores_[MANAGING_SEMAPHORE];
+
+
 	int path_len = strlen(instance.path_);
 	path_ = new char[path_len + 1];
 	strcpy_s(path_, path_len + 1, instance.path_);
@@ -94,14 +104,21 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 	}
 
 
-	if (!ReleaseSemaphore(data.semaphore, 1, NULL))
+	if (!ReleaseSemaphore(data.semaphores[OWNED_SEMAPHORE], 1, NULL))
 	{
-		logger << "Incrementing semaphore count is failed";
+		logger << "Incrementing OWNED_SEMAPHORE semaphore count is failed";
+		return -1;
+	}
+	if (!ReleaseSemaphore(data.semaphores[MANAGING_SEMAPHORE], 1, NULL))
+	{
+		logger << "Incrementing MANAGING_SEMAPHORE semaphore count is failed";
 		return -1;
 	}
 
 	delete parameters;
 
+
+	// TODO: make there a reporter support
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 	
 	return duration_cast<milliseconds>(t2 - t1).count();
@@ -116,7 +133,7 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 		return test_.getWaitFor();
 	}
 
-	ProcessData* parameters = new ProcessData( command_line_, &process_information_, semaphore_ );
+	ProcessData* parameters = new ProcessData( command_line_, &process_information_, semaphores_ );
 
 	work_thread_ = CreateThread(NULL, NULL, &ProcessInfo::StartThread, parameters, NULL, NULL);
 	if (work_thread_ == NULL)
@@ -129,6 +146,11 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 	return nullptr;
 }
 
+
+
+
+
+// WILL BE CHANGED AFTER REPORTER'S INTEGRATION
 bool ProcessInfo::ReleaseResources()
 {
 	if (status_ != Status::Running)
@@ -175,12 +197,7 @@ bool ProcessInfo::ReleaseResources()
 	}
 }
 
-
-ProcessInfo::operator TRSResult() const
-{
-	return TRSResult(path_, test_.getName(), result_, duration_);
-}
-
+// WILL BE ERASED AFTER REPORTER'S INTEGRATION
 bool ProcessInfo::RecordDuration()
 {
 	int wait_thread = WaitForSingleObject(work_thread_, INFINITE);
@@ -217,4 +234,9 @@ bool ProcessInfo::RecordDuration()
 		// thread is still running
 		return false;
 	}
+}
+
+ProcessInfo::operator TRSResult() const
+{
+	return TRSResult(path_, test_.getName(), result_, duration_);
 }
