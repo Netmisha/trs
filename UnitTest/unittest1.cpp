@@ -28,6 +28,7 @@ namespace UnitTest
 	TEST_CLASS(UnitTest1)
 	{
 	public:
+
 		TEST_CLASS_INITIALIZE(ClassInitialization)
 		{
 			Manager.Init();
@@ -287,108 +288,108 @@ namespace UnitTest
 		//=============================================================================================================
 		//=============================================================================================================
 
-		TEST_METHOD(RunTest_Result)
-		{
-			std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture)", nullptr, nullptr);
+		//TEST_METHOD(RunTest_Result)
+		//{
+		//	std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture)", nullptr, nullptr);
 
 
-			unsigned succeed_counter = 0;
-			for each (auto val in run_result)
-			{
-				if (val.get_result() == true)
-					++succeed_counter;
-			}
-			Assert::AreEqual(succeed_counter, SUCCEED_TESTS);
-		}
-		// **************************************************************************************************************
-		TEST_METHOD(RunTest_NameAmount_TestStrcuture)
-		{
-			std::vector<TRSResult> run_result;
-			for (int i = 1; i <= 5; ++i)
-			{
-				char name[MAX_TEST_NAME_LENGHT];
-				sprintf(name, "Test %d", i);
+		//	unsigned succeed_counter = 0;
+		//	for each (auto val in run_result)
+		//	{
+		//		if (val.get_result() == true)
+		//			++succeed_counter;
+		//	}
+		//	Assert::AreEqual(succeed_counter, SUCCEED_TESTS);
+		//}
+		//// **************************************************************************************************************
+		//TEST_METHOD(RunTest_NameAmount_TestStrcuture)
+		//{
+		//	std::vector<TRSResult> run_result;
+		//	for (int i = 1; i <= 5; ++i)
+		//	{
+		//		char name[MAX_TEST_NAME_LENGHT];
+		//		sprintf(name, "Test %d", i);
 
-				run_result = Manager.Run(R"(../TestData/TestStrcuture)", name, nullptr);
+		//		run_result = Manager.Run(R"(../TestData/TestStrcuture)", name, nullptr);
 
-				Assert::AreEqual(run_result.size(), 3U);
-			}
-
-
-			run_result = Manager.Run(R"(../TestData/TestStrcuture)", "Test 6", nullptr);
-
-			Assert::AreEqual(run_result.size(), 2U);
-
-			run_result = Manager.Run(R"(../TestData/TestStrcuture)", "Test 7", nullptr);
-
-			Assert::AreEqual(run_result.size(), 1U);
-		}
-
-		// **************************************************************************************************************
-		//_________________________________________________________________________________________________________________
-		TEST_METHOD(RunTest_ReleaseTagAmount_TestStrcuture)
-		{
-			std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture)", nullptr, "Release");
-
-			Assert::AreEqual(run_result.size(), TOTAL_AMOUNT_OF_RELEASE_TAGS);
-		}
-
-		TEST_METHOD(RunTest_DebugTagAmount_TestStrcuture)
-		{
-			std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture)", nullptr, "Debug");
-
-			Assert::AreEqual(run_result.size(), TOTAL_AMOUNT_OF_DEBUG_TAGS);
-		}
-
-		TEST_METHOD(RunTest_SingleTagAmount_TestStrcuture)
-		{
-			std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture)", nullptr, "Single");
-
-			Assert::AreEqual(run_result.size(), 1U);
-		}
-
-		//_________________________________________________________________________________________________________________
+		//		Assert::AreEqual(run_result.size(), 3U);
+		//	}
 
 
-		TEST_METHOD(RunTest_TotalAmount_TestStructure)
-		{
-			std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture)", nullptr, nullptr);
+		//	run_result = Manager.Run(R"(../TestData/TestStrcuture)", "Test 6", nullptr);
 
-			Assert::AreEqual(run_result.size(), AMOUNT_OF_TESTS);
-		}
+		//	Assert::AreEqual(run_result.size(), 2U);
 
-		TEST_METHOD(RunTest_TotalAmount_Suite1)
-		{
-			std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture/Suite1)", nullptr, nullptr);
+		//	run_result = Manager.Run(R"(../TestData/TestStrcuture)", "Test 7", nullptr);
 
-			Assert::AreEqual(run_result.size(), FIRST_BRANCH_AMOUNT);
-		}
-		TEST_METHOD(RunTest_TotalAmount_Suite11)
-		{
-			std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture/Suite1/Suite1)", nullptr, nullptr);
+		//	Assert::AreEqual(run_result.size(), 1U);
+		//}
 
-			Assert::AreEqual(run_result.size(), 5U);
-		}
-		TEST_METHOD(RunTest_TotalAmount_Suite111)
-		{
-			std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture/Suite1/Suite1/Suite1)", nullptr, nullptr);
+		//// **************************************************************************************************************
+		////_________________________________________________________________________________________________________________
+		//TEST_METHOD(RunTest_ReleaseTagAmount_TestStrcuture)
+		//{
+		//	std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture)", nullptr, "Release");
 
-			Assert::AreEqual(run_result.size(), 2U);
-		}
+		//	Assert::AreEqual(run_result.size(), TOTAL_AMOUNT_OF_RELEASE_TAGS);
+		//}
 
-		TEST_METHOD(RunTest_TotalAmount_Suite2)
-		{
-			std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture/Suite2)", nullptr, nullptr);
+		//TEST_METHOD(RunTest_DebugTagAmount_TestStrcuture)
+		//{
+		//	std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture)", nullptr, "Debug");
 
-			Assert::AreEqual(run_result.size(), SECOND_BRANCH_AMOUNT);
-		}
+		//	Assert::AreEqual(run_result.size(), TOTAL_AMOUNT_OF_DEBUG_TAGS);
+		//}
 
-		TEST_METHOD(RunTest_TotalAmount_Suite3)
-		{
-			std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture/Suite3)", nullptr, nullptr);
+		//TEST_METHOD(RunTest_SingleTagAmount_TestStrcuture)
+		//{
+		//	std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture)", nullptr, "Single");
 
-			Assert::AreEqual(run_result.size(), THIRD_BRANCH_AMOUNT);
-		}
+		//	Assert::AreEqual(run_result.size(), 1U);
+		//}
+
+		////_________________________________________________________________________________________________________________
+
+
+		//TEST_METHOD(RunTest_TotalAmount_TestStructure)
+		//{
+		//	std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture)", nullptr, nullptr);
+
+		//	Assert::AreEqual(run_result.size(), AMOUNT_OF_TESTS);
+		//}
+
+		//TEST_METHOD(RunTest_TotalAmount_Suite1)
+		//{
+		//	std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture/Suite1)", nullptr, nullptr);
+
+		//	Assert::AreEqual(run_result.size(), FIRST_BRANCH_AMOUNT);
+		//}
+		//TEST_METHOD(RunTest_TotalAmount_Suite11)
+		//{
+		//	std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture/Suite1/Suite1)", nullptr, nullptr);
+
+		//	Assert::AreEqual(run_result.size(), 5U);
+		//}
+		//TEST_METHOD(RunTest_TotalAmount_Suite111)
+		//{
+		//	std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture/Suite1/Suite1/Suite1)", nullptr, nullptr);
+
+		//	Assert::AreEqual(run_result.size(), 2U);
+		//}
+
+		//TEST_METHOD(RunTest_TotalAmount_Suite2)
+		//{
+		//	std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture/Suite2)", nullptr, nullptr);
+
+		//	Assert::AreEqual(run_result.size(), SECOND_BRANCH_AMOUNT);
+		//}
+
+		//TEST_METHOD(RunTest_TotalAmount_Suite3)
+		//{
+		//	std::vector<TRSResult> run_result = Manager.Run(R"(../TestData/TestStrcuture/Suite3)", nullptr, nullptr);
+
+		//	Assert::AreEqual(run_result.size(), THIRD_BRANCH_AMOUNT);
+		//}
 
 		TEST_METHOD(Verify_Name_absent)
 		{
@@ -425,5 +426,8 @@ namespace UnitTest
 			bool const no_leaks = 0 == _CrtMemDifference(&s3, &s1, &s2);
 			Assert::IsTrue(no_leaks);
 		}
+
+		
+
 	};
 }

@@ -13,10 +13,25 @@
 class ProcessCollection
 {
 public:
-	ProcessCollection(const Suite&);
+	ProcessCollection(const Suite&, HANDLE semaphore);
+	ProcessCollection(const ProcessCollection&);
 	~ProcessCollection();
 
-	std::list<TRSResult> RunAll();
+	// I wiil reconsider this functions in ord
+	inline bool is_undone()
+	{
+		return undone_tests_;
+	}
+	inline std::list<ProcessInfo> get_tests()
+	{
+		return tests_;
+	}
+	inline HANDLE get_semaphore()
+	{
+		return semaphores_[OWNED_SEMAPHORE];
+	}
+
+	bool TryRun();
 private:
 	// if name == nullptr - return 0
 	int IsDone(char* name);
@@ -24,7 +39,7 @@ private:
 private:
 	int undone_tests_;
 	char* path_;
-	HANDLE semaphore_;
+	HANDLE semaphores_[SEMAPHORES_AMOUNT];
 	std::list<ProcessInfo> tests_;
 };
 #endif

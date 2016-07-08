@@ -1,6 +1,11 @@
 #ifndef ProcessInfo_HEADER
 #define ProcessInfo_HEADER
 
+#define SEMAPHORES_AMOUNT 2
+#define OWNED_SEMAPHORE 0
+#define MANAGING_SEMAPHORE 1
+
+
 #include "stdafx.h"
 #include "TRSTest.h"
 #include "TRSResult.h"
@@ -11,18 +16,18 @@ enum class Status{ Waiting, Done, Running };
 
 struct ProcessData
 {
-	ProcessData(wchar_t*, PROCESS_INFORMATION*, HANDLE);
+	ProcessData(wchar_t*, PROCESS_INFORMATION*, HANDLE[SEMAPHORES_AMOUNT]);
 	~ProcessData();
 
 	wchar_t* command_line;
 	PROCESS_INFORMATION* process_information;
-	HANDLE semaphore;
+	HANDLE semaphores[SEMAPHORES_AMOUNT];
 };
 
 class ProcessInfo
 {
 public:
-	ProcessInfo(const TRSTest&, char*, HANDLE);
+	ProcessInfo(const TRSTest&, char*, HANDLE[SEMAPHORES_AMOUNT]);
 	ProcessInfo(const ProcessInfo&);
 	~ProcessInfo();
 
@@ -46,7 +51,7 @@ private:
 	bool result_;
 	TRSTest test_;
 	Status status_;
-	HANDLE semaphore_;
+	HANDLE semaphores_[SEMAPHORES_AMOUNT];
 	HANDLE work_thread_;
 	char* path_;
 	wchar_t* command_line_;

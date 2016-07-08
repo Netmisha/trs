@@ -4,6 +4,7 @@
 #include "FunctionalityForXML.h"
 #include "spdlog\spdlog.h"
 #include "ProcessCollection.h"
+#include "SuiteCollection.h"
 
 #include <iostream>
 #include <memory>
@@ -19,26 +20,18 @@ TRSManager Manager;
 Logger logger;
 
 
-std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag, ReportManager* pResult)
+bool TRSManager::Run(char* path, char* name, char* tag, ReportManager* pResult)
 {
 	std::list<Suite*> arr = *List(path, name, tag);
+	std::list<Suite> coll;
 
-	char* test_name, *test_path;
-	bool result;
-	std::vector<TRSResult> result_vector;
+	for (auto var = arr.begin(); var != arr.end(); ++var)
+		coll.push_back(**var);
+	
+	// TODO: add parameter to Console command line
+	SuiteCollection suits(coll, 10);
 
-	for each(Suite* var in arr)
-	{
-		ProcessCollection suite_collection(*var);
-		std::list<TRSResult> ret_list = suite_collection.RunAll();
-		for each (auto elem in ret_list)
-		{
-			result_vector.push_back(elem);
-		}
-	}
-
-
-	return result_vector;
+	return suits.Run();
 }
 
 
