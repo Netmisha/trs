@@ -24,11 +24,12 @@ class TRSInfo_API TRSInfo
 	char* expectedResult=nullptr;
 	char* executableName=nullptr;
 	char* waitfor = nullptr;
+	char* priority = nullptr;
 	Metadata* metadata;
-
+	
 public:
 	TRSInfo(char*Name, char*Description);
-	TRSInfo(const TRSInfo&);
+	TRSInfo(const TRSInfo& val);
 	TRSInfo();
 	virtual ~TRSInfo();
 
@@ -42,7 +43,7 @@ public:
 	bool setMetadata(Metadata* metadata_);
 	bool setExpectedResult(char* res_);
 	bool setWaitFor(char* wait_);
-
+	bool setPriority(char* prior_);
 
 	inline char* get_executableName() const
 	{
@@ -59,6 +60,7 @@ public:
 	char* getRepeat() const;
 	char* getMaxTime() const;
 	char* getMaxThreads() const;
+	char* getPriority() const;
 	Metadata* getMetadata() const;
 
 	bool Parse(TiXmlNode* pParent);

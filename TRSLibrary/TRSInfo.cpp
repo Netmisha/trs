@@ -94,6 +94,7 @@ TRSInfo::~TRSInfo()
 	delete[] waitfor;
 	delete[] expectedResult;
 	delete[] executableName;
+	delete[] priority;
 }
 
 char* TRSInfo::getName() const
@@ -311,6 +312,21 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			}
 			break;
 		}
+		if ((strncmp(pParent->Value(), "priority", strlen("priority")) == 0))
+		{
+			TiXmlNode* child = pParent->FirstChild();
+			if (child && child->Type() == TiXmlNode::TINYXML_TEXT)
+			{
+				if (strlen(child->Value()) > 0)
+				{
+					char *wait = new char[strlen(child->Value()) + 1];
+					strncpy_s(wait, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+					setPriority(wait);
+					delete[] wait;
+				}
+			}
+			break;
+		}
 		if ((strncmp(pParent->Value(), "repeat", strlen("repeat")) == 0))
 		{
 			TiXmlNode* child = pParent->FirstChild();
@@ -354,7 +370,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			{
 				if (child)
 				{
-					if (strlen(child->Value()) > 0)
+					if ((strlen(child->Value()) > 0)&&atoi(child->Value())>0)
 					{
 						char*MaxThreads = new char[strlen(child->Value()) + 1];
 						strncpy_s(MaxThreads, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
@@ -633,4 +649,32 @@ bool TRSInfo::setExpectedResult(char* res)
 			return false;
 		}
 	}
+}
+
+bool TRSInfo::setPriority(char* prior)
+{
+	if (priority)
+	{
+		delete[] priority;
+		priority = new char[strlen(prior) + 1];
+		strncpy_s(priority, strlen(prior) + 1, prior, strlen(prior));
+		return true;
+	}
+	else
+	{
+		if (priority = new char[strlen(prior) + 1])
+		{
+			strncpy_s(priority, strlen(prior) + 1, prior, strlen(prior));
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+char* TRSInfo::getPriority() const
+{
+	return priority;
 }
