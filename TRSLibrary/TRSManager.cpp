@@ -275,7 +275,7 @@ bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suit
 		if (hFind == INVALID_HANDLE_VALUE)
 		{
 			std::cout << "FindFirstFile failed\n";
-
+			return 0;
 		}
 		else
 		{
@@ -291,7 +291,7 @@ bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suit
 						StringCchCat(subDir, MAX_PATH, TEXT("\\"));//additional slash))
 						StringCchCat(subDir, MAX_PATH, ffd.cFileName);//name of last folder to search in
 						char* way = convertToChar(subDir);
-						FillList(way, name, tag,suiteCollection);//workin' only for path,not for names or tags yet
+						FillList(way, name, tag,suiteCollection);
 						delete[] way;
 					}
 				}
@@ -349,40 +349,9 @@ bool TRSManager::Info(char* path, char* name, char* tag)
 	return false;
 }
 
-bool TRSManager::SetReport(char* path,char* name,char* tag)
+bool TRSManager::SetReport(char* path,char* name,char* tag,ReportManager* pReport)
 {
-	std::ofstream output("Report.hmtl");
-
-	output << R"(<!DOCTYPE html>
-<html>
-<head>
-<style>
-table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
-}
-th, td {
-    padding: 5px;
-}
-th {
-    text-align: left;
-}
-</style>
-</head>
-<body>)";
-	std::vector<TRSResult> res_vector = Run(path, name, tag);
-	output << R"(<table style="width:100%">
-  <tr>
-    <th>Test name</th>
-    <th>Result</th>
-    <th>Path</th>
-  </tr>)";
-	for each(auto x in res_vector)
-	{
-		output << "<tr>\n\t<th>" << x.get_name() << "</th>\n\t" <<
-			"<th>" << x.get_result() << "</th>";
-
-	}
-	return false;
+	Manager.Run(path, name, tag, pReport);
+	return true;
 }
 

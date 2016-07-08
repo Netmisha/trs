@@ -19,6 +19,7 @@ ConsoleReport::~ConsoleReport()
 	std::cout << "Passed:\t" << (int)passedAmount << "(" << int((passedAmount / amount) * 100) << "%)\n";
 	std::cout << "Failed:\t" << (int)failedAmount << "(" << int((failedAmount / amount) * 100) << "%)\n";
 	std::cout << "Total time:\t" << (int)time << "ms\n";
+
 }
 
 double ConsoleReport::getTime()

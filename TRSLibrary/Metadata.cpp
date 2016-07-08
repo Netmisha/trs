@@ -63,30 +63,12 @@ Metadata::Metadata()
 Metadata::~Metadata()
 {
 	delete[] autorName;
-	if (date)
-	{
-		delete[] date;
-	}
-	if (version)
-	{
-		delete[] version;
-	}
-	if (mail)
-	{
-		delete[] mail;
-	}
-	if (copyright)
-	{
-		delete[] copyright;
-	}
-	if (license)
-	{
-		delete[] license;
-	}
-	if (info)
-	{
-		delete[] info;
-	}
+	delete[] date;
+	delete[] version;
+	delete[] mail;
+	delete[] copyright;
+	delete[] license;
+	delete[] info;
 }
 
 bool Metadata::setDate(char*date_)
