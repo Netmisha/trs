@@ -9,25 +9,18 @@
 #include "stdafx.h"
 #include "TRSTest.h"
 #include "TRSResult.h"
+#include "ReportManager.h"
 
 #include <chrono>
 
 enum class Status{ Waiting, Done, Running };
 
-struct ProcessData
-{
-	ProcessData(wchar_t*, PROCESS_INFORMATION*, HANDLE[SEMAPHORES_AMOUNT]);
-	~ProcessData();
-
-	wchar_t* command_line;
-	PROCESS_INFORMATION* process_information;
-	HANDLE semaphores[SEMAPHORES_AMOUNT];
-};
+class ProcessInfo;
 
 class ProcessInfo
 {
 public:
-	ProcessInfo(const TRSTest&, char*, HANDLE[SEMAPHORES_AMOUNT]);
+	ProcessInfo(const TRSTest&, char*, HANDLE[SEMAPHORES_AMOUNT], ReportManager* pReporter = nullptr);
 	ProcessInfo(const ProcessInfo&);
 	~ProcessInfo();
 
@@ -41,9 +34,12 @@ public:
 	}
 
 	char* ProcessTest(bool ignore_wait = false);
+	bool IsDone();
 	bool ReleaseResources();
 
 	operator TRSResult() const;
+
+//	friend struct ProcessData;
 private:
 	bool RecordDuration();
 	static DWORD WINAPI StartThread(LPVOID);
@@ -55,7 +51,19 @@ private:
 	HANDLE work_thread_;
 	char* path_;
 	wchar_t* command_line_;
+	ReportManager* pReporter_;
 	PROCESS_INFORMATION process_information_;
 	std::chrono::duration<long long, std::milli> duration_;
 };
+
+struct ProcessData
+{
+	ProcessData(ProcessInfo, PROCESS_INFORMATION*, HANDLE s[SEMAPHORES_AMOUNT]);
+	~ProcessData(){}
+
+	PROCESS_INFORMATION* process_information;
+	HANDLE semaphores[SEMAPHORES_AMOUNT];
+	ProcessInfo running_process;
+};
+
 #endif

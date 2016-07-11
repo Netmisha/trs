@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SuiteCollection.h"
 
-SuiteCollection::SuiteCollection(const std::list<Suite>& list, unsigned thread_amount)
+SuiteCollection::SuiteCollection(const std::list<Suite>& list, unsigned thread_amount, ReportManager* pReport)
 {
 	global_semaphore_ = CreateSemaphore(NULL, thread_amount, thread_amount, NULL);
 	if (global_semaphore_ == NULL)
@@ -11,19 +11,12 @@ SuiteCollection::SuiteCollection(const std::list<Suite>& list, unsigned thread_a
 
 	for (auto var = list.begin(); var != list.end(); ++var)
 	{
-		suits_.push_back(ProcessCollection(*var, global_semaphore_));
+		suits_.push_back(ProcessCollection(*var, global_semaphore_, pReport));
 	}
 }
 
 SuiteCollection::~SuiteCollection()
 {
-	// output will be erased when reported will be integrated
-	for each(auto var in suits_)
-	{
-		for each(auto var_1 in var.get_tests())
-			std::cout << (TRSResult)var_1 << std::endl;
-	}
-
 	for (auto var = suits_.begin(); var != suits_.end(); ++var)
 	{
 		if (!CloseHandle(var->get_semaphore()))

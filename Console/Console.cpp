@@ -41,14 +41,18 @@ int ProcessFunction(char* name, char* tag, char* path)
 	else if (!_stricmp(__argv[1], "Run"))
 	{
 
-		//ReportManager reportManager;
-		//ConsoleReport cReport;
-		//reportManager.addReporter(&cReport);
-		//std::vector<TRSResult> arr = Manager.Run(path, name, tag,&reportManager);
-		//long long total_time = 0;
+		ReportManager reportManager;
+		ConsoleReport cReport;
+		HTMLReport htmlReport;
 
-		return Manager.Run(path, name, tag);
+		reportManager.addReporter(&cReport);
+		reportManager.addReporter(&htmlReport);
+		reportManager.Begin();
 
+		bool result = Manager.Run(path, name, tag, &reportManager);
+
+		reportManager.End();
+		return result;
 	/*	ReportManager reportManager;
 		ConsoleReport cReport;
 		HTMLReport htmlReport;
@@ -56,11 +60,11 @@ int ProcessFunction(char* name, char* tag, char* path)
 		reportManager.addReporter(&cReport);
 		reportManager.addReporter(&htmlReport);
 		reportManager.Begin();
-		std::vector<TRSResult> arr = Manager.Run(path, name, tag,&reportManager);*/
+		std::vector<TRSResult> arr = Manager.Run(path, name, tag,&reportManager);
 
 
 
-		/*long long total_time = 0;
+		long long total_time = 0;
 		for each(auto var in arr)
 		{
 			cout << var.get_name() << " ";

@@ -9,7 +9,7 @@ using std::list;
 
 
 // futher implementation of priority will be added
-ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore)
+ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, ReportManager* pReport)
 {
 	int max_threads =  atoi(suite.getMaxThreads());
 	if (max_threads < 0)
@@ -27,7 +27,7 @@ ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore)
 	strcpy_s(path_, path_len + 1, suite.get_path());
 
 	for each (TRSTest* var in suite.getList())
-		tests_.push_back(ProcessInfo(*var, path_, semaphores_));
+		tests_.push_back(ProcessInfo(*var, path_, semaphores_, pReport));
 
 	undone_tests_ = tests_.size();
 }
@@ -47,6 +47,8 @@ ProcessCollection::ProcessCollection(const ProcessCollection& var) : undone_test
 
 ProcessCollection::~ProcessCollection()
 {
+	for (auto iter = tests_.begin(); iter != tests_.end(); ++iter)
+		iter->ReleaseResources();
 	delete[] path_;
 }
 
@@ -62,7 +64,7 @@ bool ProcessCollection::TryRun()
 			std::list<ProcessInfo>::iterator var = tests_.begin();
 			for (; var != tests_.end(); ++var)
 			{
-				if (var->get_status() == Status::Running && var->ReleaseResources())
+				if (var->get_status() == Status::Running && var->IsDone())
 				{
 					// this test is already "Done", so decrement the counter
 					--undone_tests_;
@@ -135,7 +137,7 @@ int ProcessCollection::IsDone(char* name)
 
 			case Status::Running:
 				// if it is finished
-				if (var->ReleaseResources())
+				if (var->IsDone())
 					return 2;
 				else
 					return 0;

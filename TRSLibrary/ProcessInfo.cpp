@@ -7,23 +7,19 @@
 #include <chrono>
 using namespace std::chrono;
 
-ProcessData::ProcessData(wchar_t* cmd, PROCESS_INFORMATION* pi, HANDLE h[2]) : process_information(pi)
-{
-	semaphores[OWNED_SEMAPHORE] = h[OWNED_SEMAPHORE];
-	semaphores[MANAGING_SEMAPHORE] = h[MANAGING_SEMAPHORE];
+// =========================================================================================================================================================
 
-	int cmd_len = wcslen(cmd);
-	command_line = new wchar_t[cmd_len + 1];
-	wcscpy_s(command_line, cmd_len + 1, cmd);
-}
-ProcessData::~ProcessData()
+ProcessData::ProcessData( ProcessInfo info, PROCESS_INFORMATION* pi, HANDLE handles[SEMAPHORES_AMOUNT]) : process_information(pi), running_process(info)
 {
-	delete[] command_line;
+	semaphores[OWNED_SEMAPHORE] = handles[OWNED_SEMAPHORE];
+	semaphores[MANAGING_SEMAPHORE] = handles[MANAGING_SEMAPHORE];
 }
 
 
-ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphores[2]) : 
-test_(test), status_(Status::Waiting), result_(false), duration_(0)
+// =========================================================================================================================================================
+
+ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphores[SEMAPHORES_AMOUNT], ReportManager* pReporter) : 
+test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(pReporter)
 {
 	semaphores_[OWNED_SEMAPHORE] = semaphores[OWNED_SEMAPHORE];
 	semaphores_[MANAGING_SEMAPHORE] = semaphores[MANAGING_SEMAPHORE];
@@ -38,7 +34,6 @@ test_(test), status_(Status::Waiting), result_(false), duration_(0)
 	int exe_path_size = strlen(path) + strlen(test_.get_executableName());
 	command_line_ = new wchar_t[exe_path_size + 1];
 
-	
 	char executable_directory_A[MAX_PATH + 1];
 	executable_directory_A[0] = 0;
 	strcat_s(executable_directory_A, MAX_PATH + 1, path);
@@ -50,7 +45,7 @@ test_(test), status_(Status::Waiting), result_(false), duration_(0)
 }
 
 ProcessInfo::ProcessInfo(const ProcessInfo& instance):
-test_(instance.test_), status_(instance.status_), work_thread_(instance.work_thread_),
+test_(instance.test_), status_(instance.status_), work_thread_(instance.work_thread_), pReporter_(instance.pReporter_),
 	result_(instance.result_), process_information_(instance.process_information_), duration_(instance.duration_)
 {
 	semaphores_[OWNED_SEMAPHORE] = instance.semaphores_[OWNED_SEMAPHORE];
@@ -72,19 +67,43 @@ ProcessInfo::~ProcessInfo()
 	delete[] command_line_;
 }
 
+// =========================================================================================================================================================
+
+char* ProcessInfo::ProcessTest(bool ignore_wait)
+{
+	// assuming that test is waiting
+	if (!ignore_wait && test_.getWaitFor() != nullptr)
+	{
+		return test_.getWaitFor();
+	}
+
+	ProcessData* parameters = new ProcessData(*this, &process_information_, semaphores_);
+
+	HANDLE work_thread = CreateThread(NULL, NULL, &ProcessInfo::StartThread, parameters, NULL, NULL);
+	if (work_thread == NULL)
+	{
+		logger << "Creating thread in ProcessTest failded";
+		return nullptr;
+	}
+	CloseHandle(work_thread);
+	status_ = Status::Running;
+	return nullptr;
+}
+
 
 DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 {
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
 	ProcessData data = *((ProcessData*)parameters);
+	data.running_process.pReporter_->beforeExecution(data.running_process.test_);
 
 	STARTUPINFO startup_info;
 	ZeroMemory(&startup_info, sizeof(startup_info));
 
 	startup_info.cb = sizeof(startup_info);
 
-	bool create_result = CreateProcess(NULL, data.command_line, NULL, NULL, FALSE, CREATE_NO_WINDOW,
+	bool create_result = CreateProcess(NULL, data.running_process.command_line_, NULL, NULL, FALSE, CREATE_NO_WINDOW,
 		NULL, NULL, &startup_info, data.process_information);
 
 	if (!create_result)
@@ -115,43 +134,38 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 		return -1;
 	}
 
-	delete parameters;
-
-
-	// TODO: make there a reporter support
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
-	
-	return duration_cast<milliseconds>(t2 - t1).count();
+	data.running_process.duration_ = duration_cast<milliseconds>(t2 - t1);
+
+	DWORD returned_value;
+	bool get_result = GetExitCodeProcess(data.process_information->hProcess, &returned_value);
+	if (!get_result)
+	{
+		logger << "Process executed but an error occured while getting its exit code";
+		return 1;
+	}
+	else
+	{
+		int expected_value = atoi(data.running_process.test_.get_expectedResult());
+		data.running_process.result_ = (expected_value == returned_value);
+	}
+
+	data.running_process.pReporter_->afterExecution(data.running_process.test_, data.running_process);
+
+	delete parameters;	
+	return 0;
 }
 
 
-char* ProcessInfo::ProcessTest(bool ignore_wait)
+bool ProcessInfo::ReleaseResources()
 {
-	// assuming that test is waiting
-	if (!ignore_wait && test_.getWaitFor() != nullptr)
-	{
-		return test_.getWaitFor();
-	}
-
-	ProcessData* parameters = new ProcessData( command_line_, &process_information_, semaphores_ );
-
-	work_thread_ = CreateThread(NULL, NULL, &ProcessInfo::StartThread, parameters, NULL, NULL);
-	if (work_thread_ == NULL)
-	{
-		logger << "Creating thread in ProcessTest failded";
-		return nullptr;
-	}
-
-	status_ = Status::Running;
-	return nullptr;
+	CloseHandle(process_information_.hThread);
+	CloseHandle(process_information_.hProcess);
+	return true;
 }
-
-
-
-
 
 // WILL BE CHANGED AFTER REPORTER'S INTEGRATION
-bool ProcessInfo::ReleaseResources()
+bool ProcessInfo::IsDone()
 {
 	if (status_ != Status::Running)
 		return status_ == Status::Done;
@@ -166,29 +180,12 @@ bool ProcessInfo::ReleaseResources()
 	}
 	if (wait_process == WAIT_OBJECT_0)
 	{
-		DWORD returned_value;
-
-		bool get_result = GetExitCodeProcess(process_information_.hProcess, &returned_value);
-
-		CloseHandle(process_information_.hProcess);
+	/*	CloseHandle(process_information_.hProcess);
 		CloseHandle(process_information_.hThread);
-		ZeroMemory(&process_information_, sizeof(process_information_));
+		ZeroMemory(&process_information_, sizeof(process_information_));*/
 
-		if (!get_result)
-		{
-			logger << "Process executed but an error occured while getting its exit code";
-			return false;
-		}
-		else
-		{
-			int expected_value = atoi(test_.get_expectedResult());
-			result_ = (expected_value == returned_value);
-			status_ = Status::Done;
-
-			RecordDuration();
-
-			return true;
-		}
+		status_ = Status::Done;
+		return true;
 	}
 	else
 	{
@@ -198,43 +195,43 @@ bool ProcessInfo::ReleaseResources()
 }
 
 // WILL BE ERASED AFTER REPORTER'S INTEGRATION
-bool ProcessInfo::RecordDuration()
-{
-	int wait_thread = WaitForSingleObject(work_thread_, INFINITE);
-	
-	if (wait_thread == WAIT_FAILED && work_thread_ != NULL)
-	{
-		logger << "Wait for thread termination failed";
-		return false;
-	}
-	if (wait_thread == WAIT_OBJECT_0)
-	{
-		DWORD returned_value;
-
-		bool get_result = GetExitCodeThread(work_thread_, &returned_value);
-
-		CloseHandle(work_thread_);
-
-		ZeroMemory(&work_thread_, sizeof(work_thread_));
-
-		if (!get_result)
-		{
-			logger << "Thread terminated but an error occured while getting its exit code";
-			return false;
-		}
-		else
-		{
-			duration<long long, std::milli> test_duration(returned_value);
-			duration_ = test_duration;
-			return true;
-		}
-	}
-	else
-	{
-		// thread is still running
-		return false;
-	}
-}
+//bool ProcessInfo::RecordDuration()
+//{
+//	int wait_thread = WaitForSingleObject(work_thread_, INFINITE);
+//	
+//	if (wait_thread == WAIT_FAILED && work_thread_ != NULL)
+//	{
+//		logger << "Wait for thread termination failed";
+//		return false;
+//	}
+//	if (wait_thread == WAIT_OBJECT_0)
+//	{
+//		DWORD returned_value;
+//
+//		bool get_result = GetExitCodeThread(work_thread_, &returned_value);
+//
+//		CloseHandle(work_thread_);
+//
+//		ZeroMemory(&work_thread_, sizeof(work_thread_));
+//
+//		if (!get_result)
+//		{
+//			logger << "Thread terminated but an error occured while getting its exit code";
+//			return false;
+//		}
+//		else
+//		{
+//			duration<long long, std::milli> test_duration(returned_value);
+//			duration_ = test_duration;
+//			return true;
+//		}
+//	}
+//	else
+//	{
+//		// thread is still running
+//		return false;
+//	}
+//}
 
 ProcessInfo::operator TRSResult() const
 {

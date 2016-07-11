@@ -22,21 +22,21 @@ void ReportManager::addReporter(TRSReport* reporter)
 	reportList.push_back(reporter);
 }
 
-void ReportManager::beforeExecution(TRSInfo* pInfo)
+void ReportManager::beforeExecution(TRSInfo info)
 {
 	std::list<TRSReport*>::iterator it = reportList.begin();
 	for (it; it != reportList.end(); ++it)
 	{
-		(*it)->BeforeExecution(pInfo);
+		(*it)->BeforeExecution(info);
 	}
 }
 
-void ReportManager::afterExecution(TRSInfo* pInfo, TRSResult* pResult)
+void ReportManager::afterExecution(TRSInfo info, TRSResult result)
 {
 	std::list<TRSReport*>::iterator it = reportList.begin();
 	for (it; it != reportList.end(); ++it)
 	{
-		(*it)->AfterExecution(pInfo,pResult);
+		(*it)->AfterExecution(info,result);
 	}
 }
 

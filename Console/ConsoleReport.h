@@ -9,10 +9,12 @@ class ConsoleReport :public TRSReport
 public:
 	ConsoleReport();
 	~ConsoleReport();
-	virtual void BeforeExecution(TRSInfo* pInfo);
-	virtual void AfterExecution(TRSInfo* pInfo, TRSResult* pResult);
+
+	virtual void BeforeExecution(TRSInfo pInfo);
+	virtual void AfterExecution(TRSInfo pInfo, TRSResult pResult);
 	virtual void Begin();
 	virtual void End();
+
 	double getTime();
 	double getAmount();
 	double getPassedAmount();
