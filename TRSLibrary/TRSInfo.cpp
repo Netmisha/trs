@@ -95,6 +95,8 @@ TRSInfo::~TRSInfo()
 	delete[] expectedResult;
 	delete[] executableName;
 	delete[] priority;
+	delete[] disable;
+	delete[] parameters;
 }
 
 char* TRSInfo::getName() const
@@ -105,7 +107,10 @@ char* TRSInfo::getWaitFor() const
 {
 	return waitfor;
 }
-
+char* TRSInfo::getParameters() const
+{
+	return parameters;
+}
 
 char* TRSInfo::getDescription() const
 {
@@ -122,6 +127,11 @@ char* TRSInfo::getTag() const
 	return tag;
 }
 
+char* TRSInfo::getDisable() const
+{
+	return disable;
+}
+
 bool TRSInfo::setTag(char*Tag)
 {
 	if (tag)
@@ -136,6 +146,46 @@ bool TRSInfo::setTag(char*Tag)
 		if (tag = new char[strlen(Tag)+1])
 		{
 			strncpy_s(tag, strlen(Tag)+1, Tag, strlen(Tag));
+			return true;
+		}
+	}
+	return false;
+}
+
+bool TRSInfo::setParameters(char*parameters_)
+{
+	if (parameters)
+	{
+		delete[] parameters;
+		parameters = new char[strlen(parameters_) + 1];
+		strncpy_s(parameters, strlen(parameters_) + 1, parameters_, strlen(parameters_));
+		return true;
+	}
+	else
+	{
+		if (parameters = new char[strlen(parameters_) + 1])
+		{
+			strncpy_s(parameters, strlen(parameters_) + 1, parameters_, strlen(parameters_));
+			return true;
+		}
+	}
+	return false;
+}
+
+bool TRSInfo::setDisable(char*disable_)
+{
+	if (disable)
+	{
+		delete[] disable;
+		disable = new char[strlen(disable_) + 1];
+		strncpy_s(disable, strlen(disable_) + 1, disable_, strlen(disable_));
+		return true;
+	}
+	else
+	{
+		if (disable = new char[strlen(disable_) + 1])
+		{
+			strncpy_s(disable, strlen(disable_) + 1, disable_, strlen(disable_));
 			return true;
 		}
 	}

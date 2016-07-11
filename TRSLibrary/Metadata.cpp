@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#define TRSLibrary_EXPORT
 #include "Metadata.h"
 
 Metadata::Metadata(char* Name)
@@ -260,4 +262,9 @@ char* Metadata::getLicense()
 char* Metadata::getInfo()
 {
 	return info;
+}
+
+char* Metadata::getName()
+{
+	return autorName;
 }
