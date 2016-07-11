@@ -6,5 +6,6 @@
 #define INVALID_RESULT 3
 #define SUCCSEED 4
 #define INVALID_EXE_FILE 5
+#define INVALID_PARAMETERS 6
 
 #endif
