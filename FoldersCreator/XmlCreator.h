@@ -10,8 +10,13 @@ class XmlCreator
 {
 public:
 	XmlCreator(char* path, Suite* currentSuite);
+	XmlCreator();
 	~XmlCreator();
 	bool CreateXML();
+	bool setPath(char* path);
+	bool setSuite(Suite* suite);
+	char* getPath() const;
+	Suite* getSuite();
 private:
 	char* path;
 	Suite* currentSuite;

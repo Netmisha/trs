@@ -7,10 +7,37 @@ XmlCreator::XmlCreator(char* path_, Suite* suite)
 	currentSuite = suite;
 }
 
+XmlCreator::XmlCreator()
+{
+
+}
+
 XmlCreator::~XmlCreator()
 {
 	delete[] path;
 	delete[] currentSuite;
+}
+
+bool XmlCreator::setPath(char* path_)
+{
+	path = path_;
+	return true;
+}
+
+bool XmlCreator::setSuite(Suite*suite)
+{
+	currentSuite = suite;
+	return true;
+}
+
+char* XmlCreator::getPath() const
+{
+	return path;
+}
+
+Suite* XmlCreator::getSuite()
+{
+	return currentSuite;
 }
 
 bool XmlCreator::CreateXML()
