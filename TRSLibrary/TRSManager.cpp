@@ -29,7 +29,7 @@ bool TRSManager::Run(char* path, char* name, char* tag, ReportManager* pResult)
 		coll.push_back(**var);
 	
 	// TODO: add parameter to Console command line
-	SuiteCollection suits(coll, 10);
+	SuiteCollection suits(coll, 10, pResult);
 
 	return suits.Run();
 }

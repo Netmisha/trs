@@ -10,8 +10,9 @@ class HTMLReport:public TRSReport
 public:
 	HTMLReport();
 	~HTMLReport();
-	virtual void BeforeExecution(TRSInfo* pInfo);
-	virtual void AfterExecution(TRSInfo* pInfo, TRSResult* pResult);
+
+	virtual void BeforeExecution(TRSInfo pInfo);
+	virtual void AfterExecution(TRSInfo pInfo, TRSResult pResult);
 	virtual void Begin();
 	virtual void End();
 private:

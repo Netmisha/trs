@@ -16,8 +16,8 @@ class TRSReport_API TRSReport
 public:
 	TRSReport();
 	virtual~TRSReport();
-	virtual void BeforeExecution(TRSInfo* pInfo) = 0;
-	virtual void AfterExecution(TRSInfo* pInfo, TRSResult* pResult) = 0;
+	virtual void BeforeExecution(TRSInfo pInfo) = 0;
+	virtual void AfterExecution(TRSInfo pInfo, TRSResult pResult) = 0;
 	virtual void Begin()=0;
 	virtual void End()=0;
 };

@@ -42,18 +42,18 @@ double ConsoleReport::getFailedAmount()
 	return failedAmount;
 }
 
-void ConsoleReport::BeforeExecution(TRSInfo* pInfo)
+void ConsoleReport::BeforeExecution(TRSInfo pInfo)
 {
 
 }
 
-void ConsoleReport::AfterExecution(TRSInfo* pInfo, TRSResult* pResult)
+void ConsoleReport::AfterExecution(TRSInfo pInfo, TRSResult pResult)
 {
 	
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	
-	std::cout <<"'"<< pInfo->getName()<<"' ";
-	if (pResult->get_result())
+	std::cout <<"'"<< pInfo.getName()<<"' ";
+	if (pResult.get_result())
 	{
 		SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN);
 		std::cout << "Passed";
@@ -67,9 +67,9 @@ void ConsoleReport::AfterExecution(TRSInfo* pInfo, TRSResult* pResult)
 		++failedAmount;
 		SetConsoleTextAttribute(hStdout, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	}
-	time += pResult->get_duration().count();
+	time += pResult.get_duration().count();
 	++amount;
-	std::cout << " " << pResult->get_path() << std::endl;
+	std::cout << " " << pResult.get_path() << std::endl;
 }
 
 void ConsoleReport::Begin()

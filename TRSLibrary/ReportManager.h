@@ -18,8 +18,8 @@ public:
 	void Begin();
 	void End();
 	void addReporter(TRSReport* pReporter);
-	void beforeExecution(TRSInfo* pInfo);
-	void afterExecution(TRSInfo* pInfo,TRSResult* pResult);
+	void beforeExecution(TRSInfo pInfo);
+	void afterExecution(TRSInfo pInfo,TRSResult pResult);
 private:
 	std::list<TRSReport*> reportList;
 };

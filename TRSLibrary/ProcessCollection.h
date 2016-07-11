@@ -6,14 +6,18 @@
 #include "Suite.h"
 #include "ProcessInfo.h"
 #include "TRSResult.h"
+#include "ReportManager.h"
 
 #include <list>
 #include <windows.h>
 
+// ProcessCollection consist of ProcessInfo collection ( which is TRSTest with additional information)
+// ProcessCollection is respnsible not only for relasing its own resources ( except of semaphore kernel object ),
+// but it also close process handles which are owned by ProcessInfo
 class ProcessCollection
 {
 public:
-	ProcessCollection(const Suite&, HANDLE semaphore);
+	ProcessCollection(const Suite&, HANDLE semaphore, ReportManager* pReport = nullptr);
 	ProcessCollection(const ProcessCollection&);
 	~ProcessCollection();
 
