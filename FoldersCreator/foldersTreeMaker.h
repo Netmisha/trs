@@ -11,6 +11,8 @@ public:
 	~FoldersTreeMaker();
 	bool MakeTree();
 private:
+	bool RecourseParse(char* path, TiXmlNode* pParent);
+private:
 	char* input_path;
 	char* output_path;
 	XmlCreator currentCreator;
