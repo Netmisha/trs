@@ -45,6 +45,8 @@ public:
 	bool Info(char* path, char* name, char* tag);
 	bool Destroy();
 	bool SetReport(char* path,char* name,char* tag,ReportManager* manager=nullptr);
+private:
+	bool VerifyParameters(char* path, char* name, char* tag);
 };
 
 class TRSManager_API Logger

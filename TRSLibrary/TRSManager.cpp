@@ -20,8 +20,23 @@ TRSManager Manager;
 Logger logger;
 
 
+bool TRSManager::VerifyParameters(char* path, char* name, char* tag)
+{
+	DWORD dwAttrib = GetFileAttributesA(path);
+
+	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
+	{
+		logger << "Specified path is not exist";
+		return false;
+	}
+	return true;
+}
+
 bool TRSManager::Run(char* path, char* name, char* tag, ReportManager* pResult)
 {
+	if (!VerifyParameters(path, name, tag))
+		return false;
+
 	std::list<Suite*> arr = *List(path, name, tag);
 	std::list<Suite> coll;
 
@@ -78,7 +93,7 @@ int TestRunner::Execute(wchar_t* command)
 
 	return ret_val;
 }
-
+// ============================================================================================================
 void Logger::operator<<(char* message)
 {
 	text_log_->info(message);
@@ -94,7 +109,7 @@ bool Logger::Init()
 		text_log_ = std::make_shared<spdlog::logger>("file_logger", sink);
 		
 		console_log_ = spd::stderr_logger_mt("console_logger");
-		console_log_->set_pattern(">>>>>>>>> %v <<<<<<<<<");
+		console_log_->set_pattern("\t\t\t%v");
 	}
 	catch (const spd::spdlog_ex& ex)
 	{
@@ -108,6 +123,8 @@ void Logger::Destroy()
 {
 	spd::drop_all();
 }
+
+// ===============================================================================================================
 
 TRSManager::TRSManager()
 {
@@ -133,6 +150,9 @@ bool TRSManager::Destroy()
 
 int TRSManager::Verify(char* path, char* name, char* tag)
 {
+	if (!VerifyParameters(path, name, tag))
+		return INVALID_PARAMETERS;
+
 		std::list<Suite*>* suiteCollection=List(path, name, tag);
 	
 		std::list<Suite*>::iterator it = suiteCollection->begin();
@@ -236,16 +256,22 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 
 bool TRSManager::Pause(char* path, char* name, char* tag)
 {
+	if (!VerifyParameters(path, name, tag))
+		return false;
 	return false;
 }
 
 bool TRSManager::Stop(char* path, char* name, char* tag)
 {
+	if (!VerifyParameters(path, name, tag))
+		return false;
 	return false;
 }
 
 bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suiteCollection)
 {
+	if (!VerifyParameters(path, name, tag))
+		return false;
 	DWORD fFile = GetFileAttributesA(path);
 	if (fFile& FILE_ATTRIBUTE_DIRECTORY)
 	{
@@ -327,6 +353,9 @@ bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suit
 
 std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 {
+	if (!VerifyParameters(path, name, tag))
+		return new std::list<Suite*>;
+
 	std::list<Suite*>*suiteCollection = new std::list<Suite*>;
 	FillList(path, name, tag, suiteCollection);
 	return suiteCollection;
@@ -334,16 +363,23 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 
 bool TRSManager::Status(char* path, char* name, char* tag)
 {
+	if (!VerifyParameters(path, name, tag))
+		return false;
 	return false;
 }
 
 bool TRSManager::Info(char* path, char* name, char* tag)
 {
+	if (!VerifyParameters(path, name, tag))
+		return false;
 	return false;
 }
 
 bool TRSManager::SetReport(char* path,char* name,char* tag,ReportManager* pReport)
 {
+	if (!VerifyParameters(path, name, tag))
+		return false;
+
 	Manager.Run(path, name, tag, pReport);
 	return true;
 }
