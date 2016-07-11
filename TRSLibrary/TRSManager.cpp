@@ -354,7 +354,7 @@ bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suit
 std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 {
 	if (!VerifyParameters(path, name, tag))
-		return new std::list<Suite*>;
+		return nullptr;
 
 	std::list<Suite*>*suiteCollection = new std::list<Suite*>;
 	FillList(path, name, tag, suiteCollection);

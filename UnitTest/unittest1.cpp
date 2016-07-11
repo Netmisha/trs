@@ -416,7 +416,12 @@ namespace UnitTest
 			_CrtMemState s1;
 			_CrtMemCheckpoint(&s1);
 			{
-				std::list<Suite*>* coll = Manager.List("(../TestData/TestStrcuture)", nullptr, nullptr);
+				std::list<Suite*>* coll = Manager.List(R"(../TestData/TestStrcuture)", nullptr, nullptr);
+				std::list<Suite*>::iterator it = coll->begin();
+				for (it; it != coll->end(); ++it)
+				{
+					delete (*it);
+				}
 				delete coll;
 			}
 			_CrtMemState s2;
