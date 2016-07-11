@@ -30,14 +30,20 @@ test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(
 	path_ = new char[path_len + 1];
 	strcpy_s(path_, path_len + 1, path);
 
-	// parameter also be added here
+	
 	int exe_path_size = strlen(path) + strlen(test_.get_executableName());
+	if (test_.getParameters() != nullptr)
+		exe_path_size += strlen(test_.getParameters());
+
 	command_line_ = new wchar_t[exe_path_size + 1];
 
 	char executable_directory_A[MAX_PATH + 1];
 	executable_directory_A[0] = 0;
 	strcat_s(executable_directory_A, MAX_PATH + 1, path);
 	strcat_s(executable_directory_A, MAX_PATH + 1, test_.get_executableName());
+	
+	if (test_.getParameters() != nullptr)
+		strcat_s(executable_directory_A, MAX_PATH + 1, test_.getParameters());
 
 	convertToTCHAR(command_line_, executable_directory_A);
 	
