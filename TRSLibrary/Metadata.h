@@ -1,8 +1,15 @@
 #ifndef METADATA_H_
 #define METADATA_H_
+
+#ifdef TRSLibrary_EXPORT
+#define Metadata_API  __declspec(dllexport) 
+#else
+#define Metadata_API  __declspec(dllimport) 
+#endif
+
 #include <string>
 
-class Metadata
+class Metadata_API Metadata
 {
 	char* autorName=nullptr;
 	char* date=nullptr;
@@ -29,5 +36,6 @@ public:
 	char* getCopyright();
 	char* getLicense();
 	char* getInfo();
+	char* getName();
 };
 #endif
