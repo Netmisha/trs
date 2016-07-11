@@ -33,12 +33,17 @@ public:
 		return test_.getName();
 	}
 
+	bool IsDisable() const;
+	int GetPriority() const;
 	char* ProcessTest(bool ignore_wait = false);
 	bool IsDone();
 	bool ReleaseResources();
-	bool IsDisable();
 
 	operator TRSResult() const;
+	bool operator<(const ProcessInfo& val)
+	{
+		return GetPriority() < val.GetPriority();
+	}
 
 //	friend struct ProcessData;
 private:

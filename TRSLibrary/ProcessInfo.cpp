@@ -69,12 +69,21 @@ ProcessInfo::~ProcessInfo()
 
 // =========================================================================================================================================================
 
-bool ProcessInfo::IsDisable()
+bool ProcessInfo::IsDisable() const
 {
 	if (test_.getDisable() == nullptr)
 		return false;
 
 	return (!_stricmp(test_.getDisable(), "false"));
+}
+
+
+int ProcessInfo::GetPriority() const
+{
+	if (test_.getPriority() == nullptr)
+		return -1;
+
+	return atoi(test_.getPriority());
 }
 
 char* ProcessInfo::ProcessTest(bool ignore_wait)

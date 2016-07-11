@@ -8,7 +8,7 @@
 #include "TRSResult.h"
 #include "ReportManager.h"
 
-#include <list>
+#include <vector>
 #include <windows.h>
 
 // ProcessCollection consist of ProcessInfo collection ( which is TRSTest with additional information)
@@ -26,7 +26,7 @@ public:
 	{
 		return undone_tests_;
 	}
-	inline std::list<ProcessInfo> get_tests()
+	inline std::vector<ProcessInfo> get_tests()
 	{
 		return tests_;
 	}
@@ -44,6 +44,6 @@ private:
 	int undone_tests_;
 	char* path_;
 	HANDLE semaphores_[SEMAPHORES_AMOUNT];
-	std::list<ProcessInfo> tests_;
+	std::vector<ProcessInfo> tests_;
 };
 #endif
