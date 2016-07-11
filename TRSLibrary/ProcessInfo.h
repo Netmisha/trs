@@ -36,6 +36,7 @@ public:
 	char* ProcessTest(bool ignore_wait = false);
 	bool IsDone();
 	bool ReleaseResources();
+	bool IsDisable();
 
 	operator TRSResult() const;
 

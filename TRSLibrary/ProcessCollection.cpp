@@ -26,10 +26,14 @@ ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, Repor
 	path_ = new char[path_len + 1];
 	strcpy_s(path_, path_len + 1, suite.get_path());
 
+	undone_tests_ = 0;
 	for each (TRSTest* var in suite.getList())
-		tests_.push_back(ProcessInfo(*var, path_, semaphores_, pReport));
+	{
+		ProcessInfo info(*var, path_, semaphores_, pReport);
+		tests_.push_back(info);
 
-	undone_tests_ = tests_.size();
+		undone_tests_ += !info.IsDisable();
+	}
 }
 
 
@@ -64,7 +68,12 @@ bool ProcessCollection::TryRun()
 			std::list<ProcessInfo>::iterator var = tests_.begin();
 			for (; var != tests_.end(); ++var)
 			{
-				if (var->get_status() == Status::Running && var->IsDone())
+				if (var->IsDisable())
+				{
+					// this test is disable, we do not need to check it 
+					continue;
+				}
+				else if (var->get_status() == Status::Running && var->IsDone())
 				{
 					// this test is already "Done", so decrement the counter
 					--undone_tests_;
@@ -103,6 +112,8 @@ bool ProcessCollection::TryRun()
 					// so it was not a test, which signaled to main thread. Continue searching
 				}
 			}
+			// if it is false - it means that test in another ProcessCollection signaled to main thread
+			// and we must continue searching
 			return var != tests_.end();
 		}
 		else if (wait_result == WAIT_TIMEOUT)
@@ -130,6 +141,10 @@ int ProcessCollection::IsDone(char* name)
 	{
 		if (!strcmp(name, var->get_name()))
 		{
+			// test is diasable, so we might execute all tests which are waiting on it
+			if (var->IsDisable())
+				return 1;
+
 			switch (var->get_status())
 			{
 			case Status::Done:

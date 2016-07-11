@@ -69,6 +69,14 @@ ProcessInfo::~ProcessInfo()
 
 // =========================================================================================================================================================
 
+bool ProcessInfo::IsDisable()
+{
+	if (test_.getDisable() == nullptr)
+		return false;
+
+	return (!_stricmp(test_.getDisable(), "false"));
+}
+
 char* ProcessInfo::ProcessTest(bool ignore_wait)
 {
 	// assuming that test is waiting
