@@ -5,7 +5,7 @@
 
 ReportManager::ReportManager()
 {
-
+	InitializeCriticalSection(&critical_section_);
 }
 
 ReportManager::~ReportManager()
@@ -15,6 +15,8 @@ ReportManager::~ReportManager()
 	{
 		(*it)->~TRSReport();
 	}
+
+	DeleteCriticalSection(&critical_section_);
 }
 
 void ReportManager::addReporter(TRSReport* reporter)
@@ -24,36 +26,44 @@ void ReportManager::addReporter(TRSReport* reporter)
 
 void ReportManager::beforeExecution(TRSInfo info)
 {
+	EnterCriticalSection(&critical_section_);
 	std::list<TRSReport*>::iterator it = reportList.begin();
 	for (it; it != reportList.end(); ++it)
 	{
 		(*it)->BeforeExecution(info);
 	}
+	LeaveCriticalSection(&critical_section_);
 }
 
 void ReportManager::afterExecution(TRSInfo info, TRSResult result)
 {
+	EnterCriticalSection(&critical_section_);
 	std::list<TRSReport*>::iterator it = reportList.begin();
 	for (it; it != reportList.end(); ++it)
 	{
 		(*it)->AfterExecution(info,result);
 	}
+	LeaveCriticalSection(&critical_section_);
 }
 
 void ReportManager::Begin()
 {
+	EnterCriticalSection(&critical_section_);
 	std::list<TRSReport*>::iterator it = reportList.begin();
 	for (it; it != reportList.end(); ++it)
 	{
 		(*it)->Begin();
 	}
+	LeaveCriticalSection(&critical_section_);
 }
 
 void ReportManager::End()
 {
+	EnterCriticalSection(&critical_section_);
 	std::list<TRSReport*>::iterator it = reportList.begin();
 	for (it; it != reportList.end(); ++it)
 	{
 		(*it)->End();
 	}
+	LeaveCriticalSection(&critical_section_);
 }
