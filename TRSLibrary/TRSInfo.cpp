@@ -20,7 +20,18 @@ TRSInfo::TRSInfo(const TRSInfo& val)
 	{
 		metadata = new Metadata(*val.metadata);
 	}
-
+	if (val.disable != nullptr)
+	{
+		int size = strlen(val.disable);
+		disable = new char[size + 1];
+		strcpy_s(disable, size + 1, val.disable);
+	}
+	if (val.priority != nullptr)
+	{
+		int size = strlen(val.priority);
+		priority = new char[size + 1];
+		strcpy_s(priority, size + 1, val.priority);
+	}
 	if (val.executableName != nullptr)
 	{
 		int size = strlen(val.executableName);

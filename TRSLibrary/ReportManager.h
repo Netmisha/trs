@@ -22,6 +22,7 @@ public:
 	void afterExecution(TRSInfo pInfo,TRSResult pResult);
 private:
 	std::list<TRSReport*> reportList;
+	CRITICAL_SECTION critical_section_;
 };
 
 #endif
