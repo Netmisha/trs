@@ -2,9 +2,13 @@
 #define TRSLibrary_EXPORT
 #include "TRSResult.h"
 
-TRSResult::TRSResult(char* path, char* name, bool result, duration<long long, std::milli> duration) 
+TRSResult::TRSResult(char* path, char* name, char* description, bool result, duration<long long, std::milli> duration) 
 : result_(result), duration_(duration)
 {
+	size_t description_size = strlen(description);
+	description_ = new char[description_size + 1];
+	strcpy_s(description_, description_size + 1, description);
+
 	size_t path_size = strlen(path);
 	path_ = new char[path_size + 1];
 	strcpy_s(path_, path_size + 1, path);
@@ -16,6 +20,10 @@ TRSResult::TRSResult(char* path, char* name, bool result, duration<long long, st
 
 TRSResult::TRSResult(const TRSResult& instance) : result_(instance.get_result()), duration_(instance.get_duration())
 {
+	size_t description_size = strlen(instance.description_);
+	description_ = new char[description_size + 1];
+	strcpy_s(description_, description_size + 1, instance.description_);
+
 	size_t path_size = strlen(instance.get_path());
 	path_ = new char[path_size + 1];
 	strcpy_s(path_, path_size + 1, instance.get_path());
@@ -28,7 +36,7 @@ TRSResult::TRSResult(const TRSResult& instance) : result_(instance.get_result())
 TRSResult::~TRSResult()
 {
 	// no harm will be if either of this pointers is nullptr
-
+	delete[] description_;
 	delete[] name_;
 	delete[] path_;
 }

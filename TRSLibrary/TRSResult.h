@@ -15,7 +15,7 @@ using namespace std::chrono;
 class TRSResult_API TRSResult
 {
 public:
-	TRSResult(char* path, char* name, bool, duration<long long, std::milli>);
+	TRSResult(char* path, char* name, char* description, bool, duration<long long, std::milli>);
 	TRSResult(const TRSResult&);
 	~TRSResult();
 
@@ -39,6 +39,7 @@ public:
 	friend TRSResult_API std::ostream& operator<<(std::ostream&, TRSResult&);
 private:
 	duration<long long, std::milli>  duration_;
+	char* description_;
 	char* path_;
 	char* name_;
 	bool result_;

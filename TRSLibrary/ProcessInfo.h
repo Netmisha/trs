@@ -5,6 +5,8 @@
 #define OWNED_SEMAPHORE 0
 #define MANAGING_SEMAPHORE 1
 
+#define NUMERIC_BASE 10
+#define MAX_IDEN_LENGHT 2
 
 #include "stdafx.h"
 #include "TRSTest.h"
@@ -47,16 +49,22 @@ public:
 
 //	friend struct ProcessData;
 private:
+	long long ParseMaxTime();
 	bool RecordDuration();
 	static DWORD WINAPI StartThread(LPVOID);
 private:
-	bool result_;
 	TRSTest test_;
+	bool result_;
 	Status status_;
+
+	long max_time_;
+	char* description_;
 	HANDLE semaphores_[SEMAPHORES_AMOUNT];
+
 	HANDLE work_thread_;
 	char* path_;
 	wchar_t* command_line_;
+
 	ReportManager* pReporter_;
 	PROCESS_INFORMATION process_information_;
 	std::chrono::duration<long long, std::milli> duration_;

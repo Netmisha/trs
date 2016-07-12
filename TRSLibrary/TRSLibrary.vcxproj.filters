@@ -6,7 +6,6 @@
     <ClCompile Include="Metadata.cpp" />
     <ClCompile Include="ReportManager.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="TRSResult.cpp" />
     <ClCompile Include="Suite.cpp" />
     <ClCompile Include="TinyXML\tinystr.cpp" />
     <ClCompile Include="TinyXML\tinyxml.cpp" />
@@ -39,6 +38,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SuiteCollection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TRSResult.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

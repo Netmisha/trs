@@ -19,12 +19,13 @@ ProcessData::ProcessData( ProcessInfo info, PROCESS_INFORMATION* pi, HANDLE hand
 // =========================================================================================================================================================
 
 ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphores[SEMAPHORES_AMOUNT], ReportManager* pReporter) : 
-test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(pReporter)
+test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(pReporter), work_thread_(NULL), description_(nullptr)
 {
 	semaphores_[OWNED_SEMAPHORE] = semaphores[OWNED_SEMAPHORE];
 	semaphores_[MANAGING_SEMAPHORE] = semaphores[MANAGING_SEMAPHORE];
 
-	work_thread_ = NULL;
+	max_time_ = ParseMaxTime();
+
 
 	int path_len = strlen(path);
 	path_ = new char[path_len + 1];
@@ -51,12 +52,11 @@ test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(
 }
 
 ProcessInfo::ProcessInfo(const ProcessInfo& instance):
-test_(instance.test_), status_(instance.status_), work_thread_(instance.work_thread_), pReporter_(instance.pReporter_),
-	result_(instance.result_), process_information_(instance.process_information_), duration_(instance.duration_)
+test_(instance.test_), status_(instance.status_), work_thread_(instance.work_thread_), pReporter_(instance.pReporter_), description_(instance.description_),
+result_(instance.result_), process_information_(instance.process_information_), duration_(instance.duration_), max_time_(instance.max_time_)
 {
 	semaphores_[OWNED_SEMAPHORE] = instance.semaphores_[OWNED_SEMAPHORE];
 	semaphores_[MANAGING_SEMAPHORE] = instance.semaphores_[MANAGING_SEMAPHORE];
-
 
 	int path_len = strlen(instance.path_);
 	path_ = new char[path_len + 1];
@@ -71,9 +71,96 @@ ProcessInfo::~ProcessInfo()
 {
 	delete[] path_;
 	delete[] command_line_;
+	if (description_)
+		delete[] description_;
 }
 
 // =========================================================================================================================================================
+
+long long ProcessInfo::ParseMaxTime()
+{
+	char* str = test_.getMaxTime();
+	int size = strlen(str);
+
+	char* sequence_end;
+
+	bool default = true;
+	for (int i = 0; i < size; ++i)
+	{
+		if (isalpha(str[i]))
+		{
+			default = false;
+			break;
+		}
+	}
+
+	if (default)
+		return strtol(str, nullptr, NUMERIC_BASE);
+
+	char identificator[MAX_IDEN_LENGHT + 1];
+
+	duration<long, std::milli> total_time;
+	while (*str != '\0')
+	{
+		long time = strtol(str, &sequence_end, NUMERIC_BASE);
+		while (isspace(*sequence_end))
+			++sequence_end;
+
+		int identificator_len = 0;
+		for (; isalpha(sequence_end[identificator_len]); ++identificator_len)
+		{
+			// empty body
+		}
+		if (identificator_len > MAX_IDEN_LENGHT)
+		{
+			logger << "Max_time identificator is too long";
+			return -1;
+		}
+
+		for (int i = 0; i < identificator_len; ++i)
+			identificator[i] = sequence_end[i];
+		identificator[identificator_len] = 0;
+
+
+		if (!_stricmp(identificator, "D"))
+		{
+			duration<long, std::ratio<60 * 60 * 24>> days(time);
+			total_time += duration_cast<milliseconds>(days);
+		}
+		else if (!_stricmp(identificator, "H"))
+		{
+			duration<long, std::ratio<60 * 60>> hours(time);
+			total_time += duration_cast<milliseconds>(hours);
+		}
+		else if (!_stricmp(identificator, "M"))
+		{
+			duration<long, std::ratio<60>> minutes(time);
+			total_time += duration_cast<milliseconds>(minutes);
+		}
+		else if (!_stricmp(identificator, "S"))
+		{
+			duration<long> seconds(time);
+			total_time += duration_cast<milliseconds>(seconds);
+		}
+		else if (!_stricmp(identificator, "MS"))
+		{
+			duration<long, std::milli> milliseconds(time);
+			total_time += milliseconds;
+		}
+		else
+		{
+			logger << "Unrecognised max_time identificator";
+			return -1;
+		}
+
+		str = sequence_end + identificator_len;
+		while (isspace(*str))
+			++str;
+	}
+
+	return total_time.count();
+}
+
 
 bool ProcessInfo::IsDisable() const
 {
@@ -116,16 +203,18 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 
 DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 {
+	// recording time in order to evaluate function duration
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
 	ProcessData data = *((ProcessData*)parameters);
+	// recording time for reporter
 	data.running_process.pReporter_->beforeExecution(data.running_process.test_);
 
 	STARTUPINFO startup_info;
 	ZeroMemory(&startup_info, sizeof(startup_info));
-
 	startup_info.cb = sizeof(startup_info);
 
+	// starting our desirable executable file
 	bool create_result = CreateProcess(NULL, data.running_process.command_line_, NULL, NULL, FALSE, CREATE_NO_WINDOW,
 		NULL, NULL, &startup_info, data.process_information);
 
@@ -136,47 +225,69 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 		return -1;
 	}
 
-	// Successfully created the process.  Wait for it to finish.
-	int wait_result = WaitForSingleObject(data.process_information->hProcess, INFINITE);
-	if (wait_result != WAIT_OBJECT_0)
+	// Successfully created the process.  Wait for it to finish no more than MAX_TIME
+	int wait_result = WaitForSingleObject(data.process_information->hProcess, data.running_process.max_time_);
+
+	if (wait_result != WAIT_FAILED)
+	{
+		if (!ReleaseSemaphore(data.semaphores[OWNED_SEMAPHORE], 1, NULL))
+		{
+			logger << "Incrementing OWNED_SEMAPHORE semaphore count is failed";
+			return -1;
+		}
+		if (!ReleaseSemaphore(data.semaphores[MANAGING_SEMAPHORE], 1, NULL))
+		{
+			logger << "Incrementing MANAGING_SEMAPHORE semaphore count is failed";
+			return -1;
+		}
+
+		high_resolution_clock::time_point t2 = high_resolution_clock::now();
+		data.running_process.duration_ = duration_cast<milliseconds>(t2 - t1);
+
+		char* message;
+		if (wait_result == WAIT_OBJECT_0)
+		{
+			DWORD returned_value;
+			bool get_result = GetExitCodeProcess(data.process_information->hProcess, &returned_value);
+			// setting apropriate description
+			if (!get_result)
+			{
+				logger << "Process executed but an error occured while getting its exit code";
+				return 1;
+			}
+			else
+			{
+				int expected_value = atoi(data.running_process.test_.get_expectedResult());
+				data.running_process.result_ = (expected_value == returned_value);
+
+				if (data.running_process.result_)
+					message = "Succeeded";
+				else
+					message = "Returned value is not mathing with expecting one";
+
+			}
+		}
+		else
+		{
+			message = "Timeout";
+			data.running_process.result_ = false;
+		}
+
+		int size = strlen(message);
+		data.running_process.description_ = new char[size + 1];
+		strcpy_s(data.running_process.description_, size + 1, message);
+
+		data.running_process.pReporter_->afterExecution(data.running_process.test_, data.running_process);
+
+		delete parameters;
+		return 0;
+	}
+	else
 	{
 		delete parameters;
 		logger << "Waiting for the process failed";
 		return -1;
 	}
-
-
-	if (!ReleaseSemaphore(data.semaphores[OWNED_SEMAPHORE], 1, NULL))
-	{
-		logger << "Incrementing OWNED_SEMAPHORE semaphore count is failed";
-		return -1;
-	}
-	if (!ReleaseSemaphore(data.semaphores[MANAGING_SEMAPHORE], 1, NULL))
-	{
-		logger << "Incrementing MANAGING_SEMAPHORE semaphore count is failed";
-		return -1;
-	}
-
-	high_resolution_clock::time_point t2 = high_resolution_clock::now();
-	data.running_process.duration_ = duration_cast<milliseconds>(t2 - t1);
-
-	DWORD returned_value;
-	bool get_result = GetExitCodeProcess(data.process_information->hProcess, &returned_value);
-	if (!get_result)
-	{
-		logger << "Process executed but an error occured while getting its exit code";
-		return 1;
-	}
-	else
-	{
-		int expected_value = atoi(data.running_process.test_.get_expectedResult());
-		data.running_process.result_ = (expected_value == returned_value);
-	}
-
-	data.running_process.pReporter_->afterExecution(data.running_process.test_, data.running_process);
-
-	delete parameters;	
-	return 0;
 }
 
 
@@ -258,5 +369,5 @@ bool ProcessInfo::IsDone()
 
 ProcessInfo::operator TRSResult() const
 {
-	return TRSResult(path_, test_.getName(), result_, duration_);
+	return TRSResult(path_, test_.getName(), description_,  result_, duration_);
 }
