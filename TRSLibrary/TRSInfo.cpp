@@ -296,6 +296,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		
 		if ((strncmp(pParent->Value(), "suite", strlen("suite")) == 0) || (strncmp(pParent->Value(), "test", strlen("test")) == 0))
 		{
+			
 			if (getName())
 			{
 				return true;
@@ -311,7 +312,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 				atr = atr->Next();
 				if (atr)
 				{
-					if (!strncmp(atr->Name(), "description", strlen("description")))
+					if (!strncmp(atr->Name(), "description", strlen("description")) )
 					{
 						char*desc = new char[strlen(atr->Value()) + 1];
 						strncpy_s(desc, strlen(atr->Value()) + 1, atr->Value(), strlen(atr->Value()));
@@ -347,7 +348,43 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			}
 			break;
 		}
-		if ((strncmp(pParent->Value(), "waitFor", strlen("waitFor")) == 0))
+		if ((strncmp(pParent->Value(), "parameters", strlen("parameters")) == 0))
+		{
+			TiXmlNode* child = pParent->FirstChild();
+			if (child->Type() == TiXmlNode::TINYXML_TEXT)
+			{
+				if (child)
+				{
+					if (strlen(child->Value()) > 0)
+					{
+						char*Parameters = new char[strlen(child->Value()) + 1];
+						strncpy_s(Parameters, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+						setParameters(Parameters);
+						delete[] Parameters;
+					}
+				}
+			}
+			break;
+		}
+		if ((strncmp(pParent->Value(), "priority", strlen("priority")) == 0))
+		{
+			TiXmlNode* child = pParent->FirstChild();
+			if (child->Type() == TiXmlNode::TINYXML_TEXT)
+			{
+				if (child)
+				{
+					if (strlen(child->Value()) > 0)
+					{
+						char*Priority = new char[strlen(child->Value()) + 1];
+						strncpy_s(Priority, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+						setPriority(Priority);
+						delete[] Priority;
+					}
+				}
+			}
+			break;
+		}
+		if ((strncmp(pParent->Value(), "waitFor", strlen("waitFor")) == 0) &&getName())
 		{
 			TiXmlNode* child = pParent->FirstChild();
 			if (child && child->Type() == TiXmlNode::TINYXML_TEXT)
@@ -362,22 +399,22 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			}
 			break;
 		}
-		if ((strncmp(pParent->Value(), "priority", strlen("priority")) == 0))
+		if ((strncmp(pParent->Value(), "disable", strlen("disable")) == 0) &&getName())
 		{
 			TiXmlNode* child = pParent->FirstChild();
 			if (child && child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
 				if (strlen(child->Value()) > 0)
 				{
-					char *wait = new char[strlen(child->Value()) + 1];
-					strncpy_s(wait, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
-					setPriority(wait);
-					delete[] wait;
+					char *dis = new char[strlen(child->Value()) + 1];
+					strncpy_s(dis, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+					setDisable(dis);
+					delete[] dis;
 				}
 			}
 			break;
 		}
-		if ((strncmp(pParent->Value(), "repeat", strlen("repeat")) == 0))
+		if ((strncmp(pParent->Value(), "repeat", strlen("repeat")) == 0)&&getName())
 		{
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
@@ -395,7 +432,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			}
 			break;
 		}
-		if ((strncmp(pParent->Value(), "maxTime", strlen("maxTime")) == 0))
+		if ((strncmp(pParent->Value(), "maxTime", strlen("maxTime")) == 0) &&getName())
 		{
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
@@ -413,7 +450,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			}
 			break;
 		}
-		if ((strncmp(pParent->Value(), "maxThreads", strlen("maxThreads")) == 0))
+		if ((strncmp(pParent->Value(), "maxThreads", strlen("maxThreads")) == 0)&&getName())
 		{
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
@@ -431,7 +468,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			}
 			break;
 		}
-		if ((strncmp(pParent->Value(), "execution", strlen("execution")) == 0))
+		if ((strncmp(pParent->Value(), "execution", strlen("execution")) == 0) &&getName())
 		{
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
@@ -449,7 +486,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			}
 			break;
 		}
-		if ((strncmp(pParent->Value(), "result", strlen("result")) == 0))
+		if ((strncmp(pParent->Value(), "result", strlen("result")) == 0)&&getName())
 		{
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
@@ -467,7 +504,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			}
 			break;
 		}
-		if ((strncmp(pParent->Value(), "metadata", strlen("metadata")) == 0))
+		if ((strncmp(pParent->Value(), "metadata", strlen("metadata")) == 0) &&getName())
 		{
 			
 			for (TiXmlNode* child = pParent->FirstChild(); child != 0; child = child->NextSibling())
@@ -475,7 +512,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 				if (child->Type() == TiXmlNode::TINYXML_ELEMENT)
 				{
 					TiXmlNode* subChild;
-					if (strncmp(child->Value(),"autor",strlen("autor"))==0)
+					if (strncmp(child->Value(),"author",strlen("author"))==0)
 					{
 						subChild = child->FirstChild();
 						if (subChild)

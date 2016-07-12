@@ -67,7 +67,7 @@ bool Suite::Parse(TiXmlNode*pParent,char*name_,char*tag_)
 {
 	if (TRSInfo::Parse(pParent))
 	{
-		ParseSuit(pParent,name_,tag_);
+		ParseSuit(pParent,name_,tag_,0);
 		return true;
 	}
 	else
@@ -116,7 +116,7 @@ bool Suite::setList(std::list<TRSTest*>& testList_)
 	return testList.size() == testList_.size();
 }
 
-bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
+bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count)
 {
 	if (!pParent) return false;
 
@@ -128,10 +128,17 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
 	switch (t)
 	{
 	case TiXmlNode::TINYXML_ELEMENT:
-
+		if ((strncmp(pParent->Value(), "suite", strlen("suite")) == 0)&&getName())
+		{
+			++count;
+		}
 		if ((strncmp(pParent->Value(), "test", strlen("test")) == 0))
 		{
-			
+			if (count>1)
+			{
+				--count;
+				break;
+			}
 			TRSTest* currentTest = new TRSTest;
 			currentTest->Parse(pParent);
 			if (name_)
@@ -216,7 +223,7 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_)
 	}
 	for (pChild = pParent->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
 	{
-		ParseSuit(pChild,name_,tag_);
+		ParseSuit(pChild,name_,tag_,count);
 	}
 	return true;
 }
