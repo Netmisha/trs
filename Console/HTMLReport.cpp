@@ -91,7 +91,7 @@ void HTMLReport::BeforeExecution(TRSInfo pInfo)
 
 void HTMLReport::AfterExecution(TRSInfo pInfo, TRSResult pResult)
 {
-	output << "<tr>\n\t<td>" << pInfo.getName() << "</td>\n\t" ;
+	output << "<tr>\n\t<td>" << pResult.get_name() << "</td>\n\t" ;
 	++amount;
 	time_ += pResult.get_duration().count();
 	if (pResult.get_result())
@@ -104,6 +104,6 @@ void HTMLReport::AfterExecution(TRSInfo pInfo, TRSResult pResult)
 		output << R"(<td><font color="red">Failed</font></td>)";
 		++failedAmount;
 	}
-	output << "<td>" << pInfo.getDescription() << "</td>";
+	output << "<td>" << pResult.get_description() << "</td>";
 	output<< "\n\t<td>" << pResult.get_path() << "</td>\n\t<td>"<<pResult.get_duration().count()<<"</td>\n\t</tr>";
 }

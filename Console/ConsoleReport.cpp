@@ -63,7 +63,7 @@ void ConsoleReport::AfterExecution(TRSInfo pInfo, TRSResult pResult)
 	else
 	{
 		SetConsoleTextAttribute(hStdout, FOREGROUND_RED );
-		std::cout << "Failed";
+		std::cout << "Failed " << pResult.get_description();
 		++failedAmount;
 		SetConsoleTextAttribute(hStdout, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	}

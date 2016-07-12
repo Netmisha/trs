@@ -35,6 +35,10 @@ public:
 	{
 		return duration_;
 	}
+	inline char* get_description() const
+	{
+		return description_;
+	}
 
 	friend TRSResult_API std::ostream& operator<<(std::ostream&, TRSResult&);
 private:

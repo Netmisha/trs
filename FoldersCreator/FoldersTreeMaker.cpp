@@ -89,7 +89,7 @@ bool FoldersTreeMaker::CreateExe(char* path,Suite* suite)
 		strncpy_s(exeName, strlen(path) + 1, path, strlen(path));
 		strncpy_s(exeName + strlen(path), 2, "//", 1);
 		strncpy_s(exeName + strlen(path) + 1, strlen((*it)->get_executableName()) + 1, (*it)->get_executableName(), strlen((*it)->get_executableName()));
-		std::ifstream infile(R"(../TestEXE.exe)", std::ifstream::binary);
+		std::ifstream infile(R"(../UnitTest/TestEXE.exe)", std::ifstream::binary);
 		std::ofstream outfile(exeName, std::ofstream::binary);
 
 		// get size of file
@@ -98,6 +98,7 @@ bool FoldersTreeMaker::CreateExe(char* path,Suite* suite)
 		infile.seekg(0);
 
 		// allocate memory for file content
+
 		char* buffer = new char[size];
 
 		// read content of infile
