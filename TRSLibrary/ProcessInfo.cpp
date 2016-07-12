@@ -34,7 +34,7 @@ test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(
 	
 	int exe_path_size = strlen(path) + strlen(test_.get_executableName());
 	if (test_.getParameters() != nullptr)
-		exe_path_size += strlen(test_.getParameters());
+		exe_path_size += strlen(test_.getParameters()) + 1;
 
 	command_line_ = new wchar_t[exe_path_size + 1];
 
@@ -44,8 +44,10 @@ test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(
 	strcat_s(executable_directory_A, MAX_PATH + 1, test_.get_executableName());
 	
 	if (test_.getParameters() != nullptr)
+	{
+		strcat_s(executable_directory_A, MAX_PATH + 1, " ");
 		strcat_s(executable_directory_A, MAX_PATH + 1, test_.getParameters());
-
+	}
 	convertToTCHAR(command_line_, executable_directory_A);
 	
 	ZeroMemory(&process_information_, sizeof(process_information_));
