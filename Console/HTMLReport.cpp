@@ -69,7 +69,7 @@ HTMLReport::~HTMLReport()
 	output << "<font>Tests amount: " << (int)amount << "</font></br>";
 	output << "<font>Passed: " << (int)passedAmount << "(" << int((passedAmount / amount) * 100) << "%)"<<"</font></br>";
 	output << "<font>Failed: " << (int)failedAmount << "(" << int((failedAmount / amount) * 100) << "%)" << "</font></br>";
-	output << "<font>Total time: " << (time_ /1000)/60<< " ms.</font></br></br>";
+	output << "<font>Total time: " << (time_ /1000)/600<< " min.</font></br></br>";
 	output << R"(</table>)";
 	output << "</body>\n</html>";
 	output.close();

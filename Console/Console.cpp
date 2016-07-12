@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
 
 	Manager.Destroy();
 	_CrtDumpMemoryLeaks();
-	system("pause");
+	//system("pause");
 	return ret_val;
 }
 
