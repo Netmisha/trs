@@ -11,6 +11,7 @@
 #include "XmlCreator.h"
 #include <Windows.h>
 #include "Converters.h"
+#include <iostream>
 #include <fstream>
 
 class FolderTreeMaker_API FoldersTreeMaker
@@ -30,6 +31,7 @@ private:
 private:
 	char* input_path;
 	char* output_path;
+	int mTestCount;
 	XmlCreator currentCreator;
 };
 

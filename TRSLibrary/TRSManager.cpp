@@ -98,7 +98,6 @@ void Logger::operator<<(char* message)
 {
 	text_log_->info(message);
 	console_log_->info(message);
-	system("pause");
 }
 
 bool Logger::Init()

@@ -6,11 +6,12 @@ FoldersTreeMaker::FoldersTreeMaker(char* input_path_, char* output_path_)
 {
 	input_path = input_path_;
 	output_path = output_path_;
+	mTestCount = 0;
 }
 
 FoldersTreeMaker::~FoldersTreeMaker()
 {
-	
+	std::cout << std::endl << mTestCount << " tests created\n";
 }
 
 bool FoldersTreeMaker::RecourseParse(char* path, TiXmlNode* pParent)
@@ -18,6 +19,7 @@ bool FoldersTreeMaker::RecourseParse(char* path, TiXmlNode* pParent)
 	Suite* currentSuite = new Suite();
 	currentSuite->Parse(pParent, nullptr, nullptr);
 	currentSuite->setDir(path);
+	mTestCount += currentSuite->getList().size();
 	char* fullName = new char[strlen(path) + strlen(currentSuite->getName()) + 2];
 	strncpy_s(fullName, strlen(path) + 1, path, strlen(path));
 	strncpy_s(fullName + strlen(path), 2, "\\", 1);
@@ -40,8 +42,11 @@ bool FoldersTreeMaker::RecourseParse(char* path, TiXmlNode* pParent)
 			{
 				RecourseParse(convertToChar(buffer), pChild);
 			}
-			check = true;
-			pChild = pChild->FirstChild();
+			else
+			{
+				check = true;
+				pChild = pChild->FirstChild();
+			}
 		}
 	}
 	return true;

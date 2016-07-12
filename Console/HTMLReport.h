@@ -21,6 +21,7 @@ private:
 	double amount = 0;
 	double passedAmount = 0;
 	double failedAmount = 0;
+	int mCount = 0;
 };
 
 #endif
