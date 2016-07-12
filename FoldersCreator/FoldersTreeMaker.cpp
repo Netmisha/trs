@@ -85,11 +85,11 @@ bool FoldersTreeMaker::CreateExe(char* path,Suite* suite)
 	if (input_path&&output_path)
 	{
 		std::ifstream input(R"(../TestEXE.exe)", std::ios::in | std::ios::binary);
-		char* exeName = new char[strlen(path) + strlen(suite->getName()) + 6];
+		std::list<TRSTest*>::iterator it = suite->getList().begin();
+		char* exeName = new char[strlen(path) + strlen((*it)->get_executableName()) + 2];
 		strncpy_s(exeName, strlen(path) + 1, path, strlen(path));
 		strncpy_s(exeName + strlen(path), 2, "//", 1);
-		strncpy_s(exeName + strlen(path) + 1, strlen(suite->getName()) + 1, suite->getName(), strlen(suite->getName()));
-		strncpy_s(exeName + strlen(path) + strlen(suite->getName()) + 1, 5, ".exe", 4);
+		strncpy_s(exeName + strlen(path) + 1, strlen((*it)->get_executableName()) + 1, (*it)->get_executableName(), strlen((*it)->get_executableName()));
 		std::ofstream output(exeName);
 
 		unsigned char c;
