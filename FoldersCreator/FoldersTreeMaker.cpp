@@ -28,6 +28,7 @@ bool FoldersTreeMaker::RecourseParse(char* path, TiXmlNode* pParent)
 	currentCreator.setSuite(currentSuite);
 	CreateDirectory(buffer, NULL);
 	currentCreator.CreateXML();
+	CreateExe(fullName, currentSuite);
 	delete[] fullName;
 	bool check = false;
 	TiXmlNode* pChild=pParent;
@@ -77,4 +78,28 @@ bool FoldersTreeMaker::setOutputPath(char* path)
 		return true;
 	}
 	return false;
+}
+
+bool FoldersTreeMaker::CreateExe(char* path,Suite* suite)
+{
+	if (input_path&&output_path)
+	{
+		std::ifstream input(R"(../TestEXE.exe)", std::ios::in | std::ios::binary);
+		char* exeName = new char[strlen(path) + strlen(suite->getName()) + 6];
+		strncpy_s(exeName, strlen(path) + 1, path, strlen(path));
+		strncpy_s(exeName + strlen(path), 2, "//", 1);
+		strncpy_s(exeName + strlen(path) + 1, strlen(suite->getName()) + 1, suite->getName(), strlen(suite->getName()));
+		strncpy_s(exeName + strlen(path) + strlen(suite->getName()) + 1, 5, ".exe", 4);
+		std::ofstream output(exeName);
+
+		unsigned char c;
+		while (!input.eof())
+		{
+			input >> c;
+			output << c;
+		}
+		output.close();
+		delete[] exeName;
+	}
+	return 0;
 }
