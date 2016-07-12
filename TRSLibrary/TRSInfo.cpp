@@ -86,6 +86,12 @@ TRSInfo::TRSInfo(const TRSInfo& val)
 		waitfor = new char[size + 1];
 		strcpy_s(waitfor, size + 1, val.waitfor);
 	}
+	if (val.parameters != nullptr)
+	{
+		int size = strlen(val.parameters);
+		parameters = new char[size + 1];
+		strcpy_s(parameters, size + 1, val.parameters);
+	}
 }
 
 TRSInfo::TRSInfo()
