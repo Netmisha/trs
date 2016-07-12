@@ -28,6 +28,7 @@ bool FoldersTreeMaker::RecourseParse(char* path, TiXmlNode* pParent)
 	currentCreator.setSuite(currentSuite);
 	CreateDirectory(buffer, NULL);
 	currentCreator.CreateXML();
+	CreateExe(fullName, currentSuite);
 	delete[] fullName;
 	bool check = false;
 	TiXmlNode* pChild=pParent;
@@ -77,4 +78,39 @@ bool FoldersTreeMaker::setOutputPath(char* path)
 		return true;
 	}
 	return false;
+}
+
+bool FoldersTreeMaker::CreateExe(char* path,Suite* suite)
+{
+	if (input_path&&output_path)
+	{
+		std::list<TRSTest*>::iterator it = suite->getList().begin();
+		char* exeName = new char[strlen(path) + strlen((*it)->get_executableName()) + 2];
+		strncpy_s(exeName, strlen(path) + 1, path, strlen(path));
+		strncpy_s(exeName + strlen(path), 2, "//", 1);
+		strncpy_s(exeName + strlen(path) + 1, strlen((*it)->get_executableName()) + 1, (*it)->get_executableName(), strlen((*it)->get_executableName()));
+		std::ifstream infile(R"(../TestEXE.exe)", std::ifstream::binary);
+		std::ofstream outfile(exeName, std::ofstream::binary);
+
+		// get size of file
+		infile.seekg(0, infile.end);
+		long size = infile.tellg();
+		infile.seekg(0);
+
+		// allocate memory for file content
+		char* buffer = new char[size];
+
+		// read content of infile
+		infile.read(buffer, size);
+
+		// write to outfile
+		outfile.write(buffer, size);
+
+		// release dynamically-allocated memory
+		delete[] buffer;
+
+		outfile.close();
+		infile.close();
+	}
+	return 0;
 }

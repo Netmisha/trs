@@ -187,7 +187,7 @@ bool XmlCreator::CreateXML()
 		if ((*it)->get_executableName())
 		{
 			TiXmlText* testExecutionText = new TiXmlText((*it)->get_executableName());
-			testDisable->LinkEndChild(testExecutionText);
+			testExecution->LinkEndChild(testExecutionText);
 		}
 
 		TiXmlElement* testParameters = new TiXmlElement("parameters");
@@ -195,7 +195,7 @@ bool XmlCreator::CreateXML()
 		if ((*it)->getParameters())
 		{
 			TiXmlText* testParametersText = new TiXmlText((*it)->getParameters());
-			testDisable->LinkEndChild(testParametersText);
+			testParameters->LinkEndChild(testParametersText);
 		}
 
 		TiXmlElement* testResult = new TiXmlElement("result");
@@ -203,7 +203,7 @@ bool XmlCreator::CreateXML()
 		if ((*it)->get_expectedResult())
 		{
 			TiXmlText* testResultText = new TiXmlText((*it)->get_expectedResult());
-			testDisable->LinkEndChild(testResultText);
+			testResult->LinkEndChild(testResultText);
 		}
 
 		TiXmlElement* testRepeat = new TiXmlElement("repeat");
@@ -211,7 +211,7 @@ bool XmlCreator::CreateXML()
 		if ((*it)->getRepeat())
 		{
 			TiXmlText* testRepeatText = new TiXmlText((*it)->getRepeat());
-			testDisable->LinkEndChild(testRepeatText);
+			testRepeat->LinkEndChild(testRepeatText);
 		}
 
 		TiXmlElement* testMaxTime = new TiXmlElement("maxTime");
@@ -219,7 +219,7 @@ bool XmlCreator::CreateXML()
 		if ((*it)->getMaxTime())
 		{
 			TiXmlText* testMaxTimeText = new TiXmlText((*it)->getMaxTime());
-			testDisable->LinkEndChild(testMaxTimeText);
+			testMaxTime->LinkEndChild(testMaxTimeText);
 		}
 
 		TiXmlElement* testWaitFor = new TiXmlElement("waitFor");
@@ -227,7 +227,7 @@ bool XmlCreator::CreateXML()
 		if ((*it)->getWaitFor())
 		{
 			TiXmlText* testWaitForText = new TiXmlText((*it)->getWaitFor());
-			testDisable->LinkEndChild(testWaitForText);
+			testWaitFor->LinkEndChild(testWaitForText);
 		}
 	}
 	char* resPath = new char[strlen(path) + strlen(currentSuite->getName())+FILE_EXPANSION];

@@ -14,6 +14,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TRSLibrary", "TRSLibrary\TR
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FoldersCreator", "FoldersCreator\FoldersCreator.vcxproj", "{926C4E25-EECA-4DFC-BA00-4AA52596E174}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CreateExe", "CreateExe\CreateExe.vcxproj", "{46BE37A3-ED2E-4D50-9CD8-5C174FA357F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -36,6 +38,10 @@ Global
 		{926C4E25-EECA-4DFC-BA00-4AA52596E174}.Debug|Win32.Build.0 = Debug|Win32
 		{926C4E25-EECA-4DFC-BA00-4AA52596E174}.Release|Win32.ActiveCfg = Release|Win32
 		{926C4E25-EECA-4DFC-BA00-4AA52596E174}.Release|Win32.Build.0 = Release|Win32
+		{46BE37A3-ED2E-4D50-9CD8-5C174FA357F7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{46BE37A3-ED2E-4D50-9CD8-5C174FA357F7}.Debug|Win32.Build.0 = Debug|Win32
+		{46BE37A3-ED2E-4D50-9CD8-5C174FA357F7}.Release|Win32.ActiveCfg = Release|Win32
+		{46BE37A3-ED2E-4D50-9CD8-5C174FA357F7}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

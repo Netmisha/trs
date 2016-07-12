@@ -446,16 +446,19 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		if ((strncmp(pParent->Value(), "maxTime", strlen("maxTime")) == 0) &&getName())
 		{
 			TiXmlNode* child = pParent->FirstChild();
-			if (child->Type() == TiXmlNode::TINYXML_TEXT)
+			if (child)
 			{
-				if (child)
+				if (child->Type() == TiXmlNode::TINYXML_TEXT)
 				{
-					if (strlen(child->Value()) > 0)
+					if (child)
 					{
-						char*MaxTime = new char[strlen(child->Value()) + 1];
-						strncpy_s(MaxTime, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
-						setMaxTime(MaxTime);
-						delete[] MaxTime;
+						if (strlen(child->Value()) > 0)
+						{
+							char*MaxTime = new char[strlen(child->Value()) + 1];
+							strncpy_s(MaxTime, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+							setMaxTime(MaxTime);
+							delete[] MaxTime;
+						}
 					}
 				}
 			}
