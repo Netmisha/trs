@@ -80,7 +80,7 @@ bool ProcessInfo::IsDisable() const
 	if (test_.getDisable() == nullptr)
 		return false;
 
-	return (!_stricmp(test_.getDisable(), "false"));
+	return _stricmp(test_.getDisable(), "false");
 }
 
 
