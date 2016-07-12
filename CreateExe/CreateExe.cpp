@@ -12,7 +12,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		if (atoi(convertToChar(argv[1])))
 		{
-			Sleep(atoi(convertToChar(argv[1])) * 1000);
+			Sleep(atoi(convertToChar(argv[1])));
 		}
 		else
 		{
