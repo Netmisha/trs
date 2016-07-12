@@ -1,12 +1,17 @@
 #ifndef XMLCREATOR_H_
 #define XMLCREATOR_H_
 
-#include "TinyXML\tinyxml.h"
-#include "Suite.h"
-#include "TRSInfo.h"
-#define NAME_LENGTH 11
+#ifdef FolderCreator_EXPORT
+#define XmlCreator_API __declspec(dllexport) 
+#else
+#define XmlCreator_API __declspec(dllimport) 
+#endif
 
-class XmlCreator
+#include "TinyXML\tinyxml.h"
+#include "TRSLibrary\Suite.h"
+#define FILE_EXPANSION 6
+
+class XmlCreator_API XmlCreator
 {
 public:
 	XmlCreator(char* path, Suite* currentSuite);

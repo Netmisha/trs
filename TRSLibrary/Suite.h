@@ -18,7 +18,7 @@ class Suite_API Suite : public TRSInfo
 {
 	std::list<TRSTest*> testList;
 	char* directoryName = nullptr;
-	bool ParseSuit(TiXmlNode* pParent,char* name_,char* tag_);
+	bool ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count);
 public:
 	Suite(char*TestName,char*Description,char*DirName);
 	Suite();
