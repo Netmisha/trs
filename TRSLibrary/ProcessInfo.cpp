@@ -201,7 +201,7 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 	status_ = Status::Running;
 	return nullptr;
 }
-
+#include <iostream>
 
 DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 {
@@ -232,20 +232,6 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 
 	if (wait_result != WAIT_FAILED)
 	{
-		if (!ReleaseSemaphore(data.semaphores[OWNED_SEMAPHORE], 1, NULL))
-		{
-			logger << "Incrementing OWNED_SEMAPHORE semaphore count is failed";
-			return -1;
-		}
-		if (!ReleaseSemaphore(data.semaphores[MANAGING_SEMAPHORE], 1, NULL))
-		{
-			logger << "Incrementing MANAGING_SEMAPHORE semaphore count is failed";
-			return -1;
-		}
-
-		high_resolution_clock::time_point t2 = high_resolution_clock::now();
-		data.running_process.duration_ = duration_cast<milliseconds>(t2 - t1);
-
 		char* message;
 		if (wait_result == WAIT_OBJECT_0)
 		{
@@ -257,27 +243,46 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 				logger << "Process executed but an error occured while getting its exit code";
 				return 1;
 			}
+		
+			int expected_value = atoi(data.running_process.test_.get_expectedResult());
+			data.running_process.result_ = (expected_value == returned_value);
+
+			if (data.running_process.result_)
+			{
+				message = "Succeeded";
+			}
 			else
 			{
-				int expected_value = atoi(data.running_process.test_.get_expectedResult());
-				data.running_process.result_ = (expected_value == returned_value);
-
-				if (data.running_process.result_)
-					message = "Succeeded";
-				else
-					message = "Returned value is not mathing with expecting one";
-
+				message = "Returned value is not mathing with expecting one";
 			}
 		}
 		else
 		{
+			TerminateProcess(data.process_information->hProcess, -1);
 			message = "Timeout";
 			data.running_process.result_ = false;
+			std::cout<<WaitForSingleObject(data.process_information->hProcess, NULL)<<std::endl;
 		}
+
+		if (!ReleaseSemaphore(data.semaphores[OWNED_SEMAPHORE], 1, NULL))
+		{
+			logger << "Incrementing OWNED_SEMAPHORE semaphore count is failed";
+			return -1;
+		}
+		if (!ReleaseSemaphore(data.semaphores[MANAGING_SEMAPHORE], 1, NULL))
+		{
+			logger << "Incrementing MANAGING_SEMAPHORE semaphore count is failed";
+			return -1;
+		}
+
 
 		int size = strlen(message);
 		data.running_process.description_ = new char[size + 1];
 		strcpy_s(data.running_process.description_, size + 1, message);
+
+		high_resolution_clock::time_point t2 = high_resolution_clock::now();
+		data.running_process.duration_ = duration_cast<milliseconds>(t2 - t1);
+
 
 		data.running_process.pReporter_->afterExecution(data.running_process.test_, data.running_process);
 
@@ -286,6 +291,7 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 	}
 	else
 	{
+		// TODO: increment semaphore here
 		delete parameters;
 		logger << "Waiting for the process failed";
 		return -1;
