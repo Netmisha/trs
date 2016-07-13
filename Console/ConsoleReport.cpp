@@ -18,7 +18,7 @@ ConsoleReport::~ConsoleReport()
 	std::cout << "Tests amount:\t" << (int)amount << std::endl;
 	std::cout << "Passed:\t" << (int)passedAmount << "(" << int((passedAmount / amount) * 100) << "%)\n";
 	std::cout << "Failed:\t" << (int)failedAmount << "(" << int((failedAmount / amount) * 100) << "%)\n";
-	std::cout << "Total time:\t" << (int)time << "ms\n";
+	std::cout << "Total time:\t" << (time/1000)/600 << "min\n";
 
 }
 
@@ -52,7 +52,8 @@ void ConsoleReport::AfterExecution(TRSInfo pInfo, TRSResult pResult)
 	
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	
-	std::cout <<"'"<< pInfo.getName()<<"' ";
+	std::cout <<mCount<<" '"<< pInfo.getName()<<"' ";
+	mCount++;
 	if (pResult.get_result())
 	{
 		SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN);
