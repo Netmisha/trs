@@ -157,7 +157,10 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 		return INVALID_PARAMETERS;
 
 		std::list<Suite*>* suiteCollection=List(path, name, tag);
-	
+		if (suiteCollection->size() == 0)
+		{
+			return DEAD_LOCK_WAS_FOUND;
+		}
 		std::list<Suite*>::iterator it = suiteCollection->begin();
 		for (it; it != suiteCollection->end(); ++it)
 		{
@@ -191,13 +194,6 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 				{
 					delete[] buf;
 					collTests.push_back((*iter));
-				}
-			}
-			for (int i = 0; i < collTests.size(); ++i)
-			{
-				if (!VerifyTestsList(collTests, (*it)->getList().size(), coll, i))
-				{
-					return DEAD_LOCK_WAS_FOUND;
 				}
 			}
 		}

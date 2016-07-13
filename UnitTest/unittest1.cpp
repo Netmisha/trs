@@ -431,8 +431,17 @@ namespace UnitTest
 			bool const no_leaks = 0 == _CrtMemDifference(&s3, &s1, &s2);
 			Assert::IsTrue(no_leaks);
 		}
-
-		
-
+		TEST_METHOD(Dead_lock_finding_two_tests)
+		{
+			Assert::AreEqual((int)Manager.Verify(R"(../VerifyingTestsDeadLock/Twotestslock)", nullptr, nullptr), (int)DEAD_LOCK_WAS_FOUND);
+		}
+		TEST_METHOD(Dead_lock_finding_long_chain)
+		{
+			Assert::AreEqual((int)Manager.Verify(R"(../VerifyingTestsDeadLock/LongChain)", nullptr, nullptr), (int)DEAD_LOCK_WAS_FOUND);
+		}
+		TEST_METHOD(Dead_lock_finding_intricately)
+		{
+			Assert::AreEqual((int)Manager.Verify(R"(../VerifyingTestsDeadLock/Intricately)", nullptr, nullptr), (int)DEAD_LOCK_WAS_FOUND);
+		}
 	};
 }

@@ -12,6 +12,18 @@ int TestPosition(std::vector<TRSTest*> coll, char* testName)
 	}
 }
 
+bool ExistTest(std::vector<TRSTest*> coll, char* testName)
+{
+	for (int i = 0; i < coll.size(); ++i)
+	{
+		if (!strncmp(coll[i]->getName(), testName, strlen(testName)))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool VerifyTestsList(std::vector<TRSTest*>coll, int size, std::vector<char*>nameColl, int firstelem )
 {
 	if (size)
@@ -26,13 +38,16 @@ bool VerifyTestsList(std::vector<TRSTest*>coll, int size, std::vector<char*>name
 				}
 			}
 			nameColl.push_back(coll[firstelem]->getName());
-			if (!strncmp(coll[firstelem]->getName(), coll[TestPosition(coll, coll[firstelem]->getWaitFor())]->getName(), strlen(coll[firstelem]->getName())))
+			if (ExistTest(coll, coll[firstelem]->getWaitFor()))
 			{
-				return false;
-			}
-			else
-			{
-				return VerifyTestsList(coll, coll.size() - 1, nameColl, TestPosition(coll, coll[firstelem]->getWaitFor()));
+				if (!strncmp(coll[firstelem]->getName(), coll[TestPosition(coll, coll[firstelem]->getWaitFor())]->getName(), strlen(coll[firstelem]->getName())))
+				{
+					return false;
+				}
+				else
+				{
+					return VerifyTestsList(coll, coll.size() - 1, nameColl, TestPosition(coll, coll[firstelem]->getWaitFor()));
+				}
 			}
 		}
 		else
