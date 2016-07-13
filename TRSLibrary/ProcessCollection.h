@@ -38,7 +38,7 @@ public:
 	bool TryRun();
 private:
 	// if name == nullptr - return 0
-	int IsDone(char* name);
+	int IsDone(char* name, _Outptr_ bool& res);
 
 private:
 	int undone_tests_;

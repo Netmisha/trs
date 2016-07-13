@@ -27,9 +27,12 @@ ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, Repor
 	for each (TRSTest* var in suite.getList())
 	{
 		ProcessInfo info(*var, path_, semaphores_, pReport);
-		tests_.push_back(info);
-
-		undone_tests_ += !info.IsDisable();
+		int repeat = atoi(var->getRepeat());
+		for (int i = 0; i < repeat; ++i)
+		{
+			tests_.push_back(info);
+			undone_tests_ += !info.IsDisable();
+		}
 	}
 	//sorting collection by priority
 
@@ -102,25 +105,23 @@ bool ProcessCollection::TryRun()
 						break;
 					}
 					// if this test is waiting for test, which is already done
-					int result = IsDone(name);
-
-				    if (result == 1)
+					bool is_done;
+					int result = IsDone(name, is_done);
+					if (result >= 0)
 					{
-						var->ProcessTest(true);
-						break;
+						undone_tests_ -= result;
 					}
-					else if (result ==  2)
-					{
-						--undone_tests_;
-						var->ProcessTest(true);
-						break;
-					}
-					else if (result < 0)
+					else
 					{
 						logger << "Waitfor name is not exist in current namespace";
 						return false;
 					}
 
+					if (is_done)
+					{
+						var->ProcessTest(true);
+						break;
+					}
 					// So, this test is wating fo another test which is still runnig.
 					// so it was not a test, which signaled to main thread. Continue searching
 				}
@@ -141,40 +142,62 @@ bool ProcessCollection::TryRun()
 }
 
 // returns:
-// 0 - if test is not Done
-// 1 - test was Done before checking
-// 2 - we release resources of this test and change its status to Done
 // -1 - error: this test is not exist in current suite
-int ProcessCollection::IsDone(char* name)
+// val >= 0 - we release resources of val tests and change their status to Done
+// in all_done output parameter we will write whether all specified tests are done or not
+int ProcessCollection::IsDone(char* name, _Outptr_ bool &all_done)
 {
-	if (name == nullptr)
-		return 0;
+	all_done = true;
+	int ret_val = 0;
 
+	if (name == nullptr)
+		return ret_val;
+
+	bool name_exist = false;
 	for (auto var = tests_.begin(); var != tests_.end(); ++var)
 	{
 		if (!strcmp(name, var->get_name()))
 		{
+			name_exist = true;
 			// test is diasable, so we might execute all tests which are waiting on it
 			if (var->IsDisable())
-				return 1;
+			{
+				continue;
+			}
 
 			switch (var->get_status())
 			{
 			case Status::Done:
-				return 1;
+			{
+				 continue;
+			}
 
 			case Status::Running:
+			{
 				// if it is finished
 				if (var->IsDone())
-					return 2;
+				{
+					++ret_val;
+					break;
+				}
 				else
-					return 0;
-
-			default:
-				return 0;
+				{
+					all_done = false;
+					return ret_val;
+				}
 			}
+			case Status::Waiting:
+			{
+				all_done = false;
+				return ret_val;
+			}
+			}
+
 		}
 	}
 
-	return -1;
+	if (name_exist)
+		return ret_val;
+	else
+		return -1;
 }
