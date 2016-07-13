@@ -5,7 +5,7 @@
 #include "spdlog\spdlog.h"
 #include "ProcessCollection.h"
 #include "SuiteCollection.h"
-
+#include "TestsListVerifying.h"
 #include <iostream>
 #include <memory>
 #include "Erorrs.h"
@@ -38,6 +38,10 @@ bool TRSManager::Run(char* path, char* name, char* tag, ReportManager* pResult)
 		return false;
 
 	std::list<Suite*> arr = *List(path, name, tag);
+	if (arr.size() == 0)
+	{
+		return false;
+	}
 	std::list<Suite> coll;
 
 	for (auto var = arr.begin(); var != arr.end(); ++var)
@@ -45,7 +49,7 @@ bool TRSManager::Run(char* path, char* name, char* tag, ReportManager* pResult)
 	
 	// TODO: add parameter to Console command line
 	SuiteCollection suits(coll, 10, pResult);
-
+	
 	return suits.Run();
 }
 
@@ -158,6 +162,8 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 		for (it; it != suiteCollection->end(); ++it)
 		{
 			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+			std::vector<char*> coll;
+			std::vector<TRSTest*>collTests;
 			for (iter; iter != (*it)->getList().end(); ++iter)
 			{
 				if (!((*iter)->getName()))
@@ -184,7 +190,14 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 				else
 				{
 					delete[] buf;
-					
+					collTests.push_back((*iter));
+				}
+			}
+			for (int i = 0; i < collTests.size(); ++i)
+			{
+				if (!VerifyTestsList(collTests, (*it)->getList().size(), coll, i))
+				{
+					return DEAD_LOCK_WAS_FOUND;
 				}
 			}
 		}
@@ -357,6 +370,79 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 
 	std::list<Suite*>*suiteCollection = new std::list<Suite*>;
 	FillList(path, name, tag, suiteCollection);
+	std::list<Suite*>::iterator it = suiteCollection->begin();
+	for (it; it != suiteCollection->end(); ++it)
+	{
+		std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+		std::vector<char*> coll;
+		std::vector<TRSTest*>collTests;
+		for (iter; iter != (*it)->getList().end(); ++iter)
+		{
+			if (!((*iter)->getName()))
+			{
+				std::list<Suite*>::iterator it = suiteCollection->begin();
+				for (it; it != suiteCollection->end(); ++it)
+				{
+					delete (*it);
+				}
+				suiteCollection->clear();
+				return suiteCollection;
+			}
+			if ((!(*iter)->get_executableName()))
+			{
+				std::list<Suite*>::iterator it = suiteCollection->begin();
+				for (it; it != suiteCollection->end(); ++it)
+				{
+					delete (*it);
+				}
+				suiteCollection->clear();
+				return suiteCollection;
+			}
+			if ((!(*iter)->get_expectedResult()))
+			{
+				std::list<Suite*>::iterator it = suiteCollection->begin();
+				for (it; it != suiteCollection->end(); ++it)
+				{
+					delete (*it);
+				}
+				suiteCollection->clear();
+				return suiteCollection;
+			}
+			char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
+			strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
+			strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
+			DWORD fFile = GetFileAttributesA(buf);
+			if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
+			{
+				delete[] buf;
+				std::list<Suite*>::iterator it = suiteCollection->begin();
+				for (it; it != suiteCollection->end(); ++it)
+				{
+					delete (*it);
+				}
+				suiteCollection->clear();
+				return suiteCollection;
+			}
+			else
+			{
+				delete[] buf;
+				collTests.push_back((*iter));
+			}
+		}
+		for (int i = 0; i < collTests.size(); ++i)
+		{
+			if (!VerifyTestsList(collTests, (*it)->getList().size(), coll, i))
+			{
+				std::list<Suite*>::iterator it = suiteCollection->begin();
+				for (it; it != suiteCollection->end(); ++it)
+				{
+					delete (*it);
+				}
+				suiteCollection->clear();
+				return suiteCollection;
+			}
+		}
+	}
 	return suiteCollection;
 }
 

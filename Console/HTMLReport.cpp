@@ -90,6 +90,11 @@ void HTMLReport::BeforeExecution(TRSInfo pInfo)
 	
 }
 
+void HTMLReport::ErrorOutput()
+{
+	output << R"(<font color="red">AN ERROR OCCURED</font></br>)";
+}
+
 void HTMLReport::AfterExecution(TRSInfo pInfo, TRSResult pResult)
 {
 	output << "<tr>\n\t<td>" << mCount << "</td>";
