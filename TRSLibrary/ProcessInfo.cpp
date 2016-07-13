@@ -201,7 +201,6 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 	status_ = Status::Running;
 	return nullptr;
 }
-#include <iostream>
 
 DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 {
@@ -261,7 +260,8 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 			TerminateProcess(data.process_information->hProcess, -1);
 			message = "Timeout";
 			data.running_process.result_ = false;
-			std::cout<<WaitForSingleObject(data.process_information->hProcess, NULL)<<std::endl;
+			Sleep(1000);
+		//	std::cout << WaitForSingleObject(data.process_information->hProcess, NULL) << std::endl;;
 		}
 
 		if (!ReleaseSemaphore(data.semaphores[OWNED_SEMAPHORE], 1, NULL))

@@ -28,7 +28,6 @@ SuiteCollection::~SuiteCollection()
 		logger << "Closing semaphore's handle failed";
 }
 
-
 bool SuiteCollection::Run()
 {
 	while (IsUndone())
@@ -50,7 +49,6 @@ bool SuiteCollection::Run()
 			logger << "Wait for semaphore failed _1";
 			return false;
 		}
-
 	}
 
 	return true;
@@ -61,10 +59,17 @@ bool SuiteCollection::Run()
 // I will change it later
 bool SuiteCollection::IsUndone()
 {
-	for (auto var = suits_.begin(); var != suits_.end(); ++var)
+	for (auto var = suits_.begin(); var != suits_.end();)
 	{
-		if (var->is_undone())
+		if (!var->is_undone())
+		{
+			auto to_erase = var;
+			++var;
+			suits_.erase(to_erase);
+		}
+		else
 			return true;
 	}
+
 	return false;
 }

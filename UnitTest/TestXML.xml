@@ -2,7 +2,7 @@
 <suite name="Suite root" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -21,105 +21,105 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">2</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 6" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 7" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 8" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 9" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	<test name="Test 10" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	<suite name="Suite 1" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>3s</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -138,55 +138,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">2</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite root" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>3s</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -205,55 +205,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">2</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite 1" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -272,55 +272,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 <suite name="Suite root" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -339,55 +339,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite 1" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -406,55 +406,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite root" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -473,55 +473,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite 1" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -540,56 +540,56 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	</suite>
 	<suite name="Suite 2" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>3s</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -608,50 +608,50 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>3s</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	</suite>
 	</suite>
@@ -659,7 +659,7 @@
 	<suite name="Suite 2" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -678,55 +678,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite root" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -745,55 +745,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<suite name="Suite 1" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1234</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -812,56 +812,56 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	</suite>
 	<suite name="Suite 2" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1234</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -880,50 +880,50 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	</suite>
 	</suite>
@@ -933,7 +933,7 @@
 	<suite name="Suite 2" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -952,50 +952,50 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	</suite>
 	</suite>
@@ -1003,7 +1003,7 @@
 	<suite name="Suite 2" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1234</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1022,55 +1022,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite root" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1089,55 +1089,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite 1" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1234</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1156,55 +1156,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1234</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 <suite name="Suite root" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1223,55 +1223,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite 1" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1290,55 +1290,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite root" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1357,55 +1357,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite 1" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1424,56 +1424,56 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	</suite>
 	<suite name="Suite 2" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1492,50 +1492,50 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	</suite>
 	</suite>
@@ -1543,7 +1543,7 @@
 	<suite name="Suite 2" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1562,55 +1562,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
-		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<parameters repeat = "32" >2 5</parameters>
+		<result>5</result>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite root" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1629,55 +1629,55 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<suite name="Suite 1" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1696,56 +1696,56 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	</suite>
 	<suite name="Suite 2" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1764,50 +1764,50 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	</suite>
 	</suite>
@@ -1817,7 +1817,7 @@
 	<suite name="Suite 2" description="Test description">
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
-	<maxTime>10h50m</maxTime>
+	<maxTime>1m</maxTime>
 	<maxThreads>3</maxThreads>
 	<priority>4</priority>
 	<disable>false</disable>
@@ -1836,50 +1836,50 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 2" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 3" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 4" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	<test name="Test 5" description="Test description">
 		<priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.exe</execution>
-		<parameters repeat = "32" >10 5</parameters>
+		<parameters repeat = "32" >2 5</parameters>
 		<result>0</result>
-		<repeat pause="100">120</repeat>
-            	<maxTime>10h50m</maxTime>
+		<repeat pause="100">1</repeat>
+            	<maxTime>1m</maxTime>
 	</test>
 	</suite>
 	</suite>
