@@ -273,16 +273,16 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 		{
 			TerminateProcess(data.process_information->hProcess, -1);
 			message = "Timeout";
-			
+			Sleep(1000);
 			data.running_process.result_ = false;
 		}
-		Sleep(1000);
-		std::cout << WaitForSingleObject(data.process_information->hProcess, NULL) << std::endl;
+		
+		
 		int size = strlen(message);
 		data.running_process.description_ = new char[size + 1];
 		strcpy_s(data.running_process.description_, size + 1, message);
 
-		//data.running_process.pReporter_->afterExecution(data.running_process.test_, data.running_process);
+		data.running_process.pReporter_->afterExecution(data.running_process.test_, data.running_process);
 
 		delete parameters;
 		return 0;
