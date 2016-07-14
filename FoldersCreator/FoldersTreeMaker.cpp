@@ -2,6 +2,7 @@
 #define FolderCreator_EXPORT
 #include "foldersTreeMaker.h"
 
+
 FoldersTreeMaker::FoldersTreeMaker(char* input_path_, char* output_path_)
 {
 	input_path = input_path_;
@@ -12,7 +13,31 @@ FoldersTreeMaker::FoldersTreeMaker(char* input_path_, char* output_path_)
 FoldersTreeMaker::~FoldersTreeMaker()
 {
 	std::cout << std::endl << mTestCount << " tests created\n";
+	delete[] rootDirectoryPath;
 }
+
+char* FoldersTreeMaker::getInputPath()
+{
+	return rootDirectoryPath;
+}
+
+int FoldersTreeMaker::DeleteDirectory(LPCWSTR wzDirectory)
+{
+	WCHAR szDir[MAX_PATH + 1];  // +1 for the double null terminate
+	SHFILEOPSTRUCTW fos = { 0 };
+
+	StringCchCopy(szDir, MAX_PATH, wzDirectory);
+	int len = lstrlenW(szDir);
+	szDir[len + 1] = 0; // double null terminate for SHFileOperation
+
+	// delete the folder and everything inside
+	fos.wFunc = FO_DELETE;
+	fos.pFrom = szDir;
+	fos.fFlags = FOF_NO_UI;
+	return SHFileOperation(&fos);
+}
+
+
 
 bool FoldersTreeMaker::RecourseParse(char* path, TiXmlNode* pParent)
 {
@@ -24,10 +49,24 @@ bool FoldersTreeMaker::RecourseParse(char* path, TiXmlNode* pParent)
 	strncpy_s(fullName, strlen(path) + 1, path, strlen(path));
 	strncpy_s(fullName + strlen(path), 2, "\\", 1);
 	strncpy_s(fullName + strlen(path)+1, strlen(currentSuite->getName()) + 1, currentSuite->getName(), strlen(currentSuite->getName()));
+	if (!rootDirectoryPath)
+	{
+		SetRootDirectory(fullName);
+	}
 	TCHAR* buffer = new TCHAR[strlen(path) + strlen(currentSuite->getName()) + 1];
 	convertToTCHAR(buffer, fullName);
 	currentCreator.setPath(fullName);
 	currentCreator.setSuite(currentSuite);
+	DWORD fFile = GetFileAttributesA(fullName);
+	if ((fFile != INVALID_FILE_ATTRIBUTES))
+	{
+		mTestCount = 0;
+		TCHAR* buf = new TCHAR[strlen(rootDirectoryPath) + 1];
+		convertToTCHAR(buf, rootDirectoryPath);
+		DeleteDirectory(buf);
+		delete[] buf;
+		return false;
+	}
 	CreateDirectory(buffer, NULL);
 	currentCreator.CreateXML();
 	CreateExe(fullName, currentSuite);
@@ -63,6 +102,17 @@ bool FoldersTreeMaker::MakeTree()
 	{
 		return false;
 	}
+}
+
+bool FoldersTreeMaker::SetRootDirectory(char*path)
+{
+	if (path)
+	{
+		rootDirectoryPath = new char[strlen(path)+1];
+		strncpy_s(rootDirectoryPath, strlen(path) + 1, path, strlen(path));
+		return true;
+	}
+	return false;
 }
 
 bool FoldersTreeMaker::setInputPath(char*path)

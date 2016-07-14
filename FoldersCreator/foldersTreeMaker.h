@@ -13,6 +13,7 @@
 #include "Converters.h"
 #include <iostream>
 #include <fstream>
+#include <strsafe.h>
 
 class FolderTreeMaker_API FoldersTreeMaker
 {
@@ -25,13 +26,17 @@ public:
 	bool setOutputPath(char* path);
 	char* getInputPath();
 	char* getOutputPath();
+	char* getRootDirectory();
 private:
 	bool RecourseParse(char* path, TiXmlNode* pParent);
 	bool CreateExe(char*path,Suite*suite);
+	bool SetRootDirectory(char*path);
+	int DeleteDirectory(LPCWSTR wzDirectory);
 private:
 	char* input_path;
 	char* output_path;
 	int mTestCount;
+	char* rootDirectoryPath = nullptr;
 	XmlCreator currentCreator;
 };
 

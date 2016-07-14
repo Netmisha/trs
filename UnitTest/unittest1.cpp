@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 #include "TRSLibrary\Metadata.h"
+#include "FoldersCreator\foldersTreeMaker.h"
 
 #define AMOUNT_OF_TESTS 18U
 #define FIRST_BRANCH_AMOUNT 6U
@@ -32,6 +33,7 @@ namespace UnitTest
 		TEST_CLASS_INITIALIZE(ClassInitialization)
 		{
 			Manager.Init();
+			
 		}
 		
 		TEST_CLASS_CLEANUP(ClassCleanUp)
@@ -442,6 +444,24 @@ namespace UnitTest
 		TEST_METHOD(Dead_lock_finding_intricately)
 		{
 			Assert::AreEqual((int)Manager.Verify(R"(../VerifyingTestsDeadLock/Intricately)", nullptr, nullptr), (int)DEAD_LOCK_WAS_FOUND);
+		}
+		TEST_METHOD(Check_if_folder_exist_when_failed_FolderCreation)
+		{	
+			char buf[] = R"(..\Debug\FoldersCreator.exe)";
+			TCHAR* buffer = new TCHAR[strlen(buf) + 1];
+			TCHAR help = buf[0];
+			int i = 0;
+			while (help)
+			{
+				buffer[i] = help;
+				++i;
+				help = buf[i];
+			}
+			buffer[i] = '\0';
+			CreateProcess(buffer, 0, NULL, NULL, FALSE, CREATE_NO_WINDOW,NULL, NULL, 0, 0);
+			char fullName[] = R"(../UnitTest/Suite root)";
+			DWORD fFile = GetFileAttributesA(fullName);
+			Assert::IsTrue(fFile == INVALID_FILE_ATTRIBUTES || !(fFile & FILE_ATTRIBUTE_DIRECTORY));
 		}
 	};
 }
