@@ -38,7 +38,7 @@ bool SuiteCollection::Run()
 		{
 			for (auto var = suits_.begin(); var != suits_.end(); ++var)
 			{
-				if (var->is_undone() && var->TryRun())
+				if (var->TryRun())
 				{
 					break;
 				}
@@ -50,7 +50,7 @@ bool SuiteCollection::Run()
 			return false;
 		}
 	}
-
+//	system("pause");
 	return true;
 
 }
@@ -59,13 +59,13 @@ bool SuiteCollection::Run()
 // I will change it later
 bool SuiteCollection::IsUndone()
 {
-	for (auto var = suits_.begin(); var != suits_.end();)
+	for (auto var = suits_.begin(); var != suits_.end(); ++var)
 	{
 		if (!var->is_undone())
 		{
-			auto to_erase = var;
-			++var;
-			suits_.erase(to_erase);
+//			auto to_erase = var;
+//			++var;
+//			suits_.erase(to_erase);
 		}
 		else
 			return true;

@@ -89,9 +89,10 @@ bool ProcessCollection::TryRun()
 					// this test is disable, we do not need to check it 
 					continue;
 				}
-				else if (var->get_status() == Status::Running && var->IsDone())
+				else if (var->get_status() == Status::Closed)
 				{
 					// this test is already "Done", so decrement the counter
+					var->set_status(Status::Done);
 					--undone_tests_;
 					continue;
 				}
@@ -171,16 +172,16 @@ int ProcessCollection::IsDone(char* name, _Outptr_ bool &all_done)
 			{
 				 continue;
 			}
+			case Status::Closed:
+			{		
+				++ret_val;
+				var->set_status(Status::Done);
+			   break;
+			}
 
 			case Status::Running:
 			{
 				// if it is finished
-				if (var->IsDone())
-				{
-					++ret_val;
-					break;
-				}
-				else
 				{
 					all_done = false;
 					return ret_val;

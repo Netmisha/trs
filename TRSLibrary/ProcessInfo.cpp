@@ -9,7 +9,7 @@ using namespace std::chrono;
 
 // =========================================================================================================================================================
 
-ProcessData::ProcessData( ProcessInfo info, PROCESS_INFORMATION* pi, HANDLE handles[SEMAPHORES_AMOUNT]) : process_information(pi), running_process(info)
+ProcessData::ProcessData( ProcessInfo* info, PROCESS_INFORMATION* pi, HANDLE handles[SEMAPHORES_AMOUNT]) : process_information(pi), running_process(info)
 {
 	semaphores[OWNED_SEMAPHORE] = handles[OWNED_SEMAPHORE];
 	semaphores[MANAGING_SEMAPHORE] = handles[MANAGING_SEMAPHORE];
@@ -21,6 +21,7 @@ ProcessData::ProcessData( ProcessInfo info, PROCESS_INFORMATION* pi, HANDLE hand
 ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphores[SEMAPHORES_AMOUNT], ReportManager* pReporter) : 
 test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(pReporter), work_thread_(NULL), description_(nullptr)
 {
+	InitializeCriticalSection(&crt_);
 	semaphores_[OWNED_SEMAPHORE] = semaphores[OWNED_SEMAPHORE];
 	semaphores_[MANAGING_SEMAPHORE] = semaphores[MANAGING_SEMAPHORE];
 
@@ -57,6 +58,8 @@ ProcessInfo::ProcessInfo(const ProcessInfo& instance):
 test_(instance.test_), status_(instance.status_), work_thread_(instance.work_thread_), pReporter_(instance.pReporter_), description_(instance.description_),
 result_(instance.result_), process_information_(instance.process_information_), duration_(instance.duration_), max_time_(instance.max_time_)
 {
+	InitializeCriticalSection(&crt_);
+
 	semaphores_[OWNED_SEMAPHORE] = instance.semaphores_[OWNED_SEMAPHORE];
 	semaphores_[MANAGING_SEMAPHORE] = instance.semaphores_[MANAGING_SEMAPHORE];
 
@@ -71,6 +74,7 @@ result_(instance.result_), process_information_(instance.process_information_), 
 
 ProcessInfo::~ProcessInfo()
 {
+	DeleteCriticalSection(&crt_);
 	delete[] path_;
 	delete[] command_line_;
 	if (description_)
@@ -189,7 +193,7 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 		return test_.getWaitFor();
 	}
 
-	ProcessData* parameters = new ProcessData(*this, &process_information_, semaphores_);
+	ProcessData* parameters = new ProcessData(this, &process_information_, semaphores_);
 
 	HANDLE work_thread = CreateThread(NULL, NULL, &ProcessInfo::StartThread, parameters, NULL, NULL);
 	if (work_thread == NULL)
@@ -202,6 +206,8 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 	return nullptr;
 }
 
+#include <iostream>
+using namespace std;
 DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 {
 	// recording time in order to evaluate function duration
@@ -209,14 +215,14 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 
 	ProcessData data = *((ProcessData*)parameters);
 	// recording time for reporter
-	data.running_process.pReporter_->beforeExecution(data.running_process.test_);
+	data.running_process->pReporter_->beforeExecution(data.running_process->test_);
 
 	STARTUPINFO startup_info;
 	ZeroMemory(&startup_info, sizeof(startup_info));
 	startup_info.cb = sizeof(startup_info);
 
 	// starting our desirable executable file
-	bool create_result = CreateProcess(NULL, data.running_process.command_line_, NULL, NULL, FALSE, CREATE_NO_WINDOW,
+	bool create_result = CreateProcess(NULL, data.running_process->command_line_, NULL, NULL, FALSE, CREATE_NO_WINDOW,
 		NULL, NULL, &startup_info, data.process_information);
 
 	if (!create_result)
@@ -227,7 +233,7 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 	}
 
 	// Successfully created the process.  Wait for it to finish no more than MAX_TIME
-	int wait_result = WaitForSingleObject(data.process_information->hProcess, data.running_process.max_time_);
+	int wait_result = WaitForSingleObject(data.process_information->hProcess, data.running_process->max_time_);
 
 	if (wait_result != WAIT_FAILED)
 	{
@@ -243,10 +249,10 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 				return 1;
 			}
 		
-			int expected_value = atoi(data.running_process.test_.get_expectedResult());
-			data.running_process.result_ = (expected_value == returned_value);
+			int expected_value = atoi(data.running_process->test_.get_expectedResult());
+			data.running_process->result_ = (expected_value == returned_value);
 
-			if (data.running_process.result_)
+			if (data.running_process->result_)
 			{
 				message = "Succeeded";
 			}
@@ -259,10 +265,12 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 		{
 			TerminateProcess(data.process_information->hProcess, -1);
 			message = "Timeout";
-			data.running_process.result_ = false;
-			Sleep(1000);
+			data.running_process->result_ = false;
+		//	Sleep(1000);
 		//	std::cout << WaitForSingleObject(data.process_information->hProcess, NULL) << std::endl;;
 		}
+
+		data.running_process->set_status(Status::Closed);
 
 		if (!ReleaseSemaphore(data.semaphores[OWNED_SEMAPHORE], 1, NULL))
 		{
@@ -277,14 +285,19 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 
 
 		int size = strlen(message);
-		data.running_process.description_ = new char[size + 1];
-		strcpy_s(data.running_process.description_, size + 1, message);
+		data.running_process->description_ = new char[size + 1];
+		strcpy_s(data.running_process->description_, size + 1, message);
 
 		high_resolution_clock::time_point t2 = high_resolution_clock::now();
-		data.running_process.duration_ = duration_cast<milliseconds>(t2 - t1);
+		data.running_process->duration_ = duration_cast<milliseconds>(t2 - t1);
 
 
-		data.running_process.pReporter_->afterExecution(data.running_process.test_, data.running_process);
+	//	system("pause");
+
+	//	cout << data.running_process->path_ << endl;
+
+	
+		data.running_process->pReporter_->afterExecution(data.running_process->test_, *data.running_process);
 
 		delete parameters;
 		return 0;
@@ -307,34 +320,34 @@ bool ProcessInfo::ReleaseResources()
 }
 
 // WILL BE CHANGED AFTER REPORTER'S INTEGRATION
-bool ProcessInfo::IsDone()
-{
-	if (status_ != Status::Running)
-		return status_ == Status::Done;
-
-	int wait_process = WaitForSingleObject(process_information_.hProcess, NULL);
-
-	// how to write this if blocks more readable?
-	if (wait_process == WAIT_FAILED && process_information_.hProcess != 0)
-	{
-		logger << "Wait for process termination failed";
-		return false;
-	}
-	if (wait_process == WAIT_OBJECT_0)
-	{
-	/*	CloseHandle(process_information_.hProcess);
-		CloseHandle(process_information_.hThread);
-		ZeroMemory(&process_information_, sizeof(process_information_));*/
-
-		status_ = Status::Done;
-		return true;
-	}
-	else
-	{
-		// process is still running
-		return false;
-	}
-}
+//bool ProcessInfo::IsDone()
+//{
+//	if (status_ != Status::Running)
+//		return status_ == Status::Done;
+//
+//	int wait_process = WaitForSingleObject(process_information_.hProcess, NULL);
+//
+//	// how to write this if blocks more readable?
+//	if (wait_process == WAIT_FAILED && process_information_.hProcess != 0)
+//	{
+//		logger << "Wait for process termination failed";
+//		return false;
+//	}
+//	if (wait_process == WAIT_OBJECT_0)
+//	{
+//	/*	CloseHandle(process_information_.hProcess);
+//		CloseHandle(process_information_.hThread);
+//		ZeroMemory(&process_information_, sizeof(process_information_));*/
+//
+//		status_ = Status::Done;
+//		return true;
+//	}
+//	else
+//	{
+//		// process is still running
+//		return false;
+//	}
+//}
 
 // WILL BE ERASED AFTER REPORTER'S INTEGRATION
 //bool ProcessInfo::RecordDuration()
