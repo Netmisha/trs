@@ -67,3 +67,14 @@ void ReportManager::End()
 	}
 	LeaveCriticalSection(&critical_section_);
 }
+
+void ReportManager::errorOutput()
+{
+	EnterCriticalSection(&critical_section_);
+	std::list<TRSReport*>::iterator it = reportList.begin();
+	for (it; it != reportList.end(); ++it)
+	{
+		(*it)->ErrorOutput();
+	}
+	LeaveCriticalSection(&critical_section_);
+}

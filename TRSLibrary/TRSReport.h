@@ -18,6 +18,7 @@ public:
 	virtual~TRSReport();
 	virtual void BeforeExecution(TRSInfo pInfo) = 0;
 	virtual void AfterExecution(TRSInfo pInfo, TRSResult pResult) = 0;
+	virtual void ErrorOutput() = 0;
 	virtual void Begin()=0;
 	virtual void End()=0;
 };

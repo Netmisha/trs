@@ -7,5 +7,6 @@
 #define SUCCSEED 4
 #define INVALID_EXE_FILE 5
 #define INVALID_PARAMETERS 6
+#define DEAD_LOCK_WAS_FOUND 7
 
 #endif

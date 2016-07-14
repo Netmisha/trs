@@ -266,8 +266,6 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 			TerminateProcess(data.process_information->hProcess, -1);
 			message = "Timeout";
 			data.running_process->result_ = false;
-		//	Sleep(1000);
-		//	std::cout << WaitForSingleObject(data.process_information->hProcess, NULL) << std::endl;;
 		}
 
 		data.running_process->set_status(Status::Closed);
@@ -282,7 +280,6 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 			logger << "Incrementing MANAGING_SEMAPHORE semaphore count is failed";
 			return -1;
 		}
-
 
 		int size = strlen(message);
 		data.running_process->description_ = new char[size + 1];

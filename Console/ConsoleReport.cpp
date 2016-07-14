@@ -27,6 +27,14 @@ double ConsoleReport::getTime()
 	return time;
 }
 
+void ConsoleReport::ErrorOutput()
+{
+	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hStdout, FOREGROUND_RED);
+	std::cout << "An Error occured\n";
+	SetConsoleTextAttribute(hStdout, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+}
+
 double ConsoleReport::getAmount()
 {
 	return amount;

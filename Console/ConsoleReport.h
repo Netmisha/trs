@@ -14,6 +14,7 @@ public:
 	virtual void AfterExecution(TRSInfo pInfo, TRSResult pResult);
 	virtual void Begin();
 	virtual void End();
+	virtual void ErrorOutput();
 
 	double getTime();
 	double getAmount();

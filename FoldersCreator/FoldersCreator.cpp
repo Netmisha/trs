@@ -10,8 +10,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (argc == 3)
 	{
 		FoldersTreeMaker maker(convertToChar(argv[1]), convertToChar(argv[2]));
-		maker.MakeTree();
-		return 1;
+		if (maker.MakeTree())
+		{
+			return 1;
+		}
 	}
 	else
 	{

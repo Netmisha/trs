@@ -50,7 +50,10 @@ int ProcessFunction(char* name, char* tag, char* path)
 		reportManager.Begin();
 
 		bool result = Manager.Run(path, name, tag, &reportManager);
-
+		if (!result)
+		{
+			reportManager.errorOutput();
+		}
 		reportManager.End();
 		return result;
 	/*	ReportManager reportManager;
@@ -93,13 +96,20 @@ int ProcessFunction(char* name, char* tag, char* path)
 
 	else if (!_stricmp(__argv[1], "List"))
 	{
-		std::list<Suite*>* list =  Manager.List(path, name, tag);
-		for each (auto x in *list)
-			std::cout << *x << std::endl;
-		std::list<Suite*>::iterator it = list->begin();
-		for (it; it != list->end(); ++it)
+		std::list<Suite*>* list = Manager.List(path, name, tag);
+		if (list->size() > 0)
 		{
-			delete (*it);
+			for each (auto x in *list)
+				std::cout << *x << std::endl;
+			std::list<Suite*>::iterator it = list->begin();
+			for (it; it != list->end(); ++it)
+			{
+				delete (*it);
+			}
+		}
+		else
+		{
+			std::cout << "List is empty!\n";
 		}
 		delete list;
 		
