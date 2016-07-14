@@ -1,4 +1,4 @@
-#ifndef ProcessInfo_HEADER
+﻿#ifndef ProcessInfo_HEADER
 #define ProcessInfo_HEADER
 
 #define SEMAPHORES_AMOUNT 2
@@ -15,7 +15,7 @@
 
 #include <chrono>
 
-enum class Status{ Waiting, Done, Running };
+enum class Status{ Waiting, Done, Running, Closed };
 
 class ProcessInfo;
 
@@ -34,11 +34,16 @@ public:
 	{
 		return test_.getName();
 	}
-
+	inline void set_status(Status val)
+	{
+		EnterCriticalSection(&crt_);
+		status_ = val;
+		LeaveCriticalSection(&crt_);
+	}
 	bool IsDisable() const;
 	int GetPriority() const;
 	char* ProcessTest(bool ignore_wait = false);
-	bool IsDone();
+//	bool IsDone();
 	bool ReleaseResources();
 
 	operator TRSResult() const;
@@ -68,16 +73,18 @@ private:
 	ReportManager* pReporter_;
 	PROCESS_INFORMATION process_information_;
 	std::chrono::duration<long long, std::milli> duration_;
+
+	CRITICAL_SECTION crt_;
 };
 
 struct ProcessData
 {
-	ProcessData(ProcessInfo, PROCESS_INFORMATION*, HANDLE s[SEMAPHORES_AMOUNT]);
+	ProcessData(ProcessInfo*, PROCESS_INFORMATION*, HANDLE s[SEMAPHORES_AMOUNT]);
 	~ProcessData(){}
 
 	PROCESS_INFORMATION* process_information;
 	HANDLE semaphores[SEMAPHORES_AMOUNT];
-	ProcessInfo running_process;
+	ProcessInfo* running_process;
 };
 
 #endif
