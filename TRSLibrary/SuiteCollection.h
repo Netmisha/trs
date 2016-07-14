@@ -6,6 +6,7 @@
 #include "ProcessCollection.h"
 #include "TRSManager.h"
 #include "ReportManager.h"
+#include "ThreadPool.h"
 
 #include <list>
 
@@ -24,6 +25,7 @@ private:
 private:
 	std::list<ProcessCollection> suits_;
 	HANDLE global_semaphore_;
+	ThreadPool threads_;
 };
 
 #endif

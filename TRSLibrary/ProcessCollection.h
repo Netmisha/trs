@@ -7,6 +7,7 @@
 #include "ProcessInfo.h"
 #include "TRSResult.h"
 #include "ReportManager.h"
+#include "ThreadPool.h"
 
 #include <vector>
 #include <windows.h>
@@ -17,12 +18,12 @@
 class ProcessCollection
 {
 public:
-	ProcessCollection(const Suite&, HANDLE semaphore, ReportManager* pReport = nullptr);
+	ProcessCollection(const Suite&, HANDLE semaphore, ThreadPool*, ReportManager* pReport = nullptr);
 	ProcessCollection(const ProcessCollection&);
 	~ProcessCollection();
 
 	// I wiil reconsider this functions in ord
-	inline bool is_undone()
+	inline int is_undone()
 	{
 		return undone_tests_;
 	}
@@ -43,6 +44,7 @@ private:
 private:
 	int undone_tests_;
 	char* path_;
+	ThreadPool* threads_;
 	HANDLE semaphores_[SEMAPHORES_AMOUNT];
 	std::vector<ProcessInfo> tests_;
 };

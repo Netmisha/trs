@@ -1,15 +1,12 @@
 #ifndef THREAD_POOL_H
 #define THREAD_POOL_H
 
-#include <vector>
 #include <queue>
 #include <Windows.h>
 
 using std::queue;
-using std::vector;
-//WDWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 
-typedef DWORD(*routine)(PVOID);
+typedef DWORD (WINAPI *routine)(PVOID);
 
 //===================================================================
 class Task

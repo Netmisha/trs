@@ -6,7 +6,7 @@
 
 
 // futher implementation of priority will be added
-ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, ReportManager* pReport)
+ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, ThreadPool* threads, ReportManager* pReport) : threads_(threads)
 {
 	int max_threads = atoi(suite.getMaxThreads());
 	if (max_threads < 0)
@@ -26,7 +26,7 @@ ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, Repor
 	undone_tests_ = 0;
 	for each (TRSTest* var in suite.getList())
 	{
-		ProcessInfo info(*var, path_, semaphores_, pReport);
+		ProcessInfo info(*var, path_, semaphores_, threads_, pReport);
 		int repeat = atoi(var->getRepeat());
 		for (int i = 0; i < repeat; ++i)
 		{
@@ -40,20 +40,23 @@ ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, Repor
 	//	sort(tests_.begin(), tests_.end());
 
 	int j;
-	for (int i = 0; i < tests_.size(); ++i){
+	for (int i = 0; i < tests_.size(); ++i)
+	{
 		j = i;
 
-		while (j > 0 && tests_[j] < tests_[j - 1]){
+		while (j > 0 && tests_[j] < tests_[j - 1])
+		{
 			auto temp = tests_[j];
 			tests_[j] = tests_[j - 1];
 			tests_[j - 1] = temp;
 			j--;
 		}
 	}
+
 }
 
 
-ProcessCollection::ProcessCollection(const ProcessCollection& var) : undone_tests_(var.undone_tests_), tests_(var.tests_)
+ProcessCollection::ProcessCollection(const ProcessCollection& var) : undone_tests_(var.undone_tests_), tests_(var.tests_), threads_(var.threads_)
 {
 	// TODO: made all operation with array in loops && made all unclear indexes initialized by macros
 	semaphores_[OWNED_SEMAPHORE] = var.semaphores_[OWNED_SEMAPHORE];

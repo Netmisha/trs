@@ -12,6 +12,7 @@
 #include "TRSTest.h"
 #include "TRSResult.h"
 #include "ReportManager.h"
+#include "ThreadPool.h"
 
 #include <chrono>
 
@@ -22,7 +23,7 @@ class ProcessInfo;
 class ProcessInfo
 {
 public:
-	ProcessInfo(const TRSTest&, char*, HANDLE[SEMAPHORES_AMOUNT], ReportManager* pReporter = nullptr);
+	ProcessInfo(const TRSTest&, char*, HANDLE[SEMAPHORES_AMOUNT], ThreadPool*, ReportManager* pReporter = nullptr);
 	ProcessInfo(const ProcessInfo&);
 	~ProcessInfo();
 
@@ -75,6 +76,7 @@ private:
 	std::chrono::duration<long long, std::milli> duration_;
 
 	CRITICAL_SECTION crt_;
+	ThreadPool* threads_;
 };
 
 struct ProcessData

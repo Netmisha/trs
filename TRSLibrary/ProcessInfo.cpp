@@ -18,8 +18,8 @@ ProcessData::ProcessData( ProcessInfo* info, PROCESS_INFORMATION* pi, HANDLE han
 
 // =========================================================================================================================================================
 
-ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphores[SEMAPHORES_AMOUNT], ReportManager* pReporter) : 
-test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(pReporter), work_thread_(NULL), description_(nullptr)
+ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphores[SEMAPHORES_AMOUNT], ThreadPool* threads, ReportManager* pReporter) : 
+test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(pReporter), work_thread_(NULL), description_(nullptr), threads_(threads)
 {
 	InitializeCriticalSection(&crt_);
 	semaphores_[OWNED_SEMAPHORE] = semaphores[OWNED_SEMAPHORE];
@@ -56,7 +56,7 @@ test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(
 
 ProcessInfo::ProcessInfo(const ProcessInfo& instance):
 test_(instance.test_), status_(instance.status_), work_thread_(instance.work_thread_), pReporter_(instance.pReporter_), description_(instance.description_),
-result_(instance.result_), process_information_(instance.process_information_), duration_(instance.duration_), max_time_(instance.max_time_)
+result_(instance.result_), process_information_(instance.process_information_), duration_(instance.duration_), max_time_(instance.max_time_), threads_(instance.threads_)
 {
 	InitializeCriticalSection(&crt_);
 
@@ -194,20 +194,16 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 	}
 
 	ProcessData* parameters = new ProcessData(this, &process_information_, semaphores_);
-
-	HANDLE work_thread = CreateThread(NULL, NULL, &ProcessInfo::StartThread, parameters, NULL, NULL);
-	if (work_thread == NULL)
+	if (!threads_->AddTask(&ProcessInfo::StartThread, parameters))
 	{
-		logger << "Creating thread in ProcessTest failded";
+		logger << "Adding Task to thread pool failed";
 		return nullptr;
 	}
-	CloseHandle(work_thread);
+
 	status_ = Status::Running;
 	return nullptr;
 }
 
-#include <iostream>
-using namespace std;
 DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 {
 	// recording time in order to evaluate function duration

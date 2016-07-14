@@ -86,6 +86,7 @@
     <ClInclude Include="ReportManager.h" />
     <ClInclude Include="SuiteCollection.h" />
     <ClInclude Include="TestsListVerifying.h" />
+    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="TRSReport.h" />
     <ClInclude Include="ProcessInfo.h" />
     <ClInclude Include="ProcessCollection.h" />
@@ -115,6 +116,7 @@
     <ClCompile Include="ProcessCollection.cpp" />
     <ClCompile Include="SuiteCollection.cpp" />
     <ClCompile Include="TestsListVerifying.cpp" />
+    <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="TRSReport.cpp" />
     <ClCompile Include="TRSResult.cpp" />
     <ClCompile Include="stdafx.cpp">
