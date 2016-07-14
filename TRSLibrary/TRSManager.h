@@ -30,7 +30,7 @@
 
 class TRSManager_API TRSManager
 {
-	bool FillList(char*path, char*name, char*tag, std::list<Suite*>*curList);
+	int FillList(char*path, char*name, char*tag, std::list<Suite*>*curList);
 public:
 	TRSManager();
 	~TRSManager();

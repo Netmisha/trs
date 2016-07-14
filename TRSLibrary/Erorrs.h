@@ -8,5 +8,6 @@
 #define INVALID_EXE_FILE 5
 #define INVALID_PARAMETERS 6
 #define DEAD_LOCK_WAS_FOUND 7
+#define EXE_OR_XML_ABSENT 8
 
 #endif

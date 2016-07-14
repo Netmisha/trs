@@ -80,7 +80,7 @@
         <maxTime>1s</maxTime>
         <waitFor>Test 7</waitFor>
     </test>
-	<test name="Test 6" description="Test description">
+	<test name="Test 7" description="Test description">
         <priority>4</priority>
         <tag>Release</tag>
         <disable>false</disable>

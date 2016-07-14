@@ -7,8 +7,12 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	std::cout << "Process started!\n";
+
 	if (argc == 3)
 	{
+		std::cout << "Good parameters\n";
+
 		FoldersTreeMaker maker(convertToChar(argv[1]), convertToChar(argv[2]));
 		if (maker.MakeTree())
 		{
