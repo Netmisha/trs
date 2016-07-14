@@ -23,8 +23,8 @@ public:
 	char* getPath() const;
 	Suite* getSuite();
 private:
-	char* path;
-	Suite* currentSuite;
+	char* path=nullptr;
+	Suite* currentSuite=nullptr;
 };
 
 #endif
