@@ -10,7 +10,10 @@
 #include <crtdbg.h>
 #include "TRSLibrary\Metadata.h"
 #include "FoldersCreator\foldersTreeMaker.h"
-
+#include "TCHARPathConverter.h"
+#include <Windows.h>
+#include <iostream>
+#include <strsafe.h>
 #define AMOUNT_OF_TESTS 18U
 #define FIRST_BRANCH_AMOUNT 6U
 #define SECOND_BRANCH_AMOUNT 7U
@@ -20,6 +23,7 @@
 
 #define TOTAL_AMOUNT_OF_DEBUG_TAGS 6U
 #define TOTAL_AMOUNT_OF_RELEASE_TAGS 11U
+
 
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -445,23 +449,92 @@ namespace UnitTest
 		{
 			Assert::AreEqual((int)Manager.Verify(R"(../VerifyingTestsDeadLock/Intricately)", nullptr, nullptr), (int)DEAD_LOCK_WAS_FOUND);
 		}
-		TEST_METHOD(Check_if_folder_exist_when_failed_FolderCreation)
+		TEST_METHOD(Check_if_folder_exist_when_normal_FolderCreation)
 		{	
-			char buf[] = R"(..\Debug\FoldersCreator.exe)";
-			TCHAR* buffer = new TCHAR[strlen(buf) + 1];
-			TCHAR help = buf[0];
-			int i = 0;
-			while (help)
-			{
-				buffer[i] = help;
-				++i;
-				help = buf[i];
-			}
-			buffer[i] = '\0';
-			CreateProcess(buffer, 0, NULL, NULL, FALSE, CREATE_NO_WINDOW,NULL, NULL, 0, 0);
+			char buf[] = R"(../Debug/FoldersCreator.exe)";
+			WCHAR  buf1[MAX_PATH] = TEXT("");
+			WCHAR** lppPart = { NULL };
+			WCHAR* buffer = new WCHAR[strlen(buf) + 1];
+			convertToTCHAR(buffer, buf);
+			GetFullPathName(buffer,MAX_PATH,buf1,lppPart);
+			delete[] buffer;
+			char firstArgument[] = R"(../UnitTest/TestXML.xml)";
+			char secondArgument[] = R"(../UnitTest)";
+			WCHAR* bufFirstArgument = new WCHAR[strlen(firstArgument) +1];
+			convertToTCHAR(bufFirstArgument, firstArgument);
+			WCHAR  buf2[MAX_PATH] = TEXT("");
+			WCHAR  buf3[MAX_PATH] = TEXT("");
+			GetFullPathName(bufFirstArgument, MAX_PATH, buf2, lppPart);
+			delete[] bufFirstArgument;
+			bufFirstArgument = new WCHAR[strlen(secondArgument) + 1];
+			convertToTCHAR(bufFirstArgument, secondArgument);
+			GetFullPathName(bufFirstArgument, MAX_PATH, buf3, lppPart);
+			delete[] bufFirstArgument;
+			StringCchCat(buf2, MAX_PATH, TEXT(" "));
+			StringCchCat(buf2, MAX_PATH,buf3);
+			StringCchCat(buf1, MAX_PATH, TEXT(" "));
+			StringCchCat(buf1, MAX_PATH, buf2);
+			STARTUPINFO startup_info;
+			ZeroMemory(&startup_info, sizeof(startup_info));
+			startup_info.cb = sizeof(startup_info);
+			PROCESS_INFORMATION pi;
+			ZeroMemory(&pi, sizeof(pi));
+			PROCESS_INFORMATION pa;
+			ZeroMemory(&pi, sizeof(pa));
+			CreateProcess(0, buf1, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &pi);
+			WaitForSingleObject(pi.hProcess,INFINITE);
+			char fullName[] = R"(../UnitTest/Suite root)";
+			char endPath[] = R"(/UnitTest/Suite root)";
+			bool validate = Manager.Verify(endPath, nullptr, nullptr);
+			CreateProcess(0, buf1, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &pa);
+			WaitForSingleObject(pa.hProcess, INFINITE);
+			Assert::IsTrue(validate);
+			
+		}
+		TEST_METHOD(Check_if_folder_exist_when_failed_FolderCreation)
+		{
+			char buf[] = R"(../Debug/FoldersCreator.exe)";
+			WCHAR  buf1[MAX_PATH] = TEXT("");
+			WCHAR** lppPart = { NULL };
+			WCHAR* buffer = new WCHAR[strlen(buf) + 1];
+			convertToTCHAR(buffer, buf);
+			GetFullPathName(buffer, MAX_PATH, buf1, lppPart);
+			delete[] buffer;
+			char firstArgument[] = R"(../UnitTest/TestXMLfailed.xml)";
+			char secondArgument[] = R"(../UnitTest)";
+			WCHAR* bufFirstArgument = new WCHAR[strlen(firstArgument) + 1];
+			convertToTCHAR(bufFirstArgument, firstArgument);
+			WCHAR  buf2[MAX_PATH] = TEXT("");
+			WCHAR  buf3[MAX_PATH] = TEXT("");
+			GetFullPathName(bufFirstArgument, MAX_PATH, buf2, lppPart);
+			delete[] bufFirstArgument;
+			bufFirstArgument = new WCHAR[strlen(secondArgument) + 1];
+			convertToTCHAR(bufFirstArgument, secondArgument);
+			GetFullPathName(bufFirstArgument, MAX_PATH, buf3, lppPart);
+			delete[] bufFirstArgument;
+			StringCchCat(buf2, MAX_PATH, TEXT(" "));
+			StringCchCat(buf2, MAX_PATH, buf3);
+			StringCchCat(buf1, MAX_PATH, TEXT(" "));
+			StringCchCat(buf1, MAX_PATH, buf2);
+			STARTUPINFO startup_info;
+			ZeroMemory(&startup_info, sizeof(startup_info));
+			startup_info.cb = sizeof(startup_info);
+			PROCESS_INFORMATION pi;
+			ZeroMemory(&pi, sizeof(pi));
+			PROCESS_INFORMATION pa;
+			ZeroMemory(&pi, sizeof(pa));
+			CreateProcess(0, buf1, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &pi);
+			WaitForSingleObject(pi.hProcess, INFINITE);
 			char fullName[] = R"(../UnitTest/Suite root)";
 			DWORD fFile = GetFileAttributesA(fullName);
-			Assert::IsTrue(fFile == INVALID_FILE_ATTRIBUTES || !(fFile & FILE_ATTRIBUTE_DIRECTORY));
+			CreateProcess(0, buf1, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &pa);
+			WaitForSingleObject(pa.hProcess, INFINITE);
+			Assert::IsTrue(fFile == INVALID_FILE_ATTRIBUTES);
+
+		}
+		TEST_METHOD(Verify_exe_absent)
+		{
+			Assert::AreEqual((int)Manager.Verify(R"(../FailTestData)", nullptr, nullptr), (int)EXE_OR_XML_ABSENT);
 		}
 	};
 }

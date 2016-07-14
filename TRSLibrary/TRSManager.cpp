@@ -157,47 +157,54 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 		return INVALID_PARAMETERS;
 
 		std::list<Suite*>* suiteCollection=List(path, name, tag);
-		if (suiteCollection->size() == 0)
+		if (suiteCollection)
 		{
-			return DEAD_LOCK_WAS_FOUND;
-		}
-		std::list<Suite*>::iterator it = suiteCollection->begin();
-		for (it; it != suiteCollection->end(); ++it)
-		{
-			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
-			std::vector<char*> coll;
-			std::vector<TRSTest*>collTests;
-			for (iter; iter != (*it)->getList().end(); ++iter)
+			if (suiteCollection->size() == 0)
 			{
-				if (!((*iter)->getName()))
+				return DEAD_LOCK_WAS_FOUND;
+			}
+			std::list<Suite*>::iterator it = suiteCollection->begin();
+			for (it; it != suiteCollection->end(); ++it)
+			{
+				std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+				std::vector<char*> coll;
+				std::vector<TRSTest*>collTests;
+				for (iter; iter != (*it)->getList().end(); ++iter)
 				{
-					return INVALID_NAME;
-				}
-				if ((!(*iter)->get_executableName()))
-				{
-					return INVALID_EXECUTION_NAME;
-				}
-				if ((!(*iter)->get_expectedResult()))
-				{
-					return INVALID_RESULT;
-				}
-				char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
-				strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
-				strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
-				DWORD fFile = GetFileAttributesA(buf);
-				if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
-				{
-					delete[] buf;
-					return INVALID_EXE_FILE;
-				}
-				else
-				{
-					delete[] buf;
-					collTests.push_back((*iter));
+					if (!((*iter)->getName()))
+					{
+						return INVALID_NAME;
+					}
+					if ((!(*iter)->get_executableName()))
+					{
+						return INVALID_EXECUTION_NAME;
+					}
+					if ((!(*iter)->get_expectedResult()))
+					{
+						return INVALID_RESULT;
+					}
+					char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
+					strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
+					strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
+					DWORD fFile = GetFileAttributesA(buf);
+					if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
+					{
+						delete[] buf;
+						return INVALID_EXE_FILE;
+					}
+					else
+					{
+						delete[] buf;
+						collTests.push_back((*iter));
+					}
 				}
 			}
+			return SUCCSEED;
 		}
-		return SUCCSEED;
+		else
+		{
+			return EXE_OR_XML_ABSENT;
+		}
 }
 
 
@@ -276,7 +283,7 @@ bool TRSManager::Stop(char* path, char* name, char* tag)
 	return false;
 }
 
-bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suiteCollection)
+int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suiteCollection)
 {
 	if (!VerifyParameters(path, name, tag))
 		return false;
@@ -306,6 +313,8 @@ bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suit
 		}
 		else
 		{
+			bool exeExist = false;
+			bool xmlExist = false;
 			do
 			{
 				if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)//check if it's a folder or not
@@ -318,8 +327,15 @@ bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suit
 						StringCchCat(subDir, MAX_PATH, TEXT("\\"));//additional slash))
 						StringCchCat(subDir, MAX_PATH, ffd.cFileName);//name of last folder to search in
 						char* way = convertToChar(subDir);
-						FillList(way, name, tag,suiteCollection);
-						delete[] way;
+						if (FillList(way, name, tag, suiteCollection) != EXE_OR_XML_ABSENT)
+						{
+							delete[] way;
+						}
+						else
+						{
+							delete[] way;
+							return EXE_OR_XML_ABSENT;
+						}
 					}
 				}
 				else
@@ -328,6 +344,7 @@ bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suit
 					std::wstring name_(ffd.cFileName);//used for validating file name(checks if there is .xml in the end
 					if (Validate(name_))//validating function
 					{
+						xmlExist = true;
 						TCHAR fileDir[MAX_PATH];//buffer which contains a path to an xml file
 						StringCchCopy(fileDir, MAX_PATH, hzDir);//some moves to save path
 						StringCchCat(fileDir, MAX_PATH, TEXT("\\"));
@@ -348,8 +365,34 @@ bool TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suit
 						}
 						delete[] way;
 					}
+					else
+					{
+						if (name_[name_.length() - 1] == 'e')
+						{
+							if (name_[name_.length() - 2] == 'x')
+							{
+								if (name_[name_.length() - 3] == 'e')
+								{
+									if (name_[name_.length() - 4] == '.')
+									{
+										exeExist=true;
+									}
+								}
+							}
+						}
+					}
 				}
 			} while (FindNextFile(hFind, &ffd) != 0);//repeat
+			if (xmlExist)
+			{
+				if (!exeExist)
+					return EXE_OR_XML_ABSENT;
+			}
+			if (exeExist)
+			{
+				if (!xmlExist)
+					return EXE_OR_XML_ABSENT;
+			}
 		}
 		return true;
 	}
@@ -365,81 +408,87 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 		return nullptr;
 
 	std::list<Suite*>*suiteCollection = new std::list<Suite*>;
-	FillList(path, name, tag, suiteCollection);
-	std::list<Suite*>::iterator it = suiteCollection->begin();
-	for (it; it != suiteCollection->end(); ++it)
+	if (FillList(path, name, tag, suiteCollection) != EXE_OR_XML_ABSENT)
 	{
-		std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
-		std::vector<char*> coll;
-		std::vector<TRSTest*>collTests;
-		for (iter; iter != (*it)->getList().end(); ++iter)
+		std::list<Suite*>::iterator it = suiteCollection->begin();
+		for (it; it != suiteCollection->end(); ++it)
 		{
-			if (!((*iter)->getName()))
+			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+			std::vector<char*> coll;
+			std::vector<TRSTest*>collTests;
+			for (iter; iter != (*it)->getList().end(); ++iter)
 			{
-				std::list<Suite*>::iterator it = suiteCollection->begin();
-				for (it; it != suiteCollection->end(); ++it)
+				if (!((*iter)->getName()))
 				{
-					delete (*it);
+					std::list<Suite*>::iterator it = suiteCollection->begin();
+					for (it; it != suiteCollection->end(); ++it)
+					{
+						delete (*it);
+					}
+					suiteCollection->clear();
+					return suiteCollection;
 				}
-				suiteCollection->clear();
-				return suiteCollection;
-			}
-			if ((!(*iter)->get_executableName()))
-			{
-				std::list<Suite*>::iterator it = suiteCollection->begin();
-				for (it; it != suiteCollection->end(); ++it)
+				if ((!(*iter)->get_executableName()))
 				{
-					delete (*it);
+					std::list<Suite*>::iterator it = suiteCollection->begin();
+					for (it; it != suiteCollection->end(); ++it)
+					{
+						delete (*it);
+					}
+					suiteCollection->clear();
+					return suiteCollection;
 				}
-				suiteCollection->clear();
-				return suiteCollection;
-			}
-			if ((!(*iter)->get_expectedResult()))
-			{
-				std::list<Suite*>::iterator it = suiteCollection->begin();
-				for (it; it != suiteCollection->end(); ++it)
+				if ((!(*iter)->get_expectedResult()))
 				{
-					delete (*it);
+					std::list<Suite*>::iterator it = suiteCollection->begin();
+					for (it; it != suiteCollection->end(); ++it)
+					{
+						delete (*it);
+					}
+					suiteCollection->clear();
+					return suiteCollection;
 				}
-				suiteCollection->clear();
-				return suiteCollection;
-			}
-			char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
-			strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
-			strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
-			DWORD fFile = GetFileAttributesA(buf);
-			if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
-			{
-				delete[] buf;
-				std::list<Suite*>::iterator it = suiteCollection->begin();
-				for (it; it != suiteCollection->end(); ++it)
+				char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
+				strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
+				strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
+				DWORD fFile = GetFileAttributesA(buf);
+				if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
 				{
-					delete (*it);
+					delete[] buf;
+					std::list<Suite*>::iterator it = suiteCollection->begin();
+					for (it; it != suiteCollection->end(); ++it)
+					{
+						delete (*it);
+					}
+					suiteCollection->clear();
+					return suiteCollection;
 				}
-				suiteCollection->clear();
-				return suiteCollection;
+				else
+				{
+					delete[] buf;
+					collTests.push_back((*iter));
+				}
 			}
-			else
+			for (int i = 0; i < collTests.size(); ++i)
 			{
-				delete[] buf;
-				collTests.push_back((*iter));
+				if (!VerifyTestsList(collTests, (*it)->getList().size(), coll, i))
+				{
+					std::list<Suite*>::iterator it = suiteCollection->begin();
+					for (it; it != suiteCollection->end(); ++it)
+					{
+						delete (*it);
+					}
+					suiteCollection->clear();
+					return suiteCollection;
+				}
 			}
 		}
-		for (int i = 0; i < collTests.size(); ++i)
-		{
-			if (!VerifyTestsList(collTests, (*it)->getList().size(), coll, i))
-			{
-				std::list<Suite*>::iterator it = suiteCollection->begin();
-				for (it; it != suiteCollection->end(); ++it)
-				{
-					delete (*it);
-				}
-				suiteCollection->clear();
-				return suiteCollection;
-			}
-		}
+		return suiteCollection;
 	}
-	return suiteCollection;
+	else
+	{
+		return nullptr;
+	}
 }
 
 bool TRSManager::Status(char* path, char* name, char* tag)
