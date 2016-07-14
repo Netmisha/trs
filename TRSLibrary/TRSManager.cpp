@@ -183,6 +183,14 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					{
 						return INVALID_RESULT;
 					}
+					if ((*iter)->getExecutePath())
+					{
+						DWORD fFile = GetFileAttributesA((*iter)->getExecutePath());
+						if ((fFile != INVALID_FILE_ATTRIBUTES))
+						{
+							return WRONG_PATH_EXECUTION;
+						}
+					}
 					char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
 					strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
 					strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));

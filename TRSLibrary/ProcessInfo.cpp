@@ -27,7 +27,7 @@ test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(
 
 	max_time_ = ParseMaxTime();
 
-
+	
 	int path_len = strlen(path);
 	path_ = new char[path_len + 1];
 	strcpy_s(path_, path_len + 1, path);
@@ -41,17 +41,30 @@ test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(
 
 	char executable_directory_A[MAX_PATH + 1];
 	executable_directory_A[0] = 0;
-	strcat_s(executable_directory_A, MAX_PATH + 1, path);
-	strcat_s(executable_directory_A, MAX_PATH + 1, test_.get_executableName());
-	
-	if (test_.getParameters() != nullptr)
+	if (test_.getExecutePath())
 	{
-		strcat_s(executable_directory_A, MAX_PATH + 1, " ");
-		strcat_s(executable_directory_A, MAX_PATH + 1, test_.getParameters());
+		DWORD fFile = GetFileAttributesA(test_.getExecutePath());
+		if ((fFile == INVALID_FILE_ATTRIBUTES))
+		{
+			strcat_s(executable_directory_A, MAX_PATH + 1, test_.getExecutePath());
+			convertToTCHAR(command_line_, executable_directory_A);
+		}
+		//error
 	}
-	convertToTCHAR(command_line_, executable_directory_A);
-	
-	ZeroMemory(&process_information_, sizeof(process_information_));
+	else
+	{
+		strcat_s(executable_directory_A, MAX_PATH + 1, path);
+		strcat_s(executable_directory_A, MAX_PATH + 1, test_.get_executableName());
+
+		if (test_.getParameters() != nullptr)
+		{
+			strcat_s(executable_directory_A, MAX_PATH + 1, " ");
+			strcat_s(executable_directory_A, MAX_PATH + 1, test_.getParameters());
+		}
+		convertToTCHAR(command_line_, executable_directory_A);
+
+		ZeroMemory(&process_information_, sizeof(process_information_));
+	}
 }
 
 ProcessInfo::ProcessInfo(const ProcessInfo& instance):

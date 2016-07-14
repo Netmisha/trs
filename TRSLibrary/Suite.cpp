@@ -84,6 +84,11 @@ bool Suite::setDir(char*dir_)
 		if (directoryName = new char[strlen(dir_) + 1])
 		{
 			strncpy_s(directoryName, strlen(dir_) + 1, dir_, strlen(dir_));
+			std::list<TRSTest*>::iterator it = testList.begin();
+			for (it; it != testList.end(); ++it)
+			{
+				(*it)->setPath(dir_);
+			}
 			return true;
 		}
 		else

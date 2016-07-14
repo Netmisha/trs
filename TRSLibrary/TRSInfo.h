@@ -27,6 +27,8 @@ class TRSInfo_API TRSInfo
 	char* priority = nullptr;
 	char* disable = nullptr;
 	char* parameters = nullptr;
+	char* executePath = nullptr;
+	char* path = nullptr;
 	Metadata* metadata;
 	
 public:
@@ -40,12 +42,14 @@ public:
 	bool setMaxTime(char*maxTime_);
 	bool setMaxThreads(char*maxThreads_);
 	bool setExecutableName(char* name_);
+	bool setExecutePath(char*exeName);
 	bool setName(char*Name_);
 	bool setDescription(char*Desc_);
 	bool setMetadata(Metadata* metadata_);
 	bool setExpectedResult(char* res_);
 	bool setWaitFor(char* wait_);
 	bool setPriority(char* prior_);
+	bool setPath(char* path);
 	bool setParameters(char*parameters_);
 	inline char* get_executableName() const
 	{
@@ -56,6 +60,8 @@ public:
 		return expectedResult;
 	}
 	char* getParameters() const;
+	char* getExecutePath() const;
+	char* getPath() const;
 	char* getWaitFor() const;
 	char* getName() const;
 	char* getDescription() const;

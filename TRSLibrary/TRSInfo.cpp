@@ -114,6 +114,8 @@ TRSInfo::~TRSInfo()
 	delete[] priority;
 	delete[] disable;
 	delete[] parameters;
+	delete[] executePath;
+	delete[] path;
 }
 
 char* TRSInfo::getName() const
@@ -147,6 +149,16 @@ char* TRSInfo::getTag() const
 char* TRSInfo::getDisable() const
 {
 	return disable;
+}
+
+char* TRSInfo::getExecutePath() const
+{
+	return executePath;
+}
+
+char* TRSInfo::getPath() const
+{
+	return path;
 }
 
 bool TRSInfo::setTag(char*Tag)
@@ -490,6 +502,21 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		}
 		if ((strncmp(pParent->Value(), "execution", strlen("execution")) == 0) &&getName())
 		{
+			TiXmlAttribute*atr = pParent->ToElement()->FirstAttribute();
+			
+			if (atr)
+			{
+				if ((!strncmp(atr->Name(), "path", strlen("path"))))
+				{
+					if (atr->Value())
+					{
+						char*executePath_ = new char[strlen(atr->Value()) + 1];
+						strncpy_s(executePath_, strlen(atr->Value()) + 1, atr->Value(), strlen(atr->Value()));
+						setExecutePath(executePath_);
+						delete[] executePath_;
+					}
+				}
+			}
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
@@ -497,10 +524,13 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 				{
 					if (strlen(child->Value()) > 0)
 					{
-						char*executableName = new char[strlen(child->Value()) + 1];
-						strncpy_s(executableName, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
-						setExecutableName(executableName);
-						delete[] executableName;
+						
+						
+							char*executableName = new char[strlen(child->Value()) + 1];
+							strncpy_s(executableName, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
+							setExecutableName(executableName);
+							delete[] executableName;
+						
 					}
 				}
 			}
@@ -726,6 +756,52 @@ bool TRSInfo::setExecutableName(char*exeName)
 		if (executableName = new char[strlen(exeName) + 1])
 		{
 			strncpy_s(executableName, strlen(exeName) + 1, exeName, strlen(exeName));
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+bool TRSInfo::setPath(char* path_)
+{
+	if (path)
+	{
+		delete[] path;
+		path = new char[strlen(path_) + 1];
+		strncpy_s(path, strlen(path_) + 1, path_, strlen(path_));
+		return true;
+	}
+	else
+	{
+		if (path = new char[strlen(path_) + 1])
+		{
+			strncpy_s(path, strlen(path_) + 1, path_, strlen(path_));
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+bool TRSInfo::setExecutePath(char* path)
+{
+	if (executePath)
+	{
+		delete[] executePath;
+		executePath = new char[strlen(path) + 1];
+		strncpy_s(executePath, strlen(path) + 1, path, strlen(path));
+		return true;
+	}
+	else
+	{
+		if (executePath = new char[strlen(path) + 1])
+		{
+			strncpy_s(executePath, strlen(path) + 1, path, strlen(path));
 			return true;
 		}
 		else

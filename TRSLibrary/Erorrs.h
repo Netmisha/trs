@@ -9,5 +9,6 @@
 #define INVALID_PARAMETERS 6
 #define DEAD_LOCK_WAS_FOUND 7
 #define EXE_OR_XML_ABSENT 8
+#define WRONG_PATH_EXECUTION 9
 
 #endif
