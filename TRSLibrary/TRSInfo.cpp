@@ -153,10 +153,9 @@ char* TRSInfo::getDisable() const
 
 char* TRSInfo::getExecutePath() const
 {
-	if (parameters)
+	if (parameters&&executePath&&executableName)
 	{
-		
-		char* result = new char[strlen(executePath) + strlen(executableName) + strlen(parameters) + 2];
+		char* result = new char[strlen(executePath) + strlen(executableName) + strlen(parameters) + 3];
 		strncpy_s(result, strlen(executePath)+1, executePath, strlen(executePath));
 		strncpy_s(result + strlen(executePath), 2, "//", 1);
 		strncpy_s(result + strlen(executePath) + 1, strlen(executableName) + 1, executableName, strlen(executableName));
@@ -167,7 +166,37 @@ char* TRSInfo::getExecutePath() const
 		}
 		else
 		{
-			strncpy_s(result + strlen(executePath) + strlen(parameters) + 1, strlen(parameters) + 1, parameters, strlen(parameters));
+			strncpy_s(result + strlen(executePath) + strlen(executableName) + 1, 2, " ", 1);
+			strncpy_s(result + strlen(executePath) + strlen(executableName) + 2, strlen(parameters) + 1, parameters, strlen(parameters));
+			return result;
+		}
+	}
+	else
+	{
+		if (parameters&&!executePath)
+		{
+			char* result = new char[strlen(path) + strlen(parameters) + strlen(executableName)+ 3];
+			strncpy_s(result, strlen(path) + 1, path, strlen(path));
+			strncpy_s(result + strlen(path), 2, "//", 1);
+			strncpy_s(result + strlen(path)+1, strlen(executableName) + 1, executableName, strlen(executableName));
+			strncpy_s(result + strlen(path) + strlen(executableName)+1, 2, " ", 1);
+			strncpy_s(result + strlen(path) + 2, strlen(parameters) + 1, parameters, strlen(parameters));
+			return result;
+		}
+		if (executePath&&!parameters)
+		{
+			char* result = new char[strlen(executePath) + strlen(executableName) + 3];
+			strncpy_s(result, strlen(executePath) + 1, executePath, strlen(executePath));
+			strncpy_s(result + strlen(executePath), 2, "//", 1);
+			strncpy_s(result + strlen(executePath)+1, strlen(executableName) + 1, executableName, strlen(executableName));
+			return result;
+		}
+		if (!parameters&&!executableName)
+		{
+			char* result = new char[strlen(path) + strlen(executableName) + 2];
+			strncpy_s(result, strlen(path) + 1, path, strlen(path));
+			strncpy_s(result + strlen(path), 2, "//", 1);
+			strncpy_s(result + strlen(path)+1, strlen(executableName) + 1, executableName, strlen(executableName));
 			return result;
 		}
 	}
