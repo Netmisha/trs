@@ -22,13 +22,13 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 
-#define MAX_PARAMETERS 7
+#define MAX_PARAMETERS 9
 
 
 namespace spd = spdlog;
 using std::cout;
 
-int ProcessFunction(char* name, char* tag, char* path)
+int ProcessFunction(char* name, char* tag, char* path, int threads)
 {
 	if (__argc < 2)
 		return 1;
@@ -49,36 +49,10 @@ int ProcessFunction(char* name, char* tag, char* path)
 		reportManager.addReporter(&htmlReport);
 		reportManager.Begin();
 
-		bool result = Manager.Run(path, name, tag, &reportManager);
+		bool result = Manager.Run(path, name, tag, threads, &reportManager);
 		
 		reportManager.End();
 		return result;
-	/*	ReportManager reportManager;
-		ConsoleReport cReport;
-		HTMLReport htmlReport;
-		
-		reportManager.addReporter(&cReport);
-		reportManager.addReporter(&htmlReport);
-		reportManager.Begin();
-		std::vector<TRSResult> arr = Manager.Run(path, name, tag,&reportManager);
-
-
-
-		long long total_time = 0;
-		for each(auto var in arr)
-		{
-			cout << var.get_name() << " ";
-			if (var.get_result())
-				cout << "Succeeded" << " ";
-			else
-				cout << "Failed" << " ";
-			cout<< var.get_duration().count() << " msec ";
-			cout << var.get_path() << std::endl;
-
-			total_time += var.get_duration().count();
-		}
-		cout << "\nTotal execution time of tests:" << total_time << " msec" << std::endl;
-		return 0;*/
 	}
 	else if (!_stricmp(__argv[1], "Pause"))
 	{
@@ -134,10 +108,10 @@ int ProcessFunction(char* name, char* tag, char* path)
 }
 
 // taking references to pointer and assign them to appropriate console parameter
-bool ParseArguments(char* &name, char* &tag, char* &path)
+bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &path, _Outptr_ int & threads)
 {
 	name = tag = path = nullptr;
-
+	threads = 1;
 	// checking whether amount of parameters is correct
 	if (__argc < 3 || __argc > MAX_PARAMETERS || __argc % 2 == 0)
 	{
@@ -169,6 +143,13 @@ bool ParseArguments(char* &name, char* &tag, char* &path)
 			tag = __argv[i + 1];
 			continue;
 		}
+		else if (_stricmp(__argv[i], "-t") == 0)
+		{
+			threads = atoi(__argv[i + 1]);
+			if (threads <= 0)
+				logger << "Amount of threads must be a positive integer!";
+			continue;
+		}
 		else
 		{
 			// this mean that there was not a identifier at the place
@@ -186,16 +167,15 @@ int main(int argc, char* argv[])
 
 	Manager.Init();
 
-
 	char *name, *path, *tag;
-	name = tag = path = nullptr;
+	int threads;
 
-	if (!ParseArguments(name, tag, path))
+	if (!ParseArguments(name, tag, path, threads))
 	{
 		Manager.Destroy();
 		return 1;
 	}
-	int ret_val = ProcessFunction(name,tag,path);
+	int ret_val = ProcessFunction(name, tag, path, threads);
 
 	Manager.Destroy();
 	_CrtDumpMemoryLeaks();

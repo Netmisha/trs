@@ -24,9 +24,7 @@
 #include "ReportManager.h"
 
 #define BUF_SIZE 512
-
-
-
+#define MAX_THREADS 128
 
 class TRSManager_API TRSManager
 {
@@ -37,14 +35,14 @@ public:
 
 	bool Init();
 	int Verify(char* path, char* name, char* tag);
-	bool Run(char* path, char* name, char* tag,ReportManager* pReport=nullptr);
+	bool Run(char* path, char* name, char* tag, unsigned threads_amount = 1, ReportManager* pReport=nullptr);
 	bool Pause(char* path, char* name, char* tag);
 	bool Stop(char* path, char* name, char* tag);
 	std::list<Suite*>* List(char* path, char* name, char* tag);
 	bool Status(char* path, char* name, char* tag);
 	bool Info(char* path, char* name, char* tag);
 	bool Destroy();
-	bool SetReport(char* path,char* name,char* tag,ReportManager* manager=nullptr);
+	bool SetReport(char* path,char* name,char* tag, unsigned threads_amount = 1, ReportManager* manager=nullptr);
 private:
 	bool VerifyParameters(char* path, char* name, char* tag);
 };
@@ -55,20 +53,14 @@ public:
 	bool Init();
 	void Destroy();
 
-	void operator<<(char* mes);
+	void operator<<(char* message);
+	std::shared_ptr<spdlog::logger> operator->()
+	{
+		return text_log_;
+	}
 private:
 	std::shared_ptr<spdlog::logger> text_log_;
 	std::shared_ptr<spdlog::logger> console_log_;
-};
-
-
-
-class TRSManager_API TestRunner
-{
-public:
-	static int Execute(wchar_t*);
-private:
-	static TCHAR* Converter(char*);
 };
 
 extern TRSManager_API Logger logger;

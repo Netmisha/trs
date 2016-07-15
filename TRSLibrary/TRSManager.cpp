@@ -19,85 +19,6 @@ using namespace std::chrono;
 TRSManager Manager;
 Logger logger;
 
-
-bool TRSManager::VerifyParameters(char* path, char* name, char* tag)
-{
-	DWORD dwAttrib = GetFileAttributesA(path);
-
-	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
-	{
-		logger << "Specified path is not exist";
-		return false;
-	}
-	return true;
-}
-
-bool TRSManager::Run(char* path, char* name, char* tag, ReportManager* pResult)
-{
-	if (!VerifyParameters(path, name, tag))
-		return false;
-
-	std::list<Suite*> arr = *List(path, name, tag);
-	if (arr.size() == 0)
-	{
-		return false;
-	}
-	std::list<Suite> coll;
-
-	for (auto var = arr.begin(); var != arr.end(); ++var)
-		coll.push_back(**var);
-	
-	// TODO: add parameter to Console command line
-	SuiteCollection suits(coll, 10, pResult);
-	
-	return suits.Run();
-}
-
-
-int TestRunner::Execute(wchar_t* command)
-{
-	PROCESS_INFORMATION process_information;
-	ZeroMemory(&process_information, sizeof(process_information));
-
-	STARTUPINFO startup_info; 
-	ZeroMemory(&startup_info, sizeof(startup_info));
-
-	startup_info.cb = sizeof(startup_info);
-
-	LPTSTR szCmdline = _tcsdup(command);
-
-	bool create_result = CreateProcess(NULL, szCmdline, NULL, NULL, FALSE, CREATE_NO_WINDOW,
-		NULL, NULL, &startup_info, &process_information);
-
-	if (!create_result)
-	{
-		logger << "Create process failed with error";
-		cout << GetLastError() << endl;
-		return -1;
-	}
-
-	// Successfully created the process.  Wait for it to finish.
-	WaitForSingleObject(process_information.hProcess, INFINITE);
-
-	DWORD ret_val;
-
-	// Get the exit code.
-	bool get_result = GetExitCodeProcess(process_information.hProcess, &ret_val);
-
-	// Close the handles.
-	CloseHandle(process_information.hProcess);
-	CloseHandle(process_information.hThread);
-
-	if (!get_result)
-	{
-		logger << "Process executed but an error occured while getting its exit code";
-		cout << GetLastError() << endl;
-		return -1;
-	}
-
-	return ret_val;
-}
-// ============================================================================================================
 void Logger::operator<<(char* message)
 {
 	text_log_->info(message);
@@ -149,6 +70,38 @@ bool TRSManager::Destroy()
 {
 	logger.Destroy();
 	return false;
+}
+
+bool TRSManager::VerifyParameters(char* path, char* name, char* tag)
+{
+	DWORD dwAttrib = GetFileAttributesA(path);
+
+	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
+	{
+		logger << "Specified path is not exist";
+		return false;
+	}
+	return true;
+}
+
+bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount, ReportManager* pResult)
+{
+	if (!VerifyParameters(path, name, tag) || threads_amount > MAX_THREADS)
+		return false;
+
+	std::list<Suite*> arr = *List(path, name, tag);
+	if (arr.size() == 0)
+		return false;
+
+	std::list<Suite> coll;
+
+	for (auto var = arr.begin(); var != arr.end(); ++var)
+		coll.push_back(**var);
+
+	// TODO: add parameter to Console command line
+	SuiteCollection suits(coll, threads_amount, pResult);
+
+	return suits.Run();
 }
 
 int TRSManager::Verify(char* path, char* name, char* tag)
@@ -215,68 +168,6 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 			return EXE_OR_XML_ABSENT;
 		}
 }
-
-
-// OLD RUN FUNCTION
-//std::vector<TRSResult> TRSManager::Run(char* path, char* name, char* tag,ReportManager* pResult)
-//{
-//	std::list<Suite*> arr = *List(path, name, tag);
-//
-//	char* test_name, *test_path;
-//	bool result;
-//	std::vector<TRSResult> result_vector;
-//
-//	for each(Suite* var in arr)
-//	{
-//		test_path = var->get_path();
-//		for each (auto test in var->getList())
-//		{
-//			test_name = test->getName();
-//	
-//			// alternative version
-//		//	int exe_path_size = strlen(test_path) + strlen(test->get_executableName());
-//		//	wchar_t* executable_directory = new wchar_t[exe_path_size + 1];
-//			
-//			wchar_t executable_directory_W[MAX_PATH + 1];
-//
-//			char executable_directory_A[MAX_PATH + 1];
-//			
-//			executable_directory_A[0] = 0;
-//			strcat_s(executable_directory_A, MAX_PATH + 1, test_path);
-//			strcat_s(executable_directory_A, MAX_PATH + 1, test->get_executableName());
-//		
-//			
-//			convertToTCHAR(executable_directory_W, executable_directory_A);
-//	
-//
-//			int expected_result = atoi(test->get_expectedResult());
-//			if (pResult)
-//			{
-//				pResult->beforeExecution(test);
-//			}
-//			high_resolution_clock::time_point t1 = high_resolution_clock::now();
-//			
-//			
-//			result = (expected_result == TestRunner::Execute(executable_directory_W));
-//			
-//			high_resolution_clock::time_point t2 = high_resolution_clock::now();
-//
-//			auto duration = duration_cast<milliseconds>(t2 - t1);
-//			TRSResult resultInfo = TRSResult(test_path, test_name, result, duration);
-//			if (pResult)
-//			{
-//			
-//				pResult->afterExecution(test, &resultInfo);
-//			}
-//			result_vector.push_back(resultInfo);
-//
-////			delete[] executable_directory;
-//		}
-//	}
-//
-//
-//	return result_vector;
-//}
 
 bool TRSManager::Pause(char* path, char* name, char* tag)
 {
@@ -514,12 +405,12 @@ bool TRSManager::Info(char* path, char* name, char* tag)
 	return false;
 }
 
-bool TRSManager::SetReport(char* path,char* name,char* tag,ReportManager* pReport)
+bool TRSManager::SetReport(char* path,char* name,char* tag, unsigned threads_amount, ReportManager* pReport)
 {
 	if (!VerifyParameters(path, name, tag))
 		return false;
 
-	Manager.Run(path, name, tag, pReport);
+	Manager.Run(path, name, tag, threads_amount, pReport);
 	return true;
 }
 
