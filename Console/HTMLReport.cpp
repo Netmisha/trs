@@ -90,13 +90,13 @@ void HTMLReport::BeforeExecution(TRSInfo pInfo)
 	
 }
 
-void HTMLReport::ErrorOutput(TRSResult& res,std::string message)
+void HTMLReport::ErrorOutput(TRSResult& res,char* message)
 {
 	output << R"(<font color="red">AN ERROR OCCURED</font></br>)";
 }
-void HTMLReport::ErrorMessage(std::string)
+void HTMLReport::ErrorMessage(char* message)
 {
-
+	output << R"(<font color="red">)"<<message<<R"(</font></br>)";
 }
 
 void HTMLReport::AfterExecution(TRSInfo pInfo, TRSResult pResult)

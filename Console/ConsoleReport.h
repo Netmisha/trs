@@ -14,8 +14,8 @@ public:
 	virtual void AfterExecution(TRSInfo pInfo, TRSResult pResult);
 	virtual void Begin();
 	virtual void End();
-	virtual void ErrorOutput(TRSResult& result,std::string message);
-	virtual void ErrorMessage( std::string message);
+	virtual void ErrorOutput(TRSResult& result,char* message);
+	virtual void ErrorMessage( char* message);
 	double getTime();
 	double getAmount();
 	double getPassedAmount();
