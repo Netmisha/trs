@@ -8,7 +8,15 @@
 // futher implementation of priority will be added
 ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, ThreadPool* threads, ReportManager* pReport) : threads_(threads)
 {
-	int max_threads = atoi(suite.getMaxThreads());
+	int max_threads;
+	if (suite.getMaxThreads())
+	{
+		max_threads = atoi(suite.getMaxThreads());
+	}
+	else
+	{
+		max_threads = 1;
+	}
 	if (max_threads < 0)
 		logger << "Negative value in max_threas field";
 
