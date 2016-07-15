@@ -70,8 +70,6 @@ ProcessCollection::ProcessCollection(const ProcessCollection& var) : undone_test
 
 ProcessCollection::~ProcessCollection()
 {
-	for (auto iter = tests_.begin(); iter != tests_.end(); ++iter)
-		iter->ReleaseResources();
 	delete[] path_;
 }
 

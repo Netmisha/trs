@@ -9,7 +9,7 @@ using namespace std::chrono;
 
 // =========================================================================================================================================================
 
-ProcessData::ProcessData( ProcessInfo* info, PROCESS_INFORMATION* pi, HANDLE handles[SEMAPHORES_AMOUNT]) : process_information(pi), running_process(info)
+ProcessData::ProcessData( ProcessInfo* info, HANDLE handles[SEMAPHORES_AMOUNT]) : running_process(info)
 {
 	semaphores[OWNED_SEMAPHORE] = handles[OWNED_SEMAPHORE];
 	semaphores[MANAGING_SEMAPHORE] = handles[MANAGING_SEMAPHORE];
@@ -19,7 +19,7 @@ ProcessData::ProcessData( ProcessInfo* info, PROCESS_INFORMATION* pi, HANDLE han
 // =========================================================================================================================================================
 
 ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphores[SEMAPHORES_AMOUNT], ThreadPool* threads, ReportManager* pReporter) : 
-test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(pReporter), work_thread_(NULL), description_(nullptr), threads_(threads)
+test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(pReporter), result_description_(nullptr), threads_(threads)
 {
 	InitializeCriticalSection(&crt_);
 	semaphores_[OWNED_SEMAPHORE] = semaphores[OWNED_SEMAPHORE];
@@ -27,48 +27,38 @@ test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(
 
 	max_time_ = ParseMaxTime();
 
-	
 	int path_len = strlen(path);
 	path_ = new char[path_len + 1];
 	strcpy_s(path_, path_len + 1, path);
 
-	
-	int exe_path_size = strlen(path) + strlen(test_.get_executableName());
-	if (test_.getParameters() != nullptr)
-		exe_path_size += strlen(test_.getParameters()) + 1;
+	int exe_path_len = strlen(test_.getExecutablePath());
+	command_line_ = new wchar_t[exe_path_len + 1];
+	convertToTCHAR(command_line_, test_.getExecutablePath());
 
-	command_line_ = new wchar_t[exe_path_size + 1];
+	//int exe_path_size = strlen(path) + strlen(test_.get_executableName());
+	//if (test_.getParameters() != nullptr)
+	//	exe_path_size += strlen(test_.getParameters()) + 1;
 
-	char executable_directory_A[MAX_PATH + 1];
-	executable_directory_A[0] = 0;
-	if (test_.getExecutePath())
-	{
-		DWORD fFile = GetFileAttributesA(test_.getExecutePath());
-		if ((fFile == INVALID_FILE_ATTRIBUTES))
-		{
-			strcat_s(executable_directory_A, MAX_PATH + 1, test_.getExecutePath());
-			convertToTCHAR(command_line_, executable_directory_A);
-		}
-		//error
-	}
-	else
-	{
-		strcat_s(executable_directory_A, MAX_PATH + 1, path);
-		strcat_s(executable_directory_A, MAX_PATH + 1, test_.get_executableName());
+	//command_line_ = new wchar_t[exe_path_size + 1];
 
-		if (test_.getParameters() != nullptr)
-		{
-			strcat_s(executable_directory_A, MAX_PATH + 1, " ");
-			strcat_s(executable_directory_A, MAX_PATH + 1, test_.getParameters());
-		}
-		convertToTCHAR(command_line_, executable_directory_A);
+	//char executable_directory_A[MAX_PATH + 1];
+	//executable_directory_A[0] = 0;
+	//strcat_s(executable_directory_A, MAX_PATH + 1, path);
+	//strcat_s(executable_directory_A, MAX_PATH + 1, test_.get_executableName());
 
-		ZeroMemory(&process_information_, sizeof(process_information_));
-	}
+
+	//if (test_.getParameters() != nullptr)
+	//{
+	//	strcat_s(executable_directory_A, MAX_PATH + 1, " ");
+	//	strcat_s(executable_directory_A, MAX_PATH + 1, test_.getParameters());
+	//}
+	//convertToTCHAR(command_line_, executable_directory_A);
+
+	ZeroMemory(&process_information_, sizeof(process_information_));
 }
 
 ProcessInfo::ProcessInfo(const ProcessInfo& instance):
-test_(instance.test_), status_(instance.status_), work_thread_(instance.work_thread_), pReporter_(instance.pReporter_), description_(instance.description_),
+test_(instance.test_), status_(instance.status_), pReporter_(instance.pReporter_), result_description_(instance.result_description_),
 result_(instance.result_), process_information_(instance.process_information_), duration_(instance.duration_), max_time_(instance.max_time_), threads_(instance.threads_)
 {
 	InitializeCriticalSection(&crt_);
@@ -90,8 +80,8 @@ ProcessInfo::~ProcessInfo()
 	DeleteCriticalSection(&crt_);
 	delete[] path_;
 	delete[] command_line_;
-	if (description_)
-		delete[] description_;
+	if (result_description_)
+		delete[] result_description_;
 }
 
 // =========================================================================================================================================================
@@ -206,7 +196,7 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 		return test_.getWaitFor();
 	}
 
-	ProcessData* parameters = new ProcessData(this, &process_information_, semaphores_);
+	ProcessData* parameters = new ProcessData(this, semaphores_);
 	if (!threads_->AddTask(&ProcessInfo::StartThread, parameters))
 	{
 		logger << "Adding Task to thread pool failed";
@@ -222,17 +212,17 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 	// recording time in order to evaluate function duration
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
-	ProcessData data = *((ProcessData*)parameters);
+	ProcessData* data = (ProcessData*)parameters;
 	// recording time for reporter
-	data.running_process->pReporter_->beforeExecution(data.running_process->test_);
+	data->running_process->pReporter_->beforeExecution(data->running_process->test_);
 
 	STARTUPINFO startup_info;
 	ZeroMemory(&startup_info, sizeof(startup_info));
 	startup_info.cb = sizeof(startup_info);
 
 	// starting our desirable executable file
-	bool create_result = CreateProcess(NULL, data.running_process->command_line_, NULL, NULL, FALSE, CREATE_NO_WINDOW,
-		NULL, NULL, &startup_info, data.process_information);
+	bool create_result = CreateProcess(NULL, data->running_process->command_line_, NULL, NULL, FALSE, CREATE_NO_WINDOW,
+		NULL, NULL, &startup_info, &data->running_process->process_information_);
 
 	if (!create_result)
 	{
@@ -242,7 +232,7 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 	}
 
 	// Successfully created the process.  Wait for it to finish no more than MAX_TIME
-	int wait_result = WaitForSingleObject(data.process_information->hProcess, data.running_process->max_time_);
+	int wait_result = WaitForSingleObject(data->running_process->process_information_.hProcess, data->running_process->max_time_);
 
 	if (wait_result != WAIT_FAILED)
 	{
@@ -250,7 +240,7 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 		if (wait_result == WAIT_OBJECT_0)
 		{
 			DWORD returned_value;
-			bool get_result = GetExitCodeProcess(data.process_information->hProcess, &returned_value);
+			bool get_result = GetExitCodeProcess(data->running_process->process_information_.hProcess, &returned_value);
 			// setting apropriate description
 			if (!get_result)
 			{
@@ -258,10 +248,10 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 				return 1;
 			}
 		
-			int expected_value = atoi(data.running_process->test_.get_expectedResult());
-			data.running_process->result_ = (expected_value == returned_value);
+			int expected_value = atoi(data->running_process->test_.get_expectedResult());
+			data->running_process->result_ = (expected_value == returned_value);
 
-			if (data.running_process->result_)
+			if (data->running_process->result_)
 			{
 				message = "Succeeded";
 			}
@@ -272,47 +262,43 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 		}
 		else
 		{
-			TerminateProcess(data.process_information->hProcess, -1);
+			TerminateProcess(data->running_process->process_information_.hProcess, -1);
 			message = "Timeout";
-			data.running_process->result_ = false;
+			data->running_process->result_ = false;
 		}
 
-		data.running_process->set_status(Status::Closed);
+		data->running_process->set_status(Status::Closed);
 
-		if (!ReleaseSemaphore(data.semaphores[OWNED_SEMAPHORE], 1, NULL))
+		if (!ReleaseSemaphore(data->semaphores[OWNED_SEMAPHORE], 1, NULL))
 		{
 			logger << "Incrementing OWNED_SEMAPHORE semaphore count is failed";
 			return -1;
 		}
-		if (!ReleaseSemaphore(data.semaphores[MANAGING_SEMAPHORE], 1, NULL))
+		if (!ReleaseSemaphore(data->semaphores[MANAGING_SEMAPHORE], 1, NULL))
 		{
 			logger << "Incrementing MANAGING_SEMAPHORE semaphore count is failed";
 			return -1;
 		}
 
 		int size = strlen(message);
-		data.running_process->description_ = new char[size + 1];
-		strcpy_s(data.running_process->description_, size + 1, message);
+		data->running_process->result_description_ = new char[size + 1];
+		strcpy_s(data->running_process->result_description_, size + 1, message);
 
 		high_resolution_clock::time_point t2 = high_resolution_clock::now();
-		data.running_process->duration_ = duration_cast<milliseconds>(t2 - t1);
-
-
-	//	system("pause");
-
-	//	cout << data.running_process->path_ << endl;
+		data->running_process->duration_ = duration_cast<milliseconds>(t2 - t1);
 
 	
-		data.running_process->pReporter_->afterExecution(data.running_process->test_, *data.running_process);
+		data->running_process->pReporter_->afterExecution(data->running_process->test_, *data->running_process);
 
+		data->running_process->ReleaseResources();
 		delete parameters;
 		return 0;
 	}
 	else
 	{
-		// TODO: increment semaphore here
+		// TODO: increment semaphore here or program will loop infinitly
 		delete parameters;
-		logger << "Waiting for the process failed";
+		logger << "Waiting for the test failed";
 		return -1;
 	}
 }
@@ -320,81 +306,25 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 
 bool ProcessInfo::ReleaseResources()
 {
-	CloseHandle(process_information_.hThread);
-	CloseHandle(process_information_.hProcess);
+	if (!CloseHandle(process_information_.hThread))
+	{
+		logger << "Closing event failed";
+		return false;
+	}
+	if (!CloseHandle(process_information_.hProcess))
+	{
+		logger << "Closing event failed";
+		return false;
+	}
 	return true;
 }
 
-// WILL BE CHANGED AFTER REPORTER'S INTEGRATION
-//bool ProcessInfo::IsDone()
-//{
-//	if (status_ != Status::Running)
-//		return status_ == Status::Done;
-//
-//	int wait_process = WaitForSingleObject(process_information_.hProcess, NULL);
-//
-//	// how to write this if blocks more readable?
-//	if (wait_process == WAIT_FAILED && process_information_.hProcess != 0)
-//	{
-//		logger << "Wait for process termination failed";
-//		return false;
-//	}
-//	if (wait_process == WAIT_OBJECT_0)
-//	{
-//	/*	CloseHandle(process_information_.hProcess);
-//		CloseHandle(process_information_.hThread);
-//		ZeroMemory(&process_information_, sizeof(process_information_));*/
-//
-//		status_ = Status::Done;
-//		return true;
-//	}
-//	else
-//	{
-//		// process is still running
-//		return false;
-//	}
-//}
-
-// WILL BE ERASED AFTER REPORTER'S INTEGRATION
-//bool ProcessInfo::RecordDuration()
-//{
-//	int wait_thread = WaitForSingleObject(work_thread_, INFINITE);
-//	
-//	if (wait_thread == WAIT_FAILED && work_thread_ != NULL)
-//	{
-//		logger << "Wait for thread termination failed";
-//		return false;
-//	}
-//	if (wait_thread == WAIT_OBJECT_0)
-//	{
-//		DWORD returned_value;
-//
-//		bool get_result = GetExitCodeThread(work_thread_, &returned_value);
-//
-//		CloseHandle(work_thread_);
-//
-//		ZeroMemory(&work_thread_, sizeof(work_thread_));
-//
-//		if (!get_result)
-//		{
-//			logger << "Thread terminated but an error occured while getting its exit code";
-//			return false;
-//		}
-//		else
-//		{
-//			duration<long long, std::milli> test_duration(returned_value);
-//			duration_ = test_duration;
-//			return true;
-//		}
-//	}
-//	else
-//	{
-//		// thread is still running
-//		return false;
-//	}
-//}
+bool ProcessInfo::operator<(const ProcessInfo& val)
+{
+	return GetPriority() < val.GetPriority();
+}
 
 ProcessInfo::operator TRSResult() const
 {
-	return TRSResult(path_, test_.getName(), description_,  result_, duration_);
+	return TRSResult(path_, test_.getName(), result_description_,  result_, duration_);
 }

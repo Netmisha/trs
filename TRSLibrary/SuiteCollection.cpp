@@ -60,19 +60,12 @@ bool SuiteCollection::Run()
 	return true;
 }
 
-
-// I will change it later
+// may be optimized
 bool SuiteCollection::IsUndone()
 {
 	for (auto var = suits_.begin(); var != suits_.end(); ++var)
 	{
-		if (!var->is_undone())
-		{
-//			auto to_erase = var;
-//			++var;
-//			suits_.erase(to_erase);
-		}
-		else
+		if (var->is_undone())
 			return true;
 	}
 

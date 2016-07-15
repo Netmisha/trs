@@ -44,30 +44,25 @@ public:
 	bool IsDisable() const;
 	int GetPriority() const;
 	char* ProcessTest(bool ignore_wait = false);
-//	bool IsDone();
-	bool ReleaseResources();
 
 	operator TRSResult() const;
-	bool operator<(const ProcessInfo& val)
-	{
-		return GetPriority() < val.GetPriority();
-	}
+	bool operator<(const ProcessInfo&);
 
-//	friend struct ProcessData;
 private:
+	bool ReleaseResources();
 	long long ParseMaxTime();
 	bool RecordDuration();
 	static DWORD WINAPI StartThread(LPVOID);
+
 private:
 	TRSTest test_;
 	bool result_;
 	Status status_;
 
 	long max_time_;
-	char* description_;
+	char* result_description_;
 	HANDLE semaphores_[SEMAPHORES_AMOUNT];
 
-	HANDLE work_thread_;
 	char* path_;
 	wchar_t* command_line_;
 
@@ -81,10 +76,9 @@ private:
 
 struct ProcessData
 {
-	ProcessData(ProcessInfo*, PROCESS_INFORMATION*, HANDLE s[SEMAPHORES_AMOUNT]);
+	ProcessData(ProcessInfo*, HANDLE s[SEMAPHORES_AMOUNT]);
 	~ProcessData(){}
 
-	PROCESS_INFORMATION* process_information;
 	HANDLE semaphores[SEMAPHORES_AMOUNT];
 	ProcessInfo* running_process;
 };

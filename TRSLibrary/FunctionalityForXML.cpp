@@ -39,7 +39,7 @@ char* convertToChar( TCHAR*path)//create buffer to set info to tinyXML doc const
 
 void convertToTCHAR(TCHAR*dest,char* path)
 {
-	if (dest != nullptr)
+	if (dest != nullptr && path != nullptr)
 	{
 		TCHAR help = path[0];
 		int i = 0;

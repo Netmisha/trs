@@ -183,9 +183,9 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					{
 						return INVALID_RESULT;
 					}
-					if ((*iter)->getExecutePath())
+					if ((*iter)->getExecutablePath())
 					{
-						DWORD fFile = GetFileAttributesA((*iter)->getExecutePath());
+						DWORD fFile = GetFileAttributesA((*iter)->getExecutablePath());
 						if ((fFile != INVALID_FILE_ATTRIBUTES))
 						{
 							return WRONG_PATH_EXECUTION;
