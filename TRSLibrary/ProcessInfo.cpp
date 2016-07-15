@@ -308,12 +308,12 @@ bool ProcessInfo::ReleaseResources()
 {
 	if (!CloseHandle(process_information_.hThread))
 	{
-		logger << "Closing event failed";
+		logger << "Closing thread failed";
 		return false;
 	}
 	if (!CloseHandle(process_information_.hProcess))
 	{
-		logger << "Closing event failed";
+		logger << "Closing proccess failed";
 		return false;
 	}
 	return true;

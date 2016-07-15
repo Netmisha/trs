@@ -72,7 +72,7 @@ ThreadPool::~ThreadPool()
 
 BOOL ThreadPool::InitPool(DWORD max_queue_size)
 {
-	available_task_ = CreateSemaphore(NULL, 0, max_queue_size, NULL);
+	available_task_ = CreateSemaphore(NULL, 0, max_queue_size + size_, NULL);
 	if (available_task_ == NULL)
 	{
 		logger << "Semaphore creating error";
