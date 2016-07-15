@@ -20,6 +20,18 @@ TRSInfo::TRSInfo(const TRSInfo& val)
 	{
 		metadata = new Metadata(*val.metadata);
 	}
+	if (val.path != nullptr)
+	{
+		int size = strlen(val.path);
+		path = new char[size + 1];
+		strncpy_s(path, size + 1, val.path, size);
+	}
+	if (val.executablePath != nullptr)
+	{
+		int size = strlen(val.executablePath);
+		executablePath = new char[size + 1];
+		strncpy_s(executablePath, size + 1, val.executablePath, size);
+	}
 	if (val.disable != nullptr)
 	{
 		int size = strlen(val.disable);
@@ -156,12 +168,10 @@ char* TRSInfo::getExecutablePath() const
 	if (parameters&&executablePath&&executableName)
 	{
 
-		char* result = new char[strlen(executablePath) + strlen(executableName) + strlen(parameters) + 3];
+		char* result = new char[strlen(executablePath) + strlen(executableName) + strlen(parameters) + 2];
 		strncpy_s(result, strlen(executablePath)+1, executablePath, strlen(executablePath));
-		strncpy_s(result + strlen(executablePath), 2, "//", 1);
-		strncpy_s(result + strlen(executablePath) + 1, strlen(executableName) + 1, executableName, strlen(executableName));
+		strncpy_s(result + strlen(executablePath) , strlen(executableName) + 1, executableName, strlen(executableName));
 
-		
 		
 		DWORD dwAttrib = GetFileAttributesA(result);
 		if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
@@ -179,29 +189,26 @@ char* TRSInfo::getExecutablePath() const
 	{
 		if (parameters&&!executablePath)
 		{
-			char* result = new char[strlen(path) + strlen(parameters) + strlen(executableName)+ 3];
+			char* result = new char[strlen(path) + strlen(parameters) + strlen(executableName)+ 2];
 			strncpy_s(result, strlen(path) + 1, path, strlen(path));
-			strncpy_s(result + strlen(path), 2, "//", 1);
-			strncpy_s(result + strlen(path)+1, strlen(executableName) + 1, executableName, strlen(executableName));
-			strncpy_s(result + strlen(path) + strlen(executableName)+1, 2, " ", 1);
-			strncpy_s(result + strlen(path) + 2, strlen(parameters) + 1, parameters, strlen(parameters));
+			strncpy_s(result + strlen(path), strlen(executableName) + 1, executableName, strlen(executableName));
+			strncpy_s(result + strlen(path) + strlen(executableName), 2, " ", 1);
+			strncpy_s(result + strlen(path) + strlen(executableName)+1, strlen(parameters) + 1, parameters, strlen(parameters));
 			return result;
 		}
 		if (executablePath&&!parameters)
 		{
-			char* result = new char[strlen(executablePath) + strlen(executableName) + 3];
+			char* result = new char[strlen(executablePath) + strlen(executableName) + 2];
 			strncpy_s(result, strlen(executablePath) + 1, executablePath, strlen(executablePath));
-			strncpy_s(result + strlen(executablePath), 2, "//", 1);
-			strncpy_s(result + strlen(executablePath)+1, strlen(executableName) + 1, executableName, strlen(executableName));
+			strncpy_s(result + strlen(executablePath), strlen(executableName) + 1, executableName, strlen(executableName));
 			return result;
 		}
 		if (!parameters&&!executableName)
 		{
-			char* result = new char[strlen(path) + strlen(executableName) + 2];
+			char* result = new char[strlen(path) + strlen(executableName) + 1];
 			strncpy_s(result, strlen(path) + 1, path, strlen(path));
-			strncpy_s(result + strlen(path), 2, "//", 1);
-			strncpy_s(result + strlen(path)+1, strlen(executableName) + 1, executableName, strlen(executableName));
-			strncpy_s(result + strlen(executablePath) + strlen(parameters) + 1, strlen(parameters) + 1, parameters, strlen(parameters));
+			strncpy_s(result + strlen(path), strlen(executableName) + 1, executableName, strlen(executableName));
+			strncpy_s(result + strlen(executablePath) + strlen(parameters) , strlen(parameters) + 1, parameters, strlen(parameters));
 
 			return result;
 		}
