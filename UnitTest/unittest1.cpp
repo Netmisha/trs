@@ -439,15 +439,15 @@ namespace UnitTest
 		}
 		TEST_METHOD(Dead_lock_finding_two_tests)
 		{
-			Assert::AreEqual((int)Manager.Verify(R"(../VerifyingTestsDeadLock/Twotestslock)", nullptr, nullptr), (int)DEAD_LOCK_WAS_FOUND);
+			Assert::AreEqual((int)Manager.Verify(R"(../VerifyingTestsDeadLock/Twotestslock)", nullptr, nullptr), (int)DEAD_LOCK_OR_FILES_ABSENT_WAS_FOUND);
 		}
 		TEST_METHOD(Dead_lock_finding_long_chain)
 		{
-			Assert::AreEqual((int)Manager.Verify(R"(../VerifyingTestsDeadLock/LongChain)", nullptr, nullptr), (int)DEAD_LOCK_WAS_FOUND);
+			Assert::AreEqual((int)Manager.Verify(R"(../VerifyingTestsDeadLock/LongChain)", nullptr, nullptr), (int)DEAD_LOCK_OR_FILES_ABSENT_WAS_FOUND);
 		}
 		TEST_METHOD(Dead_lock_finding_intricately)
 		{
-			Assert::AreEqual((int)Manager.Verify(R"(../VerifyingTestsDeadLock/Intricately)", nullptr, nullptr), (int)DEAD_LOCK_WAS_FOUND);
+			Assert::AreEqual((int)Manager.Verify(R"(../VerifyingTestsDeadLock/Intricately)", nullptr, nullptr), (int)DEAD_LOCK_OR_FILES_ABSENT_WAS_FOUND);
 		}
 		TEST_METHOD(Check_if_folder_exist_when_normal_FolderCreation)
 		{	
@@ -534,7 +534,7 @@ namespace UnitTest
 		}
 		TEST_METHOD(Verify_exe_absent)
 		{
-			Assert::AreEqual((int)Manager.Verify(R"(../FailTestData)", nullptr, nullptr), (int)EXE_OR_XML_ABSENT);
+			Assert::AreEqual((int)Manager.Verify(R"(../FailTestData)", nullptr, nullptr), (int)DEAD_LOCK_OR_FILES_ABSENT_WAS_FOUND);
 		}
 	};
 }

@@ -13,6 +13,7 @@
 #include "Converters.h"
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include <strsafe.h>
 
 class FolderTreeMaker_API FoldersTreeMaker

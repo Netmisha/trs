@@ -42,7 +42,8 @@ int FoldersTreeMaker::DeleteDirectory(LPCWSTR wzDirectory)
 bool FoldersTreeMaker::RecourseParse(char* path, TiXmlNode* pParent)
 {
 	Suite* currentSuite = new Suite();
-	currentSuite->Parse(pParent, nullptr, nullptr);
+	std::vector<TRSTest*> test;
+	currentSuite->Parse(pParent, nullptr, nullptr,test);
 	currentSuite->setDir(path);
 	mTestCount += currentSuite->getList().size();
 	char* fullName = new char[strlen(path) + strlen(currentSuite->getName()) + 2];

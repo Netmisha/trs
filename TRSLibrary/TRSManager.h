@@ -28,7 +28,7 @@
 
 class TRSManager_API TRSManager
 {
-	int FillList(char*path, char*name, char*tag, std::list<Suite*>*curList);
+	int FillList(char*path, char*name, char*tag, std::list<Suite*>*curList,std::vector<TRSTest*>testList);
 public:
 	TRSManager();
 	~TRSManager();

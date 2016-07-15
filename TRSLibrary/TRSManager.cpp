@@ -123,11 +123,9 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 		return INVALID_PARAMETERS;
 
 		std::list<Suite*>* suiteCollection=List(path, name, tag);
-		if (suiteCollection)
-		{
 			if (suiteCollection->size() == 0)
 			{
-				return DEAD_LOCK_WAS_FOUND;
+				return DEAD_LOCK_OR_FILES_ABSENT_WAS_FOUND;
 			}
 			std::list<Suite*>::iterator it = suiteCollection->begin();
 			
@@ -185,11 +183,7 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 			}
 			return SUCCSEED;
 		}
-		else
-		{
-			return EXE_OR_XML_ABSENT;
-		}
-}
+
 
 bool TRSManager::Pause(char* path, char* name, char* tag)
 {
@@ -217,7 +211,7 @@ bool TRSManager::Stop(char* path, char* name, char* tag)
 	return false;
 }
 
-int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suiteCollection)
+int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suiteCollection, std::vector<TRSTest*>testList)
 {
 	logger->info("Entered FillList function with path: {}", path);
 	if (name)
@@ -267,7 +261,7 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 						StringCchCat(subDir, MAX_PATH, TEXT("\\"));//additional slash))
 						StringCchCat(subDir, MAX_PATH, ffd.cFileName);//name of last folder to search in
 						char* way = convertToChar(subDir);
-						if (FillList(way, name, tag, suiteCollection) != EXE_OR_XML_ABSENT)
+						if (FillList(way, name, tag, suiteCollection,testList) != EXE_OR_XML_ABSENT)
 						{
 							delete[] way;
 						}
@@ -297,11 +291,12 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 						if (loadOk)
 						{
 							Suite* currentSuite = new Suite();
-							currentSuite->Parse(&doc, name, tag);
+							currentSuite->Parse(&doc, name, tag,testList);
 							char*SuiteWay = convertToChar(currentDir);
 							currentSuite->setDir(SuiteWay);
 							delete[] SuiteWay;
 							suiteCollection->push_back(currentSuite);
+							
 						}
 						delete[] way;
 					}
@@ -355,7 +350,8 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 		return new std::list<Suite*>;
 
 	std::list<Suite*>*suiteCollection = new std::list<Suite*>;
-	if (FillList(path, name, tag, suiteCollection) != EXE_OR_XML_ABSENT)
+	std::vector<TRSTest*> testWait;
+	if (FillList(path, name, tag, suiteCollection, testWait) != EXE_OR_XML_ABSENT)
 	{
 		std::list<Suite*>::iterator it = suiteCollection->begin();
 		for (it; it != suiteCollection->end(); ++it)
@@ -416,11 +412,26 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 					delete[] buf;
 					collTests.push_back((*iter));
 				}
-				if ((*iter)->getWaitFor())
+			}
+			for (int i = 0; i < testWait.size(); ++i)
+			{
+				if (testWait[i]->getWaitFor())
 				{
-					collWait.push_back((*iter)->getWaitFor());
+					collWait.push_back(testWait[i]->getWaitFor());
 				}
 			}
+			
+				if (!VerifyWaitForList(testWait, collWait))
+				{
+					std::list<Suite*>::iterator it = suiteCollection->begin();
+					for (it; it != suiteCollection->end(); ++it)
+					{
+						delete (*it);
+					}
+					suiteCollection->clear();
+					return suiteCollection;
+				}
+			
 			for (int i = 0; i < collTests.size(); ++i)
 			{
 				if (!VerifyTestsList(collTests, (*it)->getList().size(), coll, i))
@@ -433,16 +444,7 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 					suiteCollection->clear();
 					return suiteCollection;
 				}
-				if (!VerifyWaitForList(collTests, collWait))
-				{
-					std::list<Suite*>::iterator it = suiteCollection->begin();
-					for (it; it != suiteCollection->end(); ++it)
-					{
-						delete (*it);
-					}
-					suiteCollection->clear();
-					return suiteCollection;
-				}
+				
 			}
 		}
 		return suiteCollection;

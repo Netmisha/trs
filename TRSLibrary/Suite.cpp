@@ -63,11 +63,11 @@ ostream& operator<<(ostream& out, Suite& instance)
 	return out;
 }
 
-bool Suite::Parse(TiXmlNode*pParent,char*name_,char*tag_)
+bool Suite::Parse(TiXmlNode*pParent,char*name_,char*tag_,std::vector<TRSTest*>& tests)
 {
 	if (TRSInfo::Parse(pParent))
 	{
-		ParseSuit(pParent,name_,tag_,0);
+		ParseSuit(pParent,name_,tag_,0,tests);
 		return true;
 	}
 	else
@@ -127,7 +127,7 @@ bool Suite::setList(std::list<TRSTest*>& testList_)
 	return testList.size() == testList_.size();
 }
 
-bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count)
+bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count,std::vector<TRSTest*>& tests)
 {
 	if (!pParent) return false;
 
@@ -152,6 +152,7 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count)
 			}
 			TRSTest* currentTest = new TRSTest;
 			currentTest->Parse(pParent);
+			tests.push_back(currentTest);
 			if (name_)
 			{
 				if (strlen(name_) > 0)
@@ -234,7 +235,7 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count)
 	}
 	for (pChild = pParent->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
 	{
-		ParseSuit(pChild,name_,tag_,count);
+		ParseSuit(pChild, name_, tag_, count, tests);
 	}
 	return true;
 }

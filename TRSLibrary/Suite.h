@@ -13,12 +13,13 @@
 #include "TRSTest.h"
 #include <list>
 #include <istream>
+#include <vector>
 
 class Suite_API Suite : public TRSInfo
 {
 	std::list<TRSTest*> testList;
 	char* directoryName = nullptr;
-	bool ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count);
+	bool ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count,std::vector<TRSTest*>& tests);
 public:
 	Suite(char*TestName,char*Description,char*DirName);
 	Suite();
@@ -33,7 +34,7 @@ public:
 	}
 	std::list<TRSTest*>& getList();
 	std::list<TRSTest*> getList() const;
-	bool Parse(TiXmlNode*pParent,char*name_,char*tag_);
+	bool Parse(TiXmlNode*pParent,char*name_,char*tag_,std::vector<TRSTest*>& test );
 	bool setDir(char*dir_);
 	bool setList(std::list<TRSTest*>& testList_);
 
