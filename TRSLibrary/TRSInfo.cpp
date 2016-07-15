@@ -153,7 +153,24 @@ char* TRSInfo::getDisable() const
 
 char* TRSInfo::getExecutePath() const
 {
-	return executePath;
+	if (parameters)
+	{
+		
+		char* result = new char[strlen(executePath) + strlen(executableName) + strlen(parameters) + 2];
+		strncpy_s(result, strlen(executePath)+1, executePath, strlen(executePath));
+		strncpy_s(result + strlen(executePath), 2, "//", 1);
+		strncpy_s(result + strlen(executePath) + 1, strlen(executableName) + 1, executableName, strlen(executableName));
+		DWORD dwAttrib = GetFileAttributesA(result);
+		if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
+		{
+			return nullptr;
+		}
+		else
+		{
+			strncpy_s(result + strlen(executePath) + strlen(parameters) + 1, strlen(parameters) + 1, parameters, strlen(parameters));
+			return result;
+		}
+	}
 }
 
 char* TRSInfo::getPath() const

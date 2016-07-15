@@ -15,7 +15,8 @@ public:
 	virtual void AfterExecution(TRSInfo pInfo, TRSResult pResult);
 	virtual void Begin();
 	virtual void End();
-	virtual void ErrorOutput();
+	virtual void ErrorOutput(TRSResult& result, std::string message);
+	virtual void ErrorMessage(std::string message);
 private:
 	std::ofstream output;
 	double time_ = 0;

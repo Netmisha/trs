@@ -8,7 +8,7 @@
 #endif
 
 #include "TRSInfo.h"
-
+#include <string>
 #include "TRSLibrary\TRSResult.h"
 
 class TRSReport_API TRSReport
@@ -18,7 +18,8 @@ public:
 	virtual~TRSReport();
 	virtual void BeforeExecution(TRSInfo pInfo) = 0;
 	virtual void AfterExecution(TRSInfo pInfo, TRSResult pResult) = 0;
-	virtual void ErrorOutput() = 0;
+	virtual void ErrorOutput(TRSResult& result,string message) = 0;
+	virtual void ErrorMessage(string message) = 0;
 	virtual void Begin()=0;
 	virtual void End()=0;
 };

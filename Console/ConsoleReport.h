@@ -3,7 +3,7 @@
 
 #include "TRSLibrary\TRSReport.h"
 #include <Windows.h>
-
+#include <string>
 class ConsoleReport :public TRSReport
 {
 public:
@@ -14,8 +14,8 @@ public:
 	virtual void AfterExecution(TRSInfo pInfo, TRSResult pResult);
 	virtual void Begin();
 	virtual void End();
-	virtual void ErrorOutput();
-
+	virtual void ErrorOutput(TRSResult& result,std::string message);
+	virtual void ErrorMessage( std::string message);
 	double getTime();
 	double getAmount();
 	double getPassedAmount();

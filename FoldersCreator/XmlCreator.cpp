@@ -4,7 +4,7 @@
 
 XmlCreator::XmlCreator(char* path_, Suite* suite)
 {
-	path = path;
+	path = path_;
 	currentSuite = suite;
 }
 
