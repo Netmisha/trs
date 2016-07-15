@@ -4,6 +4,12 @@ TRS.opensdf
 
 *.vcxproj.user
 TRSLibrary/Debug/
+Console/Release/
+CreateExe/Release/
+FoldersCreator/Release/
+Release/
+TRSLibrary/Release/
+UnitTest/Release/
 
 UnitTest/Debug/
 
