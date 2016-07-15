@@ -143,7 +143,7 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 			tag = __argv[i + 1];
 			continue;
 		}
-		else if (_stricmp(__argv[i], "-t") == 0)
+		else if (_stricmp(__argv[i], "-j") == 0)
 		{
 			threads = atoi(__argv[i + 1]);
 			if (threads <= 0)

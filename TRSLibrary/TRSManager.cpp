@@ -86,9 +86,14 @@ bool TRSManager::VerifyParameters(char* path, char* name, char* tag)
 
 bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount, ReportManager* pResult)
 {
+	logger->info("Entered Run function with path: {}, amount of threads: {} ", path, threads_amount);
+	if (name)
+		logger->info("name: {} ", name);
+	if (tag)
+		logger->info("name: {} ", tag);
+
 	if (!VerifyParameters(path, name, tag) || threads_amount > MAX_THREADS)
 		return false;
-
 	std::list<Suite*> arr = *List(path, name, tag);
 	if (arr.size() == 0)
 		return false;
@@ -101,11 +106,19 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 	// TODO: add parameter to Console command line
 	SuiteCollection suits(coll, threads_amount, pResult);
 
-	return suits.Run();
+	bool ret_val = suits.Run();
+	logger->info("Exit Run function with result: {0}", ret_val);
+	return ret_val;
 }
 
 int TRSManager::Verify(char* path, char* name, char* tag)
 {
+	logger->info("Entered Verify function with path: {}", path);
+	if (name)
+		logger->info("name: {} ", name);
+	if (tag)
+		logger->info("name: {} ", tag);
+
 	if (!VerifyParameters(path, name, tag))
 		return INVALID_PARAMETERS;
 
@@ -171,6 +184,12 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 
 bool TRSManager::Pause(char* path, char* name, char* tag)
 {
+	logger->info("Entered Pause function with path: {}", path );
+	if (name)
+		logger->info("name: {} ", name);
+	if (tag)
+		logger->info("name: {} ", tag);
+
 	if (!VerifyParameters(path, name, tag))
 		return false;
 	return false;
@@ -178,6 +197,12 @@ bool TRSManager::Pause(char* path, char* name, char* tag)
 
 bool TRSManager::Stop(char* path, char* name, char* tag)
 {
+	logger->info("Entered Stop function with path: {}", path);
+	if (name)
+		logger->info("name: {} ", name);
+	if (tag)
+		logger->info("name: {} ", tag);
+
 	if (!VerifyParameters(path, name, tag))
 		return false;
 	return false;
@@ -185,6 +210,12 @@ bool TRSManager::Stop(char* path, char* name, char* tag)
 
 int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suiteCollection)
 {
+	logger->info("Entered FillList function with path: {}", path);
+	if (name)
+		logger->info("name: {} ", name);
+	if (tag)
+		logger->info("name: {} ", tag);
+
 	if (!VerifyParameters(path, name, tag))
 		return false;
 	DWORD fFile = GetFileAttributesA(path);
@@ -304,6 +335,13 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 
 std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 {
+	logger->info("Entered List function with path: {}", path);
+	if (name)
+		logger->info("name: {} ", name);
+	if (tag)
+		logger->info("name: {} ", tag
+		);
+
 	if (!VerifyParameters(path, name, tag))
 		return nullptr;
 
@@ -387,6 +425,7 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 	}
 	else
 	{
+		logger->info("List returned nullptr");
 		return nullptr;
 	}
 }
