@@ -153,12 +153,12 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 		}
 	}
 
-	if ( !path || (path && !_stricmp(path, ".")))
+	if ( !path )
 	{
 		path = new char[MAX_PATH + 1];
 		GetCurrentDirectoryA(MAX_PATH + 1, path);
 	}
-	else if (path && strlen(path) >= 2 && path[0] == '.' && path[1] == '.')
+	else if (path && strlen(path) > 1 && path[0] == '.' )
 	{
 		char* coll = new char[MAX_PATH + 1];
 		GetCurrentDirectoryA(MAX_PATH + 1, coll);
