@@ -217,12 +217,10 @@ char* TRSInfo::getExecutablePath() const
 		{
 			int sizePath = strlen(path);
 			int sizeName = strlen(executableName);
-			int sizeParam = strlen(parameters);
 			char* result = new char[sizePath + sizeName + 1];
 			strncpy_s(result, sizePath + 1, path, sizePath);
 			strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
-			strncpy_s(result + sizeName + sizeParam, sizeParam + 1, parameters, sizeParam);
-
+			
 			return result;
 		}
 	}
