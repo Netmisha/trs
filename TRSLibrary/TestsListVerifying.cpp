@@ -24,6 +24,26 @@ bool ExistTest(std::vector<TRSTest*> coll, char* testName)
 	return false;
 }
 
+bool VerifyWaitForList(std::vector<TRSTest*>coll, std::vector<char*> waitColl)
+{
+	bool check = true;
+	for (int i = 0; i < coll.size(); ++i)
+	{
+		for (int j = 0; j < waitColl.size(); ++j)
+		{
+			if (!strncmp(coll[i]->getName(), waitColl[j], strlen(waitColl[i])))
+			{
+				check = false;
+			}
+		}
+		if (check)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 bool VerifyTestsList(std::vector<TRSTest*>coll, int size, std::vector<char*>nameColl, int firstelem )
 {
 	if (size)
@@ -49,6 +69,7 @@ bool VerifyTestsList(std::vector<TRSTest*>coll, int size, std::vector<char*>name
 					return VerifyTestsList(coll, coll.size() - 1, nameColl, TestPosition(coll, coll[firstelem]->getWaitFor()));
 				}
 			}
+			
 		}
 		else
 		{

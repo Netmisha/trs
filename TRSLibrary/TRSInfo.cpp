@@ -7,10 +7,12 @@ TRSInfo::TRSInfo(char*TestName, char*Description)
 {
 	if (Name&&description)
 	{
-		Name = new char[strlen(TestName)];
-		strncpy_s(Name, strlen(TestName), TestName, strlen(TestName));
-		description = new char[strlen(Description)];
-		strncpy_s(description, strlen(Description), Description, strlen(Description));
+		int size = strlen(TestName);
+		int count = strlen(Description);
+		Name = new char[size];
+		strncpy_s(Name, size, TestName, size);
+		description = new char[count];
+		strncpy_s(description, count + 1, Description, count);
 	}
 }
 
@@ -167,48 +169,59 @@ char* TRSInfo::getExecutablePath() const
 {
 	if (parameters&&executablePath&&executableName)
 	{
-
-		char* result = new char[strlen(executablePath) + strlen(executableName) + strlen(parameters) + 2];
-		strncpy_s(result, strlen(executablePath)+1, executablePath, strlen(executablePath));
-		strncpy_s(result + strlen(executablePath) , strlen(executableName) + 1, executableName, strlen(executableName));
+		int sizePath = strlen(executablePath);
+		int sizeName = strlen(executableName);
+		int sizeParam = strlen(parameters);
+		char* result = new char[sizePath + sizeName + sizeParam + 2];
+		strncpy_s(result, sizePath + 1, executablePath, sizePath);
+		strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
 
 		
 		DWORD dwAttrib = GetFileAttributesA(result);
 		if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
 		{
+			delete[] result;
 			return nullptr;
 		}
 		else
 		{
-			strncpy_s(result + strlen(executablePath) + strlen(executableName) + 1, 2, " ", 1);
-			strncpy_s(result + strlen(executablePath) + strlen(executableName) + 2, strlen(parameters) + 1, parameters, strlen(parameters));
+			strncpy_s(result + sizePath + sizeName + 1, 2, " ", 1);
+			strncpy_s(result + sizePath + sizeName + 2, sizeParam + 1, parameters, sizeParam);
 			return result;
 		}
 	}
 	else
 	{
-		if (parameters&&!executablePath)
+		if (parameters&&!executablePath&&executableName)
 		{
-			char* result = new char[strlen(path) + strlen(parameters) + strlen(executableName)+ 2];
-			strncpy_s(result, strlen(path) + 1, path, strlen(path));
-			strncpy_s(result + strlen(path), strlen(executableName) + 1, executableName, strlen(executableName));
-			strncpy_s(result + strlen(path) + strlen(executableName), 2, " ", 1);
-			strncpy_s(result + strlen(path) + strlen(executableName)+1, strlen(parameters) + 1, parameters, strlen(parameters));
+			int sizePath = strlen(path);
+			int sizeName = strlen(executableName);
+			int sizeParam = strlen(parameters);
+			char* result = new char[sizePath + sizeParam + sizeName + 2];
+			strncpy_s(result, sizePath + 1, path, sizePath);
+			strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
+			strncpy_s(result + sizePath + sizeName, 2, " ", 1);
+			strncpy_s(result + sizePath + sizeName + 1, sizeParam + 1, parameters, sizeParam);
 			return result;
 		}
-		if (executablePath&&!parameters)
+		if (executablePath&&!parameters&&executableName)
 		{
-			char* result = new char[strlen(executablePath) + strlen(executableName) + 2];
-			strncpy_s(result, strlen(executablePath) + 1, executablePath, strlen(executablePath));
-			strncpy_s(result + strlen(executablePath), strlen(executableName) + 1, executableName, strlen(executableName));
+			int sizePath = strlen(executablePath);
+			int sizeName = strlen(executableName);
+			char* result = new char[sizePath + sizeName + 2];
+			strncpy_s(result, sizePath + 1, executablePath, sizePath);
+			strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
 			return result;
 		}
-		if (!parameters&&!executableName)
+		if (!parameters&&!executablePath&&executableName)
 		{
-			char* result = new char[strlen(path) + strlen(executableName) + 1];
-			strncpy_s(result, strlen(path) + 1, path, strlen(path));
-			strncpy_s(result + strlen(path), strlen(executableName) + 1, executableName, strlen(executableName));
-			strncpy_s(result + strlen(executablePath) + strlen(parameters) , strlen(parameters) + 1, parameters, strlen(parameters));
+			int sizePath = strlen(path);
+			int sizeName = strlen(executableName);
+			int sizeParam = strlen(parameters);
+			char* result = new char[sizePath + sizeName + 1];
+			strncpy_s(result, sizePath + 1, path, sizePath);
+			strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
+			strncpy_s(result + sizeName + sizeParam, sizeParam + 1, parameters, sizeParam);
 
 			return result;
 		}

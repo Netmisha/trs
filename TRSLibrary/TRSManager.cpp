@@ -164,11 +164,12 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 				return DEAD_LOCK_WAS_FOUND;
 			}
 			std::list<Suite*>::iterator it = suiteCollection->begin();
+			
 			for (it; it != suiteCollection->end(); ++it)
 			{
 				std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
-				std::vector<char*> coll;
 				std::vector<TRSTest*>collTests;
+				std::vector<char*> coll;
 				for (iter; iter != (*it)->getList().end(); ++iter)
 				{
 					if (!((*iter)->getName()))
@@ -206,6 +207,11 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 						delete[] buf;
 						collTests.push_back((*iter));
 					}
+					coll.push_back((*iter)->getWaitFor());
+				}
+				if (!VerifyWaitForList(collTests, coll))
+				{
+					return WRONG_WAITFOR;
 				}
 			}
 			return SUCCSEED;
@@ -424,6 +430,7 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 		{
 			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
 			std::vector<char*> coll;
+			std::vector<char*> collWait;
 			std::vector<TRSTest*>collTests;
 			for (iter; iter != (*it)->getList().end(); ++iter)
 			{
@@ -477,10 +484,21 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 					delete[] buf;
 					collTests.push_back((*iter));
 				}
+				collWait.push_back((*iter)->getWaitFor());
 			}
 			for (int i = 0; i < collTests.size(); ++i)
 			{
 				if (!VerifyTestsList(collTests, (*it)->getList().size(), coll, i))
+				{
+					std::list<Suite*>::iterator it = suiteCollection->begin();
+					for (it; it != suiteCollection->end(); ++it)
+					{
+						delete (*it);
+					}
+					suiteCollection->clear();
+					return suiteCollection;
+				}
+				if (!VerifyWaitForList(collTests, collWait))
 				{
 					std::list<Suite*>::iterator it = suiteCollection->begin();
 					for (it; it != suiteCollection->end(); ++it)
