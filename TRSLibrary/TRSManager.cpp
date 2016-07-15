@@ -343,7 +343,7 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 		);
 
 	if (!VerifyParameters(path, name, tag))
-		return nullptr;
+		return new std::list<Suite*>;
 
 	std::list<Suite*>*suiteCollection = new std::list<Suite*>;
 	if (FillList(path, name, tag, suiteCollection) != EXE_OR_XML_ABSENT)
@@ -426,7 +426,7 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 	else
 	{
 		logger->info("List returned nullptr");
-		return nullptr;
+		return new std::list<Suite*>;
 	}
 }
 
