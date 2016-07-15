@@ -113,25 +113,14 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 	name = tag = path = nullptr;
 	threads = 1;
 	// checking whether amount of parameters is correct
-	if (__argc < 3 || __argc > MAX_PARAMETERS || __argc % 2 == 0)
+	if (__argc < 3 || __argc > MAX_PARAMETERS || __argc % 2 != 0)
 	{
 		logger<<"Incorrect amount of parameters";
 		return false;
 	}
 
-	// checking if path parameter is valid
-	path = __argv[2];
-
-	DWORD dwAttrib = GetFileAttributesA(path);
-
-	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
-	{
-		logger<<"Specified path is not exist";
-		return false;
-	}
-
-	// checking optional parameters
-	for (int i = 3; i < __argc; i += 2)
+	// checking  parameters
+	for (int i = 2; i < __argc; i += 2)
 	{
 		if (_stricmp(__argv[i], "-n") == 0)
 		{
@@ -150,6 +139,11 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 				logger << "Amount of threads must be a positive integer!";
 			continue;
 		}
+		else if (_stricmp(__argv[i], "-p") == 0)
+		{
+			path = __argv[i + 1];
+			continue;
+		}
 		else
 		{
 			// this mean that there was not a identifier at the place
@@ -158,6 +152,37 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 			return false;
 		}
 	}
+
+	if ( !path || (path && !_stricmp(path, ".")))
+	{
+		path = new char[MAX_PATH + 1];
+		GetCurrentDirectoryA(MAX_PATH + 1, path);
+	}
+	else if (path && strlen(path) >= 2 && path[0] == '.' && path[1] == '.')
+	{
+		char* coll = new char[MAX_PATH + 1];
+		GetCurrentDirectoryA(MAX_PATH + 1, coll);
+		int len = strlen(coll);
+		coll[len] = '\\';
+		coll[len + 1] = 0;
+		strcat_s(coll, MAX_PATH + 1, path);
+		path = coll;
+	}
+	else
+	{
+		char* coll = new char[MAX_PATH + 1];
+		strcpy_s(coll, MAX_PATH + 1, path);
+		path = coll;
+	}
+	DWORD dwAttrib = GetFileAttributesA(path);
+
+	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
+	{
+		logger << "Specified path is not exist";
+		return false;
+	}
+		
+
 	return true;
 }
 
@@ -178,8 +203,9 @@ int main(int argc, char* argv[])
 	int ret_val = ProcessFunction(name, tag, path, threads);
 
 	Manager.Destroy();
+	delete[] path;
 	_CrtDumpMemoryLeaks();
-	//system("pause");
+	system("pause");
 	return ret_val;
 }
 
