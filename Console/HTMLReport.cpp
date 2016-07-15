@@ -90,7 +90,7 @@ void HTMLReport::BeforeExecution(TRSInfo pInfo)
 	
 }
 
-void HTMLReport::ErrorOutput(TRSResult& res,char* message)
+void HTMLReport::ErrorOutput(TRSResult& res,char* message )
 {
 	output << R"(<font color="red">AN ERROR OCCURED</font></br>)";
 }

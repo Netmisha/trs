@@ -50,10 +50,7 @@ int ProcessFunction(char* name, char* tag, char* path)
 		reportManager.Begin();
 
 		bool result = Manager.Run(path, name, tag, &reportManager);
-		if (!result)
-		{
-			reportManager.errorOutput();
-		}
+		
 		reportManager.End();
 		return result;
 	/*	ReportManager reportManager;

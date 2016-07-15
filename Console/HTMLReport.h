@@ -11,11 +11,11 @@ public:
 	HTMLReport();
 	~HTMLReport();
 
-	virtual void BeforeExecution(TRSInfo pInfo);
-	virtual void AfterExecution(TRSInfo pInfo, TRSResult pResult);
+	virtual void BeforeExecution(TRSInfo pInfo );
+	virtual void AfterExecution(TRSInfo pInfo, TRSResult pResult );
 	virtual void Begin();
 	virtual void End();
-	virtual void ErrorOutput(TRSResult& result, char* message);
+	virtual void ErrorOutput(TRSResult& result, char* message );
 	virtual void ErrorMessage(char* message);
 private:
 	std::ofstream output;
