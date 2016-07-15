@@ -173,7 +173,10 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 						delete[] buf;
 						collTests.push_back((*iter));
 					}
-					coll.push_back((*iter)->getWaitFor());
+					if ((*iter)->getWaitFor())
+					{
+						coll.push_back((*iter)->getWaitFor());
+					}
 				}
 				if (!VerifyWaitForList(collTests, coll))
 				{
@@ -413,7 +416,10 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 					delete[] buf;
 					collTests.push_back((*iter));
 				}
-				collWait.push_back((*iter)->getWaitFor());
+				if ((*iter)->getWaitFor())
+				{
+					collWait.push_back((*iter)->getWaitFor());
+				}
 			}
 			for (int i = 0; i < collTests.size(); ++i)
 			{

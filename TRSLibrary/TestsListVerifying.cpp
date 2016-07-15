@@ -27,11 +27,11 @@ bool ExistTest(std::vector<TRSTest*> coll, char* testName)
 bool VerifyWaitForList(std::vector<TRSTest*>coll, std::vector<char*> waitColl)
 {
 	bool check = true;
-	for (int i = 0; i < coll.size(); ++i)
+	for (int i = 0; i < waitColl.size(); ++i)
 	{
-		for (int j = 0; j < waitColl.size(); ++j)
+		for (int j = 0; j < coll.size(); ++j)
 		{
-			if (!strncmp(coll[i]->getName(), waitColl[j], strlen(waitColl[i])))
+			if (!strncmp(waitColl[i], coll[j]->getName(), strlen(waitColl[i])))
 			{
 				check = false;
 			}
