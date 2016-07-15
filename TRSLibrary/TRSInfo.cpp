@@ -114,7 +114,7 @@ TRSInfo::~TRSInfo()
 	delete[] priority;
 	delete[] disable;
 	delete[] parameters;
-	delete[] executePath;
+	delete[] executablePath;
 	delete[] path;
 }
 
@@ -151,14 +151,18 @@ char* TRSInfo::getDisable() const
 	return disable;
 }
 
-char* TRSInfo::getExecutePath() const
+char* TRSInfo::getExecutablePath() const
 {
-	if (parameters&&executePath&&executableName)
+	if (parameters&&executablePath&&executableName)
 	{
-		char* result = new char[strlen(executePath) + strlen(executableName) + strlen(parameters) + 3];
-		strncpy_s(result, strlen(executePath)+1, executePath, strlen(executePath));
-		strncpy_s(result + strlen(executePath), 2, "//", 1);
-		strncpy_s(result + strlen(executePath) + 1, strlen(executableName) + 1, executableName, strlen(executableName));
+
+		char* result = new char[strlen(executablePath) + strlen(executableName) + strlen(parameters) + 3];
+		strncpy_s(result, strlen(executablePath)+1, executablePath, strlen(executablePath));
+		strncpy_s(result + strlen(executablePath), 2, "//", 1);
+		strncpy_s(result + strlen(executablePath) + 1, strlen(executableName) + 1, executableName, strlen(executableName));
+
+		
+		
 		DWORD dwAttrib = GetFileAttributesA(result);
 		if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
 		{
@@ -166,14 +170,14 @@ char* TRSInfo::getExecutePath() const
 		}
 		else
 		{
-			strncpy_s(result + strlen(executePath) + strlen(executableName) + 1, 2, " ", 1);
-			strncpy_s(result + strlen(executePath) + strlen(executableName) + 2, strlen(parameters) + 1, parameters, strlen(parameters));
+			strncpy_s(result + strlen(executablePath) + strlen(executableName) + 1, 2, " ", 1);
+			strncpy_s(result + strlen(executablePath) + strlen(executableName) + 2, strlen(parameters) + 1, parameters, strlen(parameters));
 			return result;
 		}
 	}
 	else
 	{
-		if (parameters&&!executePath)
+		if (parameters&&!executablePath)
 		{
 			char* result = new char[strlen(path) + strlen(parameters) + strlen(executableName)+ 3];
 			strncpy_s(result, strlen(path) + 1, path, strlen(path));
@@ -183,12 +187,12 @@ char* TRSInfo::getExecutePath() const
 			strncpy_s(result + strlen(path) + 2, strlen(parameters) + 1, parameters, strlen(parameters));
 			return result;
 		}
-		if (executePath&&!parameters)
+		if (executablePath&&!parameters)
 		{
-			char* result = new char[strlen(executePath) + strlen(executableName) + 3];
-			strncpy_s(result, strlen(executePath) + 1, executePath, strlen(executePath));
-			strncpy_s(result + strlen(executePath), 2, "//", 1);
-			strncpy_s(result + strlen(executePath)+1, strlen(executableName) + 1, executableName, strlen(executableName));
+			char* result = new char[strlen(executablePath) + strlen(executableName) + 3];
+			strncpy_s(result, strlen(executablePath) + 1, executablePath, strlen(executablePath));
+			strncpy_s(result + strlen(executablePath), 2, "//", 1);
+			strncpy_s(result + strlen(executablePath)+1, strlen(executableName) + 1, executableName, strlen(executableName));
 			return result;
 		}
 		if (!parameters&&!executableName)
@@ -197,6 +201,8 @@ char* TRSInfo::getExecutePath() const
 			strncpy_s(result, strlen(path) + 1, path, strlen(path));
 			strncpy_s(result + strlen(path), 2, "//", 1);
 			strncpy_s(result + strlen(path)+1, strlen(executableName) + 1, executableName, strlen(executableName));
+			strncpy_s(result + strlen(executablePath) + strlen(parameters) + 1, strlen(parameters) + 1, parameters, strlen(parameters));
+
 			return result;
 		}
 	}
@@ -556,10 +562,10 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 				{
 					if (atr->Value())
 					{
-						char*executePath_ = new char[strlen(atr->Value()) + 1];
-						strncpy_s(executePath_, strlen(atr->Value()) + 1, atr->Value(), strlen(atr->Value()));
-						setExecutePath(executePath_);
-						delete[] executePath_;
+						char*executablePath_ = new char[strlen(atr->Value()) + 1];
+						strncpy_s(executablePath_, strlen(atr->Value()) + 1, atr->Value(), strlen(atr->Value()));
+						setExecutablePath(executablePath_);
+						delete[] executablePath_;
 					}
 				}
 			}
@@ -834,20 +840,20 @@ bool TRSInfo::setPath(char* path_)
 	}
 }
 
-bool TRSInfo::setExecutePath(char* path)
+bool TRSInfo::setExecutablePath(char* path)
 {
-	if (executePath)
+	if (executablePath)
 	{
-		delete[] executePath;
-		executePath = new char[strlen(path) + 1];
-		strncpy_s(executePath, strlen(path) + 1, path, strlen(path));
+		delete[] executablePath;
+		executablePath = new char[strlen(path) + 1];
+		strncpy_s(executablePath, strlen(path) + 1, path, strlen(path));
 		return true;
 	}
 	else
 	{
-		if (executePath = new char[strlen(path) + 1])
+		if (executablePath = new char[strlen(path) + 1])
 		{
-			strncpy_s(executePath, strlen(path) + 1, path, strlen(path));
+			strncpy_s(executablePath, strlen(path) + 1, path, strlen(path));
 			return true;
 		}
 		else
