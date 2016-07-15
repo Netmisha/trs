@@ -35,7 +35,11 @@ ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, Threa
 	for each (TRSTest* var in suite.getList())
 	{
 		ProcessInfo info(*var, path_, semaphores_, threads_, pReport);
-		int repeat = atoi(var->getRepeat());
+
+		int repeat = 1;
+		if (var->getRepeat())
+			repeat = atoi(var->getRepeat());
+
 		for (int i = 0; i < repeat; ++i)
 		{
 			tests_.push_back(info);
