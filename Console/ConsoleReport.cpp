@@ -27,14 +27,14 @@ double ConsoleReport::getTime()
 	return time;
 }
 
-void ConsoleReport::ErrorOutput(TRSResult& res,char* message)
+void ConsoleReport::ErrorOutput(TRSResult& res,char* message )
 {
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hStdout, FOREGROUND_RED);
 	std::cout << "An Error occured\n";
 	SetConsoleTextAttribute(hStdout, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
-void ConsoleReport::ErrorMessage(char* message)
+void ConsoleReport::ErrorMessage(char* message )
 {
 	std::cout << message;
 }

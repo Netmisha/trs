@@ -20,7 +20,8 @@ public:
 	void addReporter(TRSReport* pReporter);
 	void beforeExecution(TRSInfo pInfo);
 	void afterExecution(TRSInfo pInfo,TRSResult pResult);
-	void errorOutput();
+	void errorOutput(TRSResult& res,char* mess );
+	void errorMessage(char* mes);
 private:
 	std::list<TRSReport*> reportList;
 	CRITICAL_SECTION critical_section_;
