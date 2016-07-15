@@ -86,9 +86,12 @@ ProcessInfo::~ProcessInfo()
 
 // =========================================================================================================================================================
 
-long long ProcessInfo::ParseMaxTime()
+long ProcessInfo::ParseMaxTime()
 {
 	char* str = test_.getMaxTime();
+	if (!str)
+		return INFINITE;
+
 	int size = strlen(str);
 
 	char* sequence_end;

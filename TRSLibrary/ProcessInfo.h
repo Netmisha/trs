@@ -50,7 +50,7 @@ public:
 
 private:
 	bool ReleaseResources();
-	long long ParseMaxTime();
+	long ParseMaxTime();
 	bool RecordDuration();
 	static DWORD WINAPI StartThread(LPVOID);
 
