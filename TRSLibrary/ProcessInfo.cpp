@@ -212,6 +212,7 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 
 DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 {
+	int id = GetCurrentThreadId();
 	// recording time in order to evaluate function duration
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
@@ -227,99 +228,99 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 	bool create_result = CreateProcess(NULL, data->running_process->command_line_, NULL, NULL, FALSE, CREATE_NO_WINDOW,
 		NULL, NULL, &startup_info, &data->running_process->process_information_);
 
-	if (!create_result)
-	{
-		delete parameters;
-		logger << "Create process failed";
-		return -1;
-	}
+	char* message;
 
-	// Successfully created the process.  Wait for it to finish no more than MAX_TIME
-	int wait_result = WaitForSingleObject(data->running_process->process_information_.hProcess, data->running_process->max_time_);
-
-	if (wait_result != WAIT_FAILED)
+	if (create_result)
 	{
-		char* message;
-		if (wait_result == WAIT_OBJECT_0)
+		// Successfully created the process.  Wait for it to finish no more than MAX_TIME
+		int wait_result = WaitForSingleObject(data->running_process->process_information_.hProcess, data->running_process->max_time_);
+
+		switch (wait_result)
+		{
+		case WAIT_OBJECT_0:
 		{
 			DWORD returned_value;
 			bool get_result = GetExitCodeProcess(data->running_process->process_information_.hProcess, &returned_value);
 			// setting apropriate description
-			if (!get_result)
+			if (get_result)
 			{
-				logger << "Process executed but an error occured while getting its exit code";
-				return 1;
-			}
-		
-			int expected_value = atoi(data->running_process->test_.get_expectedResult());
-			data->running_process->result_ = (expected_value == returned_value);
+				int expected_value = atoi(data->running_process->test_.get_expectedResult());
+				data->running_process->result_ = (expected_value == returned_value);
 
-			if (data->running_process->result_)
-			{
-				message = "Succeeded";
+				if (data->running_process->result_)
+					message = "Succeeded";
+				else
+					message = "Returned value is not mathing with expecting one";
 			}
 			else
 			{
-				message = "Returned value is not mathing with expecting one";
+				logger << "Process executed but an error occured while getting its exit code";
+				message = "Process executed but an error occured while getting its exit code";
+				data->running_process->result_ = false;
 			}
+			break;
 		}
-		else
+		case WAIT_TIMEOUT:
 		{
 			TerminateProcess(data->running_process->process_information_.hProcess, -1);
 			message = "Timeout";
 			data->running_process->result_ = false;
+			break;
 		}
-
-		data->running_process->set_status(Status::Closed);
-
-		if (!ReleaseSemaphore(data->semaphores[OWNED_SEMAPHORE], 1, NULL))
+		default:
 		{
-			logger << "Incrementing OWNED_SEMAPHORE semaphore count is failed";
-			return -1;
+			logger << "Waiting for the test failed";
+			message = "Can not check test's return value";
+			data->running_process->result_ = false;
+			break;
 		}
-		if (!ReleaseSemaphore(data->semaphores[MANAGING_SEMAPHORE], 1, NULL))
-		{
-			logger << "Incrementing MANAGING_SEMAPHORE semaphore count is failed";
-			return -1;
 		}
-
-		int size = strlen(message);
-		data->running_process->result_description_ = new char[size + 1];
-		strcpy_s(data->running_process->result_description_, size + 1, message);
-
-		high_resolution_clock::time_point t2 = high_resolution_clock::now();
-		data->running_process->duration_ = duration_cast<milliseconds>(t2 - t1);
-
-	
-		data->running_process->pReporter_->afterExecution(data->running_process->test_, *data->running_process);
-
-		data->running_process->ReleaseResources();
-		delete parameters;
-		return 0;
 	}
 	else
 	{
-		// TODO: increment semaphore here or program will loop infinitly
-		delete parameters;
-		logger << "Waiting for the test failed";
-		return -1;
+		logger << "CreateProcess failed";
+		message = "Can not run the test";
+		data->running_process->result_ = false;
 	}
+
+	data->running_process->set_status(Status::Closed);
+
+	if (!ReleaseSemaphore(data->semaphores[OWNED_SEMAPHORE], 1, NULL))
+		logger << "Incrementing OWNED_SEMAPHORE semaphore count is failed";
+
+	if (!ReleaseSemaphore(data->semaphores[MANAGING_SEMAPHORE], 1, NULL))
+		logger << "Incrementing MANAGING_SEMAPHORE semaphore count is failed";
+
+	int size = strlen(message);
+	data->running_process->result_description_ = new char[size + 1];
+	strcpy_s(data->running_process->result_description_, size + 1, message);
+
+	high_resolution_clock::time_point t2 = high_resolution_clock::now();
+	data->running_process->duration_ = duration_cast<milliseconds>(t2 - t1);
+
+
+	data->running_process->pReporter_->afterExecution(data->running_process->test_, *data->running_process);
+
+	data->running_process->ReleaseResources();
+	delete parameters;
+	return 0;
 }
 
 
 bool ProcessInfo::ReleaseResources()
 {
+	bool ret_val = true;
 	if (!CloseHandle(process_information_.hThread))
 	{
 		logger << "Closing thread failed";
-		return false;
+		ret_val = false;
 	}
 	if (!CloseHandle(process_information_.hProcess))
 	{
 		logger << "Closing proccess failed";
-		return false;
+		ret_val = false;
 	}
-	return true;
+	return ret_val;
 }
 
 bool ProcessInfo::operator<(const ProcessInfo& val)
