@@ -31,7 +31,7 @@ bool Logger::Init()
 	{
 		auto sink = std::make_shared<spd::sinks::simple_file_sink_mt>("logs.txt");
 		text_log_ = std::make_shared<spdlog::logger>("file_logger", sink);
-		
+
 		console_log_ = spd::stderr_logger_mt("console_logger");
 		console_log_->set_pattern("\t\t\t%v");
 	}
@@ -52,12 +52,12 @@ void Logger::Destroy()
 
 TRSManager::TRSManager()
 {
-	
+
 }
 
 TRSManager::~TRSManager()
 {
-	
+
 }
 
 bool TRSManager::Init()
@@ -75,13 +75,15 @@ bool TRSManager::Destroy()
 bool TRSManager::VerifyParameters(char* path, char* name, char* tag)
 {
 	DWORD dwAttrib = GetFileAttributesA(path);
+	bool ret_val = true;
 
 	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
 	{
 		logger << "Specified path is not exist";
-		return false;
+		ret_val = false;
 	}
-	return true;
+
+	return ret_val;
 }
 
 bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount, ReportManager* pResult)
@@ -92,7 +94,9 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 	if (tag)
 		logger->info("name: {} ", tag);
 
-	if (Verify(path,name,tag)!=SUCCEEDED || threads_amount > MAX_THREADS)
+
+	if (Verify(path, name, tag) != SUCCEEDED || threads_amount > MAX_THREADS)
+
 		return false;
 	std::list<Suite*> arr = *List(path, name, tag);
 	if (arr.size() == 0)
@@ -122,86 +126,87 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 	if (!VerifyParameters(path, name, tag))
 		return INVALID_PARAMETERS;
 
-		std::list<Suite*>* suiteCollection=List(path, name, tag);
-			if (suiteCollection->size() == 0)
+	std::list<Suite*>* suiteCollection = List(path, name, tag);
+	if (suiteCollection->size() == 0)
+	{
+		logger << "There are tests that waiting for each other or some xml or exe files are absent\n";
+		return DEAD_LOCK_OR_FILES_ABSENT_WAS_FOUND;
+	}
+	std::list<Suite*>::iterator it = suiteCollection->begin();
+
+	for (it; it != suiteCollection->end(); ++it)
+	{
+		std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+		std::vector<TRSTest*>collTests;
+		std::vector<char*> coll;
+		for (iter; iter != (*it)->getList().end(); ++iter)
+		{
+			if (!((*iter)->getName()))
 			{
-				logger << "There are tests that waiting for each other or some xml or exe files are absent\n";
-				return DEAD_LOCK_OR_FILES_ABSENT_WAS_FOUND;
+				logger << "There are one(or more) test(s) without name\n";
+				return INVALID_NAME;
 			}
-			std::list<Suite*>::iterator it = suiteCollection->begin();
-			
-			for (it; it != suiteCollection->end(); ++it)
+			if ((!(*iter)->get_executableName()))
 			{
-				std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
-				std::vector<TRSTest*>collTests;
-				std::vector<char*> coll;
-				for (iter; iter != (*it)->getList().end(); ++iter)
+				logger << "There are one (or more) test(s) that has wrong execution name\n";
+				return INVALID_EXECUTION_NAME;
+			}
+			if ((!(*iter)->get_expectedResult()))
+			{
+				logger << "There are one (or more) test(s) that has wrong result\n";
+				return INVALID_RESULT;
+			}
+			if ((*iter)->getExecutablePath())
+			{
+				DWORD fFile = GetFileAttributesA((*iter)->getPathForExe());
+				if (fFile == INVALID_FILE_ATTRIBUTES)
+
 				{
-					if (!((*iter)->getName()))
-					{
-						logger << "There are one(or more) test(s) without name\n";
-						return INVALID_NAME;
-					}
-					if ((!(*iter)->get_executableName()))
-					{
-						logger << "There are one (or more) test(s) that has wrong execution name\n";
-						return INVALID_EXECUTION_NAME;
-					}
-					if ((!(*iter)->get_expectedResult()))
-					{
-						logger << "There are one (or more) test(s) that has wrong result\n";
-						return INVALID_RESULT;
-					}
-					if ((*iter)->getExecutablePath())
-					{
-						DWORD fFile = GetFileAttributesA((*iter)->getPathForExe());
-						if (fFile == INVALID_FILE_ATTRIBUTES && (fFile == ERROR_FILE_NOT_FOUND))
-						{
-							logger << "There are one (or more) test(s) that has wrong path to exe file\n";
-							return WRONG_PATH_EXECUTION;
-						}
-					}
-					
-					char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
-					strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
-					strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
-					DWORD fFile = GetFileAttributesA(buf);
-					if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
-					{
-						delete[] buf;
-						logger << "There are no exe file for one or more test(s)\n";
-						return INVALID_EXE_FILE;
-					}
-					else
-					{
-						delete[] buf;
-						collTests.push_back((*iter));
-					}
-					if ((*iter)->getWaitFor())
-					{
-						coll.push_back((*iter)->getWaitFor());
-					}
-				}
-				if (!VerifyWaitForList(collTests, coll))
-				{
-					logger << "There are tests that waiting for each other\n";
-					return WRONG_WAITFOR;
+					logger << "There are one (or more) test(s) that has wrong path to exe file\n";
+					return WRONG_PATH_EXECUTION;
 				}
 			}
-			logger << "Verify Succeeded\n";
-			return SUCCEEDED;
+
+			char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
+			strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
+			strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
+			DWORD fFile = GetFileAttributesA(buf);
+			if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
+			{
+				delete[] buf;
+				logger << "There are no exe file for one or more test(s)\n";
+				return INVALID_EXE_FILE;
+			}
+			else
+			{
+				delete[] buf;
+				collTests.push_back((*iter));
+			}
+			if ((*iter)->getWaitFor())
+			{
+				coll.push_back((*iter)->getWaitFor());
+			}
 		}
+		if (!VerifyWaitForList(collTests, coll))
+		{
+			logger << "There are tests that waiting for each other\n";
+			return WRONG_WAITFOR;
+		}
+	}
+	logger << "Verify Succeeded\n";
+	return SUCCEEDED;
+}
 
 
 bool TRSManager::Pause(char* path, char* name, char* tag)
 {
-	logger->info("Entered Pause function with path: {}", path );
+	logger->info("Entered Pause function with path: {}", path);
 	if (name)
 		logger->info("name: {} ", name);
 	if (tag)
 		logger->info("name: {} ", tag);
 
-	if (!VerifyParameters(path, name, tag))
+	if (!Verify(path, name, tag))
 		return false;
 	return false;
 }
@@ -214,7 +219,7 @@ bool TRSManager::Stop(char* path, char* name, char* tag)
 	if (tag)
 		logger->info("name: {} ", tag);
 
-	if (!VerifyParameters(path, name, tag))
+	if (!Verify(path, name, tag))
 		return false;
 	return false;
 }
@@ -229,6 +234,7 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 
 	if (!VerifyParameters(path, name, tag))
 		return false;
+
 	DWORD fFile = GetFileAttributesA(path);
 	if (fFile& FILE_ATTRIBUTE_DIRECTORY)
 	{
@@ -269,7 +275,7 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 						StringCchCat(subDir, MAX_PATH, TEXT("\\"));//additional slash))
 						StringCchCat(subDir, MAX_PATH, ffd.cFileName);//name of last folder to search in
 						char* way = convertToChar(subDir);
-						if (FillList(way, name, tag, suiteCollection,testList) != EXE_OR_XML_ABSENT)
+						if (FillList(way, name, tag, suiteCollection, testList) != EXE_OR_XML_ABSENT)
 						{
 							delete[] way;
 						}
@@ -299,12 +305,12 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 						if (loadOk)
 						{
 							Suite* currentSuite = new Suite();
-							currentSuite->Parse(&doc, name, tag,testList);
+							currentSuite->Parse(&doc, name, tag, testList);
 							char*SuiteWay = convertToChar(currentDir);
 							currentSuite->setDir(SuiteWay);
 							delete[] SuiteWay;
 							suiteCollection->push_back(currentSuite);
-							
+
 						}
 						delete[] way;
 					}
@@ -318,12 +324,7 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 								{
 									if (name_[name_.length() - 4] == '.')
 									{
-										TCHAR fileName[MAX_PATH];
-										char* conv = convertToChar(ffd.cFileName);
-										if (strncmp(conv, "trs.exe", strlen(conv)))
-										{
-											exeExist = true;
-										}
+										exeExist = true;
 									}
 								}
 							}
@@ -433,18 +434,18 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 					collWait.push_back(testWait[i]->getWaitFor());
 				}
 			}
-			
-				if (!VerifyWaitForList(testWait, collWait))
+
+			if (!VerifyWaitForList(testWait, collWait))
+			{
+				std::list<Suite*>::iterator it = suiteCollection->begin();
+				for (it; it != suiteCollection->end(); ++it)
 				{
-					std::list<Suite*>::iterator it = suiteCollection->begin();
-					for (it; it != suiteCollection->end(); ++it)
-					{
-						delete (*it);
-					}
-					suiteCollection->clear();
-					return suiteCollection;
+					delete (*it);
 				}
-			
+				suiteCollection->clear();
+				return suiteCollection;
+			}
+
 			for (int i = 0; i < collTests.size(); ++i)
 			{
 				if (!VerifyTestsList(collTests, (*it)->getList().size(), coll, i))
@@ -457,7 +458,7 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 					suiteCollection->clear();
 					return suiteCollection;
 				}
-				
+
 			}
 		}
 		return suiteCollection;
@@ -471,21 +472,21 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 
 bool TRSManager::Status(char* path, char* name, char* tag)
 {
-	if (!VerifyParameters(path, name, tag))
+	if (!Verify(path, name, tag))
 		return false;
 	return false;
 }
 
 bool TRSManager::Info(char* path, char* name, char* tag)
 {
-	if (!VerifyParameters(path, name, tag))
+	if (!Verify(path, name, tag))
 		return false;
 	return false;
 }
 
-bool TRSManager::SetReport(char* path,char* name,char* tag, unsigned threads_amount, ReportManager* pReport)
+bool TRSManager::SetReport(char* path, char* name, char* tag, unsigned threads_amount, ReportManager* pReport)
 {
-	if (!VerifyParameters(path, name, tag))
+	if (!Verify(path, name, tag))
 		return false;
 
 	Manager.Run(path, name, tag, threads_amount, pReport);
