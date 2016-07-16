@@ -413,9 +413,9 @@ namespace UnitTest
 		{
 			Assert::IsFalse((int)Manager.Verify(R"(../TestData/TestStrcuture)", nullptr, nullptr) == (int)INVALID_EXE_FILE);
 		}
-		TEST_METHOD(Verify_SUCCSEED)
+		TEST_METHOD(Verify_SUCCEEDED)
 		{
-			Assert::IsTrue((int)Manager.Verify(R"(../TestData/TestStrcuture)", nullptr, nullptr) == (int)SUCCSEED);
+			Assert::IsTrue((int)Manager.Verify(R"(../TestData/TestStrcuture)", nullptr, nullptr) == (int)SUCCEEDED);
 		}
 		TEST_METHOD(Memory_leak_for_List_function_detecting)
 		{

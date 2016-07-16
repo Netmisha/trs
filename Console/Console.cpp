@@ -186,16 +186,16 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 		path = new char[MAX_PATH + 1];
 		GetCurrentDirectoryA(MAX_PATH + 1, path);
 	}
-	//else if (path && strlen(path) > 1 && path[0] == '.' )
-	//{
-	//	char* coll = new char[MAX_PATH + 1];
-	//	GetCurrentDirectoryA(MAX_PATH + 1, coll);
-	//	int len = strlen(coll);
-	//	coll[len] = '\\';
-	//	coll[len + 1] = 0;
-	//	strcat_s(coll, MAX_PATH + 1, path);
-	//	path = coll;
-	//}
+	else if (path && strlen(path) >= 1 && path[0] == '.' )
+	{
+		char* coll = new char[MAX_PATH + 1];
+		GetCurrentDirectoryA(MAX_PATH + 1, coll);
+		int len = strlen(coll);
+		coll[len] = '\\';
+		coll[len + 1] = 0;
+		strcat_s(coll, MAX_PATH + 1, path);
+		path = coll;
+	}
 	else
 	{
 		char* coll = new char[MAX_PATH + 1];
