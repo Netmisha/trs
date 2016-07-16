@@ -92,7 +92,7 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 	if (tag)
 		logger->info("name: {} ", tag);
 
-	if (!VerifyParameters(path, name, tag) || threads_amount > MAX_THREADS)
+	if (Verify(path,name,tag)!=SUCCEEDED || threads_amount > MAX_THREADS)
 		return false;
 	std::list<Suite*> arr = *List(path, name, tag);
 	if (arr.size() == 0)
@@ -155,7 +155,7 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					if ((*iter)->getExecutablePath())
 					{
 						DWORD fFile = GetFileAttributesA((*iter)->getPathForExe());
-						if (fFile == INVALID_FILE_ATTRIBUTES || !(fFile & FILE_ATTRIBUTE_DIRECTORY))
+						if (fFile == INVALID_FILE_ATTRIBUTES && (fFile == ERROR_FILE_NOT_FOUND))
 						{
 							logger << "There are one (or more) test(s) that has wrong path to exe file\n";
 							return WRONG_PATH_EXECUTION;
