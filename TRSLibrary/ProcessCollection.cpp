@@ -8,17 +8,10 @@
 // futher implementation of priority will be added
 ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, ThreadPool* threads, ReportManager* pReport) : threads_(threads)
 {
-	int max_threads;
-	if (suite.getMaxThreads())
-	{
-		max_threads = atoi(suite.getMaxThreads());
-	}
-	else
-	{
-		max_threads = 1;
-	}
-	if (max_threads < 0)
-		logger << "Negative value in max_threas field";
+	int max_threads = atoi(suite.getMaxThreads());
+
+	if (max_threads <= 0)
+		logger << "Notpositive value in max_threas field";
 
 	semaphores_[OWNED_SEMAPHORE] = CreateSemaphore(NULL, max_threads, max_threads, NULL);
 	if (semaphores_[OWNED_SEMAPHORE] == NULL)
@@ -36,9 +29,7 @@ ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, Threa
 	{
 		ProcessInfo info(*var, path_, semaphores_, threads_, pReport);
 
-		int repeat = 1;
-		if (var->getRepeat())
-			repeat = atoi(var->getRepeat());
+		int repeat = atoi(var->getRepeat());
 
 		for (int i = 0; i < repeat; ++i)
 		{

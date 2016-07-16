@@ -3,15 +3,11 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FunctionalityForXML.cpp" />
-    <ClCompile Include="Metadata.cpp" />
-    <ClCompile Include="ReportManager.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="Suite.cpp" />
     <ClCompile Include="TinyXML\tinystr.cpp" />
     <ClCompile Include="TinyXML\tinyxml.cpp" />
     <ClCompile Include="TinyXML\tinyxmlerror.cpp" />
     <ClCompile Include="TinyXML\tinyxmlparser.cpp" />
-    <ClCompile Include="TRSLibrary.cpp" />
     <ClCompile Include="ProcessCollection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,7 +29,6 @@
     <ClCompile Include="ProcessInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TRSReport.cpp" />
     <ClCompile Include="ProcessCollection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -49,13 +44,25 @@
     <ClCompile Include="ThreadPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ReportManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Suite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TRSLibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TRSReport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Metadata.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Erorrs.h" />
     <ClInclude Include="FunctionalityForXML.h" />
-    <ClInclude Include="Metadata.h" />
-    <ClInclude Include="ReportManager.h" />
-    <ClInclude Include="TRSReport.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TinyXML\tinystr.h" />
@@ -88,6 +95,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ThreadPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TRSReport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Metadata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
