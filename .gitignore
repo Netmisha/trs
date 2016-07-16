@@ -22,4 +22,4 @@ Console/logs.txt
 tatus
 
 Report.html
-.log
+*.log
