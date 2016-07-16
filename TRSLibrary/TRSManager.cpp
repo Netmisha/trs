@@ -191,7 +191,7 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 			if ((*iter)->getExecutablePath())
 			{
 				DWORD fFile = GetFileAttributesA((*iter)->getPathForExe());
-				if (fFile == INVALID_FILE_ATTRIBUTES)
+				if (fFile == INVALID_FILE_ATTRIBUTES && (fFile == ERROR_FILE_NOT_FOUND))
 
 				{
 					logger << "There are one (or more) test(s) that has wrong path to exe file\n";
