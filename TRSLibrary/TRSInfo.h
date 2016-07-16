@@ -60,6 +60,7 @@ public:
 		return expectedResult;
 	}
 	char* getParameters() const;
+	char* getPathForExe() const;
 	char* getExecutablePath() const;
 	char* getPath() const;
 	char* getWaitFor() const;
