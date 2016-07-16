@@ -290,4 +290,203 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 					if (Validate(name_))//validating function
 					{
 						xmlExist = true;
-						TCHA...
+						TCHAR fileDir[MAX_PATH];//buffer which contains a path to an xml file
+						StringCchCopy(fileDir, MAX_PATH, hzDir);//some moves to save path
+						StringCchCat(fileDir, MAX_PATH, TEXT("\\"));
+						TCHAR currentDir[MAX_PATH];
+						StringCchCopy(currentDir, MAX_PATH, fileDir);
+						StringCchCat(fileDir, MAX_PATH, ffd.cFileName);
+						char* way = convertToChar(fileDir);
+						TiXmlDocument doc(way);//try to open such document wuth tinyXML parser
+						bool loadOk = doc.LoadFile();//check if opening was successfull
+						if (loadOk)
+						{
+							Suite* currentSuite = new Suite();
+							currentSuite->Parse(&doc, name, tag, testList);
+							char*SuiteWay = convertToChar(currentDir);
+							currentSuite->setDir(SuiteWay);
+							delete[] SuiteWay;
+							suiteCollection->push_back(currentSuite);
+
+						}
+						delete[] way;
+					}
+					else
+					{
+						if (name_[name_.length() - 1] == 'e')
+						{
+							if (name_[name_.length() - 2] == 'x')
+							{
+								if (name_[name_.length() - 3] == 'e')
+								{
+									if (name_[name_.length() - 4] == '.')
+									{
+										exeExist = true;
+									}
+								}
+							}
+						}
+					}
+				}
+			} while (FindNextFile(hFind, &ffd) != 0);//repeat
+			if (xmlExist)
+			{
+				if (!exeExist)
+					return EXE_OR_XML_ABSENT;
+			}
+			if (exeExist)
+			{
+				if (!xmlExist)
+					return EXE_OR_XML_ABSENT;
+			}
+		}
+		return true;
+	}
+	else
+	{
+		//place for exception
+	}
+}
+
+std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
+{
+	logger->info("Entered List function with path: {}", path);
+	if (name)
+		logger->info("name: {} ", name);
+	if (tag)
+		logger->info("name: {} ", tag
+		);
+
+	if (!VerifyParameters(path, name, tag))
+		return new std::list<Suite*>;
+
+	std::list<Suite*>*suiteCollection = new std::list<Suite*>;
+	std::vector<TRSTest*> testWait;
+	if (FillList(path, name, tag, suiteCollection, testWait) != EXE_OR_XML_ABSENT)
+	{
+		std::list<Suite*>::iterator it = suiteCollection->begin();
+		for (it; it != suiteCollection->end(); ++it)
+		{
+			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+			std::vector<char*> coll;
+			std::vector<char*> collWait;
+			std::vector<TRSTest*>collTests;
+			for (iter; iter != (*it)->getList().end(); ++iter)
+			{
+				if (!((*iter)->getName()))
+				{
+					std::list<Suite*>::iterator it = suiteCollection->begin();
+					for (it; it != suiteCollection->end(); ++it)
+					{
+						delete (*it);
+					}
+					suiteCollection->clear();
+					return suiteCollection;
+				}
+				if ((!(*iter)->get_executableName()))
+				{
+					std::list<Suite*>::iterator it = suiteCollection->begin();
+					for (it; it != suiteCollection->end(); ++it)
+					{
+						delete (*it);
+					}
+					suiteCollection->clear();
+					return suiteCollection;
+				}
+				if ((!(*iter)->get_expectedResult()))
+				{
+					std::list<Suite*>::iterator it = suiteCollection->begin();
+					for (it; it != suiteCollection->end(); ++it)
+					{
+						delete (*it);
+					}
+					suiteCollection->clear();
+					return suiteCollection;
+				}
+				char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
+				strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
+				strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
+				DWORD fFile = GetFileAttributesA(buf);
+				if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
+				{
+					delete[] buf;
+					std::list<Suite*>::iterator it = suiteCollection->begin();
+					for (it; it != suiteCollection->end(); ++it)
+					{
+						delete (*it);
+					}
+					suiteCollection->clear();
+					return suiteCollection;
+				}
+				else
+				{
+					delete[] buf;
+					collTests.push_back((*iter));
+				}
+			}
+			for (int i = 0; i < testWait.size(); ++i)
+			{
+				if (testWait[i]->getWaitFor())
+				{
+					collWait.push_back(testWait[i]->getWaitFor());
+				}
+			}
+
+			if (!VerifyWaitForList(testWait, collWait))
+			{
+				std::list<Suite*>::iterator it = suiteCollection->begin();
+				for (it; it != suiteCollection->end(); ++it)
+				{
+					delete (*it);
+				}
+				suiteCollection->clear();
+				return suiteCollection;
+			}
+
+			for (int i = 0; i < collTests.size(); ++i)
+			{
+				if (!VerifyTestsList(collTests, (*it)->getList().size(), coll, i))
+				{
+					std::list<Suite*>::iterator it = suiteCollection->begin();
+					for (it; it != suiteCollection->end(); ++it)
+					{
+						delete (*it);
+					}
+					suiteCollection->clear();
+					return suiteCollection;
+				}
+
+			}
+		}
+		return suiteCollection;
+	}
+	else
+	{
+		logger->info("List returned nullptr");
+		return new std::list<Suite*>;
+	}
+}
+
+bool TRSManager::Status(char* path, char* name, char* tag)
+{
+	if (!Verify(path, name, tag))
+		return false;
+	return false;
+}
+
+bool TRSManager::Info(char* path, char* name, char* tag)
+{
+	if (!Verify(path, name, tag))
+		return false;
+	return false;
+}
+
+bool TRSManager::SetReport(char* path, char* name, char* tag, unsigned threads_amount, ReportManager* pReport)
+{
+	if (!Verify(path, name, tag))
+		return false;
+
+	Manager.Run(path, name, tag, threads_amount, pReport);
+	return true;
+}
+
