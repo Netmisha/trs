@@ -81,7 +81,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Erorrs.h" />
+    <ClInclude Include="Errors.h" />
     <ClInclude Include="FunctionalityForXML.h" />
     <ClInclude Include="Metadata.h" />
     <ClInclude Include="ReportManager.h" />

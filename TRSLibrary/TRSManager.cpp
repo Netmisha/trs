@@ -8,7 +8,7 @@
 #include "TestsListVerifying.h"
 #include <iostream>
 #include <memory>
-#include "Erorrs.h"
+#include "Errors.h"
 #include <vector>
 #include <chrono>
 
@@ -127,6 +127,7 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 		std::list<Suite*>* suiteCollection=List(path, name, tag);
 			if (suiteCollection->size() == 0)
 			{
+				logger << "There are tests that waiting for each other or some xml or exe files are absent\n";
 				return DEAD_LOCK_OR_FILES_ABSENT_WAS_FOUND;
 			}
 			std::list<Suite*>::iterator it = suiteCollection->begin();
@@ -140,14 +141,17 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 				{
 					if (!((*iter)->getName()))
 					{
+						logger << "There are one(or more) test(s) without name\n";
 						return INVALID_NAME;
 					}
 					if ((!(*iter)->get_executableName()))
 					{
+						logger << "There are one (or more) test(s) that has wrong execution name\n";
 						return INVALID_EXECUTION_NAME;
 					}
 					if ((!(*iter)->get_expectedResult()))
 					{
+						logger << "There are one (or more) test(s) that has wrong result\n";
 						return INVALID_RESULT;
 					}
 					if ((*iter)->getExecutablePath())
@@ -155,6 +159,7 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 						DWORD fFile = GetFileAttributesA((*iter)->getPathForExe());
 						if (fFile == INVALID_FILE_ATTRIBUTES )
 						{
+							logger << "There are one (or more) test(s) that has wrong path to exe file\n";
 							return WRONG_PATH_EXECUTION;
 						}
 					}
@@ -166,6 +171,7 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
 					{
 						delete[] buf;
+						logger << "There are no exe file for one or more test(s)\n";
 						return INVALID_EXE_FILE;
 					}
 					else
@@ -180,9 +186,11 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 				}
 				if (!VerifyWaitForList(collTests, coll))
 				{
+					logger << "There are tests that waiting for each other\n";
 					return WRONG_WAITFOR;
 				}
 			}
+			logger << "Verify Succeeded\n";
 			return SUCCEEDED;
 		}
 

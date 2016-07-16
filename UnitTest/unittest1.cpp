@@ -4,7 +4,7 @@
 #include "TRSLibrary\TRSManager.h"
 #include <list>
 #include <vector>
-#include "TRSLibrary\Erorrs.h"
+#include "TRSLibrary\Errors.h"
 #include "TRSLibrary\FunctionalityForXML.h"
 #include <stdlib.h>
 #include <crtdbg.h>
