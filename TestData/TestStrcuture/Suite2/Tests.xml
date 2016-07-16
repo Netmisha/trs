@@ -21,7 +21,7 @@
 <priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
-<execution>test.exe</execution>
+<execution path="D:\Mihan\trs\TestData\TestStrcuture\Suite2\Suite3">test.exe</execution>
 <parameters repeat = "32" >1000 0</parameters>
 <result>0</result>
 <repeat pause="100">7</repeat>

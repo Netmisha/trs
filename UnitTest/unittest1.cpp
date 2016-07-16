@@ -527,9 +527,8 @@ namespace UnitTest
 			WaitForSingleObject(pi.hProcess, INFINITE);
 			char fullName[] = R"(../UnitTest/Suite root)";
 			DWORD fFile = GetFileAttributesA(fullName);
-			CreateProcess(0, buf1, NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &pa);
-			WaitForSingleObject(pa.hProcess, INFINITE);
-			Assert::IsTrue(fFile == INVALID_FILE_ATTRIBUTES);
+			
+			Assert::IsTrue(fFile == INVALID_FILE_ATTRIBUTES || (fFile == ERROR_FILE_NOT_FOUND));
 
 		}
 		TEST_METHOD(Verify_exe_absent)

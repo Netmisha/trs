@@ -114,7 +114,9 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 	if (tag)
 		logger->info("name: {} ", tag);
 
+
 	if (Verify(path, name, tag) != SUCCEEDED || threads_amount > MAX_THREADS)
+
 		return false;
 	std::list<Suite*> arr = *List(path, name, tag);
 	if (arr.size() == 0)
@@ -174,21 +176,57 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 				logger << "There are one (or more) test(s) that has wrong result\n";
 				return INVALID_RESULT;
 			}
+			else
+			{
+				char* res = (*iter)->get_expectedResult();
+				for (int i = 0; i < strlen(res); ++i)
+				{
+					if (!isdigit(res[i]))
+					{
+						logger << "There are one (or more) test(s) that has wrong result (use decimal numbers only)\n";
+						return WRONG_PARAMETERS;
+					}
+				}
+			}
 			if ((*iter)->getExecutablePath())
 			{
 				DWORD fFile = GetFileAttributesA((*iter)->getPathForExe());
 				if (fFile == INVALID_FILE_ATTRIBUTES)
+
 				{
 					logger << "There are one (or more) test(s) that has wrong path to exe file\n";
 					return WRONG_PATH_EXECUTION;
 				}
 			}
-
+			if ((*iter)->getRepeat())
+			{
+				char* res = (*iter)->getRepeat();
+				for (int i = 0; i < strlen(res); ++i)
+				{
+					if (!isdigit(res[i]))
+					{
+						logger << "There are one (or more) test(s) that has wrong repeat (use decimal numbers only)\n";
+						return WRONG_PARAMETERS;
+					}
+				}
+			}
+			if ((*iter)->getMaxThreads())
+			{
+				char* res = (*iter)->getMaxThreads();
+				for (int i = 0; i < strlen(res); ++i)
+				{
+					if (!isdigit(res[i]))
+					{
+						logger << "There are one (or more) test(s) that has wrong maxThreads (use decimal numbers only)\n";
+						return WRONG_PARAMETERS;
+					}
+				}
+			}
 			char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
 			strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
 			strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
 			DWORD fFile = GetFileAttributesA(buf);
-			if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
+			if (fFile == INVALID_FILE_ATTRIBUTES && (fFile == ERROR_FILE_NOT_FOUND))
 			{
 				delete[] buf;
 				logger << "There are no exe file for one or more test(s)\n";

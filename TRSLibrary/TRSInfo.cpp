@@ -209,7 +209,7 @@ char* TRSInfo::getExecutablePath() const
 		int sizeName = strlen(executableName);
 		int sizeParam = strlen(parameters);
 		char* result;
-		if (executablePath[sizeName - 1] == '//')
+		if (executablePath[sizeName - 1] == '\\')
 		{
 			result = new char[sizePath + sizeName + sizeParam + 2];
 			strncpy_s(result, sizePath + 1, executablePath, sizePath);
@@ -219,13 +219,13 @@ char* TRSInfo::getExecutablePath() const
 		{
 			result = new char[sizePath + sizeName + sizeParam + 3];
 			strncpy_s(result, sizePath + 1, executablePath, sizePath);
-			strncpy_s(result + sizePath, 2, "//", 1);
+			strncpy_s(result + sizePath, 2, "\\", 1);
 			strncpy_s(result + sizePath+1, sizeName + 1, executableName, sizeName);
 
 		}
 		
 		DWORD dwAttrib = GetFileAttributesA(result);
-		if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
+		if (dwAttrib == INVALID_FILE_ATTRIBUTES && (dwAttrib == ERROR_FILE_NOT_FOUND))
 		{
 			delete[] result;
 			return nullptr;
