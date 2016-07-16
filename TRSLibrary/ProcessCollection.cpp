@@ -28,15 +28,15 @@ ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, Threa
 	for each (TRSTest* var in suite.getList())
 	{
 		ProcessInfo info(*var, path_, semaphores_, threads_, pReport);
-
-		int repeat = atoi(var->getRepeat());
-
-		for (int i = 0; i < repeat; ++i)
+		if (!info.IsDisable())
 		{
-			tests_.push_back(info);
-			undone_tests_ += !info.IsDisable();
+			int repeat = atoi(var->getRepeat());
+
+			for (int i = 0; i < repeat; ++i)
+				tests_.push_back(info);
 		}
 	}
+	undone_tests_ = tests_.size();
 	//sorting collection by priority
 
 	//	require move constructor and assigment operators which now works incorrectly
@@ -88,12 +88,7 @@ bool ProcessCollection::TryRun()
 			auto var = tests_.begin();
 			for (; var != tests_.end(); ++var)
 			{
-				if (var->IsDisable())
-				{
-					// this test is disable, we do not need to check it 
-					continue;
-				}
-				else if (var->get_status() == Status::Closed)
+				if (var->get_status() == Status::Closed)
 				{
 					// this test is already "Done", so decrement the counter
 					var->set_status(Status::Done);
