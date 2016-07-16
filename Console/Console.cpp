@@ -9,7 +9,7 @@
 #include "ConsoleReport.h"
 #include "TRSLibrary\ReportManager.h"
 #include "HTMLReport.h"
-#include "TRSLibrary\Erorrs.h"
+#include "TRSLibrary\Errors.h"
 #include <windows.h>
 #include <tchar.h>
 #include <strsafe.h>
@@ -36,34 +36,7 @@ int ProcessFunction(char* name, char* tag, char* path, int threads)
 
 	if (!_stricmp(__argv[1], "Verify"))
 	{
-		int result=Manager.Verify(path, name, tag);
-		switch (result)
-		{
-		case DEAD_LOCK_OR_FILES_ABSENT_WAS_FOUND:
-			std::cout << "There are tests that waiting for each other or some xml or exe files are absent\n";
-			break;
-		case INVALID_NAME:
-			std::cout << "There are one(or more) test(s) without name\n";
-			break;
-		case INVALID_EXECUTION_NAME:
-			std::cout << "There are one (or more) test(s) that has wrong execution name\n";
-			break;
-		case INVALID_RESULT:
-			std::cout << "There are one (or more) test(s) that has wrong parameters\n";
-			break;
-		case WRONG_PATH_EXECUTION:
-			std::cout << "There are one (or more) test(s) that has wrong path to exe file\n";
-			break;
-		case INVALID_EXE_FILE:
-			std::cout << "There are no exe file for one or more test(s)\n";
-			break;
-		case WRONG_WAITFOR:
-			std::cout << "There are tests that waiting for each other\n";
-			break;
-		default :
-			std::cout << "Succeeded\n";
-			break;
-		}
+		Manager.Verify(path, name, tag);
 		return 0;
 	}
 	else if (!_stricmp(__argv[1], "Run"))
