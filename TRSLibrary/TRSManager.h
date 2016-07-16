@@ -22,6 +22,7 @@
 #include <fstream>
 #include "TRSReport.h"
 #include "ReportManager.h"
+#include <cctype>
 
 #define BUF_SIZE 512
 #define MAX_THREADS 128

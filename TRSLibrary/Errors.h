@@ -11,5 +11,6 @@
 #define EXE_OR_XML_ABSENT 8
 #define WRONG_PATH_EXECUTION 9
 #define WRONG_WAITFOR 10
+#define WRONG_PARAMETERS 4
 
 #endif
