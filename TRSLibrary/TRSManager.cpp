@@ -75,15 +75,13 @@ bool TRSManager::Destroy()
 bool TRSManager::VerifyParameters(char* path, char* name, char* tag)
 {
 	DWORD dwAttrib = GetFileAttributesA(path);
-	bool ret_val = true;
 
 	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
 	{
 		logger << "Specified path is not exist";
-		ret_val = false;
+		return false;
 	}
-
-	return ret_val;
+	return true;
 }
 
 bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount, ReportManager* pResult)
@@ -94,7 +92,7 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 	if (tag)
 		logger->info("name: {} ", tag);
 
-	if (Verify(path, name, tag) != SUCCEEDED|| threads_amount > MAX_THREADS)
+	if (!VerifyParameters(path, name, tag) || threads_amount > MAX_THREADS)
 		return false;
 	std::list<Suite*> arr = *List(path, name, tag);
 	if (arr.size() == 0)
@@ -157,7 +155,7 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					if ((*iter)->getExecutablePath())
 					{
 						DWORD fFile = GetFileAttributesA((*iter)->getPathForExe());
-						if (fFile == INVALID_FILE_ATTRIBUTES )
+						if (fFile == INVALID_FILE_ATTRIBUTES || !(fFile & FILE_ATTRIBUTE_DIRECTORY))
 						{
 							logger << "There are one (or more) test(s) that has wrong path to exe file\n";
 							return WRONG_PATH_EXECUTION;
@@ -203,7 +201,7 @@ bool TRSManager::Pause(char* path, char* name, char* tag)
 	if (tag)
 		logger->info("name: {} ", tag);
 
-	if (!Verify(path, name, tag))
+	if (!VerifyParameters(path, name, tag))
 		return false;
 	return false;
 }
@@ -216,7 +214,7 @@ bool TRSManager::Stop(char* path, char* name, char* tag)
 	if (tag)
 		logger->info("name: {} ", tag);
 
-	if (!Verify(path, name, tag))
+	if (!VerifyParameters(path, name, tag))
 		return false;
 	return false;
 }
@@ -231,7 +229,6 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 
 	if (!VerifyParameters(path, name, tag))
 		return false;
-
 	DWORD fFile = GetFileAttributesA(path);
 	if (fFile& FILE_ATTRIBUTE_DIRECTORY)
 	{
@@ -321,7 +318,12 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 								{
 									if (name_[name_.length() - 4] == '.')
 									{
-										exeExist=true;
+										TCHAR fileName[MAX_PATH];
+										char* conv = convertToChar(ffd.cFileName);
+										if (strncmp(conv, "trs.exe", strlen(conv)))
+										{
+											exeExist = true;
+										}
 									}
 								}
 							}
@@ -469,21 +471,21 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 
 bool TRSManager::Status(char* path, char* name, char* tag)
 {
-	if (!Verify(path, name, tag))
+	if (!VerifyParameters(path, name, tag))
 		return false;
 	return false;
 }
 
 bool TRSManager::Info(char* path, char* name, char* tag)
 {
-	if (!Verify(path, name, tag))
+	if (!VerifyParameters(path, name, tag))
 		return false;
 	return false;
 }
 
 bool TRSManager::SetReport(char* path,char* name,char* tag, unsigned threads_amount, ReportManager* pReport)
 {
-	if (!Verify(path, name, tag))
+	if (!VerifyParameters(path, name, tag))
 		return false;
 
 	Manager.Run(path, name, tag, threads_amount, pReport);
