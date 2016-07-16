@@ -379,7 +379,12 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 								{
 									if (name_[name_.length() - 4] == '.')
 									{
-										exeExist = true;
+										char* conv = convertToChar(ffd.cFileName);
+										if (strncmp(conv, "trs.exe", strlen(conv)))
+										{
+											exeExist = true;
+										}
+										delete[] conv;
 									}
 								}
 							}
@@ -461,11 +466,21 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 					suiteCollection->clear();
 					return suiteCollection;
 				}
-				char* buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
-				strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
-				strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
+				char* buf;
+				if ((*iter)->getExecutablePath())
+				{
+					int size = strlen((*iter)->getPathForExe());
+					buf = new char[size + 1];
+					strncpy_s(buf, size + 1, (*iter)->getPathForExe(), size);
+				}
+				else
+				{
+					buf = new char[strlen((*it)->get_path()) + strlen((*iter)->get_executableName()) + 1];
+					strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
+					strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
+				}
 				DWORD fFile = GetFileAttributesA(buf);
-				if ((fFile& FILE_ATTRIBUTE_DIRECTORY))
+				if (fFile == INVALID_FILE_ATTRIBUTES && (fFile == ERROR_FILE_NOT_FOUND))
 				{
 					delete[] buf;
 					std::list<Suite*>::iterator it = suiteCollection->begin();
