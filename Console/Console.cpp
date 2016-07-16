@@ -51,7 +51,7 @@ int ProcessFunction(char* name, char* tag, char* path, int threads)
 		reportManager.Begin();
 
 		bool result = Manager.Run(path, name, tag, threads, &reportManager);
-		
+
 		reportManager.End();
 		return result;
 	}
@@ -84,7 +84,7 @@ int ProcessFunction(char* name, char* tag, char* path, int threads)
 			std::cout << "List is empty!\n";
 		}
 		delete list;
-		
+
 		return 0;
 	}
 
@@ -102,10 +102,10 @@ int ProcessFunction(char* name, char* tag, char* path, int threads)
 
 	else
 	{
-		logger<<"Incorrect function name";
+		logger << "Incorrect function name";
 		return 1;
 	}
-	
+
 }
 
 // taking references to pointer and assign them to appropriate console parameter
@@ -116,7 +116,7 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 	// checking whether amount of parameters is correct
 	if (__argc < MIN_PARAMERES || __argc > MAX_PARAMETERS || __argc % 2 != 0)
 	{
-		logger<<"Incorrect amount of parameters";
+		logger << "Incorrect amount of parameters";
 		return false;
 	}
 
@@ -149,17 +149,17 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 		{
 			// this mean that there was not a identifier at the place
 			// where it was expected to be
-			logger<<"Incorrect order of parameters,  (-n or -t) was expected";
+			logger << "Incorrect order of parameters,  (-n or -t) was expected";
 			return false;
 		}
 	}
 
-	if ( !path )
+	if (!path)
 	{
 		path = new char[MAX_PATH + 1];
 		GetCurrentDirectoryA(MAX_PATH + 1, path);
 	}
-	else if (path && strlen(path) >= 1 && path[0] == '.' )
+	else if (path && strlen(path) >= 1 && path[0] == '.')
 	{
 		char* coll = new char[MAX_PATH + 1];
 		GetCurrentDirectoryA(MAX_PATH + 1, coll);
@@ -182,7 +182,7 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 		logger << "Specified path is not exist";
 		return false;
 	}
-		
+
 
 	return true;
 }
