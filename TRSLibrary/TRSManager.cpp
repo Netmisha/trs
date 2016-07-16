@@ -75,13 +75,15 @@ bool TRSManager::Destroy()
 bool TRSManager::VerifyParameters(char* path, char* name, char* tag)
 {
 	DWORD dwAttrib = GetFileAttributesA(path);
+	bool ret_val = true;
 
 	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
 	{
 		logger << "Specified path is not exist";
-		return false;
+		ret_val = false;
 	}
-	return true;
+
+	return ret_val;
 }
 
 bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount, ReportManager* pResult)
@@ -92,7 +94,7 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 	if (tag)
 		logger->info("name: {} ", tag);
 
-	if (!VerifyParameters(path, name, tag) || threads_amount > MAX_THREADS)
+	if (Verify(path, name, tag) != SUCCEEDED|| threads_amount > MAX_THREADS)
 		return false;
 	std::list<Suite*> arr = *List(path, name, tag);
 	if (arr.size() == 0)
@@ -181,7 +183,7 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					return WRONG_WAITFOR;
 				}
 			}
-			return SUCCSEED;
+			return SUCCEEDED;
 		}
 
 
@@ -193,7 +195,7 @@ bool TRSManager::Pause(char* path, char* name, char* tag)
 	if (tag)
 		logger->info("name: {} ", tag);
 
-	if (!VerifyParameters(path, name, tag))
+	if (!Verify(path, name, tag))
 		return false;
 	return false;
 }
@@ -206,7 +208,7 @@ bool TRSManager::Stop(char* path, char* name, char* tag)
 	if (tag)
 		logger->info("name: {} ", tag);
 
-	if (!VerifyParameters(path, name, tag))
+	if (!Verify(path, name, tag))
 		return false;
 	return false;
 }
@@ -221,6 +223,7 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 
 	if (!VerifyParameters(path, name, tag))
 		return false;
+
 	DWORD fFile = GetFileAttributesA(path);
 	if (fFile& FILE_ATTRIBUTE_DIRECTORY)
 	{
@@ -458,21 +461,21 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 
 bool TRSManager::Status(char* path, char* name, char* tag)
 {
-	if (!VerifyParameters(path, name, tag))
+	if (!Verify(path, name, tag))
 		return false;
 	return false;
 }
 
 bool TRSManager::Info(char* path, char* name, char* tag)
 {
-	if (!VerifyParameters(path, name, tag))
+	if (!Verify(path, name, tag))
 		return false;
 	return false;
 }
 
 bool TRSManager::SetReport(char* path,char* name,char* tag, unsigned threads_amount, ReportManager* pReport)
 {
-	if (!VerifyParameters(path, name, tag))
+	if (!Verify(path, name, tag))
 		return false;
 
 	Manager.Run(path, name, tag, threads_amount, pReport);
