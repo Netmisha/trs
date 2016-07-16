@@ -188,9 +188,10 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					}
 				}
 			}
-			if ((*iter)->getExecutablePath())
+			char* commandLine = (*iter)->getExecutablePath();
+			if (commandLine)
 			{
-				DWORD fFile = GetFileAttributesA((*iter)->getPathForExe());
+				DWORD fFile = GetFileAttributesA(commandLine);
 				if (fFile == INVALID_FILE_ATTRIBUTES && (fFile == ERROR_FILE_NOT_FOUND))
 
 				{
@@ -198,6 +199,7 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					return WRONG_PATH_EXECUTION;
 				}
 			}
+			delete[] commandLine;
 			if ((*iter)->getRepeat())
 			{
 				char* res = (*iter)->getRepeat();
@@ -467,11 +469,14 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 					return suiteCollection;
 				}
 				char* buf;
-				if ((*iter)->getExecutablePath())
+				char* console = (*iter)->getExecutablePath();
+				if (console)
 				{
-					int size = strlen((*iter)->getPathForExe());
+					char* EXE = (*iter)->getPathForExe();
+					int size = strlen(EXE);
 					buf = new char[size + 1];
-					strncpy_s(buf, size + 1, (*iter)->getPathForExe(), size);
+					strncpy_s(buf, size + 1, EXE, size);
+					delete[] EXE;
 				}
 				else
 				{
@@ -479,6 +484,7 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 					strncpy_s(buf, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
 					strncpy_s(buf + strlen((*it)->get_path()), strlen((*iter)->get_executableName()) + 1, (*iter)->get_executableName(), strlen((*iter)->get_executableName()));
 				}
+				delete[] console;
 				DWORD fFile = GetFileAttributesA(buf);
 				if (fFile == INVALID_FILE_ATTRIBUTES && (fFile == ERROR_FILE_NOT_FOUND))
 				{
