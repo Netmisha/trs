@@ -150,8 +150,8 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					}
 					if ((*iter)->getExecutablePath())
 					{
-						DWORD fFile = GetFileAttributesA((*iter)->getExecutablePath());
-						if ((fFile == INVALID_FILE_ATTRIBUTES))
+						DWORD fFile = GetFileAttributesA((*iter)->getPathForExe());
+						if (fFile == INVALID_FILE_ATTRIBUTES )
 						{
 							return WRONG_PATH_EXECUTION;
 						}
