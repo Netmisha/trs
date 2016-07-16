@@ -152,6 +152,8 @@ char* TRSInfo::getDescription() const
 
 char* TRSInfo::getMaxThreads() const
 { 
+	if (!maxThreads)
+		return "1";
 	return maxThreads;
 }
 
@@ -167,7 +169,7 @@ char* TRSInfo::getDisable() const
 
 char* TRSInfo::getExecutablePath() const
 {
-	if (parameters&&executablePath&&executableName)
+	if (parameters && executablePath&& executableName)
 	{
 		int sizePath = strlen(executablePath);
 		int sizeName = strlen(executableName);
@@ -192,7 +194,7 @@ char* TRSInfo::getExecutablePath() const
 	}
 	else
 	{
-		if (parameters&&!executablePath&&executableName)
+		if (parameters && !executablePath && executableName)
 		{
 			int sizePath = strlen(path);
 			int sizeName = strlen(executableName);
@@ -204,7 +206,7 @@ char* TRSInfo::getExecutablePath() const
 			strncpy_s(result + sizePath + sizeName + 1, sizeParam + 1, parameters, sizeParam);
 			return result;
 		}
-		if (executablePath&&!parameters&&executableName)
+		if (executablePath && !parameters&& executableName)
 		{
 			int sizePath = strlen(executablePath);
 			int sizeName = strlen(executableName);
@@ -213,15 +215,15 @@ char* TRSInfo::getExecutablePath() const
 			strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
 			return result;
 		}
-		if (!parameters&&!executablePath&&executableName)
+		if (!parameters && !executablePath&& executableName)
 		{
 			int sizePath = strlen(path);
 			int sizeName = strlen(executableName);
-			int sizeParam = strlen(parameters);
+//			int sizeParam = strlen(parameters);
 			char* result = new char[sizePath + sizeName + 1];
 			strncpy_s(result, sizePath + 1, path, sizePath);
 			strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
-			strncpy_s(result + sizeName + sizeParam, sizeParam + 1, parameters, sizeParam);
+//			strncpy_s(result + sizeName + sizeParam, sizeParam + 1, parameters, sizeParam);
 
 			return result;
 		}
@@ -760,6 +762,8 @@ bool TRSInfo::setMetadata(Metadata*metadata_)
 
 char* TRSInfo::getRepeat()  const
 {
+	if (!repeat)
+		return "1";
 	return repeat;
 }
 

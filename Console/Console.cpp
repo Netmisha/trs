@@ -23,6 +23,7 @@
 #include <crtdbg.h>
 
 #define MAX_PARAMETERS 9
+#define MIN_PARAMERES 2
 
 
 namespace spd = spdlog;
@@ -113,7 +114,7 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 	name = tag = path = nullptr;
 	threads = 1;
 	// checking whether amount of parameters is correct
-	if (__argc < 3 || __argc > MAX_PARAMETERS || __argc % 2 != 0)
+	if (__argc < MIN_PARAMERES || __argc > MAX_PARAMETERS || __argc % 2 != 0)
 	{
 		logger<<"Incorrect amount of parameters";
 		return false;
@@ -158,16 +159,16 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 		path = new char[MAX_PATH + 1];
 		GetCurrentDirectoryA(MAX_PATH + 1, path);
 	}
-	else if (path && strlen(path) > 1 && path[0] == '.' )
-	{
-		char* coll = new char[MAX_PATH + 1];
-		GetCurrentDirectoryA(MAX_PATH + 1, coll);
-		int len = strlen(coll);
-		coll[len] = '\\';
-		coll[len + 1] = 0;
-		strcat_s(coll, MAX_PATH + 1, path);
-		path = coll;
-	}
+	//else if (path && strlen(path) > 1 && path[0] == '.' )
+	//{
+	//	char* coll = new char[MAX_PATH + 1];
+	//	GetCurrentDirectoryA(MAX_PATH + 1, coll);
+	//	int len = strlen(coll);
+	//	coll[len] = '\\';
+	//	coll[len + 1] = 0;
+	//	strcat_s(coll, MAX_PATH + 1, path);
+	//	path = coll;
+	//}
 	else
 	{
 		char* coll = new char[MAX_PATH + 1];
