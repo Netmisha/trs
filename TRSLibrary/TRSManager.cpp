@@ -48,7 +48,7 @@ bool Logger::Init()
 		}
 
 		char buf[MAX_FILE_NAME_LENGHT];
-		sprintf_s(buf, MAX_FILE_NAME_LENGHT, "Logger %s.txt", time);
+		sprintf_s(buf, MAX_FILE_NAME_LENGHT, "Logger %s.log", time);
 		auto sink = std::make_shared<spd::sinks::simple_file_sink_mt>(buf);
 		text_log_ = std::make_shared<spdlog::logger>("file_logger", sink);
 
@@ -116,8 +116,8 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 
 
 	if (Verify(path, name, tag) != SUCCEEDED || threads_amount > MAX_THREADS)
-
 		return false;
+
 	std::list<Suite*> arr = *List(path, name, tag);
 	if (arr.size() == 0)
 		return false;
