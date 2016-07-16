@@ -175,7 +175,7 @@ char* TRSInfo::getExecutablePath() const
 		int sizeName = strlen(executableName);
 		int sizeParam = strlen(parameters);
 		char* result;
-		if (executablePath[sizeName - 1] != '//')
+		if (executablePath[sizeName - 1] == '//')
 		{
 			result = new char[sizePath + sizeName + sizeParam + 2];
 			strncpy_s(result, sizePath + 1, executablePath, sizePath);
@@ -221,9 +221,21 @@ char* TRSInfo::getExecutablePath() const
 		{
 			int sizePath = strlen(executablePath);
 			int sizeName = strlen(executableName);
-			char* result = new char[sizePath + sizeName + 2];
-			strncpy_s(result, sizePath + 1, executablePath, sizePath);
-			strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
+			char* result;
+			if (executablePath[sizeName - 1] == '//')
+			{
+				result = new char[sizePath + sizeName  + 1];
+				strncpy_s(result, sizePath + 1, executablePath, sizePath);
+				strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
+			}
+			else
+			{
+				result = new char[sizePath + sizeName  + 2];
+				strncpy_s(result, sizePath + 1, executablePath, sizePath);
+				strncpy_s(result + sizePath, 2, "//", 1);
+				strncpy_s(result + sizePath + 1, sizeName + 1, executableName, sizeName);
+
+			}
 			return result;
 		}
 		if (!parameters && !executablePath&& executableName)
