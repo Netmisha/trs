@@ -14,6 +14,7 @@
     <ProjectGuid>{F16C4AD9-7605-4AAC-AC25-9B5529510685}</ProjectGuid>
     <RootNamespace>MFCTRSui</RootNamespace>
     <Keyword>MFCProj</Keyword>
+    <ProjectName>TRSUI</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -54,10 +55,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -124,7 +127,17 @@
   <ItemGroup>
     <Image Include="res\MFCTRSui.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TRSLibrary\TRSLibrary.vcxproj">
+      <Project>{1bc6f5e1-f69b-4540-9e08-6c2cb29b2cd2}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="MFCTRSui.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

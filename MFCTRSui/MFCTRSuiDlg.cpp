@@ -6,6 +6,8 @@
 #include "MFCTRSui.h"
 #include "MFCTRSuiDlg.h"
 #include "afxdialogex.h"
+#include "TRSLibrary\TRSManager.h"
+#include <list>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -13,7 +15,21 @@
 
 
 // CMFCTRSuiDlg dialog
-
+void convertToTCHAR(TCHAR*dest, char* path)
+{
+	if (dest != nullptr && path != nullptr)
+	{
+		TCHAR help = path[0];
+		int i = 0;
+		while (help)
+		{
+			dest[i] = help;
+			++i;
+			help = path[i];
+		}
+		dest[i] = '\0';
+	}
+}
 
 
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
@@ -25,11 +41,14 @@ CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_TREE1, m_Tree);
+	DDX_Control(pDX, IDC_EDIT1, C_edit);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiDlg::OnEnChangeEdit1)
 END_MESSAGE_MAP()
 
 
@@ -43,7 +62,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-
+	
 	// TODO: Add extra initialization here
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -85,3 +104,38 @@ HCURSOR CMFCTRSuiDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CMFCTRSuiDlg::OnEnChangeEdit1()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialogEx::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+	CString message;
+	C_edit.GetWindowTextW(message);
+	//C_edit.SetWindowTextW(message);
+	CT2A buffer(message);
+	Manager.Init();
+	std::list<Suite*>* suiteColl = Manager.List(buffer.m_psz, nullptr, nullptr);
+	if (suiteColl->size() > 0)
+	{
+		HTREEITEM hHead, hSuites, hTests;
+		std::list<Suite*>::iterator it = suiteColl->begin();
+		hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
+		for (it; it != suiteColl->end(); ++it)
+		{
+			TCHAR bufName[MAX_PATH];
+			convertToTCHAR(bufName, (*it)->getName());
+			hSuites = m_Tree.InsertItem(bufName, hHead);
+			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+			for (iter; iter != (*it)->getList().end(); ++iter)
+			{
+				TCHAR testName[MAX_PATH];
+				convertToTCHAR(testName, (*iter)->getName());
+				hTests = m_Tree.InsertItem(testName, hSuites);
+			}
+		}
+	}
+	// TODO:  Add your control notification handler code here
+}

@@ -6,6 +6,7 @@
 #include "MFCTRSui.h"
 #include "MFCTRSuiDlg.h"
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -15,6 +16,8 @@
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
+	ON_BN_CLICKED(IDOK, &CMFCTRSuiApp::OnBnClickedOk)
+	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiApp::OnEnChangeEdit1)
 END_MESSAGE_MAP()
 
 
@@ -85,3 +88,20 @@ BOOL CMFCTRSuiApp::InitInstance()
 	return FALSE;
 }
 
+
+
+void CMFCTRSuiApp::OnBnClickedOk()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void CMFCTRSuiApp::OnEnChangeEdit1()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CWinApp::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+	
+	// TODO:  Add your control notification handler code here
+}

@@ -27,6 +27,8 @@ public:
 // Implementation
 
 	DECLARE_MESSAGE_MAP()
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnEnChangeEdit1();
 };
 
 extern CMFCTRSuiApp theApp;

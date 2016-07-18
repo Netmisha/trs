@@ -3,6 +3,8 @@
 //
 
 #pragma once
+#include "afxcmn.h"
+#include "afxwin.h"
 
 
 // CMFCTRSuiDlg dialog
@@ -28,4 +30,8 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	CTreeCtrl m_Tree;
+	afx_msg void OnEnChangeEdit1();
+	CEdit C_edit;
 };
