@@ -34,6 +34,9 @@ void convertToTCHAR(TCHAR*dest, char* path)
 
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
+	, AddFolder(0)
+	, sq(0)
+	, dsa(false)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -43,6 +46,7 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_TREE1, m_Tree);
 	DDX_Control(pDX, IDC_EDIT1, C_edit);
+	DDX_Control(pDX, IDC_LIST1, ListVariable);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -51,6 +55,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiDlg::OnEnChangeEdit1)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CMFCTRSuiDlg::OnTvnSelchangedTree1)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFCTRSuiDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CMFCTRSuiDlg::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -165,6 +170,28 @@ void CMFCTRSuiDlg::OnBnClickedButton1()
 					hTests = m_Tree.InsertItem(testName, hSuites);
 				}
 			}
+		}
+	}
+}
+
+void CMFCTRSuiDlg::OnBnClickedButton2()
+{
+	BROWSEINFO bi = { 0 };
+	bi.lpszTitle = _T("Select Folder");
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	if (pidl != 0)
+	{
+		// get the name of the folder
+		TCHAR path[MAX_PATH];
+		SHGetPathFromIDList(pidl, path);
+		roots.push_back(SuiteRoot(path));
+		ListVariable.InsertItem(0, path);
+		// free memory used
+		IMalloc * imalloc = 0;
+		if (SUCCEEDED(SHGetMalloc(&imalloc)))
+		{
+			imalloc->Free(pidl);
+			imalloc->Release();
 		}
 	}
 }
