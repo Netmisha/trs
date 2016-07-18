@@ -6,6 +6,7 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 
+extern CEdit console_output;
 
 // CMFCTRSuiDlg dialog
 class CMFCTRSuiDlg : public CDialogEx
@@ -36,4 +37,9 @@ public:
 	CEdit C_edit;
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton1();
+	afx_msg void OnEnChangeEdit2();
+	CEdit report_edit;
+	afx_msg void OnBnClickedButton2();
+	CButton Run_button;
+	CEdit console_output;
 };

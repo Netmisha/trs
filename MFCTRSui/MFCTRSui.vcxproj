@@ -104,6 +104,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConsoleReporter.h" />
     <ClInclude Include="MFCTRSui.h" />
     <ClInclude Include="MFCTRSuiDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -111,6 +112,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConsoleReporter.cpp" />
     <ClCompile Include="MFCTRSui.cpp" />
     <ClCompile Include="MFCTRSuiDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -128,6 +130,9 @@
     <Image Include="res\MFCTRSui.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Console\Console.vcxproj">
+      <Project>{9072c8d4-af7c-4c58-bfbf-0fc494cd5177}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\TRSLibrary\TRSLibrary.vcxproj">
       <Project>{1bc6f5e1-f69b-4540-9e08-6c2cb29b2cd2}</Project>
     </ProjectReference>
