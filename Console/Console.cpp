@@ -112,7 +112,7 @@ int ProcessFunction(char* name, char* tag, char* path, int threads)
 bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &path, _Outptr_ int & threads)
 {
 	name = tag = path = nullptr;
-	threads = 1;
+	threads = -1;
 	// checking whether amount of parameters is correct
 	if (__argc < MIN_PARAMERES || __argc > MAX_PARAMETERS || __argc % 2 != 0)
 	{
@@ -125,23 +125,48 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 	{
 		if (_stricmp(__argv[i], "-n") == 0)
 		{
+			if (name)
+			{
+				logger << "Ambiguous indication of name parameter";
+				return false;
+			}
 			name = __argv[i + 1];
 			continue;
 		}
 		else if (_stricmp(__argv[i], "-t") == 0)
 		{
+			if (tag)
+			{
+				logger << "Ambiguous indication of tag parameter";
+				return false;
+			}
 			tag = __argv[i + 1];
 			continue;
 		}
 		else if (_stricmp(__argv[i], "-j") == 0)
 		{
+			if (threads != -1)
+			{
+				logger << "Ambiguous indication of threads parameter";
+				return false;
+			}
 			threads = atoi(__argv[i + 1]);
+
 			if (threads <= 0)
+			{
 				logger << "Amount of threads must be a positive integer!";
+				return false;
+			}
+
 			continue;
 		}
 		else if (_stricmp(__argv[i], "-p") == 0)
 		{
+			if (path)
+			{
+				logger << "Ambiguous indication of path parameter";
+				return false;
+			}
 			path = __argv[i + 1];
 			continue;
 		}
@@ -183,7 +208,8 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 		return false;
 	}
 
-
+	if (threads == -1)
+		threads = 1;
 	return true;
 }
 

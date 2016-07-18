@@ -16,6 +16,8 @@ using namespace std;
 namespace spd = spdlog;
 using namespace std::chrono;
 
+#define MAX_FILE_NAME_LENGHT 70
+
 TRSManager Manager;
 Logger logger;
 
@@ -29,7 +31,25 @@ bool Logger::Init()
 {
 	try
 	{
-		auto sink = std::make_shared<spd::sinks::simple_file_sink_mt>("logs.txt");
+		system_clock::time_point today = system_clock::now();
+		time_t tt = system_clock::to_time_t(today);
+		char time[MAX_FILE_NAME_LENGHT];
+
+		if (!ctime_s(time, MAX_FILE_NAME_LENGHT, &tt))
+		{
+			int len = strlen(time);
+			time[len - 1] = 0;
+
+			for (int i = 0; time[i] != 0; ++i)
+			{
+				if (time[i] == ':')
+					time[i] = ' ';
+			}
+		}
+
+		char buf[MAX_FILE_NAME_LENGHT];
+		sprintf_s(buf, MAX_FILE_NAME_LENGHT, "Logger %s.log", time);
+		auto sink = std::make_shared<spd::sinks::simple_file_sink_mt>(buf);
 		text_log_ = std::make_shared<spdlog::logger>("file_logger", sink);
 
 		console_log_ = spd::stderr_logger_mt("console_logger");
@@ -96,8 +116,8 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 
 
 	if (Verify(path, name, tag) != SUCCEEDED || threads_amount > MAX_THREADS)
-
 		return false;
+
 	std::list<Suite*> arr = *List(path, name, tag);
 	if (arr.size() == 0)
 		return false;
