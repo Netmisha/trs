@@ -49,6 +49,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiDlg::OnEnChangeEdit1)
+	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CMFCTRSuiDlg::OnTvnSelchangedTree1)
 END_MESSAGE_MAP()
 
 
@@ -113,29 +114,49 @@ void CMFCTRSuiDlg::OnEnChangeEdit1()
 	// function and call CRichEditCtrl().SetEventMask()
 	// with the ENM_CHANGE flag ORed into the mask.
 	CString message;
+	
 	C_edit.GetWindowTextW(message);
 	//C_edit.SetWindowTextW(message);
 	CT2A buffer(message);
-	Manager.Init();
-	std::list<Suite*>* suiteColl = Manager.List(buffer.m_psz, nullptr, nullptr);
-	if (suiteColl->size() > 0)
+	DWORD fFile = GetFileAttributesA(buffer);
+	if (fFile == INVALID_FILE_ATTRIBUTES && !(fFile == ERROR_FILE_NOT_FOUND))
 	{
-		HTREEITEM hHead, hSuites, hTests;
-		std::list<Suite*>::iterator it = suiteColl->begin();
-		hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
-		for (it; it != suiteColl->end(); ++it)
+		C_edit.SetSel(0, -1);
+		C_edit.Clear();
+		MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
+		
+	}
+	else
+	{
+		Manager.Init();
+		std::list<Suite*>* suiteColl = Manager.List(buffer.m_psz, nullptr, nullptr);
+		if (suiteColl->size() > 0)
 		{
-			TCHAR bufName[MAX_PATH];
-			convertToTCHAR(bufName, (*it)->getName());
-			hSuites = m_Tree.InsertItem(bufName, hHead);
-			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
-			for (iter; iter != (*it)->getList().end(); ++iter)
+			HTREEITEM hHead, hSuites, hTests;
+			std::list<Suite*>::iterator it = suiteColl->begin();
+			hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
+			for (it; it != suiteColl->end(); ++it)
 			{
-				TCHAR testName[MAX_PATH];
-				convertToTCHAR(testName, (*iter)->getName());
-				hTests = m_Tree.InsertItem(testName, hSuites);
+				TCHAR bufName[MAX_PATH];
+				convertToTCHAR(bufName, (*it)->getName());
+				hSuites = m_Tree.InsertItem(bufName, hHead);
+				std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+				for (iter; iter != (*it)->getList().end(); ++iter)
+				{
+					TCHAR testName[MAX_PATH];
+					convertToTCHAR(testName, (*iter)->getName());
+					hTests = m_Tree.InsertItem(testName, hSuites);
+				}
 			}
 		}
 	}
 	// TODO:  Add your control notification handler code here
+}
+
+
+void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	*pResult = 0;
 }

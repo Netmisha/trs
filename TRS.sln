@@ -16,7 +16,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FoldersCreator", "FoldersCr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CreateExe", "CreateExe\CreateExe.vcxproj", "{46BE37A3-ED2E-4D50-9CD8-5C174FA357F7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFCTRSui", "MFCTRSui\MFCTRSui.vcxproj", "{F16C4AD9-7605-4AAC-AC25-9B5529510685}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TRSUI", "MFCTRSui\MFCTRSui.vcxproj", "{F16C4AD9-7605-4AAC-AC25-9B5529510685}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -34,4 +34,5 @@ public:
 	CTreeCtrl m_Tree;
 	afx_msg void OnEnChangeEdit1();
 	CEdit C_edit;
+	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
 };
