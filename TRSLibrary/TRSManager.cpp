@@ -168,16 +168,22 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					}
 				}
 			}
-			char* commandLine = (*iter)->getExecutablePath();
+			char* commandLine = (*iter)->getPathForExe();
 			if (commandLine)
 			{
-				DWORD fFile = GetFileAttributesA(commandLine);
-				if (fFile == INVALID_FILE_ATTRIBUTES && (fFile == ERROR_FILE_NOT_FOUND))
-
+				TCHAR buf[MAX_PATH];
+				TCHAR path [MAX_PATH];
+				convertToTCHAR(path, commandLine);
+				WCHAR** lppPart = { NULL };
+				GetFullPathName(path, MAX_PATH, buf, lppPart);
+				char* convPath = convertToChar(buf);
+				DWORD fFile = GetFileAttributesA(convPath);
+				if (fFile == INVALID_FILE_ATTRIBUTES && !(fFile == ERROR_FILE_NOT_FOUND))
 				{
 					logger << "There are one (or more) test(s) that has wrong path to exe file\n";
 					return WRONG_PATH_EXECUTION;
 				}
+				delete[] convPath;
 			}
 			delete[] commandLine;
 			if ((*iter)->getRepeat())
@@ -298,8 +304,7 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 		}
 		else
 		{
-			bool exeExist = false;
-			bool xmlExist = false;
+			
 			do
 			{
 				if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)//check if it's a folder or not
@@ -329,7 +334,7 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 					std::wstring name_(ffd.cFileName);//used for validating file name(checks if there is .xml in the end
 					if (Validate(name_))//validating function
 					{
-						xmlExist = true;
+						
 						TCHAR fileDir[MAX_PATH];//buffer which contains a path to an xml file
 						StringCchCopy(fileDir, MAX_PATH, hzDir);//some moves to save path
 						StringCchCat(fileDir, MAX_PATH, TEXT("\\"));
@@ -351,39 +356,10 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 						}
 						delete[] way;
 					}
-					else
-					{
-						if (name_[name_.length() - 1] == 'e')
-						{
-							if (name_[name_.length() - 2] == 'x')
-							{
-								if (name_[name_.length() - 3] == 'e')
-								{
-									if (name_[name_.length() - 4] == '.')
-									{
-										char* conv = convertToChar(ffd.cFileName);
-										if (strncmp(conv, "trs.exe", strlen(conv)))
-										{
-											exeExist = true;
-										}
-										delete[] conv;
-									}
-								}
-							}
-						}
-					}
+					
 				}
 			} while (FindNextFile(hFind, &ffd) != 0);//repeat
-			if (xmlExist)
-			{
-				if (!exeExist)
-					return EXE_OR_XML_ABSENT;
-			}
-			if (exeExist)
-			{
-				if (!xmlExist)
-					return EXE_OR_XML_ABSENT;
-			}
+			
 		}
 		return true;
 	}

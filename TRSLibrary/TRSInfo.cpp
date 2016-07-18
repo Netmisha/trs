@@ -157,27 +157,51 @@ char* TRSInfo::getPathForExe() const
 	{
 		int sizePath = strlen(executablePath);
 		int sizeName = strlen(executableName);
-		if (executablePath[sizePath - 1] == '\\')
+		int sizeCurPath = strlen(path);
+		if (executablePath[0] == '.')
 		{
-			result = new char[sizeName + sizePath + 1];
-			strncpy_s(result, sizePath + 1, executablePath, sizePath);
-			strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
-			return result;
+			if (executablePath[sizePath - 1] == '\\')
+			{
+				result = new char[sizeCurPath+sizeName + sizePath + 1];
+				strncpy_s(result, sizeCurPath + 1, path, sizeCurPath);
+				strncpy_s(result + sizeCurPath, sizePath + 1, executablePath, sizePath);
+				strncpy_s(result + sizeCurPath + sizePath, sizeName + 1, executableName, sizeName);
+				return result;
+			}
+			else
+			{
+				result = new char[sizeCurPath+sizeName + sizePath + 2];
+				strncpy_s(result, sizeCurPath + 1, path, sizeCurPath);
+				strncpy_s(result + sizeCurPath, sizePath + 1, executablePath, sizePath);
+				strncpy_s(result + sizePath + sizeCurPath, 2, "\\", 1);
+				strncpy_s(result + sizePath + 1 + sizeCurPath, sizeName + 1, executableName, sizeName);
+				return result;
+			}
 		}
 		else
 		{
-			result = new char[sizeName + sizePath + 2];
-			strncpy_s(result, sizePath + 1, executablePath, sizePath);
-			strncpy_s(result + sizePath, 2, "\\", 1);
-			strncpy_s(result + sizePath+1, sizeName + 1, executableName, sizeName);
-			return result;
+			if (executablePath[sizePath - 1] == '\\')
+			{
+				result = new char[sizeName + sizePath + 1];
+				strncpy_s(result, sizePath + 1, executablePath, sizePath);
+				strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
+				return result;
+			}
+			else
+			{
+				result = new char[sizeName + sizePath + 2];
+				strncpy_s(result, sizePath + 1, executablePath, sizePath);
+				strncpy_s(result + sizePath, 2, "\\", 1);
+				strncpy_s(result + sizePath + 1, sizeName + 1, executableName, sizeName);
+				return result;
+			}
 		}
 	}
 	else
 	{
 		int sizePath = strlen(path);
 		int sizeName = strlen(executableName);
-		result = new char[sizePath+sizeName+1];
+		result = new char[sizePath + sizeName + 1];
 		strncpy_s(result, sizePath + 1, path, sizePath);
 		strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
 		return result;

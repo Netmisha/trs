@@ -527,13 +527,13 @@ namespace UnitTest
 			WaitForSingleObject(pi.hProcess, INFINITE);
 			char fullName[] = R"(../UnitTest/Suite root)";
 			DWORD fFile = GetFileAttributesA(fullName);
-			
+			int validate = Manager.Verify(R"(../UnitTest/Suite root)", nullptr, nullptr);
 			Assert::IsTrue(fFile == INVALID_FILE_ATTRIBUTES || (fFile == ERROR_FILE_NOT_FOUND));
-
+			Assert::AreEqual(validate, INVALID_PARAMETERS);
 		}
 		TEST_METHOD(Verify_exe_absent)
 		{
-			Assert::AreEqual((int)Manager.Verify(R"(../FailTestData)", nullptr, nullptr), (int)DEAD_LOCK_OR_FILES_ABSENT_WAS_FOUND);
+			Assert::AreEqual((int)Manager.Verify(R"(../FailTestData)", nullptr, nullptr), (int)WRONG_PATH_EXECUTION);
 		}
 	};
 }
