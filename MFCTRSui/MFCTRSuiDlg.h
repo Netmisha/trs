@@ -35,4 +35,5 @@ public:
 	afx_msg void OnEnChangeEdit1();
 	CEdit C_edit;
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedButton1();
 };

@@ -50,6 +50,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiDlg::OnEnChangeEdit1)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CMFCTRSuiDlg::OnTvnSelchangedTree1)
+	ON_BN_CLICKED(IDC_BUTTON1, &CMFCTRSuiDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -113,8 +114,24 @@ void CMFCTRSuiDlg::OnEnChangeEdit1()
 	// send this notification unless you override the CDialogEx::OnInitDialog()
 	// function and call CRichEditCtrl().SetEventMask()
 	// with the ENM_CHANGE flag ORed into the mask.
-	CString message;
 	
+	// TODO:  Add your control notification handler code here
+}
+
+
+void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	*pResult = 0;
+}
+
+
+void CMFCTRSuiDlg::OnBnClickedButton1()
+{
+	// TODO: Add your control notification handler code here
+	CString message;
+
 	C_edit.GetWindowTextW(message);
 	//C_edit.SetWindowTextW(message);
 	CT2A buffer(message);
@@ -124,7 +141,7 @@ void CMFCTRSuiDlg::OnEnChangeEdit1()
 		C_edit.SetSel(0, -1);
 		C_edit.Clear();
 		MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
-		
+
 	}
 	else
 	{
@@ -150,13 +167,4 @@ void CMFCTRSuiDlg::OnEnChangeEdit1()
 			}
 		}
 	}
-	// TODO:  Add your control notification handler code here
-}
-
-
-void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
-{
-	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
-	// TODO: Add your control notification handler code here
-	*pResult = 0;
 }
