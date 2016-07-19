@@ -5,17 +5,26 @@
 #pragma once
 #include "afxcmn.h"
 #include "afxwin.h"
-#include <list>
+#include <vector>
 
 class SuiteRoot
 {
 public:
+	SuiteRoot()
+	{
+		dRoot = nullptr;
+	}
 	SuiteRoot(TCHAR* path)
 	{
 		int size = wcslen(path);
 		dRoot = new TCHAR[size + 1];
 		wcscpy_s(dRoot, size + 1, path);
 	}
+	inline TCHAR* get_path()
+	{
+		return dRoot;
+	}
+
 	~SuiteRoot()
 	{
 		delete[] dRoot;
@@ -49,8 +58,6 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
-
-	std::list<SuiteRoot> roots;
 public:
 	CTreeCtrl m_Tree;
 	afx_msg void OnEnChangeEdit1();
@@ -74,4 +81,8 @@ public:
 	afx_msg void OnBnClickedAddfolder();
 protected:
 	CListBox RootList;
+	std::vector<SuiteRoot> dRoots;
+public:
+	afx_msg void OnLbnSelchangeListroot();
+	afx_msg void OnBnClickedDeletebutton();
 };

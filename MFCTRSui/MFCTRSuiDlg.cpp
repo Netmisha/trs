@@ -50,7 +50,7 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON2, Run_button);
 	DDX_Control(pDX, IDC_EDIT3, console_output);
 
-	DDX_Control(pDX, IDC_LIST1, RootList);
+	DDX_Control(pDX, IDC_ListRoot, RootList);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -61,6 +61,8 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFCTRSuiDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(Run_BUTTON, &CMFCTRSuiDlg::RunButtonClicked)
 	ON_BN_CLICKED(IDC_ADDFOLDER, &CMFCTRSuiDlg::OnBnClickedAddfolder)
+	ON_LBN_SELCHANGE(IDC_ListRoot, &CMFCTRSuiDlg::OnLbnSelchangeListroot)
+	ON_BN_CLICKED(IDC_DeleteButton, &CMFCTRSuiDlg::OnBnClickedDeletebutton)
 END_MESSAGE_MAP()
 
 
@@ -240,4 +242,29 @@ void CMFCTRSuiDlg::OnBnClickedAddfolder()
 			imalloc->Release();
 		}
 	}
+}
+
+void CMFCTRSuiDlg::OnLbnSelchangeListroot()
+{
+	int count = RootList.GetSelCount();
+	int* array = new int[count];
+	 
+	RootList.GetSelItems(count,	array);
+
+	dRoots.clear();
+	dRoots.resize(count);
+
+	for (int i = 0; i < count; ++i)
+	{
+		TCHAR root[MAX_PATH];
+		RootList.GetText(array[i], root);
+		dRoots.push_back(root);
+	}
+	delete[] array;
+}
+
+
+void CMFCTRSuiDlg::OnBnClickedDeletebutton()
+{
+
 }
