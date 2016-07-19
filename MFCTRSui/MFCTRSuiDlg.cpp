@@ -6,6 +6,7 @@
 #include "MFCTRSui.h"
 #include "MFCTRSuiDlg.h"
 #include "afxdialogex.h"
+#include "ConsoleReporter.h"
 #include "TRSLibrary\TRSManager.h"
 #include <list>
 
@@ -32,19 +33,23 @@ void convertToTCHAR(TCHAR*dest, char* path)
 }
 
 
+
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
-	, AddFolder(0)
+	
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
+
 
 void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_TREE1, m_Tree);
 	DDX_Control(pDX, IDC_EDIT1, C_edit);
-	DDX_Control(pDX, IDC_LIST1, ListVariable);
+	DDX_Control(pDX, IDC_BUTTON2, Run_button);
+	DDX_Control(pDX, IDC_EDIT3, console_output);
+
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -53,7 +58,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiDlg::OnEnChangeEdit1)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CMFCTRSuiDlg::OnTvnSelchangedTree1)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFCTRSuiDlg::OnBnClickedButton1)
-	ON_BN_CLICKED(IDC_BUTTON2, &CMFCTRSuiDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(Run_BUTTON, &CMFCTRSuiDlg::RunButtonClicked)
 END_MESSAGE_MAP()
 
 
@@ -67,7 +72,6 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-	
 	// TODO: Add extra initialization here
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -134,7 +138,7 @@ void CMFCTRSuiDlg::OnBnClickedButton1()
 {
 	// TODO: Add your control notification handler code here
 	CString message;
-
+	
 	C_edit.GetWindowTextW(message);
 	//C_edit.SetWindowTextW(message);
 	CT2A buffer(message);
@@ -168,29 +172,40 @@ void CMFCTRSuiDlg::OnBnClickedButton1()
 					hTests = m_Tree.InsertItem(testName, hSuites);
 				}
 			}
+			Run_button.EnableWindow(true);
+		}
+		else
+		{
+			m_Tree.DeleteAllItems();
+			Run_button.EnableWindow(false);
 		}
 	}
 }
 
-void CMFCTRSuiDlg::OnBnClickedButton2()
+
+
+void CMFCTRSuiDlg::OnEnChangeEdit2()
 {
-	BROWSEINFO bi = { 0 };
-	bi.lpszTitle = _T("Select Folder");
-	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-	if (pidl != 0)
-	{
-		// get the name of the folder
-		TCHAR path[MAX_PATH];
-		SHGetPathFromIDList(pidl, path);
-		roots.push_back(SuiteRoot(path));
-		ListVariable.InsertItem(0, path);
-		
-		// free memory used
-		IMalloc * imalloc = 0;
-		if (SUCCEEDED(SHGetMalloc(&imalloc)))
-		{
-			imalloc->Free(pidl);
-			imalloc->Release();
-		}
-	}
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialogEx::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO:  Add your control notification handler code here
+}
+
+
+
+
+void CMFCTRSuiDlg::RunButtonClicked()
+{
+	// TODO: Add your control notification handler code here
+	CString message;
+	ReportManager* manager = new ReportManager;
+	ConsoleReporter reporter(&console_output);
+	manager->addReporter(&reporter);
+	C_edit.GetWindowTextW(message);
+	CT2A buffer(message);
+	Manager.Init();
+	Manager.Run(buffer.m_psz, nullptr, nullptr, 10, manager);
 }

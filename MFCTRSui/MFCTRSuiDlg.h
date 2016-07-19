@@ -24,6 +24,7 @@ private:
 	TCHAR* dRoot;
 };
 
+extern CEdit console_output;
 
 // CMFCTRSuiDlg dialog
 class CMFCTRSuiDlg : public CDialogEx
@@ -56,8 +57,15 @@ public:
 	CEdit C_edit;
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton1();
-	char AddFolder;
-	afx_msg void OnBnClickedCheck1();
+
+
+	afx_msg void OnEnChangeEdit2();
+	CEdit report_edit;
+
 	afx_msg void OnBnClickedButton2();
-	CListCtrl ListVariable;
+	CButton Run_button;
+	CEdit console_output;
+
+	afx_msg void OnBnClickedButton();
+	afx_msg void RunButtonClicked();
 };

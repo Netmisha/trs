@@ -18,6 +18,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 	ON_BN_CLICKED(IDOK, &CMFCTRSuiApp::OnBnClickedOk)
 	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiApp::OnEnChangeEdit1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CMFCTRSuiApp::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -104,4 +105,10 @@ void CMFCTRSuiApp::OnEnChangeEdit1()
 	// with the ENM_CHANGE flag ORed into the mask.
 	
 	// TODO:  Add your control notification handler code here
+}
+
+
+void CMFCTRSuiApp::OnBnClickedButton2()
+{
+	// TODO: Add your control notification handler code here
 }
