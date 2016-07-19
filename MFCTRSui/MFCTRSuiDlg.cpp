@@ -251,7 +251,7 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 	 
 	RootList.GetSelItems(count,	array);
 
-	dRoots.clear();
+	dRoots.clear(); 
 	dRoots.reserve(count);
 
 	for (int i = 0; i < count; ++i)
