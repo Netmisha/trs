@@ -33,11 +33,7 @@ void convertToTCHAR(TCHAR*dest, char* path)
 }
 
 
-CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
-{
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-}
+
 
 void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 {
@@ -180,6 +176,7 @@ void CMFCTRSuiDlg::OnBnClickedButton1()
 }
 
 
+
 void CMFCTRSuiDlg::OnEnChangeEdit2()
 {
 	// TODO:  If this is a RICHEDIT control, the control will not
@@ -203,5 +200,6 @@ void CMFCTRSuiDlg::OnBnClickedButton2()
 	Manager.Init();
 	Manager.Run(buffer.m_psz, nullptr, nullptr,10,manager);
 	
+
 
 }
