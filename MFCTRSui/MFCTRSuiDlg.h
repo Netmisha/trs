@@ -57,8 +57,6 @@ public:
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton1();
 	char AddFolder;
-	int sq;
-	bool dsa;
 	afx_msg void OnBnClickedCheck1();
 	afx_msg void OnBnClickedButton2();
 	CListCtrl ListVariable;

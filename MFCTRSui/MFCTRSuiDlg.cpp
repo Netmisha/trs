@@ -35,8 +35,6 @@ void convertToTCHAR(TCHAR*dest, char* path)
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	, AddFolder(0)
-	, sq(0)
-	, dsa(false)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -186,6 +184,7 @@ void CMFCTRSuiDlg::OnBnClickedButton2()
 		SHGetPathFromIDList(pidl, path);
 		roots.push_back(SuiteRoot(path));
 		ListVariable.InsertItem(0, path);
+		
 		// free memory used
 		IMalloc * imalloc = 0;
 		if (SUCCEEDED(SHGetMalloc(&imalloc)))
