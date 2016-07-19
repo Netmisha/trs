@@ -14,7 +14,7 @@ ConsoleReporter::~ConsoleReporter()
 {
 	int end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L"\n\n");
+	console_output->ReplaceSel(L"\r\n\r\n");
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L"Summary:");
@@ -28,7 +28,7 @@ ConsoleReporter::~ConsoleReporter()
 	console_output->ReplaceSel(mess);
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L"\nPassed Amount: ");
+	console_output->ReplaceSel(L"\r\nPassed Amount: ");
 	mess.Format(L"%d", (int)passedAmount);
 	console_output->ReplaceSel(mess);
 	end = console_output->GetWindowTextLength();
@@ -39,7 +39,7 @@ ConsoleReporter::~ConsoleReporter()
 	console_output->ReplaceSel(mess);
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L"%)\nFailed Amount: ");
+	console_output->ReplaceSel(L"%)\r\nFailed Amount: ");
 	mess.Format(L"%d", (int)failedAmount);
 	console_output->SetSel(end, end);
 	console_output->ReplaceSel(mess);
@@ -51,13 +51,13 @@ ConsoleReporter::~ConsoleReporter()
 	console_output->ReplaceSel(mess);
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L"%)\nTotal time: ");
+	console_output->ReplaceSel(L"%)\r\nTotal time: ");
 	mess.Format(L"%d", (int)((time / 1000) / 600));
 	console_output->SetSel(end, end);
 	console_output->ReplaceSel(mess);
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L"min\n");
+	console_output->ReplaceSel(L"min\r\n");
 
 }
 
@@ -72,7 +72,7 @@ void ConsoleReporter::ErrorOutput(TRSResult& res, char* message)
 	//SetConsoleTextAttribute(hStdout, FOREGROUND_RED);
 	int end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L"\nAn error occured! \n");
+	console_output->ReplaceSel(L"\r\nAn error occured! \r\n");
 	//SetConsoleTextAttribute(hStdout, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 }
 
@@ -120,88 +120,73 @@ void ConsoleReporter::Begin()
 	GetSystemInfo(&siSysInfo);
 	int end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L"System info: \n\nProcessor: ");
-	console_output->SetSel(end, end);
+	console_output->ReplaceSel(L"System info: ");
 	CString mess;
 	mess.Format(L"%d", siSysInfo.dwProcessorType);
 	console_output->ReplaceSel(mess);
+	console_output->SetSel(end, end);
+	console_output->ReplaceSel(L"\r\n");
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L" Number of processors: ");
-	console_output->SetSel(end, end);
 	mess.Format(L"%d", siSysInfo.dwNumberOfProcessors);
 	console_output->ReplaceSel(mess);
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L" \n ");
+	console_output->ReplaceSel(L" \r\n ");
 	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L" Processor mask: ");
-	console_output->SetSel(end, end);
 	mess.Format(L"%d", siSysInfo.dwActiveProcessorMask);
 	console_output->ReplaceSel(mess);
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L" Processor architecture: ");
+	console_output->ReplaceSel(L" \r\n ");
 	console_output->SetSel(end, end);
+	console_output->ReplaceSel(L" Processor architecture: ");
 	mess.Format(L"%d", siSysInfo.wProcessorArchitecture);
 	console_output->ReplaceSel(mess);
 	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L" Processor level: ");
-	console_output->SetSel(end, end);
 	mess.Format(L"%d", siSysInfo.wProcessorLevel);
 	console_output->ReplaceSel(mess);
+	console_output->ReplaceSel(L"\r\n");
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L" \n\n Tests were run: \n");
+	console_output->ReplaceSel(L"\r\n\r\n ");
+	console_output->ReplaceSel(L"  Tests were run: ");
 	if (time.wDay < 10)
 	{
-		console_output->SetSel(end, end);
 		console_output->ReplaceSel(L"0");
-		console_output->SetSel(end, end);
 		mess.Format(L"%d", time.wDay);
 		console_output->ReplaceSel(mess);
 	}
 	else
 	{
-		console_output->SetSel(end, end);
 		mess.Format(L"%d", time.wDay);
 		console_output->ReplaceSel(mess);
 	}
-	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L".");
 	if (time.wMonth < 10)
 	{
-		console_output->SetSel(end, end);
 		console_output->ReplaceSel(L"0");
-		console_output->SetSel(end, end);
 		mess.Format(L"%d", time.wMonth);
 		console_output->ReplaceSel(mess);
 	}
 	else
 	{
-		console_output->SetSel(end, end);
 		mess.Format(L"%d", time.wMonth);
 		console_output->ReplaceSel(mess);
 	}
-	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L".");
-	console_output->SetSel(end, end);
 	mess.Format(L"%d", time.wYear);
 	console_output->ReplaceSel(mess);
-	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L" at ");
-	console_output->SetSel(end, end);
 	mess.Format(L"%d", time.wHour);
 	console_output->ReplaceSel(mess);
-	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L":");
-	console_output->SetSel(end, end);
 	mess.Format(L"%d", time.wMinute);
 	console_output->ReplaceSel(mess);
-	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L":");
-	console_output->SetSel(end, end);
 	mess.Format(L"%d", time.wSecond);
 	console_output->ReplaceSel(mess);
-	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L"\n\n");
+	console_output->ReplaceSel(L"\r\n\r\n");
 
 }
 
@@ -249,5 +234,5 @@ void ConsoleReporter::AfterExecution(TRSInfo pInfo, TRSResult pResult)
 	mess.Format(L"%d", pResult.get_path());
 	console_output->ReplaceSel(mess);
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L"\n");
+	console_output->ReplaceSel(L"\r\n");
 }

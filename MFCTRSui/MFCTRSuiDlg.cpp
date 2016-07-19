@@ -73,7 +73,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	// TODO: Add extra initialization here
-
+	AllocConsole();
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -207,5 +207,8 @@ void CMFCTRSuiDlg::RunButtonClicked()
 	C_edit.GetWindowTextW(message);
 	CT2A buffer(message);
 	Manager.Init();
+	manager->Begin();
 	Manager.Run(buffer.m_psz, nullptr, nullptr, 10, manager);
+	manager->End();
+	Manager.Destroy();
 }
