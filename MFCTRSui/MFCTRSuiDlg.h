@@ -68,4 +68,10 @@ public:
 
 	afx_msg void OnBnClickedButton();
 	afx_msg void RunButtonClicked();
+protected:
+
+public:
+	afx_msg void OnBnClickedAddfolder();
+protected:
+	CListBox RootList;
 };

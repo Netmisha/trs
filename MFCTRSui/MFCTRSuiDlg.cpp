@@ -50,6 +50,7 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON2, Run_button);
 	DDX_Control(pDX, IDC_EDIT3, console_output);
 
+	DDX_Control(pDX, IDC_LIST1, RootList);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -59,6 +60,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CMFCTRSuiDlg::OnTvnSelchangedTree1)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFCTRSuiDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(Run_BUTTON, &CMFCTRSuiDlg::RunButtonClicked)
+	ON_BN_CLICKED(IDC_ADDFOLDER, &CMFCTRSuiDlg::OnBnClickedAddfolder)
 END_MESSAGE_MAP()
 
 
@@ -211,4 +213,31 @@ void CMFCTRSuiDlg::RunButtonClicked()
 	Manager.Run(buffer.m_psz, nullptr, nullptr, 10, manager);
 	manager->End();
 	Manager.Destroy();
+}
+
+
+void CMFCTRSuiDlg::OnBnClickedAddfolder()
+{
+	BROWSEINFO bi = { 0 };
+	bi.lpszTitle = _T("Select Folder");
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	if (pidl != 0)
+	{
+		static int i = 0;
+		// get the name of the folder
+		TCHAR path[MAX_PATH];
+		SHGetPathFromIDList(pidl, path);
+//		roots.push_back(SuiteRoot(path));
+
+
+		RootList.AddString(path);
+		++i;
+		// free memory used
+		IMalloc * imalloc = 0;
+		if (SUCCEEDED(SHGetMalloc(&imalloc)))
+		{
+			imalloc->Free(pidl);
+			imalloc->Release();
+		}
+	}
 }
