@@ -44,10 +44,10 @@ extern CEdit console_output;
 // CMFCTRSuiDlg dialog
 class CMFCTRSuiDlg : public CDialogEx
 {
-// Construction
+	// Construction
 public:
 	CMFCTRSuiDlg(CWnd* pParent = NULL);	// standard constructor
-
+	~CMFCTRSuiDlg();
 // Dialog Data
 	enum { IDD = IDD_MFCTRSUI_DIALOG };
 
@@ -91,4 +91,5 @@ protected:
 public:
 	afx_msg void OnLbnSelchangeListroot();
 	afx_msg void OnBnClickedDeletebutton();
+	afx_msg void OnBnClickedRunselected();
 };

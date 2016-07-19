@@ -32,6 +32,21 @@ void convertToTCHAR(TCHAR*dest, char* path)
 	}
 }
 
+char* convertToChar(TCHAR*path)//create buffer to set info to tinyXML doc constructor
+{
+	char* buf = new char[MAX_PATH];
+	char help = path[0];
+	int i = 0;
+	while (help)//i tried to use memcpy,but it didn't work so i used while=(
+	{
+		buf[i] = help;
+		++i;
+		help = path[i];
+	}
+	buf[i] = '\0';
+	return buf;
+}
+
 
 
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
@@ -39,6 +54,12 @@ CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	Manager.Init();
+}
+
+CMFCTRSuiDlg::~CMFCTRSuiDlg()
+{
+	Manager.Destroy();
 }
 
 
@@ -63,6 +84,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_ADDFOLDER, &CMFCTRSuiDlg::OnBnClickedAddfolder)
 	ON_LBN_SELCHANGE(IDC_ListRoot, &CMFCTRSuiDlg::OnLbnSelchangeListroot)
 	ON_BN_CLICKED(IDC_DeleteButton, &CMFCTRSuiDlg::OnBnClickedDeletebutton)
+	ON_BN_CLICKED(IDC_RunSelected, &CMFCTRSuiDlg::OnBnClickedRunselected)
 END_MESSAGE_MAP()
 
 
@@ -156,7 +178,6 @@ void CMFCTRSuiDlg::OnBnClickedButton1()
 	}
 	else
 	{
-		Manager.Init();
 		std::list<Suite*>* suiteColl = Manager.List(buffer.m_psz, nullptr, nullptr);
 		if (suiteColl->size() > 0)
 		{
@@ -210,11 +231,9 @@ void CMFCTRSuiDlg::RunButtonClicked()
 	manager->addReporter(&reporter);
 	C_edit.GetWindowTextW(message);
 	CT2A buffer(message);
-	Manager.Init();
 	manager->Begin();
 	Manager.Run(buffer.m_psz, nullptr, nullptr, 10, manager);
 	manager->End();
-	Manager.Destroy();
 }
 
 
@@ -225,15 +244,16 @@ void CMFCTRSuiDlg::OnBnClickedAddfolder()
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
 	if (pidl != 0)
 	{
-		static int i = 0;
 		// get the name of the folder
 		TCHAR path[MAX_PATH];
 		SHGetPathFromIDList(pidl, path);
-//		roots.push_back(SuiteRoot(path));
+		char* pathA = convertToChar(path);
+		if (!Manager.Verify(pathA, nullptr, nullptr))
+			RootList.AddString(path);
+		else
+			MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
 
-
-		RootList.AddString(path);
-		++i;
+		delete[] pathA;
 		// free memory used
 		IMalloc * imalloc = 0;
 		if (SUCCEEDED(SHGetMalloc(&imalloc)))
@@ -270,5 +290,22 @@ void CMFCTRSuiDlg::OnBnClickedDeletebutton()
 	{
 		int index = RootList.FindString(-1, to_delete.get_path());
 		RootList.DeleteString(index);
+	}
+}
+
+
+void CMFCTRSuiDlg::OnBnClickedRunselected()
+{
+	ReportManager* manager = new ReportManager;
+	ConsoleReporter reporter(&console_output);
+	manager->addReporter(&reporter);
+
+	for each (auto to_delete in dRoots)
+	{
+		manager->Begin();
+		char* pathA = convertToChar(to_delete.get_path());
+		Manager.Run(pathA, nullptr, nullptr, 10, manager);
+		delete[] pathA;
+		manager->End();
 	}
 }
