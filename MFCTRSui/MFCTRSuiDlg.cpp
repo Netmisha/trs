@@ -266,5 +266,9 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 
 void CMFCTRSuiDlg::OnBnClickedDeletebutton()
 {
-
+	for each (auto to_delete in dRoots)
+	{
+		int index = RootList.FindString(-1, to_delete.get_path());
+		RootList.DeleteString(index);
+	}
 }
