@@ -58,10 +58,14 @@ public:
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClickedButton1();
 
+
 	afx_msg void OnEnChangeEdit2();
 	CEdit report_edit;
+
 	afx_msg void OnBnClickedButton2();
 	CButton Run_button;
 	CEdit console_output;
 
+	afx_msg void OnBnClickedButton();
+	afx_msg void RunButtonClicked();
 };

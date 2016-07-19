@@ -34,6 +34,13 @@ void convertToTCHAR(TCHAR*dest, char* path)
 
 
 
+CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
+	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
+	
+{
+	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+}
+
 
 void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 {
@@ -51,7 +58,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiDlg::OnEnChangeEdit1)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CMFCTRSuiDlg::OnTvnSelchangedTree1)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFCTRSuiDlg::OnBnClickedButton1)
-	ON_BN_CLICKED(IDC_BUTTON2, &CMFCTRSuiDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(Run_BUTTON, &CMFCTRSuiDlg::RunButtonClicked)
 END_MESSAGE_MAP()
 
 
@@ -188,18 +195,17 @@ void CMFCTRSuiDlg::OnEnChangeEdit2()
 }
 
 
-void CMFCTRSuiDlg::OnBnClickedButton2()
+
+
+void CMFCTRSuiDlg::RunButtonClicked()
 {
 	// TODO: Add your control notification handler code here
 	CString message;
-	ReportManager* manager=new ReportManager;
+	ReportManager* manager = new ReportManager;
 	ConsoleReporter reporter(&console_output);
 	manager->addReporter(&reporter);
 	C_edit.GetWindowTextW(message);
 	CT2A buffer(message);
 	Manager.Init();
-	Manager.Run(buffer.m_psz, nullptr, nullptr,10,manager);
-	
-
-
+	Manager.Run(buffer.m_psz, nullptr, nullptr, 10, manager);
 }
