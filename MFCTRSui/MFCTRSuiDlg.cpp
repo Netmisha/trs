@@ -9,7 +9,7 @@
 #include "ConsoleReporter.h"
 #include "TRSLibrary\TRSManager.h"
 #include <list>
-
+#include "RunParameters.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -99,7 +99,6 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	// TODO: Add extra initialization here
-	AllocConsole();
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -219,21 +218,32 @@ void CMFCTRSuiDlg::OnEnChangeEdit2()
 	// TODO:  Add your control notification handler code here
 }
 
-
+DWORD WINAPI RunSuits(LPVOID arg)
+{
+	RunParameters param;
+	param = *(RunParameters*)arg;
+	param.reporter->Begin();
+	Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
+	param.reporter->End();
+	//	delete[] param.reporter;
+	Manager.Destroy();
+	return 0;
+}
 
 
 void CMFCTRSuiDlg::RunButtonClicked()
 {
 	// TODO: Add your control notification handler code here
 	CString message;
-	ReportManager* manager = new ReportManager;
-	ConsoleReporter reporter(&console_output);
-	manager->addReporter(&reporter);
 	C_edit.GetWindowTextW(message);
 	CT2A buffer(message);
-	manager->Begin();
-	Manager.Run(buffer.m_psz, nullptr, nullptr, 10, manager);
-	manager->End();
+	ReportManager* reportManag = new ReportManager;
+	ConsoleReporter* reporter = new ConsoleReporter(&console_output);
+	reportManag->addReporter(reporter);
+	RunParameters* parameters = new RunParameters(buffer.m_psz, nullptr, nullptr, 10, reportManag);
+	DWORD ident;
+	HANDLE hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
+
 }
 
 
@@ -297,15 +307,14 @@ void CMFCTRSuiDlg::OnBnClickedDeletebutton()
 void CMFCTRSuiDlg::OnBnClickedRunselected()
 {
 	ReportManager* manager = new ReportManager;
-	ConsoleReporter reporter(&console_output);
-	manager->addReporter(&reporter);
+	ConsoleReporter* reporter=new ConsoleReporter(&console_output);
+	manager->addReporter(reporter);
 
 	for each (auto to_delete in dRoots)
 	{
-		manager->Begin();
-		char* pathA = convertToChar(to_delete.get_path());
-		Manager.Run(pathA, nullptr, nullptr, 10, manager);
-		delete[] pathA;
-		manager->End();
+		char* path = convertToChar(to_delete.get_path());
+		RunParameters* parameters = new RunParameters(path, nullptr, nullptr, 10, manager);
+		DWORD ident;
+		HANDLE hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
 	}
 }
