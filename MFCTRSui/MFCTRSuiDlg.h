@@ -6,7 +6,8 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 #include <vector>
-
+#include "Resource.h"
+extern CTreeCtrl m_Tree;
 class SuiteRoot
 {
 public:

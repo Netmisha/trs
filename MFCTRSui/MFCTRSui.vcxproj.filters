@@ -39,6 +39,12 @@
     <ClInclude Include="RunParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ToRunParameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Functionality.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCTRSui.cpp">
@@ -54,6 +60,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RunParameters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ToRunParameters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Functionalitycpp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

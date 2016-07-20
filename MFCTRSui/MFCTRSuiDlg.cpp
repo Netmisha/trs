@@ -9,43 +9,15 @@
 #include "ConsoleReporter.h"
 #include "TRSLibrary\TRSManager.h"
 #include <list>
+#include "ToRunParameters.h"
 #include "RunParameters.h"
+#include "Functionality.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-
 // CMFCTRSuiDlg dialog
-void convertToTCHAR(TCHAR*dest, char* path)
-{
-	if (dest != nullptr && path != nullptr)
-	{
-		TCHAR help = path[0];
-		int i = 0;
-		while (help)
-		{
-			dest[i] = help;
-			++i;
-			help = path[i];
-		}
-		dest[i] = '\0';
-	}
-}
 
-char* convertToChar(TCHAR*path)//create buffer to set info to tinyXML doc constructor
-{
-	char* buf = new char[MAX_PATH];
-	char help = path[0];
-	int i = 0;
-	while (help)//i tried to use memcpy,but it didn't work so i used while=(
-	{
-		buf[i] = help;
-		++i;
-		help = path[i];
-	}
-	buf[i] = '\0';
-	return buf;
-}
 
 
 
@@ -222,14 +194,30 @@ DWORD WINAPI RunSuits(LPVOID arg)
 {
 	RunParameters param;
 	param = *(RunParameters*)arg;
-	param.reporter->Begin();
 	Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
-	param.reporter->End();
-	//	delete[] param.reporter;
-	Manager.Destroy();
 	return 0;
 }
 
+DWORD WINAPI ToRun(LPVOID arg)
+{
+	ToRunParameters* param = (ToRunParameters*)arg;
+	param->manager->Begin();
+	HANDLE hThread = 0;
+	for each(auto to_delete in param->coll)
+	{
+		char* path = convertToChar(to_delete.get_path());
+		RunParameters* parameters = new RunParameters(path, nullptr, nullptr, 10, param->manager);
+		DWORD ident;
+		hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
+	}
+	WaitForSingleObject(hThread, INFINITE);
+	param->manager->End();
+	Manager.Destroy();
+	delete param->manager;
+	delete param;
+	
+	return 0;
+}
 
 void CMFCTRSuiDlg::RunButtonClicked()
 {
@@ -237,13 +225,11 @@ void CMFCTRSuiDlg::RunButtonClicked()
 	CString message;
 	C_edit.GetWindowTextW(message);
 	CT2A buffer(message);
-	ReportManager* reportManag = new ReportManager;
-	ConsoleReporter* reporter = new ConsoleReporter(&console_output);
-	reportManag->addReporter(reporter);
-	RunParameters* parameters = new RunParameters(buffer.m_psz, nullptr, nullptr, 10, reportManag);
+	
+	//RunParameters* parameters = new RunParameters(buffer.m_psz, nullptr, nullptr, 10, reportManag);
 	DWORD ident;
-	HANDLE hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
-
+	//HANDLE hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
+	
 }
 
 
@@ -306,15 +292,9 @@ void CMFCTRSuiDlg::OnBnClickedDeletebutton()
 
 void CMFCTRSuiDlg::OnBnClickedRunselected()
 {
-	ReportManager* manager = new ReportManager;
-	ConsoleReporter* reporter=new ConsoleReporter(&console_output);
-	manager->addReporter(reporter);
-
-	for each (auto to_delete in dRoots)
-	{
-		char* path = convertToChar(to_delete.get_path());
-		RunParameters* parameters = new RunParameters(path, nullptr, nullptr, 10, manager);
-		DWORD ident;
-		HANDLE hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
-	}
+	ReportManager* reportManag = new ReportManager;
+	ConsoleReporter* reporter = new ConsoleReporter(&console_output);
+	reportManag->addReporter(reporter);
+	ToRunParameters* to_run=new ToRunParameters(dRoots, reportManag);
+	HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
 }
