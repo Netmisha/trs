@@ -88,6 +88,8 @@ protected:
 
 	CButton RunButton;
 	void Info(TCHAR* path);
+
+	CToolBar m_ToolBar;
 public:
 	afx_msg void OnLbnSelchangeListroot();
 	afx_msg void OnBnClickedDeletebutton();
