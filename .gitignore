@@ -23,3 +23,6 @@ tatus
 
 Report.html
 *.log
+
+*.aps
+MFCTRSui/MFCTRSui.aps
