@@ -5,4 +5,5 @@ ToRunParameters::ToRunParameters(std::vector<SuiteRoot> coll_, ReportManager* ma
 {
 	coll = coll_;
 	manager = manager_;
+
 }

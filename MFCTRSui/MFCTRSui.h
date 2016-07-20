@@ -31,5 +31,5 @@ public:
 	afx_msg void OnEnChangeEdit1();
 	afx_msg void OnBnClickedButton2();
 };
-
+extern CTreeCtrl m_Tree;
 extern CMFCTRSuiApp theApp;

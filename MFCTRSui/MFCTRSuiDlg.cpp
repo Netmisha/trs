@@ -39,25 +39,22 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_TREE1, m_Tree);
-	DDX_Control(pDX, IDC_EDIT1, C_edit);
 	DDX_Control(pDX, IDC_EDIT3, console_output);
-
 	DDX_Control(pDX, IDC_ListRoot, RootList);
-	DDX_Control(pDX, IDC_RunSelected, RunButton);
-	DDX_Control(pDX, IDC_DeleteButton, DeleteButton);
+	DDX_Control(pDX, IDC_PROGRESS1, m_Progress);
+	DDX_Control(pDX, IDC_PROGRESS2, subm_Progress);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiDlg::OnEnChangeEdit1)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CMFCTRSuiDlg::OnTvnSelchangedTree1)
-//	ON_BN_CLICKED(IDC_BUTTON1, &CMFCTRSuiDlg::OnBnClickedButton1)
-	ON_BN_CLICKED(Run_BUTTON, &CMFCTRSuiDlg::RunButtonClicked)
 	ON_BN_CLICKED(IDC_ADDFOLDER, &CMFCTRSuiDlg::OnBnClickedAddfolder)
 	ON_LBN_SELCHANGE(IDC_ListRoot, &CMFCTRSuiDlg::OnLbnSelchangeListroot)
 	ON_BN_CLICKED(IDC_DeleteButton, &CMFCTRSuiDlg::OnBnClickedDeletebutton)
 	ON_BN_CLICKED(IDC_RunSelected, &CMFCTRSuiDlg::OnBnClickedRunselected)
+	ON_EN_CHANGE(IDC_EDIT3, &CMFCTRSuiDlg::OnEnChangeEdit3)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PROGRESS1, &CMFCTRSuiDlg::OnNMCustomdrawProgress1)
 END_MESSAGE_MAP()
 
 
@@ -71,9 +68,6 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-
-	RunButton.EnableWindow(false);
-	DeleteButton.EnableWindow(false);
 	// TODO: Add extra initialization here
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -116,16 +110,6 @@ HCURSOR CMFCTRSuiDlg::OnQueryDragIcon()
 
 
 
-void CMFCTRSuiDlg::OnEnChangeEdit1()
-{
-	// TODO:  If this is a RICHEDIT control, the control will not
-	// send this notification unless you override the CDialogEx::OnInitDialog()
-	// function and call CRichEditCtrl().SetEventMask()
-	// with the ENM_CHANGE flag ORed into the mask.
-	
-	// TODO:  Add your control notification handler code here
-}
-
 
 void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
 {
@@ -135,69 +119,17 @@ void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
 }
 
 
-//void CMFCTRSuiDlg::OnBnClickedButton1()
-//{
-//	// TODO: Add your control notification handler code here
-//	CString message;
-//	
-//	C_edit.GetWindowTextW(message);
-//	//C_edit.SetWindowTextW(message);
-//	CT2A buffer(message);
-//	DWORD fFile = GetFileAttributesA(buffer);
-//	if (fFile == INVALID_FILE_ATTRIBUTES && !(fFile == ERROR_FILE_NOT_FOUND))
-//	{
-//		C_edit.SetSel(0, -1);
-//		C_edit.Clear();
-//		MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
-//
-//	}
-//	else
-//	{
-//		std::list<Suite*>* suiteColl = Manager.List(buffer.m_psz, nullptr, nullptr);
-//		if (suiteColl->size() > 0)
-//		{
-//			HTREEITEM hHead, hSuites, hTests;
-//			std::list<Suite*>::iterator it = suiteColl->begin();
-//			hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
-//			for (it; it != suiteColl->end(); ++it)
-//			{
-//				TCHAR bufName[MAX_PATH];
-//				convertToTCHAR(bufName, (*it)->getName());
-//				hSuites = m_Tree.InsertItem(bufName, hHead);
-//				std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
-//				for (iter; iter != (*it)->getList().end(); ++iter)
-//				{
-//					TCHAR testName[MAX_PATH];
-//					convertToTCHAR(testName, (*iter)->getName());
-//					hTests = m_Tree.InsertItem(testName, hSuites);
-//				}
-//			}
-//			Run_button.EnableWindow(true);
-//		}
-//		else
-//		{
-//			m_Tree.DeleteAllItems();
-//			Run_button.EnableWindow(false);
-//		}
-//	}
-//}
 
 
 
-void CMFCTRSuiDlg::OnEnChangeEdit2()
-{
-	// TODO:  If this is a RICHEDIT control, the control will not
-	// send this notification unless you override the CDialogEx::OnInitDialog()
-	// function and call CRichEditCtrl().SetEventMask()
-	// with the ENM_CHANGE flag ORed into the mask.
 
-	// TODO:  Add your control notification handler code here
-}
+
 
 DWORD WINAPI RunSuits(LPVOID arg)
 {
 	RunParameters param;
 	param = *(RunParameters*)arg;
+	std::list<Suite*> coll = *Manager.List(param.path, param.name, param.tag);
 	Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
 	return 0;
 }
@@ -207,14 +139,16 @@ DWORD WINAPI ToRun(LPVOID arg)
 	ToRunParameters* param = (ToRunParameters*)arg;
 	param->manager->Begin();
 	HANDLE hThread = 0;
+
 	for each(auto to_delete in param->coll)
 	{
 		char* path = convertToChar(to_delete.get_path());
 		RunParameters* parameters = new RunParameters(path, nullptr, nullptr, 10, param->manager);
 		DWORD ident;
 		hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
+		WaitForSingleObject(hThread, INFINITE);
+
 	}
-	WaitForSingleObject(hThread, INFINITE);
 	param->manager->End();
 	Manager.Destroy();
 	delete param->manager;
@@ -223,18 +157,7 @@ DWORD WINAPI ToRun(LPVOID arg)
 	return 0;
 }
 
-void CMFCTRSuiDlg::RunButtonClicked()
-{
-	// TODO: Add your control notification handler code here
-	CString message;
-	C_edit.GetWindowTextW(message);
-	CT2A buffer(message);
-	
-	//RunParameters* parameters = new RunParameters(buffer.m_psz, nullptr, nullptr, 10, reportManag);
-	DWORD ident;
-	//HANDLE hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
-	
-}
+
 
 
 void CMFCTRSuiDlg::OnBnClickedAddfolder()
@@ -267,18 +190,6 @@ void CMFCTRSuiDlg::OnBnClickedAddfolder()
 void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 {
 	int count = RootList.GetSelCount();
-
-	// making RunBuuon visible only when at least one element is selected
-	if (count > 0)
-	{
-		RunButton.EnableWindow(true);
-		DeleteButton.EnableWindow(true);
-	}
-	else
-	{
-		RunButton.EnableWindow(false);
-		DeleteButton.EnableWindow(false);
-	}
 	int* array = new int[count];
 	 
 	RootList.GetSelItems(count,	array);
@@ -313,4 +224,23 @@ void CMFCTRSuiDlg::OnBnClickedRunselected()
 	reportManag->addReporter(reporter);
 	ToRunParameters* to_run=new ToRunParameters(dRoots, reportManag);
 	HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
+}
+
+
+void CMFCTRSuiDlg::OnEnChangeEdit3()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialogEx::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO:  Add your control notification handler code here
+}
+
+
+void CMFCTRSuiDlg::OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
+	// TODO: Add your control notification handler code here
+	*pResult = 0;
 }

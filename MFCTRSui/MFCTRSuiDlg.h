@@ -7,7 +7,7 @@
 #include "afxwin.h"
 #include <vector>
 #include "Resource.h"
-extern CTreeCtrl m_Tree;
+
 class SuiteRoot
 {
 public:
@@ -40,7 +40,6 @@ private:
 	TCHAR* dRoot;
 };
 
-extern CEdit console_output;
 
 // CMFCTRSuiDlg dialog
 class CMFCTRSuiDlg : public CDialogEx
@@ -67,8 +66,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CTreeCtrl m_Tree;
-	afx_msg void OnEnChangeEdit1();
-	CEdit C_edit;
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
 //	afx_msg void OnBnClickedButton1();
 
@@ -80,7 +77,6 @@ public:
 	CEdit console_output;
 
 	afx_msg void OnBnClickedButton();
-	afx_msg void RunButtonClicked();
 protected:
 
 public:
@@ -96,4 +92,9 @@ public:
 	afx_msg void OnBnClickedRunselected();
 protected:
 	CButton DeleteButton;
+public:
+	afx_msg void OnEnChangeEdit3();
+	CProgressCtrl m_Progress;
+	afx_msg void OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult);
+	CProgressCtrl subm_Progress;
 };

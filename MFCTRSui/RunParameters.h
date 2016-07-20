@@ -10,7 +10,7 @@ struct RunParameters
 	unsigned int threads;
 	ReportManager* reporter;
 	RunParameters(){}
-	RunParameters(char* path_, char* name_, char*tag_, unsigned int threads_,ReportManager* manager_);
+	RunParameters(char* path_, char* name_, char*tag_, unsigned int threads_, ReportManager* manager_);
 	RunParameters& operator=(RunParameters&cur);
 };
 

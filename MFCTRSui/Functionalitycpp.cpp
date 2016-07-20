@@ -3,9 +3,9 @@
 #include <list>
 #include "TRSLibrary\TRSManager.h"
 
-CTreeCtrl m_Tree;
 
-void Info(char*path)
+
+void Info(char*path,CTreeCtrl m_Tree)
 {
 	std::list<Suite*>* suiteColl = Manager.List(path, nullptr, nullptr);
 	if (suiteColl->size() > 0)
