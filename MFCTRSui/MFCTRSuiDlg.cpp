@@ -41,6 +41,8 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_TREE1, m_Tree);
 	DDX_Control(pDX, IDC_EDIT3, console_output);
 	DDX_Control(pDX, IDC_ListRoot, RootList);
+	DDX_Control(pDX, IDC_RunSelected, RunButton);
+	DDX_Control(pDX, IDC_DeleteButton, DeleteButton);
 	DDX_Control(pDX, IDC_PROGRESS1, m_Progress);
 	DDX_Control(pDX, IDC_PROGRESS2, subm_Progress);
 }
@@ -69,8 +71,12 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	// TODO: Add extra initialization here
+	RunButton.EnableWindow(false);
+	-DeleteButton.EnableWindow(false);
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
+
 
 // If you add a minimize button to your dialog, you will need the code below
 //  to draw the icon.  For MFC applications using the document/view model,
@@ -222,6 +228,18 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 {
 	int count = RootList.GetSelCount();
 	int* array = new int[count];
+
+	// making RunBuuon visible only when at least one element is selected
+	if (count > 0)
+	{
+		RunButton.EnableWindow(true);
+		DeleteButton.EnableWindow(true);
+	}
+	else
+	{
+		RunButton.EnableWindow(false);
+		DeleteButton.EnableWindow(false);
+	}
 	 
 	RootList.GetSelItems(count,	array);
 
