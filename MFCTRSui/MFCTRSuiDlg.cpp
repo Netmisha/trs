@@ -20,11 +20,11 @@
 
 
 
-
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
 {
+	
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	Manager.Init();
 }
@@ -65,6 +65,45 @@ END_MESSAGE_MAP()
 BOOL CMFCTRSuiDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	CRect rectFrame, rectDlg;
+	CWnd* pMainWnd = AfxGetMainWnd();
+	if (pMainWnd != NULL)
+	{
+		pMainWnd->GetClientRect(rectFrame);
+		pMainWnd->ClientToScreen(rectFrame);
+		GetWindowRect(rectDlg);
+
+		int nXPos = rectFrame.left + (rectFrame.Width() / 2)
+			- (rectDlg.Width() / 2);
+		int nYPos = rectFrame.top + (rectFrame.Height() / 2)
+			- (rectDlg.Height() / 2);
+
+		//When setting window's position, we make 
+		//it the TOP Window. Making it the TOPMOST may
+		//not be such a good idea and may annoy some people!!
+		//The most important thing to keep in mind here 
+		//is to specify SWP_NOCOPYBITS as the 
+		//the window sizing and positioning flag, 
+		//otherwise all valid contents of the client area
+		//of the previous window position are copied 
+		//into the client area after the window is 
+		//sized or repositioned.
+
+		::SetWindowPos(m_hWnd, HWND_TOP, nXPos, nYPos,
+			rectDlg.Width(), rectDlg.Height(), SWP_NOCOPYBITS);
+
+	}
+
+	LONG lStyle = GetWindowLong(m_hWnd, GWL_STYLE);
+	lStyle &= ~WS_CHILD;        //remove the CHILD style
+	lStyle &= ~WS_DISABLED;        //remove the DISABLED style
+
+	lStyle |= WS_POPUP;            //Add the POPUP style
+	//lStyle |= WS_VISIBLE;        //Add the VISIBLE style
+	lStyle |= WS_SYSMENU;
+	
+	SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
 
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
@@ -158,14 +197,14 @@ DWORD WINAPI ToRun(LPVOID arg)
 	param->progress->SetStep(1);
 	for each(auto to_delete in param->coll)
 	{
-		param->subProgress->EnableWindow(true);
+		
 		char* path = convertToChar(to_delete.get_path());
 		RunParameters* parameters = new RunParameters(path, nullptr, nullptr, 10, param->manager,param->subProgress);
 		DWORD ident;
 		hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
 		WaitForSingleObject(hThread, INFINITE);
 		param->progress->StepIt();
-		param->subProgress->ShowWindow(false);
+		param->subProgress->SetPos(0);
 	}
 	param->manager->End();
 	Manager.Destroy();
