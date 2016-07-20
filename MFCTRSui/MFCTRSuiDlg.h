@@ -93,4 +93,6 @@ public:
 	afx_msg void OnLbnSelchangeListroot();
 	afx_msg void OnBnClickedDeletebutton();
 	afx_msg void OnBnClickedRunselected();
+protected:
+	CButton DeleteButton;
 };

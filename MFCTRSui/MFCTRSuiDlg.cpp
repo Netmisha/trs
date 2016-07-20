@@ -72,6 +72,7 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Control(pDX, IDC_ListRoot, RootList);
 	DDX_Control(pDX, IDC_RunSelected, RunButton);
+	DDX_Control(pDX, IDC_DeleteButton, DeleteButton);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -98,7 +99,9 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
+
 	RunButton.EnableWindow(false);
+	DeleteButton.EnableWindow(false);
 	// TODO: Add extra initialization here
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -281,10 +284,15 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 
 	// making RunBuuon visible only when at least one element is selected
 	if (count > 0)
+	{
 		RunButton.EnableWindow(true);
+		DeleteButton.EnableWindow(true);
+	}
 	else
+	{
 		RunButton.EnableWindow(false);
-
+		DeleteButton.EnableWindow(false);
+	}
 	int* array = new int[count];
 	 
 	RootList.GetSelItems(count,	array);
