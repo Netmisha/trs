@@ -42,7 +42,7 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT3, console_output);
 	DDX_Control(pDX, IDC_ListRoot, RootList);
 	DDX_Control(pDX, IDC_PROGRESS1, m_Progress);
-	DDX_Control(pDX, IDC_PROGRESS2, subm_Progress);
+	DDX_Control(pDX, IDC_PROGRESS3, subm_Progress);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -130,6 +130,13 @@ DWORD WINAPI RunSuits(LPVOID arg)
 	RunParameters param;
 	param = *(RunParameters*)arg;
 	std::list<Suite*> coll = *Manager.List(param.path, param.name, param.tag);
+	int count = 0;
+	for each(auto it in coll)
+	{
+		count += it->getList().size();
+	}
+	param.progress->SetRange(0, count);
+	param.progress->SetStep(1);
 	Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
 	return 0;
 }
@@ -139,15 +146,20 @@ DWORD WINAPI ToRun(LPVOID arg)
 	ToRunParameters* param = (ToRunParameters*)arg;
 	param->manager->Begin();
 	HANDLE hThread = 0;
-
+	param->progress->ShowWindow(true);
+	param->subProgress->ShowWindow(true);
+	param->progress->SetRange(0, param->coll.size());
+	param->progress->SetStep(1);
 	for each(auto to_delete in param->coll)
 	{
+		param->subProgress->EnableWindow(true);
 		char* path = convertToChar(to_delete.get_path());
-		RunParameters* parameters = new RunParameters(path, nullptr, nullptr, 10, param->manager);
+		RunParameters* parameters = new RunParameters(path, nullptr, nullptr, 10, param->manager,param->subProgress);
 		DWORD ident;
 		hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
 		WaitForSingleObject(hThread, INFINITE);
-
+		param->progress->StepIt();
+		param->subProgress->ShowWindow(false);
 	}
 	param->manager->End();
 	Manager.Destroy();
@@ -257,9 +269,9 @@ void CMFCTRSuiDlg::OnBnClickedDeletebutton()
 void CMFCTRSuiDlg::OnBnClickedRunselected()
 {
 	ReportManager* reportManag = new ReportManager;
-	ConsoleReporter* reporter = new ConsoleReporter(&console_output);
+	ConsoleReporter* reporter = new ConsoleReporter(&console_output,&subm_Progress);
 	reportManag->addReporter(reporter);
-	ToRunParameters* to_run=new ToRunParameters(dRoots, reportManag);
+	ToRunParameters* to_run=new ToRunParameters(dRoots, reportManag,&m_Progress,&subm_Progress);
 	HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
 }
 
@@ -281,3 +293,6 @@ void CMFCTRSuiDlg::OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult)
 	// TODO: Add your control notification handler code here
 	*pResult = 0;
 }
+
+
+

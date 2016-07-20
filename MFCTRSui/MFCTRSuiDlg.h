@@ -98,5 +98,6 @@ public:
 	afx_msg void OnEnChangeEdit3();
 	CProgressCtrl m_Progress;
 	afx_msg void OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult);
+
 	CProgressCtrl subm_Progress;
 };

@@ -6,7 +6,7 @@
 class ConsoleReporter :public  TRSReport
 {
 public:
-	ConsoleReporter(CEdit*);
+	ConsoleReporter(CEdit*, CProgressCtrl*);
 	~ConsoleReporter();
 
 	virtual void BeforeExecution(TRSInfo pInfo);
@@ -26,6 +26,7 @@ private:
 	double failedAmount = 0;
 	int mCount = 1;
 	CEdit* console_output;
+	CProgressCtrl* progress;
 };
 
 #endif

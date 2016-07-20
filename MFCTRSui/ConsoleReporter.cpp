@@ -1,13 +1,14 @@
 #include "stdafx.h"
 #include "ConsoleReporter.h"
 
-ConsoleReporter::ConsoleReporter(CEdit*edit)
+ConsoleReporter::ConsoleReporter(CEdit*edit, CProgressCtrl* progress_)
 {
 	time = 0;
 	amount = 0;
 	passedAmount = 0;
 	failedAmount = 0;
 	console_output = edit;
+	progress = progress_;
 }
 
 ConsoleReporter::~ConsoleReporter()
@@ -20,7 +21,7 @@ ConsoleReporter::~ConsoleReporter()
 	console_output->ReplaceSel(L"Summary:");
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L"Test amount:\t");
+	console_output->ReplaceSel(L"Test amount: ");
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
 	CString mess;
@@ -29,35 +30,41 @@ ConsoleReporter::~ConsoleReporter()
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L"\r\nPassed Amount: ");
+	end = console_output->GetWindowTextLength();
+	console_output->SetSel(end, end);
 	mess.Format(L"%d", (int)passedAmount);
 	console_output->ReplaceSel(mess);
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L"(");
-	mess.Format(L"%d", (int)((passedAmount / amount) * 100));
+	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
+	mess.Format(L"%d", (int)((passedAmount / amount) * 100));
 	console_output->ReplaceSel(mess);
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L"%)\r\nFailed Amount: ");
 	mess.Format(L"%d", (int)failedAmount);
+	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
 	console_output->ReplaceSel(mess);
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L"(");
-	mess.Format(L"%d", (int)((failedAmount / amount) * 100));
+	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
+	mess.Format(L"%d", (int)((failedAmount / amount) * 100));
 	console_output->ReplaceSel(mess);
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L"%)\r\nTotal time: ");
-	mess.Format(L"%d", (int)((time / 1000) / 600));
+	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
+	mess.Format(L"%.2f", (double)((time / 1000) / 600));
 	console_output->ReplaceSel(mess);
 	end = console_output->GetWindowTextLength();
 	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L"min\r\n");
+	console_output->ReplaceSel(L" min\r\n");
 
 }
 
@@ -187,12 +194,12 @@ void ConsoleReporter::Begin()
 	mess.Format(L"%d", time.wSecond);
 	console_output->ReplaceSel(mess);
 	console_output->ReplaceSel(L"\r\n");
-
+	
 }
 
 void ConsoleReporter::AfterExecution(TRSInfo pInfo, TRSResult pResult)
 {
-
+	progress->StepIt();
 	//HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	int end = console_output->GetWindowTextLength();
 	//console_output->SetSel(end, end);

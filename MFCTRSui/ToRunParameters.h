@@ -7,7 +7,9 @@ struct ToRunParameters
 {
 	std::vector<SuiteRoot> coll;
 	ReportManager* manager;
-	ToRunParameters(std::vector<SuiteRoot> coll_, ReportManager* manager_);
+	CProgressCtrl* progress;
+	CProgressCtrl* subProgress;
+	ToRunParameters(std::vector<SuiteRoot> coll_, ReportManager* manager_, CProgressCtrl*progress, CProgressCtrl* subProgress);
 };
 
 #endif

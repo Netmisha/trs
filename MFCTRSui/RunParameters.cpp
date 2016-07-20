@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "RunParameters.h"
 
-RunParameters::RunParameters(char* path_, char* name_, char*tag_, unsigned int threads_, ReportManager* manager_)
+RunParameters::RunParameters(char* path_, char* name_, char*tag_, unsigned int threads_, ReportManager* manager_, CProgressCtrl* progress_)
 {
 	path = new char[strlen(path_) + 1];
 	int count = 0;
@@ -27,7 +27,7 @@ RunParameters::RunParameters(char* path_, char* name_, char*tag_, unsigned int t
 		strncpy_s(tag, size + 1, tag, size);
 	}
 	threads = threads_;
-
+	progress = progress_;
 	reporter = manager_;
 }
 
@@ -38,6 +38,6 @@ RunParameters& RunParameters::operator=(RunParameters&cur)
 	tag = cur.tag;
 	threads = cur.threads;
 	reporter = cur.reporter;
-
+	progress = cur.progress;
 	return *this;
 }
