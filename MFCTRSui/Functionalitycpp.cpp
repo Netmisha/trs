@@ -1,33 +1,11 @@
 #include "stdafx.h"
 #include "Functionality.h"
 #include <list>
+
 #include "TRSLibrary\TRSManager.h"
 
 CTreeCtrl m_Tree;
 
-void Info(char*path)
-{
-	std::list<Suite*>* suiteColl = Manager.List(path, nullptr, nullptr);
-	if (suiteColl->size() > 0)
-	{
-		HTREEITEM hHead, hSuites, hTests;
-		std::list<Suite*>::iterator it = suiteColl->begin();
-		hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
-		for (it; it != suiteColl->end(); ++it)
-		{
-			TCHAR bufName[MAX_PATH];
-			convertToTCHAR(bufName, (*it)->getName());
-			hSuites = m_Tree.InsertItem(bufName, hHead);
-			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
-			for (iter; iter != (*it)->getList().end(); ++iter)
-			{
-				TCHAR testName[MAX_PATH];
-				convertToTCHAR(testName, (*iter)->getName());
-				hTests = m_Tree.InsertItem(testName, hSuites);
-			}
-		}
-	}
-}
 
 void convertToTCHAR(TCHAR*dest, char* path)
 {
