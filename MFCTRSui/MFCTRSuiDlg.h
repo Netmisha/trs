@@ -69,14 +69,13 @@ public:
 	afx_msg void OnEnChangeEdit1();
 	CEdit C_edit;
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnBnClickedButton1();
+//	afx_msg void OnBnClickedButton1();
 
 
 	afx_msg void OnEnChangeEdit2();
 	CEdit report_edit;
 
 	afx_msg void OnBnClickedButton2();
-	CButton Run_button;
 	CEdit console_output;
 
 	afx_msg void OnBnClickedButton();
@@ -88,6 +87,8 @@ public:
 protected:
 	CListBox RootList;
 	std::vector<SuiteRoot> dRoots;
+
+	CButton RunButton;
 public:
 	afx_msg void OnLbnSelchangeListroot();
 	afx_msg void OnBnClickedDeletebutton();

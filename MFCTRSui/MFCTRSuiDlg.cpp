@@ -68,10 +68,10 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_TREE1, m_Tree);
 	DDX_Control(pDX, IDC_EDIT1, C_edit);
-	DDX_Control(pDX, IDC_BUTTON2, Run_button);
 	DDX_Control(pDX, IDC_EDIT3, console_output);
 
 	DDX_Control(pDX, IDC_ListRoot, RootList);
+	DDX_Control(pDX, IDC_RunSelected, RunButton);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -79,7 +79,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiDlg::OnEnChangeEdit1)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CMFCTRSuiDlg::OnTvnSelchangedTree1)
-	ON_BN_CLICKED(IDC_BUTTON1, &CMFCTRSuiDlg::OnBnClickedButton1)
+//	ON_BN_CLICKED(IDC_BUTTON1, &CMFCTRSuiDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(Run_BUTTON, &CMFCTRSuiDlg::RunButtonClicked)
 	ON_BN_CLICKED(IDC_ADDFOLDER, &CMFCTRSuiDlg::OnBnClickedAddfolder)
 	ON_LBN_SELCHANGE(IDC_ListRoot, &CMFCTRSuiDlg::OnLbnSelchangeListroot)
@@ -98,6 +98,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
+	RunButton.EnableWindow(false);
 	// TODO: Add extra initialization here
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -159,52 +160,52 @@ void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
 }
 
 
-void CMFCTRSuiDlg::OnBnClickedButton1()
-{
-	// TODO: Add your control notification handler code here
-	CString message;
-	
-	C_edit.GetWindowTextW(message);
-	//C_edit.SetWindowTextW(message);
-	CT2A buffer(message);
-	DWORD fFile = GetFileAttributesA(buffer);
-	if (fFile == INVALID_FILE_ATTRIBUTES && !(fFile == ERROR_FILE_NOT_FOUND))
-	{
-		C_edit.SetSel(0, -1);
-		C_edit.Clear();
-		MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
-
-	}
-	else
-	{
-		std::list<Suite*>* suiteColl = Manager.List(buffer.m_psz, nullptr, nullptr);
-		if (suiteColl->size() > 0)
-		{
-			HTREEITEM hHead, hSuites, hTests;
-			std::list<Suite*>::iterator it = suiteColl->begin();
-			hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
-			for (it; it != suiteColl->end(); ++it)
-			{
-				TCHAR bufName[MAX_PATH];
-				convertToTCHAR(bufName, (*it)->getName());
-				hSuites = m_Tree.InsertItem(bufName, hHead);
-				std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
-				for (iter; iter != (*it)->getList().end(); ++iter)
-				{
-					TCHAR testName[MAX_PATH];
-					convertToTCHAR(testName, (*iter)->getName());
-					hTests = m_Tree.InsertItem(testName, hSuites);
-				}
-			}
-			Run_button.EnableWindow(true);
-		}
-		else
-		{
-			m_Tree.DeleteAllItems();
-			Run_button.EnableWindow(false);
-		}
-	}
-}
+//void CMFCTRSuiDlg::OnBnClickedButton1()
+//{
+//	// TODO: Add your control notification handler code here
+//	CString message;
+//	
+//	C_edit.GetWindowTextW(message);
+//	//C_edit.SetWindowTextW(message);
+//	CT2A buffer(message);
+//	DWORD fFile = GetFileAttributesA(buffer);
+//	if (fFile == INVALID_FILE_ATTRIBUTES && !(fFile == ERROR_FILE_NOT_FOUND))
+//	{
+//		C_edit.SetSel(0, -1);
+//		C_edit.Clear();
+//		MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
+//
+//	}
+//	else
+//	{
+//		std::list<Suite*>* suiteColl = Manager.List(buffer.m_psz, nullptr, nullptr);
+//		if (suiteColl->size() > 0)
+//		{
+//			HTREEITEM hHead, hSuites, hTests;
+//			std::list<Suite*>::iterator it = suiteColl->begin();
+//			hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
+//			for (it; it != suiteColl->end(); ++it)
+//			{
+//				TCHAR bufName[MAX_PATH];
+//				convertToTCHAR(bufName, (*it)->getName());
+//				hSuites = m_Tree.InsertItem(bufName, hHead);
+//				std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+//				for (iter; iter != (*it)->getList().end(); ++iter)
+//				{
+//					TCHAR testName[MAX_PATH];
+//					convertToTCHAR(testName, (*iter)->getName());
+//					hTests = m_Tree.InsertItem(testName, hSuites);
+//				}
+//			}
+//			Run_button.EnableWindow(true);
+//		}
+//		else
+//		{
+//			m_Tree.DeleteAllItems();
+//			Run_button.EnableWindow(false);
+//		}
+//	}
+//}
 
 
 
@@ -277,6 +278,13 @@ void CMFCTRSuiDlg::OnBnClickedAddfolder()
 void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 {
 	int count = RootList.GetSelCount();
+
+	// making RunBuuon visible only when at least one element is selected
+	if (count > 0)
+		RunButton.EnableWindow(true);
+	else
+		RunButton.EnableWindow(false);
+
 	int* array = new int[count];
 	 
 	RootList.GetSelItems(count,	array);

@@ -124,33 +124,33 @@ void ConsoleReporter::Begin()
 	CString mess;
 	mess.Format(L"%d", siSysInfo.dwProcessorType);
 	console_output->ReplaceSel(mess);
-	//console_output->SetSel(end, end);
+	
 	console_output->ReplaceSel(L"\r\n");
 	end = console_output->GetWindowTextLength();
-	//console_output->SetSel(end, end);
+	
 	console_output->ReplaceSel(L" Number of processors: ");
 	mess.Format(L"%d", siSysInfo.dwNumberOfProcessors);
 	console_output->ReplaceSel(mess);
-	//console_output->SetSel(end, end);
+
 	console_output->ReplaceSel(L" \r\n ");
-	//console_output->SetSel(end, end);
+	
 	console_output->ReplaceSel(L" Processor mask: ");
 	mess.Format(L"%d", siSysInfo.dwActiveProcessorMask);
 	console_output->ReplaceSel(mess);
-	//console_output->SetSel(end, end);
+	
 	console_output->ReplaceSel(L" \r\n ");
-	//console_output->SetSel(end, end);
+	
 	console_output->ReplaceSel(L" Processor architecture: ");
 	mess.Format(L"%d", siSysInfo.wProcessorArchitecture);
 	console_output->ReplaceSel(mess);
-	//console_output->SetSel(end, end);
+	
 	console_output->ReplaceSel(L" Processor level: ");
 	mess.Format(L"%d", siSysInfo.wProcessorLevel);
 	console_output->ReplaceSel(mess);
 	console_output->ReplaceSel(L"\r\n");
-	//console_output->SetSel(end, end);
-	console_output->ReplaceSel(L"\r\n\r\n ");
-	console_output->ReplaceSel(L"  Tests were run: ");
+
+	console_output->ReplaceSel(L"\r\n ");
+	console_output->ReplaceSel(L"Tests were run: ");
 	if (time.wDay < 10)
 	{
 		console_output->ReplaceSel(L"0");
@@ -186,7 +186,7 @@ void ConsoleReporter::Begin()
 	console_output->ReplaceSel(L":");
 	mess.Format(L"%d", time.wSecond);
 	console_output->ReplaceSel(mess);
-	console_output->ReplaceSel(L"\r\n\r\n");
+	console_output->ReplaceSel(L"\r\n");
 
 }
 
@@ -195,44 +195,35 @@ void ConsoleReporter::AfterExecution(TRSInfo pInfo, TRSResult pResult)
 
 	//HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	int end = console_output->GetWindowTextLength();
-	console_output->SetSel(end, end);
+	//console_output->SetSel(end, end);
 	CString mess;
 	mess.Format(L"%d", mCount);
+	//console_output->SetSel(end, end);
 	console_output->ReplaceSel(mess);
-	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L" '");
-	console_output->SetSel(end, end);
-	mess.Format(L"%d", pInfo.getName());
+	mess.Format(L"%S", pInfo.getName());
 	console_output->ReplaceSel(mess);
-	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L"' ");
+	console_output->ReplaceSel(L" \r\n");
 	mCount++;
 	if (pResult.get_result())
 	{
-		//SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN);
-		console_output->SetSel(end, end);
 		console_output->ReplaceSel(L"Passed");
 		++passedAmount;
-		//SetConsoleTextAttribute(hStdout, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	}
 	else
 	{
-		//SetConsoleTextAttribute(hStdout, FOREGROUND_RED);
-		console_output->SetSel(end, end);
 		console_output->ReplaceSel(L"Failed");
-		console_output->SetSel(end, end);
-		mess.Format(L"%d", pResult.get_description());
+		console_output->ReplaceSel(L" \r\n");
+		mess.Format(L"%S", pResult.get_description());
 		console_output->ReplaceSel(mess);
 		++failedAmount;
-		//SetConsoleTextAttribute(hStdout, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	}
 	time += pResult.get_duration().count();
 	++amount;
-	console_output->SetSel(end, end);
-	console_output->ReplaceSel(L" ");
-	console_output->SetSel(end, end);
-	mess.Format(L"%d", pResult.get_path());
+	console_output->ReplaceSel(L" \r\n");
+	mess.Format(L"%S", pResult.get_path());
 	console_output->ReplaceSel(mess);
-	console_output->SetSel(end, end);
 	console_output->ReplaceSel(L"\r\n");
+	console_output->ReplaceSel(L" \r\n");
 }
