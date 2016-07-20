@@ -76,6 +76,7 @@ public:
 	afx_msg void OnBnClickedButton2();
 	CEdit console_output;
 
+
 	afx_msg void OnBnClickedButton();
 protected:
 
@@ -86,6 +87,7 @@ protected:
 	std::vector<SuiteRoot> dRoots;
 
 	CButton RunButton;
+	void Info(TCHAR* path);
 public:
 	afx_msg void OnLbnSelchangeListroot();
 	afx_msg void OnBnClickedDeletebutton();

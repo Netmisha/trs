@@ -187,6 +187,37 @@ void CMFCTRSuiDlg::OnBnClickedAddfolder()
 	}
 }
 
+void CMFCTRSuiDlg::Info(TCHAR* path)
+{
+	char* pathA = nullptr;
+	int size = WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, 0, NULL, NULL);
+	pathA = new char[size];
+	WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, size, NULL, NULL);
+
+	std::list<Suite*>* suiteColl = Manager.List(pathA, nullptr, nullptr);
+	if (suiteColl->size() > 0)
+	{
+		HTREEITEM hHead, hSuites, hTests;
+		std::list<Suite*>::iterator it = suiteColl->begin();
+		hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
+		for (it; it != suiteColl->end(); ++it)
+		{
+			TCHAR bufName[MAX_PATH];
+			convertToTCHAR(bufName, (*it)->getName());
+			hSuites = m_Tree.InsertItem(bufName, hHead);
+			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+			for (iter; iter != (*it)->getList().end(); ++iter)
+			{
+				TCHAR testName[MAX_PATH];
+				convertToTCHAR(testName, (*iter)->getName());
+				hTests = m_Tree.InsertItem(testName, hSuites);
+			}
+		}
+	}
+
+	delete[] pathA;
+}
+
 void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 {
 	int count = RootList.GetSelCount();
@@ -203,6 +234,12 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 		RootList.GetText(array[i], root);
 		dRoots.push_back(root);
 	}
+
+	if (count == 1)
+		Info(dRoots.front().get_path());
+	else
+		m_Tree.DeleteAllItems();
+
 	delete[] array;
 }
 
