@@ -4,4 +4,5 @@
 
 void convertToTCHAR(TCHAR*dest, char* path);
 char* convertToChar(TCHAR*path);
+char* fromCStringToChar(CString string);
 #endif

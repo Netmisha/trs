@@ -12,6 +12,7 @@
 #include "ToRunParameters.h"
 #include "RunParameters.h"
 #include "Functionality.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -109,7 +110,6 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	// TODO: Add extra initialization here
 	RunButton.EnableWindow(false);
-	
 	DeleteButton.EnableWindow(false);
 	RootList.ResetContent();
 
@@ -166,8 +166,6 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 
 
 	// toolbar image config
-
-
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -252,12 +250,17 @@ DWORD WINAPI ToRun(LPVOID arg)
 	param->progress->SetStep(1);
 	for each(auto to_delete in param->coll)
 	{
-		
 		char* path = convertToChar(to_delete.get_path());
-		RunParameters* parameters = new RunParameters(path, nullptr, nullptr, 10, param->manager,param->subProgress);
+		int Thread_amount=1;
+		if (threads)
+		{
+			Thread_amount = atoi(threads);
+		}
+		RunParameters* parameters = new RunParameters(path, name, tag, Thread_amount, param->manager,param->subProgress);
 		DWORD ident;
 		hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
 		WaitForSingleObject(hThread, INFINITE);
+		CloseHandle(hThread);
 		param->progress->StepIt();
 		param->subProgress->SetPos(0);
 	}
@@ -312,11 +315,13 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 		HTREEITEM hHead, hSuites, hTests;
 		std::list<Suite*>::iterator it = suiteColl->begin();
 		hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
+		int count = 0;
 		for (it; it != suiteColl->end(); ++it)
 		{
 			TCHAR bufName[MAX_PATH];
 			convertToTCHAR(bufName, (*it)->getName());
 			hSuites = m_Tree.InsertItem(bufName, hHead);
+			
 			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
 			for (iter; iter != (*it)->getList().end(); ++iter)
 			{
@@ -382,11 +387,17 @@ void CMFCTRSuiDlg::OnBnClickedDeletebutton()
 
 void CMFCTRSuiDlg::OnBnClickedRunselected()
 {
-	ReportManager* reportManag = new ReportManager;
-	ConsoleReporter* reporter = new ConsoleReporter(&console_output,&subm_Progress);
-	reportManag->addReporter(reporter);
-	ToRunParameters* to_run=new ToRunParameters(dRoots, reportManag,&m_Progress,&subm_Progress);
-	HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
+	RunDialog Dlg;
+	Dlg.DoModal();
+	if (ifCancelPressed)
+	{
+		ReportManager* reportManag = new ReportManager;
+		ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
+		reportManag->addReporter(reporter);
+		ToRunParameters* to_run = new ToRunParameters(dRoots, reportManag, &m_Progress, &subm_Progress);
+		HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
+		CloseHandle(hThread);
+	}
 }
 
 

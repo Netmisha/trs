@@ -4,16 +4,9 @@
 RunParameters::RunParameters(char* path_, char* name_, char*tag_, unsigned int threads_, ReportManager* manager_, CProgressCtrl* progress_)
 {
 	path = new char[strlen(path_) + 1];
-	int count = 0;
-	char current = path_[count];
-	while (current)
-	{
-		path[count] = current;
-		++count;
-		current = path_[count];
-	}
-	path[count] = '\0';
-	int size;
+	int size=strlen(path_);
+	strncpy_s(path, size + 1, path_, size);
+	
 	if (name_)
 	{
 		size = strlen(name_);
@@ -24,7 +17,7 @@ RunParameters::RunParameters(char* path_, char* name_, char*tag_, unsigned int t
 	{
 		size = strlen(tag_);
 		tag = new char[size + 1];
-		strncpy_s(tag, size + 1, tag, size);
+		strncpy_s(tag, size + 1, tag_, size);
 	}
 	threads = threads_;
 	progress = progress_;
