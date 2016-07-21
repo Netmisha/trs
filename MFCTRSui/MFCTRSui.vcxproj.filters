@@ -83,7 +83,7 @@
     <Image Include="res\MFCTRSui.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\toolbar2.bmp">
+    <Image Include="res\toolbar3.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -18,8 +18,6 @@
 
 // CMFCTRSuiDlg dialog
 
-
-
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
@@ -116,11 +114,13 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	RootList.ResetContent();
 
 	// toolbar binding
-	if (!m_ToolBar.Create(this) || !m_ToolBar.LoadToolBar(IDR_TOOLBAR2))
+	if (!m_ToolBar.Create(this) || !m_ToolBar.LoadToolBar(QWERTY))
 	{
 		TRACE0("Failed to Create Dialog Toolbar\n");
 		EndDialog(IDCANCEL);
 	}
+
+	
 	CRect	rcClientOld; // Old Client Rect
 	CRect	rcClientNew; // New Client Rect with Tollbar Added
 	GetClientRect(rcClientOld); // Retrive the Old Client WindowSize
@@ -161,6 +161,11 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	// Now we REALLY Redraw the Toolbar
 	RepositionBars(AFX_IDW_CONTROLBAR_FIRST,
 		AFX_IDW_CONTROLBAR_LAST, 0);
+
+
+
+
+	// toolbar image config
 
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
