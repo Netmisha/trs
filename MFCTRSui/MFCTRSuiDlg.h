@@ -103,4 +103,7 @@ public:
 	afx_msg void OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult);
 
 	CProgressCtrl subm_Progress;
+	afx_msg void OnProgramAddfolder();
+	afx_msg void OnProgramDeleteselecteditems();
+	afx_msg void OnProgramRunsel();
 };
