@@ -45,6 +45,9 @@
     <ClInclude Include="Functionality.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RunDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCTRSui.cpp">
@@ -65,7 +68,10 @@
     <ClCompile Include="ToRunParameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Functionalitycpp.cpp">
+    <ClCompile Include="RunDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Functionality.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

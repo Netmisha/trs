@@ -7,6 +7,7 @@
 #include "afxwin.h"
 #include <vector>
 #include "Resource.h"
+#include "RunDialog.h"
 
 class SuiteRoot
 {
