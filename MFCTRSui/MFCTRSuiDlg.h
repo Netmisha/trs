@@ -101,4 +101,5 @@ public:
 	afx_msg void OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult);
 
 	CProgressCtrl subm_Progress;
+	CEdit Time_running_edit;
 };

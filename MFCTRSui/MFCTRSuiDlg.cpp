@@ -12,6 +12,7 @@
 #include "ToRunParameters.h"
 #include "RunParameters.h"
 #include "Functionality.h"
+#include <ctime>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -19,7 +20,7 @@
 
 // CMFCTRSuiDlg dialog
 
-
+bool RunEndCheck;
 
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
@@ -46,6 +47,7 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_DeleteButton, DeleteButton);
 	DDX_Control(pDX, IDC_PROGRESS1, m_Progress);
 	DDX_Control(pDX, IDC_PROGRESS3, subm_Progress);
+	DDX_Control(pDX, IDC_EDIT1, Time_running_edit);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -189,6 +191,7 @@ DWORD WINAPI RunSuits(LPVOID arg)
 
 DWORD WINAPI ToRun(LPVOID arg)
 {
+	RunEndCheck = true;
 	ToRunParameters* param = (ToRunParameters*)arg;
 	param->manager->Begin();
 	HANDLE hThread = 0;
@@ -216,11 +219,65 @@ DWORD WINAPI ToRun(LPVOID arg)
 	Manager.Destroy();
 	delete param->manager;
 	delete param;
-	
+	RunEndCheck = false;
 	return 0;
 }
 
-
+DWORD WINAPI Timer(LPVOID arg)
+{
+	CEdit* edit = (CEdit*)arg;
+	edit->ShowWindow(true);
+	int count = 0;
+	CString mes;
+	int last;
+	while (RunEndCheck)
+	{
+		last = edit->GetWindowTextLength();
+		edit->SetSel(0,last);
+		edit->ReplaceSel(L"Tests running: ");
+		++count;
+		if ((count / 3600) < 10)
+		{
+			edit->ReplaceSel(L"0");
+			mes.Format(L"%d", count/3600);
+			edit->ReplaceSel(mes);
+		}
+		else
+		{
+			mes.Format(L"%d", count);
+			edit->ReplaceSel(mes);
+		}
+		edit->ReplaceSel(L":");
+		if ((count / 60) < 10)
+		{
+			edit->ReplaceSel(L"0");
+			mes.Format(L"%d", count/60);
+			edit->ReplaceSel(mes);
+		}
+		else
+		{
+			mes.Format(L"%d", count);
+			edit->ReplaceSel(mes);
+		}
+		edit->ReplaceSel(L":");
+		if ((count ) < 10)
+		{
+			edit->ReplaceSel(L"0");
+			mes.Format(L"%d", count);
+			edit->ReplaceSel(mes);
+		}
+		else
+		{
+			mes.Format(L"%d", count);
+			edit->ReplaceSel(mes);
+		}
+		edit->SetSel(0, 0);
+		Sleep(1000);
+	}
+	edit->SetSel(0, last);
+	edit->ReplaceSel(L"Tests running finished");
+	return 0;
+}
 
 
 void CMFCTRSuiDlg::OnBnClickedAddfolder()
@@ -342,7 +399,7 @@ void CMFCTRSuiDlg::OnBnClickedRunselected()
 		reportManag->addReporter(reporter);
 		ToRunParameters* to_run = new ToRunParameters(dRoots, reportManag, &m_Progress, &subm_Progress);
 		HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
-		CloseHandle(hThread);
+		HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
 	}
 }
 
