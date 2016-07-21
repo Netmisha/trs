@@ -20,7 +20,9 @@
 
 // CMFCTRSuiDlg dialog
 
+
 bool RunEndCheck;
+
 
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
@@ -114,8 +116,62 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	// TODO: Add extra initialization here
 	RunButton.EnableWindow(false);
-	-DeleteButton.EnableWindow(false);
+	DeleteButton.EnableWindow(false);
+	RootList.ResetContent();
+
+	// toolbar binding
+	if (!m_ToolBar.Create(this) || !m_ToolBar.LoadToolBar(MYAMAZINGTOOLBAR))
+	{
+		TRACE0("Failed to Create Dialog Toolbar\n");
+		EndDialog(IDCANCEL);
+	}
+
 	
+	CRect	rcClientOld; // Old Client Rect
+	CRect	rcClientNew; // New Client Rect with Tollbar Added
+	GetClientRect(rcClientOld); // Retrive the Old Client WindowSize
+
+	// Called to reposition and resize control bars in the client 
+	// area of a window. The reposQuery FLAG does not really traw the 
+	// Toolbar.  It only does the calculations. And puts the new 
+	// ClientRect values in rcClientNew so we can do the rest of the 
+	// Math.
+	RepositionBars(AFX_IDW_CONTROLBAR_FIRST,
+		AFX_IDW_CONTROLBAR_LAST, 0, reposQuery, rcClientNew);
+
+	// All of the Child Windows (Controls) now need to be moved so 
+	// the Tollbar does not cover them up. Offest to move all child 
+	// controls after adding Tollbar
+	CPoint ptOffset(rcClientNew.left - rcClientOld.left,
+		rcClientNew.top - rcClientOld.top);
+	CRect	rcChild;
+
+	// Handle to the Dialog Controls
+	CWnd*	pwndChild = GetWindow(GW_CHILD);
+	while (pwndChild) // Cycle through all child controls
+	{
+		pwndChild->GetWindowRect(rcChild); // Get the child control RECT
+		ScreenToClient(rcChild);
+		// Changes the Child Rect by the values of the claculated offset
+		rcChild.OffsetRect(ptOffset);
+		pwndChild->MoveWindow(rcChild, FALSE); // Move the Child Control
+		pwndChild = pwndChild->GetNextWindow();
+	}
+	CRect	rcWindow;
+	GetWindowRect(rcWindow); // Get the RECT of the Dialog
+	// Increase width to new Client Width
+	rcWindow.right += rcClientOld.Width() - rcClientNew.Width();
+	// Increase height to new Client Height
+	rcWindow.bottom += rcClientOld.Height() - rcClientNew.Height();
+	MoveWindow(rcWindow, FALSE); // Redraw Window
+	// Now we REALLY Redraw the Toolbar
+	RepositionBars(AFX_IDW_CONTROLBAR_FIRST,
+		AFX_IDW_CONTROLBAR_LAST, 0);
+
+
+
+
+	// toolbar image config
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -380,6 +436,8 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 
 void CMFCTRSuiDlg::OnBnClickedDeletebutton()
 {
+	RunButton.EnableWindow(false);
+	DeleteButton.EnableWindow(false);
 	for each (auto to_delete in dRoots)
 	{
 		int index = RootList.FindString(-1, to_delete.get_path());
