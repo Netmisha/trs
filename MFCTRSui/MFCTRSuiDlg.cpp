@@ -62,6 +62,9 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_RunSelected, &CMFCTRSuiDlg::OnBnClickedRunselected)
 	ON_EN_CHANGE(IDC_EDIT3, &CMFCTRSuiDlg::OnEnChangeEdit3)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PROGRESS1, &CMFCTRSuiDlg::OnNMCustomdrawProgress1)
+	ON_COMMAND(ID_PROGRAM_ADDFOLDER, &CMFCTRSuiDlg::OnProgramAddfolder)
+	ON_COMMAND(ID_PROGRAM_DELETESELECTEDITEMS, &CMFCTRSuiDlg::OnProgramDeleteselecteditems)
+	ON_COMMAND(ID_PROGRAM_RUNSEL, &CMFCTRSuiDlg::OnProgramRunsel)
 END_MESSAGE_MAP()
 
 
@@ -482,3 +485,57 @@ void CMFCTRSuiDlg::OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult)
 
 
 
+
+
+void CMFCTRSuiDlg::OnProgramAddfolder()
+{
+	BROWSEINFO bi = { 0 };
+	bi.lpszTitle = _T("Select Folder");
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	if (pidl != 0)
+	{
+		// get the name of the folder
+		TCHAR path[MAX_PATH];
+		SHGetPathFromIDList(pidl, path);
+		char* pathA = convertToChar(path);
+		if (!Manager.Verify(pathA, nullptr, nullptr))
+			RootList.AddString(path);
+		else
+			MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
+
+		delete[] pathA;
+		// free memory used
+		IMalloc * imalloc = 0;
+		if (SUCCEEDED(SHGetMalloc(&imalloc)))
+		{
+			imalloc->Free(pidl);
+			imalloc->Release();
+		}
+	}
+}
+
+
+void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
+{
+	for each (auto to_delete in dRoots)
+	{
+		int index = RootList.FindString(-1, to_delete.get_path());
+		RootList.DeleteString(index);
+	}
+}
+
+
+void CMFCTRSuiDlg::OnProgramRunsel()
+{
+	RunDialog Dlg;
+	Dlg.DoModal();
+	if (ifCancelPressed)
+	{
+		ReportManager* reportManag = new ReportManager;
+		ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
+		reportManag->addReporter(reporter);
+		ToRunParameters* to_run = new ToRunParameters(dRoots, reportManag, &m_Progress, &subm_Progress);
+		HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
+		CloseHandle(hThread);
+	}
+}
