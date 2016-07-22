@@ -68,7 +68,6 @@ protected:
 public:
 	CTreeCtrl m_Tree;
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
-//	afx_msg void OnBnClickedButton1();
 
 
 	afx_msg void OnEnChangeEdit2();
@@ -80,23 +79,16 @@ public:
 
 	afx_msg void OnBnClickedButton();
 protected:
-
-public:
-	afx_msg void OnBnClickedAddfolder();
-protected:
 	CListBox RootList;
 	std::vector<SuiteRoot> dRoots;
 
-	CButton RunButton;
 	void Info(TCHAR* path);
 
 	CToolBar m_ToolBar;
-public:
+	CMenu* m_Menu;
+
 	afx_msg void OnLbnSelchangeListroot();
-	afx_msg void OnBnClickedDeletebutton();
-	afx_msg void OnBnClickedRunselected();
-protected:
-	CButton DeleteButton;
+
 public:
 	afx_msg void OnEnChangeEdit3();
 	CProgressCtrl m_Progress;
