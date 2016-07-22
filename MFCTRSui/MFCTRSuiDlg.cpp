@@ -414,34 +414,39 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 
 void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
 {
-	if (m_Menu)
+	if (dRoots.size())
 	{
-		m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
-		m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		if (m_Menu)
+		{
+			m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+			m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		}
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY, false);
+		m_Tree.DeleteAllItems();
+		for each (auto to_delete in dRoots)
+		{
+			int index = RootList.FindString(-1, to_delete.get_path());
+			RootList.DeleteString(index);
+		}
+		dRoots.clear();
 	}
-	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
-	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
-	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
-	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY, false);
-	m_Tree.DeleteAllItems();
-	for each (auto to_delete in dRoots)
-	{
-		int index = RootList.FindString(-1, to_delete.get_path());
-		RootList.DeleteString(index);
-	}
-	dRoots.clear();
-
 }
 
 
 void CMFCTRSuiDlg::OnProgramRunsel()
 {
-	RunDialog Dlg;
-	Dlg.DoModal();
-	ReportManager* reportManag = new ReportManager;
-	ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
-	reportManag->addReporter(reporter);
-	ToRunParameters* to_run = new ToRunParameters(dRoots, reportManag, &m_Progress, &subm_Progress);
-	HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
-	CloseHandle(hThread);
+	if (dRoots.size())
+	{
+		RunDialog Dlg;
+		Dlg.DoModal();
+		ReportManager* reportManag = new ReportManager;
+		ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
+		reportManag->addReporter(reporter);
+		ToRunParameters* to_run = new ToRunParameters(dRoots, reportManag, &m_Progress, &subm_Progress);
+		HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
+		CloseHandle(hThread);
+	}
 }
