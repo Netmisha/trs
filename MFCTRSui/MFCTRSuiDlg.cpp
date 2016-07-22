@@ -13,6 +13,7 @@
 #include "RunParameters.h"
 #include "Functionality.h"
 #include <ctime>
+#include <algorithm>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -366,6 +367,119 @@ void CMFCTRSuiDlg::OnBnClickedAddfolder()
 	}
 }
 
+bool checkDiff(int begin, char* source)
+{
+	int count = 0;
+	for (int i = begin; i < strlen(source); ++i)
+	{
+		if (source[i] == '\\')
+		{
+			++count;
+		}
+	}
+	return count == 1;
+}
+
+void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CTreeCtrl* m_Tree, int& count, HTREEITEM* hHead,std::list<Suite*>* checkList)
+{
+	if (count != suiteColl->size())
+	{
+		char* rootPath = new char[strlen((*it)->get_path()) + 1];
+		strncpy_s(rootPath, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
+		char* rootName = new char[strlen((*it)->getName()) + 1];
+		strncpy_s(rootName, strlen((*it)->getName()) + 1, (*it)->getName(), strlen((*it)->getName()));
+		HTREEITEM* hSuite=new HTREEITEM;
+		std::list<Suite*>::iterator itHelp = it;
+		
+		for (it; it != suiteColl->begin(); --it)
+		{
+			
+			if (count == suiteColl->size())
+			{
+				break;
+			}
+			std::list<Suite*>::iterator helper = std::find(checkList->begin(), checkList->end(), *it);
+			if (helper == (checkList->end()))
+			{
+				if (strlen((*it)->get_path()) != strlen(rootPath))
+				{
+					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
+					{
+						if (checkDiff(strlen(rootPath), (*it)->get_path()))
+						TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList);
+					}
+					
+				}
+				else
+				{
+						if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)) && !strncmp((*it)->getName(), rootName, strlen(rootName)))
+						{
+							TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
+							convertToTCHAR(buf, (*it)->getName());
+							*hSuite = m_Tree->InsertItem(buf, *hHead);
+							++count;
+							HTREEITEM hTest;
+							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+							for (iter; iter != (*it)->getList().end(); ++iter)
+							{
+								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+								convertToTCHAR(subBuf, (*iter)->getName());
+								m_Tree->InsertItem(subBuf, *hSuite);
+								delete[] subBuf;
+							}
+							checkList->push_back((*it));
+							delete[] buf;
+						}
+					
+				}
+			}
+		}
+		if (count != suiteColl->size())
+		{
+			std::list<Suite*>::iterator helper = std::find(checkList->begin(), checkList->end(), *it);
+			if (helper == checkList->end())
+			{
+				
+				if (strlen((*it)->get_path()) != strlen(rootPath))
+				{
+					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
+					{
+						if (checkDiff(strlen(rootPath), (*it)->get_path()))
+						TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList);
+					}
+				}
+				else
+				{
+					
+						if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)) && !strncmp((*it)->getName(), rootName, strlen(rootName)))
+						{
+							TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
+							convertToTCHAR(buf, (*it)->getName());
+							*hSuite = m_Tree->InsertItem(buf, *hHead);
+							++count;
+							HTREEITEM hTest;
+							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+							for (iter; iter != (*it)->getList().end(); ++iter)
+							{
+								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+								convertToTCHAR(subBuf, (*iter)->getName());
+								m_Tree->InsertItem(subBuf, *hSuite);
+								delete[] subBuf;
+							}
+							checkList->push_back((*it));
+							delete[] buf;
+						}
+					}
+				
+			}
+		}
+		it = itHelp;
+		delete hSuite;
+		delete[] rootName;
+		delete[] rootPath;
+	}
+}
+
 void CMFCTRSuiDlg::Info(TCHAR* path)
 {
 	char* pathA = nullptr;
@@ -374,28 +488,32 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, size, NULL, NULL);
 
 	std::list<Suite*>* suiteColl = Manager.List(pathA, nullptr, nullptr);
-	if (suiteColl->size() > 0)
+	HTREEITEM hHead;
+	hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
+	int count = 0;
+	std::list<Suite*>::iterator it = suiteColl->begin();
+	count = strlen((*it)->get_path());
+	for (it; it != suiteColl->end(); ++it)
 	{
-		HTREEITEM hHead, hSuites, hTests;
-		std::list<Suite*>::iterator it = suiteColl->begin();
-		hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
-		int count = 0;
-		for (it; it != suiteColl->end(); ++it)
+		if (strlen((*it)->get_path()) < count)
 		{
-			TCHAR bufName[MAX_PATH];
-			convertToTCHAR(bufName, (*it)->getName());
-			hSuites = m_Tree.InsertItem(bufName, hHead);
-			
-			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
-			for (iter; iter != (*it)->getList().end(); ++iter)
-			{
-				TCHAR testName[MAX_PATH];
-				convertToTCHAR(testName, (*iter)->getName());
-				hTests = m_Tree.InsertItem(testName, hSuites);
-			}
+			count = strlen((*it)->get_path());
 		}
 	}
-
+	--it;
+	int lic = 0;
+	std::list<Suite*> checkList;
+	for(it; it != suiteColl->begin(); --it)
+	{
+		if (strlen((*it)->get_path()) == count)
+		{
+			TreeParse(it, suiteColl, &m_Tree, lic, &hHead,&checkList);
+		}
+	}
+	if (strlen((*it)->get_path()) == count)
+	{
+		TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList);
+	}
 	delete[] pathA;
 }
 
