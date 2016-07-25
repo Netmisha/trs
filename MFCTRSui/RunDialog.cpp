@@ -115,7 +115,12 @@ void RunDialog::OnBnClickedOk()
 				name = fromCStringToChar(messName);
 				CDialogEx::OnOK();
 			}
-			delete[] pString;
+			else
+			{
+				delete[] pString;
+				delete[] buffer;
+				delete[] message;
+			}
 		}
 		else
 		{
@@ -152,6 +157,12 @@ void RunDialog::OnBnClickedOk()
 				tag = fromCStringToChar(messTag);
 				CDialogEx::OnOK();
 				
+			}
+			else
+			{
+				delete[] pString;
+				delete[] buffer;
+				delete[] message;
 			}
 		}
 		else
@@ -195,7 +206,12 @@ void RunDialog::OnBnClickedOk()
 				tag = fromCStringToChar(messTag);
 				CDialogEx::OnOK();
 			}
-			delete[] pString;
+			else
+			{
+				delete[] pString;
+				delete[] buffer;
+				delete[] message;
+			}
 		}
 		else
 		{

@@ -16,8 +16,11 @@ ConsoleReport::~ConsoleReport()
 	std::cout << "Summary:\n";
 	std::cout.setf(std::ios_base::fixed, std::ios_base::floatfield);
 	std::cout << "Tests amount:\t" << (int)amount << std::endl;
-	std::cout << "Passed:\t" << (int)passedAmount << "(" << int((passedAmount / amount) * 100) << "%)\n";
-	std::cout << "Failed:\t" << (int)failedAmount << "(" << int((failedAmount / amount) * 100) << "%)\n";
+	if (amount != 0)
+	{
+		std::cout << "Passed:\t" << (int)passedAmount << "(" << int((passedAmount / amount) * 100) << "%)\n";
+		std::cout << "Failed:\t" << (int)failedAmount << "(" << int((failedAmount / amount) * 100) << "%)\n";
+	}
 	std::cout << "Total time:\t" << (time/1000)/600 << "min\n";
 
 }

@@ -8,6 +8,7 @@
 #include <vector>
 #include "Resource.h"
 #include "RunDialog.h"
+#include "ProjNameEdit.h"
 
 class SuiteRoot
 {
@@ -68,7 +69,6 @@ protected:
 public:
 	CTreeCtrl m_Tree;
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
-//	afx_msg void OnBnClickedButton1();
 
 
 	afx_msg void OnEnChangeEdit2();
@@ -76,27 +76,20 @@ public:
 
 	afx_msg void OnBnClickedButton2();
 	CEdit console_output;
-
+	
 
 	afx_msg void OnBnClickedButton();
-protected:
-
-public:
-	afx_msg void OnBnClickedAddfolder();
 protected:
 	CListBox RootList;
 	std::vector<SuiteRoot> dRoots;
 
-	CButton RunButton;
 	void Info(TCHAR* path);
 
 	CToolBar m_ToolBar;
-public:
+	CMenu* m_Menu;
+	ProjectProperties properties;
 	afx_msg void OnLbnSelchangeListroot();
-	afx_msg void OnBnClickedDeletebutton();
-	afx_msg void OnBnClickedRunselected();
-protected:
-	CButton DeleteButton;
+
 public:
 	afx_msg void OnEnChangeEdit3();
 	CProgressCtrl m_Progress;
@@ -110,4 +103,7 @@ public:
 	afx_msg void OnProgramDeleteselecteditems();
 	afx_msg void OnProgramRunsel();
 
+	afx_msg void OnBnClickedOk();
 };
+
+extern CListBox* List;

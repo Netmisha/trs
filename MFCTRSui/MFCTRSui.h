@@ -8,7 +8,9 @@
 	#error "include 'stdafx.h' before including this file for PCH"
 #endif
 
-#include "resource.h"		// main symbols
+#include "resource.h"	
+#include "ProjNameEdit.h"
+// main symbols
 
 
 // CMFCTRSuiApp:
@@ -30,6 +32,8 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnEnChangeEdit1();
 	afx_msg void OnBnClickedButton2();
+	afx_msg void OnNewProject();
+	afx_msg void OnSaveProject();
 };
 extern CTreeCtrl m_Tree;
 extern CMFCTRSuiApp theApp;

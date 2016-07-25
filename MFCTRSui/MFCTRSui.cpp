@@ -5,13 +5,15 @@
 #include "stdafx.h"
 #include "MFCTRSui.h"
 #include "MFCTRSuiDlg.h"
+#include "Functionality.h"
+#include "afxdialogex.h"
 
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-
+CListBox* List;
 // CMFCTRSuiApp
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiApp, CWinApp)
@@ -19,6 +21,8 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiApp, CWinApp)
 	ON_BN_CLICKED(IDOK, &CMFCTRSuiApp::OnBnClickedOk)
 	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiApp::OnEnChangeEdit1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CMFCTRSuiApp::OnBnClickedButton2)
+	ON_COMMAND(ID_New_Project, &CMFCTRSuiApp::OnNewProject)
+	ON_COMMAND(ID_Save_Project, &CMFCTRSuiApp::OnSaveProject)
 END_MESSAGE_MAP()
 
 
@@ -111,4 +115,38 @@ void CMFCTRSuiApp::OnEnChangeEdit1()
 void CMFCTRSuiApp::OnBnClickedButton2()
 {
 	// TODO: Add your control notification handler code here
+}
+
+
+
+void CMFCTRSuiApp::OnNewProject()
+{
+	BROWSEINFO bi = { 0 };
+	bi.lpszTitle = _T("Select Folder");
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	if (pidl != 0)
+	{
+		// get the name of the folder
+		TCHAR path[MAX_PATH];
+		SHGetPathFromIDList(pidl, path);
+		char* pathA = convertToChar(path);
+		pro_.setPath(pathA);
+		ProjNameEdit NameDlg;
+		NameDlg.DoModal();
+		IMalloc * imalloc = 0;
+		if (SUCCEEDED(SHGetMalloc(&imalloc)))
+		{
+			imalloc->Free(pidl);
+			imalloc->Release();
+		}
+	}
+	
+	// TODO: Add your command handler code here
+}
+
+void CMFCTRSuiApp::OnSaveProject()
+{
+	MessageBox(NULL, _T("Project was saved"), _T("Note:"), MB_ICONINFORMATION | MB_OK);
+	pro_.SaveProject(List);
+	// TODO: Add your command handler code here
 }

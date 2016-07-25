@@ -52,3 +52,8 @@ char* fromCStringToChar(CString string)
 	buf[i] = '\0';
 	return buf;
 }
+
+bool ValidateProjXML(char* path)
+{
+	return false;
+}

@@ -23,6 +23,7 @@
 
 
 bool RunEndCheck;
+CToolBar* ToolBar;
 
 
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
@@ -46,8 +47,6 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_TREE1, m_Tree);
 	DDX_Control(pDX, IDC_EDIT3, console_output);
 	DDX_Control(pDX, IDC_ListRoot, RootList);
-	DDX_Control(pDX, IDC_RunSelected, RunButton);
-	DDX_Control(pDX, IDC_DeleteButton, DeleteButton);
 	DDX_Control(pDX, IDC_PROGRESS1, m_Progress);
 	DDX_Control(pDX, IDC_PROGRESS3, subm_Progress);
 	DDX_Control(pDX, IDC_EDIT1, Time_running_edit);
@@ -57,15 +56,13 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CMFCTRSuiDlg::OnTvnSelchangedTree1)
-	ON_BN_CLICKED(IDC_ADDFOLDER, &CMFCTRSuiDlg::OnBnClickedAddfolder)
 	ON_LBN_SELCHANGE(IDC_ListRoot, &CMFCTRSuiDlg::OnLbnSelchangeListroot)
-	ON_BN_CLICKED(IDC_DeleteButton, &CMFCTRSuiDlg::OnBnClickedDeletebutton)
-	ON_BN_CLICKED(IDC_RunSelected, &CMFCTRSuiDlg::OnBnClickedRunselected)
 	ON_EN_CHANGE(IDC_EDIT3, &CMFCTRSuiDlg::OnEnChangeEdit3)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PROGRESS1, &CMFCTRSuiDlg::OnNMCustomdrawProgress1)
 	ON_COMMAND(ID_PROGRAM_ADDFOLDER, &CMFCTRSuiDlg::OnProgramAddfolder)
 	ON_COMMAND(ID_PROGRAM_DELETESELECTEDITEMS, &CMFCTRSuiDlg::OnProgramDeleteselecteditems)
 	ON_COMMAND(ID_PROGRAM_RUNSEL, &CMFCTRSuiDlg::OnProgramRunsel)
+	ON_BN_CLICKED(IDOK, &CMFCTRSuiDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -119,9 +116,18 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	// TODO: Add extra initialization here
-	RunButton.EnableWindow(false);
-	DeleteButton.EnableWindow(false);
 	RootList.ResetContent();
+
+	// menu hiding
+	m_Menu = GetMenu();
+	if (m_Menu)
+	{
+		
+		m_Menu->EnableMenuItem(ID_New_Project, MF_BYCOMMAND | MF_ENABLED );
+		m_Menu->EnableMenuItem(ID_Load_Project, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_DISABLED );
+	}
+
 
 	// toolbar binding
 	if (!m_ToolBar.Create(this) || !m_ToolBar.LoadToolBar(MYAMAZINGTOOLBAR))
@@ -172,9 +178,11 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	RepositionBars(AFX_IDW_CONTROLBAR_FIRST,
 		AFX_IDW_CONTROLBAR_LAST, 0);
 
-
-
-
+	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
+	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
+	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
+	ToolBar = &m_ToolBar;
+	List = &RootList;
 	// toolbar image config
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -283,6 +291,7 @@ DWORD WINAPI ToRun(LPVOID arg)
 	return 0;
 }
 
+
 DWORD WINAPI Timer(LPVOID arg)
 {
 	CEdit* edit = (CEdit*)arg;
@@ -296,76 +305,320 @@ DWORD WINAPI Timer(LPVOID arg)
 		edit->SetSel(0,last);
 		edit->ReplaceSel(L"Tests running: ");
 		++count;
-		if ((count / 3600) < 10)
+		if (count < 3600)
 		{
-			edit->ReplaceSel(L"0");
-			mes.Format(L"%d", count/3600);
-			edit->ReplaceSel(mes);
+			edit->ReplaceSel(L"00:");
+			if ((count / 60)>0)
+			{
+				if ((count / 60) > 9)
+				{
+					mes.Format(L"%d", count / 60);
+					edit->ReplaceSel(mes);
+					edit->ReplaceSel(L":");
+					int res = count - (count / 60) * 60;
+					if (res > 10)
+					{
+						mes.Format(L"%d", res);
+						edit->ReplaceSel(mes);
+					}
+					else
+					{
+						edit->ReplaceSel(L"0");
+						mes.Format(L"%d", res);
+						edit->ReplaceSel(mes);
+					}
+				}
+				else
+				{
+					edit->ReplaceSel(L"0");
+					mes.Format(L"%d", count / 60);
+					edit->ReplaceSel(mes);
+					edit->ReplaceSel(L":");
+					int res = count - (count / 60) * 60;
+					if (res > 9)
+					{
+						mes.Format(L"%d", res);
+						edit->ReplaceSel(mes);
+						
+					}
+					else
+					{
+						edit->ReplaceSel(L"0");
+						mes.Format(L"%d", res);
+						edit->ReplaceSel(mes);
+					}
+				}
+			}
+			else
+			{
+				edit->ReplaceSel(L"00:");
+				if (count > 9)
+				{
+					mes.Format(L"%d", count);
+					edit->ReplaceSel(mes);
+				}
+				else
+				{
+					edit->ReplaceSel(L"0");
+					mes.Format(L"%d", count);
+					edit->ReplaceSel(mes);
+				}
+			}
 		}
 		else
 		{
-			mes.Format(L"%d", count);
-			edit->ReplaceSel(mes);
-		}
-		edit->ReplaceSel(L":");
-		if ((count / 60) < 10)
-		{
-			edit->ReplaceSel(L"0");
-			mes.Format(L"%d", count/60);
-			edit->ReplaceSel(mes);
-		}
-		else
-		{
-			mes.Format(L"%d", count);
-			edit->ReplaceSel(mes);
-		}
-		edit->ReplaceSel(L":");
-		if ((count ) < 10)
-		{
-			edit->ReplaceSel(L"0");
-			mes.Format(L"%d", count);
-			edit->ReplaceSel(mes);
-		}
-		else
-		{
-			mes.Format(L"%d", count);
-			edit->ReplaceSel(mes);
+			if ((count / 3600) > 9)
+			{
+				mes.Format(L"%d", count/3600);
+				edit->ReplaceSel(mes);
+				edit->ReplaceSel(L":");
+				int res = count - (count / 3600) * 3600;
+				if (res/60 > 9)
+				{
+					mes.Format(L"%d", res/60);
+					edit->ReplaceSel(mes);
+					edit->ReplaceSel(L":");
+					int sec = res - (res / 60) * 60;
+					if (sec > 10)
+					{
+						mes.Format(L"%d", sec);
+						edit->ReplaceSel(mes);
+					}
+					else
+					{
+						edit->ReplaceSel(L"0");
+						mes.Format(L"%d", sec);
+						edit->ReplaceSel(mes);
+					}
+				}
+				else
+				{
+					edit->ReplaceSel(L"0");
+					mes.Format(L"%d", res/60);
+					edit->ReplaceSel(mes);
+					edit->ReplaceSel(L":");
+					int sec = res - (res / 60) * 60;
+					if (sec > 9)
+					{
+						mes.Format(L"%d", sec);
+						edit->ReplaceSel(mes);
+					}
+					else
+					{
+						edit->ReplaceSel(L"0");
+						mes.Format(L"%d", sec);
+						edit->ReplaceSel(mes);
+					}
+				}
+			}
+			else
+			{
+				edit->ReplaceSel(L"0");
+				mes.Format(L"%d", count/3600);
+				edit->ReplaceSel(mes);
+				edit->ReplaceSel(L":");
+				int res = count - (count / 3600) * 3600;
+				if (res / 60 > 9)
+				{
+					mes.Format(L"%d", res / 60);
+					edit->ReplaceSel(mes);
+					edit->ReplaceSel(L":");
+					int sec = res - (res / 60) * 60;
+					if (sec > 9)
+					{
+						mes.Format(L"%d", sec);
+						edit->ReplaceSel(mes);
+					}
+					else
+					{
+						edit->ReplaceSel(L"0");
+						mes.Format(L"%d", sec);
+						edit->ReplaceSel(mes);
+					}
+				}
+				else
+				{
+					edit->ReplaceSel(L"0");
+					mes.Format(L"%d", res / 60);
+					edit->ReplaceSel(mes);
+					edit->ReplaceSel(L":");
+					int sec = res - (res / 60) * 60;
+					if (sec > 9)
+					{
+						mes.Format(L"%d", sec);
+						edit->ReplaceSel(mes);
+					}
+					else
+					{
+						edit->ReplaceSel(L"0");
+						mes.Format(L"%d", sec);
+						edit->ReplaceSel(mes);
+					}
+				}
+			}
 		}
 		edit->SetSel(0, 0);
 		Sleep(1000);
 	}
 	edit->SetSel(0, last);
-	edit->ReplaceSel(L"Tests running finished");
+	edit->ReplaceSel(L"Time spent: ");
+	if (count < 3600)
+	{
+		edit->ReplaceSel(L"00:");
+		if ((count / 60)>0)
+		{
+			if ((count / 60) > 10)
+			{
+				mes.Format(L"%d", count / 60);
+				edit->ReplaceSel(mes);
+				edit->ReplaceSel(L":");
+				int res = count - (count / 60) * 60;
+				if (res > 10)
+				{
+					mes.Format(L"%d", res);
+					edit->ReplaceSel(mes);
+				}
+				else
+				{
+					edit->ReplaceSel(L"0");
+					mes.Format(L"%d", res);
+					edit->ReplaceSel(mes);
+				}
+			}
+			else
+			{
+				edit->ReplaceSel(L"0");
+				mes.Format(L"%d", count / 60);
+				edit->ReplaceSel(mes);
+				edit->ReplaceSel(L":");
+				int res = count - (count / 60) * 60;
+				if (res > 10)
+				{
+					mes.Format(L"%d", res);
+					edit->ReplaceSel(mes);
+
+				}
+				else
+				{
+					edit->ReplaceSel(L"0");
+					mes.Format(L"%d", res);
+					edit->ReplaceSel(mes);
+				}
+			}
+		}
+		else
+		{
+			edit->ReplaceSel(L"00:");
+			if (count > 10)
+			{
+				mes.Format(L"%d", count / 60);
+				edit->ReplaceSel(mes);
+			}
+			else
+			{
+				edit->ReplaceSel(L"0");
+				mes.Format(L"%d", count / 60);
+				edit->ReplaceSel(mes);
+			}
+		}
+	}
+	else
+	{
+		if ((count / 3600) > 10)
+		{
+			mes.Format(L"%d", count / 3600);
+			edit->ReplaceSel(mes);
+			edit->ReplaceSel(L":");
+			int res = count - (count / 3600) * 3600;
+			if (res / 60 > 10)
+			{
+				mes.Format(L"%d", res / 60);
+				edit->ReplaceSel(mes);
+				edit->ReplaceSel(L":");
+				int sec = res - (res / 60) * 60;
+				if (sec > 10)
+				{
+					mes.Format(L"%d", sec);
+					edit->ReplaceSel(mes);
+				}
+				else
+				{
+					edit->ReplaceSel(L"0");
+					mes.Format(L"%d", sec);
+					edit->ReplaceSel(mes);
+				}
+			}
+			else
+			{
+				edit->ReplaceSel(L"0");
+				mes.Format(L"%d", res / 60);
+				edit->ReplaceSel(mes);
+				edit->ReplaceSel(L":");
+				int sec = res - (res / 60) * 60;
+				if (sec > 10)
+				{
+					mes.Format(L"%d", sec);
+					edit->ReplaceSel(mes);
+				}
+				else
+				{
+					edit->ReplaceSel(L"0");
+					mes.Format(L"%d", sec);
+					edit->ReplaceSel(mes);
+				}
+			}
+		}
+		else
+		{
+			edit->ReplaceSel(L"0");
+			mes.Format(L"%d", count / 3600);
+			edit->ReplaceSel(mes);
+			edit->ReplaceSel(L":");
+			int res = count - (count / 3600) * 3600;
+			if (res / 60 > 10)
+			{
+				mes.Format(L"%d", res / 60);
+				edit->ReplaceSel(mes);
+				edit->ReplaceSel(L":");
+				int sec = res - (res / 60) * 60;
+				if (sec > 10)
+				{
+					mes.Format(L"%d", sec);
+					edit->ReplaceSel(mes);
+				}
+				else
+				{
+					edit->ReplaceSel(L"0");
+					mes.Format(L"%d", sec);
+					edit->ReplaceSel(mes);
+				}
+			}
+			else
+			{
+				edit->ReplaceSel(L"0");
+				mes.Format(L"%d", res / 60);
+				edit->ReplaceSel(mes);
+				edit->ReplaceSel(L":");
+				int sec = res - (res / 60) * 60;
+				if (sec > 10)
+				{
+					mes.Format(L"%d", sec);
+					edit->ReplaceSel(mes);
+				}
+				else
+				{
+					edit->ReplaceSel(L"0");
+					mes.Format(L"%d", sec);
+					edit->ReplaceSel(mes);
+				}
+			}
+		}
+	}
 	return 0;
 }
 
 
-void CMFCTRSuiDlg::OnBnClickedAddfolder()
-{
-	BROWSEINFO bi = { 0 };
-	bi.lpszTitle = _T("Select Folder");
-	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-	if (pidl != 0)
-	{
-		// get the name of the folder
-		TCHAR path[MAX_PATH];
-		SHGetPathFromIDList(pidl, path);
-		char* pathA = convertToChar(path);
-		if (!Manager.Verify(pathA, nullptr, nullptr))
-			RootList.AddString(path);
-		else
-			MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
 
-		delete[] pathA;
-		// free memory used
-		IMalloc * imalloc = 0;
-		if (SUCCEEDED(SHGetMalloc(&imalloc)))
-		{
-			imalloc->Free(pidl);
-			imalloc->Release();
-		}
-	}
-}
 
 bool checkDiff(int begin, char* source)
 {
@@ -480,6 +733,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 	}
 }
 
+
 void CMFCTRSuiDlg::Info(TCHAR* path)
 {
 	char* pathA = nullptr;
@@ -525,13 +779,30 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 	// making RunBuuon visible only when at least one element is selected
 	if (count > 0)
 	{
-		RunButton.EnableWindow(true);
-		DeleteButton.EnableWindow(true);
+
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY);
+		if (m_Menu)
+		{
+			m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_ENABLED);
+			m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_ENABLED);
+		}
 	}
 	else
 	{
-		RunButton.EnableWindow(false);
-		DeleteButton.EnableWindow(false);
+
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY, false);
+
+		if (m_Menu)
+		{
+			m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+			m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		}
 	}
 	 
 	RootList.GetSelItems(count,	array);
@@ -555,32 +826,11 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 }
 
 
-void CMFCTRSuiDlg::OnBnClickedDeletebutton()
-{
-	RunButton.EnableWindow(false);
-	DeleteButton.EnableWindow(false);
-	for each (auto to_delete in dRoots)
-	{
-		int index = RootList.FindString(-1, to_delete.get_path());
-		RootList.DeleteString(index);
-	}
-}
 
 
-void CMFCTRSuiDlg::OnBnClickedRunselected()
-{
-	RunDialog Dlg;
-	Dlg.DoModal();
-	if (ifCancelPressed)
-	{
-		ReportManager* reportManag = new ReportManager;
-		ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
-		reportManag->addReporter(reporter);
-		ToRunParameters* to_run = new ToRunParameters(dRoots, reportManag, &m_Progress, &subm_Progress);
-		HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
-		HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
-	}
-}
+
+
+
 
 
 void CMFCTRSuiDlg::OnEnChangeEdit3()
@@ -601,10 +851,6 @@ void CMFCTRSuiDlg::OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
-
-
-
-
 void CMFCTRSuiDlg::OnProgramAddfolder()
 {
 	BROWSEINFO bi = { 0 };
@@ -624,6 +870,7 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 		delete[] pathA;
 		// free memory used
 		IMalloc * imalloc = 0;
+		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
 		if (SUCCEEDED(SHGetMalloc(&imalloc)))
 		{
 			imalloc->Free(pidl);
@@ -635,25 +882,86 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 
 void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
 {
-	for each (auto to_delete in dRoots)
+	if (dRoots.size())
 	{
-		int index = RootList.FindString(-1, to_delete.get_path());
-		RootList.DeleteString(index);
+		if (m_Menu)
+		{
+			//m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		}
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY, false);
+		m_Tree.DeleteAllItems();
+		for each (auto to_delete in dRoots)
+		{
+			int index = RootList.FindString(-1, to_delete.get_path());
+			RootList.DeleteString(index);
+		}
+		dRoots.clear();
+		if (RootList.GetCount() == 0)
+		{
+			m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		}
 	}
 }
 
 
 void CMFCTRSuiDlg::OnProgramRunsel()
 {
-	RunDialog Dlg;
-	Dlg.DoModal();
-	if (ifCancelPressed)
+	if (dRoots.size())
 	{
+		RunDialog Dlg;
+		Dlg.DoModal();
 		ReportManager* reportManag = new ReportManager;
 		ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
 		reportManag->addReporter(reporter);
 		ToRunParameters* to_run = new ToRunParameters(dRoots, reportManag, &m_Progress, &subm_Progress);
 		HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
+		HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
 		CloseHandle(hThread);
+	}
+}
+
+
+
+void CMFCTRSuiDlg::OnBnClickedOk()
+{
+	// TODO: Add your control notification handler code here
+	if (RootList.GetCount() > 0)
+	{
+		char* path = pro_.getProjPath();
+		if (path)
+		{
+			WIN32_FIND_DATA FindFileData;
+			TCHAR* buf = new TCHAR[strlen(path) + 1];
+			convertToTCHAR(buf, path);
+			HANDLE handle = FindFirstFile(buf, &FindFileData);
+			int found = handle != INVALID_HANDLE_VALUE;
+			if (!found)
+			{
+				int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
+				if (res == IDYES)
+				{
+					pro_.SaveProject(&RootList);
+					delete[] path;
+					delete[] buf;
+					CDialogEx::OnOK();
+				}
+				else
+				{
+					delete[] path;
+					delete[] buf;
+					CDialogEx::OnOK();
+				}
+			}
+			delete[] buf;
+			delete[] path;
+			CDialogEx::OnOK();
+		}
+	}
+	else
+	{
+		CDialogEx::OnOK();
 	}
 }
