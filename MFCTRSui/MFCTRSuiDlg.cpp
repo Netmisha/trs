@@ -62,7 +62,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_PROGRAM_ADDFOLDER, &CMFCTRSuiDlg::OnProgramAddfolder)
 	ON_COMMAND(ID_PROGRAM_DELETESELECTEDITEMS, &CMFCTRSuiDlg::OnProgramDeleteselecteditems)
 	ON_COMMAND(ID_PROGRAM_RUNSEL, &CMFCTRSuiDlg::OnProgramRunsel)
-	ON_BN_CLICKED(IDOK, &CMFCTRSuiDlg::OnBnClickedOk)
+	ON_WM_SYSCOMMAND(SC_CLOSE, &CMFCTRSuiDlg::OnSysCommand(UINT , LPARAM))
 	ON_COMMAND(ID_Load_Project, &CMFCTRSuiDlg::OnLoadProject)
 	ON_COMMAND(ID_PROJECT_LASTPROJECTS, &CMFCTRSuiDlg::OnProjectLastprojects)
 END_MESSAGE_MAP()
@@ -110,6 +110,8 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	lStyle |= WS_POPUP;            //Add the POPUP style
 	//lStyle |= WS_VISIBLE;        //Add the VISIBLE style
 	lStyle |= WS_SYSMENU;
+	lStyle |= WS_MINIMIZEBOX;
+	lStyle |= WS_MAXIMIZEBOX;
 	
 	SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
 
@@ -193,6 +195,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	Bar = ToolBar;
 	List = &RootList;
 	// toolbar image config
+	
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -963,6 +966,8 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 {
 	if (dRoots.size())
 	{
+
+		m_Progress.SetPos(0);
 		RunDialog Dlg;
 		Dlg.DoModal();
 		ReportManager* reportManag = new ReportManager;
@@ -972,75 +977,13 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 		HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
 		HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
 		CloseHandle(hThread);
+		CloseHandle(hTimer);
 	}
 }
 
 
 
-void CMFCTRSuiDlg::OnBnClickedOk()
-{
-	// TODO: Add your control notification handler code here
-	if (RootList.GetCount() > 0)
-	{
-		char* path = pro_.getProjPath();
-		if (path)
-		{
-			WIN32_FIND_DATA FindFileData;
-			TCHAR* buf = new TCHAR[strlen(path) + 1];
-			convertToTCHAR(buf, path);
-			HANDLE handle = FindFirstFile(buf, &FindFileData);
-			int found = handle != INVALID_HANDLE_VALUE;
-			if (!found)
-			{
-				int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
-				if (res == IDYES)
-				{
-					pro_.SaveProject(&RootList);
-					delete[] path;
-					delete[] buf;
-					CDialogEx::OnOK();
-				}
-				else
-				{
-					delete[] path;
-					delete[] buf;
-					CDialogEx::OnOK();
-				}
-			}
-			else
-			{
-				
-				if (!CheckForModification(path, pro_.getName(), &RootList))
-				{
-					int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
-					if (res == IDYES)
-					{
-						pro_.SaveProject(&RootList);
-						delete[] path;
-						delete[] buf;
-						CDialogEx::OnOK();
-					}
-					else
-					{
-						delete[] path;
-						delete[] buf;
-						CDialogEx::OnOK();
-					}
-				}
-				else
-				{
-					delete[] buf;
-					delete[] path;
-					CDialogEx::OnOK();
-				}
-			}
-		}
-	}
-	else
-	{
-		CDialogEx::OnOK();
-	}
-}
+
 
 
 void CMFCTRSuiDlg::OnLoadProject()
@@ -1144,4 +1087,77 @@ void CMFCTRSuiDlg::OnProjectLastprojects()
 	Bar = ToolBar;
 	List = &RootList;
 	// TODO: Add your command handler code here
+}
+
+void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
+{
+	if (nID == SC_CLOSE)
+	{
+		if (RootList.GetCount() > 0)
+		{
+			char* path = pro_.getProjPath();
+			if (path)
+			{
+				WIN32_FIND_DATA FindFileData;
+				TCHAR* buf = new TCHAR[strlen(path) + 1];
+				convertToTCHAR(buf, path);
+				HANDLE handle = FindFirstFile(buf, &FindFileData);
+				int found = handle != INVALID_HANDLE_VALUE;
+				if (!found)
+				{
+					int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
+					if (res == IDYES)
+					{
+						pro_.SaveProject(&RootList);
+						delete[] path;
+						delete[] buf;
+						CDialogEx::OnOK();
+					}
+					else
+					{
+						delete[] path;
+						delete[] buf;
+						CDialogEx::OnOK();
+					}
+				}
+				else
+				{
+
+					if (!CheckForModification(path, pro_.getName(), &RootList))
+					{
+						int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
+						if (res == IDYES)
+						{
+							pro_.SaveProject(&RootList);
+							delete[] path;
+							delete[] buf;
+							CDialogEx::OnOK();
+						}
+						else
+						{
+							delete[] path;
+							delete[] buf;
+							CDialogEx::OnOK();
+						}
+					}
+					else
+					{
+						delete[] buf;
+						delete[] path;
+						CDialogEx::OnOK();
+					}
+				}
+			}
+		}
+		else
+		{
+			CDialogEx::OnOK();
+		}
+	}
+	if (nID == SC_ZOOM)
+	{
+
+	}
+
+	CWnd::OnSysCommand(nID, lParam);
 }

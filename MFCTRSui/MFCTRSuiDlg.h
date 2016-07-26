@@ -106,6 +106,7 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnLoadProject();
 	afx_msg void OnProjectLastprojects();
+	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 };
 
 extern CListBox* List;
