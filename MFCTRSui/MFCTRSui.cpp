@@ -14,6 +14,7 @@
 #endif
 
 CListBox* List;
+
 // CMFCTRSuiApp
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiApp, CWinApp)
@@ -133,6 +134,13 @@ void CMFCTRSuiApp::OnNewProject()
 		pro_.setPath(pathA);
 		ProjNameEdit NameDlg;
 		NameDlg.DoModal();
+		Bar->GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
+		Bar->GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
+		Bar->GetToolBarCtrl().HideButton(TOOLBAR_RUN);
+		Bar->GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
+		Bar->GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
+		Bar->GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY, false);
+		List->ResetContent();
 		IMalloc * imalloc = 0;
 		if (SUCCEEDED(SHGetMalloc(&imalloc)))
 		{

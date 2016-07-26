@@ -14,8 +14,8 @@ public:
 	~ProjectProperties();
 	ProjectProperties& operator=(ProjectProperties& pro);
 
-	bool setPath(char* path);
-	bool setName(char* name);
+	bool setPath(const char* path);
+	bool setName(const char* name);
 	char* getProjPath();
 	bool SaveProject(CListBox*List);
 	char* getPath();

@@ -3,8 +3,10 @@
 #include <Windows.h>
 #include "TRSLibrary\TinyXML\tinyxml.h"
 
-void convertToTCHAR(TCHAR*dest, char* path);
+
+void convertToTCHAR(TCHAR*dest, const char* path);
 char* convertToChar(TCHAR*path);
 char* fromCStringToChar(CString string);
 bool ValidateProjXML(char* path);
+bool CheckForModification(char* path, char* name, CListBox*List);
 #endif

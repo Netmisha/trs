@@ -24,7 +24,7 @@
 
 bool RunEndCheck;
 CToolBar* ToolBar;
-
+CToolBar* Bar;
 
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
@@ -63,6 +63,8 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_PROGRAM_DELETESELECTEDITEMS, &CMFCTRSuiDlg::OnProgramDeleteselecteditems)
 	ON_COMMAND(ID_PROGRAM_RUNSEL, &CMFCTRSuiDlg::OnProgramRunsel)
 	ON_BN_CLICKED(IDOK, &CMFCTRSuiDlg::OnBnClickedOk)
+	ON_COMMAND(ID_Load_Project, &CMFCTRSuiDlg::OnLoadProject)
+	ON_COMMAND(ID_PROJECT_LASTPROJECTS, &CMFCTRSuiDlg::OnProjectLastprojects)
 END_MESSAGE_MAP()
 
 
@@ -122,9 +124,15 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	m_Menu = GetMenu();
 	if (m_Menu)
 	{
-		
+		WIN32_FIND_DATA FindFileData;
+		HANDLE handle = FindFirstFile(L"Last Project.xml", &FindFileData);
+		int found = handle != INVALID_HANDLE_VALUE;
+		if (found)
+		{
+			m_Menu->EnableMenuItem(ID_PROJECT_LASTPROJECTS, MF_BYCOMMAND | MF_ENABLED);
+		}
 		m_Menu->EnableMenuItem(ID_New_Project, MF_BYCOMMAND | MF_ENABLED );
-		m_Menu->EnableMenuItem(ID_Load_Project, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		m_Menu->EnableMenuItem(ID_Load_Project, MF_BYCOMMAND | MF_ENABLED);
 		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_DISABLED );
 	}
 
@@ -182,6 +190,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
 	ToolBar = &m_ToolBar;
+	Bar = ToolBar;
 	List = &RootList;
 	// toolbar image config
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -467,13 +476,13 @@ DWORD WINAPI Timer(LPVOID arg)
 		edit->ReplaceSel(L"00:");
 		if ((count / 60)>0)
 		{
-			if ((count / 60) > 10)
+			if ((count / 60) > 9)
 			{
 				mes.Format(L"%d", count / 60);
 				edit->ReplaceSel(mes);
 				edit->ReplaceSel(L":");
 				int res = count - (count / 60) * 60;
-				if (res > 10)
+				if (res > 9)
 				{
 					mes.Format(L"%d", res);
 					edit->ReplaceSel(mes);
@@ -492,7 +501,7 @@ DWORD WINAPI Timer(LPVOID arg)
 				edit->ReplaceSel(mes);
 				edit->ReplaceSel(L":");
 				int res = count - (count / 60) * 60;
-				if (res > 10)
+				if (res > 9)
 				{
 					mes.Format(L"%d", res);
 					edit->ReplaceSel(mes);
@@ -509,7 +518,7 @@ DWORD WINAPI Timer(LPVOID arg)
 		else
 		{
 			edit->ReplaceSel(L"00:");
-			if (count > 10)
+			if (count > 9)
 			{
 				mes.Format(L"%d", count / 60);
 				edit->ReplaceSel(mes);
@@ -524,13 +533,13 @@ DWORD WINAPI Timer(LPVOID arg)
 	}
 	else
 	{
-		if ((count / 3600) > 10)
+		if ((count / 3600) > 9)
 		{
 			mes.Format(L"%d", count / 3600);
 			edit->ReplaceSel(mes);
 			edit->ReplaceSel(L":");
 			int res = count - (count / 3600) * 3600;
-			if (res / 60 > 10)
+			if (res / 60 > 9)
 			{
 				mes.Format(L"%d", res / 60);
 				edit->ReplaceSel(mes);
@@ -555,7 +564,7 @@ DWORD WINAPI Timer(LPVOID arg)
 				edit->ReplaceSel(mes);
 				edit->ReplaceSel(L":");
 				int sec = res - (res / 60) * 60;
-				if (sec > 10)
+				if (sec > 9)
 				{
 					mes.Format(L"%d", sec);
 					edit->ReplaceSel(mes);
@@ -575,13 +584,13 @@ DWORD WINAPI Timer(LPVOID arg)
 			edit->ReplaceSel(mes);
 			edit->ReplaceSel(L":");
 			int res = count - (count / 3600) * 3600;
-			if (res / 60 > 10)
+			if (res / 60 > 9)
 			{
 				mes.Format(L"%d", res / 60);
 				edit->ReplaceSel(mes);
 				edit->ReplaceSel(L":");
 				int sec = res - (res / 60) * 60;
-				if (sec > 10)
+				if (sec > 9)
 				{
 					mes.Format(L"%d", sec);
 					edit->ReplaceSel(mes);
@@ -600,7 +609,7 @@ DWORD WINAPI Timer(LPVOID arg)
 				edit->ReplaceSel(mes);
 				edit->ReplaceSel(L":");
 				int sec = res - (res / 60) * 60;
-				if (sec > 10)
+				if (sec > 9)
 				{
 					mes.Format(L"%d", sec);
 					edit->ReplaceSel(mes);
@@ -643,7 +652,49 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 		strncpy_s(rootName, strlen((*it)->getName()) + 1, (*it)->getName(), strlen((*it)->getName()));
 		HTREEITEM* hSuite=new HTREEITEM;
 		std::list<Suite*>::iterator itHelp = it;
-		
+		for (it; it != suiteColl->end(); ++it)
+		{
+			if (count == suiteColl->size())
+			{
+				break;
+			}
+			std::list<Suite*>::iterator helper = std::find(checkList->begin(), checkList->end(), *it);
+			if (helper == (checkList->end()))
+			{
+				if (strlen((*it)->get_path()) != strlen(rootPath))
+				{
+					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
+					{
+						if (checkDiff(strlen(rootPath), (*it)->get_path()))
+							TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList);
+					}
+
+				}
+				else
+				{
+					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)) && !strncmp((*it)->getName(), rootName, strlen(rootName)))
+					{
+						TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
+						convertToTCHAR(buf, (*it)->getName());
+						*hSuite = m_Tree->InsertItem(buf, *hHead);
+						++count;
+						HTREEITEM hTest;
+						std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+						for (iter; iter != (*it)->getList().end(); ++iter)
+						{
+							TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+							convertToTCHAR(subBuf, (*iter)->getName());
+							m_Tree->InsertItem(subBuf, *hSuite);
+							delete[] subBuf;
+						}
+						checkList->push_back((*it));
+						delete[] buf;
+					}
+
+				}
+			}
+		}
+		--it;
 		for (it; it != suiteColl->begin(); --it)
 		{
 			
@@ -687,6 +738,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 				}
 			}
 		}
+		
 		if (count != suiteColl->size())
 		{
 			std::list<Suite*>::iterator helper = std::find(checkList->begin(), checkList->end(), *it);
@@ -955,13 +1007,141 @@ void CMFCTRSuiDlg::OnBnClickedOk()
 					CDialogEx::OnOK();
 				}
 			}
-			delete[] buf;
-			delete[] path;
-			CDialogEx::OnOK();
+			else
+			{
+				
+				if (!CheckForModification(path, pro_.getName(), &RootList))
+				{
+					int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
+					if (res == IDYES)
+					{
+						pro_.SaveProject(&RootList);
+						delete[] path;
+						delete[] buf;
+						CDialogEx::OnOK();
+					}
+					else
+					{
+						delete[] path;
+						delete[] buf;
+						CDialogEx::OnOK();
+					}
+				}
+				else
+				{
+					delete[] buf;
+					delete[] path;
+					CDialogEx::OnOK();
+				}
+			}
 		}
 	}
 	else
 	{
 		CDialogEx::OnOK();
 	}
+}
+
+
+void CMFCTRSuiDlg::OnLoadProject()
+{
+	CString filePath;
+	CFileDialog dlgFile(TRUE);
+	OPENFILENAME& ofn = dlgFile.GetOFN();
+	wchar_t* p = filePath.GetBuffer(260);
+	ofn.lpstrFile = p;
+	Bar = ToolBar;
+	List = &RootList;
+	dlgFile.DoModal();
+	char* path = convertToChar(p);
+	if (ValidateProjXML(path))
+	{
+		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD,false);
+		RootList.ResetContent();
+		TiXmlDocument doc(path);
+		doc.LoadFile();
+		TiXmlNode* first = doc.FirstChild();
+		while (first->Type() != TiXmlNode::TINYXML_ELEMENT)
+		{
+			first = first->NextSibling();
+		}
+		if (!strncmp(first->Value(), "TRSProject", strlen(first->Value())))
+		{
+			TiXmlAttribute* atr = first->ToElement()->FirstAttribute();
+			pro_.setName(atr->Value());
+			char* proPath = new char[strlen(path) - strlen(pro_.getName()) - 3];
+			strncpy_s(proPath, strlen(path) - strlen(pro_.getName()) - 3, path, strlen(path) - strlen(pro_.getName()) - 4);
+			pro_.setPath(proPath);
+			delete[] proPath;
+			TiXmlNode* head = first->FirstChild();
+			for (head; head != 0; head = head->NextSibling())
+			{
+				if (!strncmp(head->Value(), "path", strlen(head->Value())))
+				{
+					TiXmlNode* text = head->FirstChild();
+					while (text->Type() != TiXmlNode::TINYXML_TEXT)
+					{
+						text = text->NextSibling();
+					}
+					TCHAR* buf = new TCHAR[strlen(text->Value() + 1)];
+					convertToTCHAR(buf, text->Value());
+					RootList.AddString(buf);
+				}
+			}
+			
+		}
+		
+	}
+	else
+	{
+		MessageBox(_T("Current project file is invalid!"), _T("Erorr"), MB_ICONERROR | MB_OK);
+	}
+	// TODO: Add your command handler code here
+}
+
+
+void CMFCTRSuiDlg::OnProjectLastprojects()
+{
+	m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
+	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
+	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
+	RootList.ResetContent();
+	
+	TiXmlDocument doc("Last Project.xml");
+	doc.LoadFile();
+	TiXmlNode* first = doc.FirstChild();
+	while (first->Type() != TiXmlNode::TINYXML_ELEMENT)
+	{
+		first = first->NextSibling();
+	}
+	if (!strncmp(first->Value(), "TRSProject", strlen(first->Value())))
+	{
+		TiXmlAttribute* atr = first->ToElement()->FirstAttribute();
+		pro_.setName(atr->Value());
+		char* proPath = new char[2];
+		proPath[0] = '\\';
+		pro_.setPath(proPath);
+		delete[] proPath;
+		TiXmlNode* head = first->FirstChild();
+		for (head; head != 0; head = head->NextSibling())
+		{
+			if (!strncmp(head->Value(), "path", strlen(head->Value())))
+			{
+				TiXmlNode* text = head->FirstChild();
+				while (text->Type() != TiXmlNode::TINYXML_TEXT)
+				{
+					text = text->NextSibling();
+				}
+				TCHAR* buf = new TCHAR[strlen(text->Value() + 1)];
+				convertToTCHAR(buf, text->Value());
+				RootList.AddString(buf);
+			}
+		}
+
+	}
+	Bar = ToolBar;
+	List = &RootList;
+	// TODO: Add your command handler code here
 }

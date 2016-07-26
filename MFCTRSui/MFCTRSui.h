@@ -37,3 +37,4 @@ public:
 };
 extern CTreeCtrl m_Tree;
 extern CMFCTRSuiApp theApp;
+extern CToolBar* Bar;

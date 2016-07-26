@@ -44,21 +44,39 @@ ProjectProperties::~ProjectProperties()
 	delete[] path;
 }
 
-bool ProjectProperties::setName(char* name_)
+bool ProjectProperties::setName(const char* name_)
 {
 	if (name_)
 	{
-		name = name_;
+		name = new char[strlen(name_)+1];
+		int count = 0;
+		char help = name_[count];
+		while (help)
+		{
+			name[count]=help;
+			++count;
+			help = name_[count];
+		}
+		name[count] = '\0';
 		return true;
 	}
 	return false;
 }
 
-bool ProjectProperties::setPath(char* path_)
+bool ProjectProperties::setPath(const char* path_)
 {
 	if (path_)
 	{
-		path = path_;
+		path = new char[strlen(path_) + 1];
+		int count = 0;
+		char help = path_[count];
+		while (help)
+		{
+			path[count]= help;
+			++count;
+			help = path_[count];
+		}
+		path[count] = '\0';
 		return true;
 	}
 	return false;
@@ -87,15 +105,15 @@ bool ProjectProperties::SaveProject(CListBox*List)
 	{
 		int sizePath = strlen(path);
 		int sizeName = strlen(name);
-		char* fullPath = new char[sizePath + sizeName + 6];
+		char* fullPath = new char[sizePath + sizeName + 5];
 		strncpy_s(fullPath, sizePath + 1, path, sizePath);
-		strncpy_s(fullPath + sizePath, 2, "\\", 1);
-		strncpy_s(fullPath + sizePath + 1, sizeName + 1, name, sizeName);
-		strncpy_s(fullPath + sizePath + sizeName + 1, 5, ".xml", 4);
+		
+		strncpy_s(fullPath + sizePath , sizeName + 1, name, sizeName);
+		strncpy_s(fullPath + sizePath + sizeName , 5, ".xml", 4);
 		TiXmlDocument doc;
 		TiXmlDeclaration* dec = new TiXmlDeclaration("1.0", "", "");
 		doc.LinkEndChild(dec);
-		TiXmlElement* element = new TiXmlElement("TRS Project");
+		TiXmlElement* element = new TiXmlElement("TRSProject");
 		element->SetAttribute("name", name);
 		doc.LinkEndChild(element);
 		CString buffer;
@@ -118,6 +136,7 @@ bool ProjectProperties::SaveProject(CListBox*List)
 		}
 		if (doc.SaveFile(fullPath))
 		{
+			doc.SaveFile("Last Project.xml");
 			return true;
 		}
 		return false;
