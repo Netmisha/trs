@@ -105,16 +105,17 @@ bool ProjectProperties::SaveProject(CListBox*List)
 	{
 		int sizePath = strlen(path);
 		int sizeName = strlen(name);
-		char* fullPath = new char[sizePath + sizeName + 5];
+		char* fullPath = new char[sizePath + sizeName + 6];
 		strncpy_s(fullPath, sizePath + 1, path, sizePath);
-		
-		strncpy_s(fullPath + sizePath , sizeName + 1, name, sizeName);
-		strncpy_s(fullPath + sizePath + sizeName , 5, ".xml", 4);
+		strncpy_s(fullPath + sizePath, 2, "\\", 1);
+		strncpy_s(fullPath + sizePath +1, sizeName + 1, name, sizeName);
+		strncpy_s(fullPath + sizePath + sizeName +1, 5, ".xml", 4);
 		TiXmlDocument doc;
 		TiXmlDeclaration* dec = new TiXmlDeclaration("1.0", "", "");
 		doc.LinkEndChild(dec);
 		TiXmlElement* element = new TiXmlElement("TRSProject");
 		element->SetAttribute("name", name);
+		element->SetAttribute("ProjectPath", path);
 		doc.LinkEndChild(element);
 		CString buffer;
 		CString helpBuffer;

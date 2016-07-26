@@ -1120,10 +1120,10 @@ void CMFCTRSuiDlg::OnProjectLastprojects()
 	{
 		TiXmlAttribute* atr = first->ToElement()->FirstAttribute();
 		pro_.setName(atr->Value());
-		char* proPath = new char[2];
-		proPath[0] = '\\';
-		pro_.setPath(proPath);
-		delete[] proPath;
+		
+		atr = atr->Next();
+		pro_.setPath(atr->Value());
+		
 		TiXmlNode* head = first->FirstChild();
 		for (head; head != 0; head = head->NextSibling())
 		{

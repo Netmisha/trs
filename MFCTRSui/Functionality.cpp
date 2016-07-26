@@ -65,6 +65,25 @@ bool ValidateProjXML(char* path)
 		}
 		if (!strncmp(first->Value(), "TRSProject", strlen(first->Value())))
 		{
+			TiXmlAttribute* art = first->ToElement()->FirstAttribute();
+			if (!art)
+				return false;
+			if (strncmp(art->Name(), "name", 4))
+			{
+				return false;
+			}
+			art = art->Next();
+			if (art)
+			{
+				if (strncmp(art->Name(), "ProjectPath", 11))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
 			TiXmlNode* head = first->FirstChild();
 			for (head; head != 0; head = head->NextSibling())
 			{
