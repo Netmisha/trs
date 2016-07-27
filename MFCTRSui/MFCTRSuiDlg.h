@@ -63,6 +63,7 @@ protected:
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
+	afx_msg void OnSize(UINT nType, int cxx, int cyy);
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
@@ -88,6 +89,8 @@ protected:
 	CMenu* m_Menu;
 
 	afx_msg void OnLbnSelchangeListroot();
+	int resizible_raw = 2;
+	int resizible_column = 2;
 
 public:
 	afx_msg void OnEnChangeEdit3();

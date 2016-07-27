@@ -250,7 +250,7 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 				if (data->running_process->result_)
 					message = "Succeeded";
 				else
-					message = "Returned value is not mathing with expecting one";
+					message = "Returned value is not matching with expecting one";
 			}
 			else
 			{

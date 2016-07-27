@@ -17,6 +17,8 @@
 #define new DEBUG_NEW
 #endif
 
+
+#define RAW_RESIZIBLE 2
 // CMFCTRSuiDlg dialog
 
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
@@ -47,6 +49,7 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_SIZE()
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CMFCTRSuiDlg::OnTvnSelchangedTree1)
 	ON_LBN_SELCHANGE(IDC_ListRoot, &CMFCTRSuiDlg::OnLbnSelchangeListroot)
 	ON_EN_CHANGE(IDC_EDIT3, &CMFCTRSuiDlg::OnEnChangeEdit3)
@@ -61,6 +64,10 @@ END_MESSAGE_MAP()
 
 BOOL CMFCTRSuiDlg::OnInitDialog()
 {
+	// 
+	resizible_raw = 2;
+
+
 	CDialogEx::OnInitDialog();
 
 	CRect rectFrame, rectDlg;
@@ -449,4 +456,97 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 		HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
 		CloseHandle(hThread);
 	}
+}
+
+
+void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
+{ 
+	CRect old_rect;
+	this->GetWindowRect(&old_rect);
+
+	CDialog::OnSize(nType, cxx, cyy);  // default processing
+
+	CRect new_rect;
+	this->GetWindowRect(&new_rect);
+
+	long left_diff = new_rect.left - old_rect.left;
+	long right_diff = new_rect.right - old_rect.right;
+	long bottom_diff = new_rect.bottom - old_rect.bottom;
+	long top_diff = new_rect.top - old_rect.top;
+	long width_diff = left_diff + right_diff;
+	long height_diff = bottom_diff + top_diff;
+
+	CRect frame;
+	long new_x;
+	long new_y;
+	long new_height;
+	long new_width;
+
+	long width_reserved = 0;
+	
+
+	int raw_depen = 2;
+	int column_depen = 1;
+	if (::IsWindow(RootList.m_hWnd))
+	{
+		RootList.GetWindowRect(&frame);
+		new_x = frame.left - left_diff;
+		new_y = frame.top;// -top_diff;
+
+		new_width = frame.Width() + width_diff / raw_depen;
+		width_reserved += width_diff / raw_depen;
+
+		RootList.MoveWindow(new_x, new_y, new_width, frame.Height(), false);
+	}
+
+
+	//raw_depen = 2;
+	//column_depen = 4;
+	//if (::IsWindow(m_Tree.m_hWnd))
+	//{
+	//	m_Tree.GetWindowRect(&frame);
+	//	new_x = frame.left + width_reserved;
+	//	new_y = frame.top; // !!!
+	//	new_width = frame.Width() + width_diff - width_reserved;
+
+	//	m_Tree.MoveWindow(new_x, new_y, new_width, frame.Height());
+	//}
+
+	//raw_depen = 2;
+	//column_depen = 4;
+	//if (::IsWindow(console_output.m_hWnd))
+	//{
+	//	console_output.GetWindowRect(&frame);
+	//	new_x = frame.left + width_reserved;
+	//	new_y = frame.top; // !!!
+	//	new_width = frame.Width() + width_diff - width_reserved;
+
+	//	console_output.MoveWindow(new_x, new_y, new_width, frame.Height());
+	//}
+
+	//raw_depen = 2;
+	//column_depen = 4;
+	//if (::IsWindow(m_Progress.m_hWnd))
+	//{
+	//	m_Progress.GetWindowRect(&frame);
+	//	new_x = frame.left + width_reserved;
+	//	new_y = frame.top; // !!!
+	//	new_width = frame.Width() + width_diff - width_reserved;
+
+	//	m_Progress.MoveWindow(new_x, new_y, new_width, frame.Height());
+	//}
+
+
+	//raw_depen = 2;
+	//column_depen = 4;
+	//if (::IsWindow(subm_Progress.m_hWnd))
+	//{
+	//	subm_Progress.GetWindowRect(&frame);
+	//	new_x = frame.left + width_reserved;
+	//	new_y = frame.top; // !!!
+	//	new_width = frame.Width() + width_diff - width_reserved;
+
+	//	subm_Progress.MoveWindow(new_x, new_y, new_width, frame.Height());
+	//}
+
 }
