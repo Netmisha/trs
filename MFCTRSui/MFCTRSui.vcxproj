@@ -104,10 +104,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\TRSLibrary\TinyXML\tinystr.h" />
+    <ClInclude Include="..\TRSLibrary\TinyXML\tinyxml.h" />
     <ClInclude Include="ConsoleReporter.h" />
     <ClInclude Include="Functionality.h" />
     <ClInclude Include="MFCTRSui.h" />
     <ClInclude Include="MFCTRSuiDlg.h" />
+    <ClInclude Include="ProjectProperties.h" />
+    <ClInclude Include="ProjNameEdit.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RunDialog.h" />
     <ClInclude Include="RunParameters.h" />
@@ -116,10 +120,16 @@
     <ClInclude Include="ToRunParameters.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinystr.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxml.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlerror.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlparser.cpp" />
     <ClCompile Include="ConsoleReporter.cpp" />
     <ClCompile Include="Functionality.cpp" />
     <ClCompile Include="MFCTRSui.cpp" />
     <ClCompile Include="MFCTRSuiDlg.cpp" />
+    <ClCompile Include="ProjectProperties.cpp" />
+    <ClCompile Include="ProjNameEdit.cpp" />
     <ClCompile Include="RunDialog.cpp" />
     <ClCompile Include="RunParameters.cpp" />
     <ClCompile Include="stdafx.cpp">

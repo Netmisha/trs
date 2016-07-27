@@ -8,6 +8,7 @@
 #include <vector>
 #include "Resource.h"
 #include "RunDialog.h"
+#include "ProjNameEdit.h"
 
 class SuiteRoot
 {
@@ -63,6 +64,7 @@ protected:
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
+	afx_msg void OnGetMinMaxInfo(MINMAXINFO *mx);
 	afx_msg void OnSize(UINT nType, int cxx, int cyy);
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
@@ -76,7 +78,7 @@ public:
 
 	afx_msg void OnBnClickedButton2();
 	CEdit console_output;
-
+	
 
 	afx_msg void OnBnClickedButton();
 protected:
@@ -87,10 +89,12 @@ protected:
 
 	CToolBar m_ToolBar;
 	CMenu* m_Menu;
-
+	ProjectProperties properties;
 	afx_msg void OnLbnSelchangeListroot();
 	int resizible_raw = 2;
 	int resizible_column = 2;
+
+	CRect old_rect;
 
 public:
 	afx_msg void OnEnChangeEdit3();
@@ -98,7 +102,17 @@ public:
 	afx_msg void OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult);
 
 	CProgressCtrl subm_Progress;
+
+	CEdit Time_running_edit;
+
 	afx_msg void OnProgramAddfolder();
 	afx_msg void OnProgramDeleteselecteditems();
 	afx_msg void OnProgramRunsel();
+
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnLoadProject();
+	afx_msg void OnProjectLastprojects();
+	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 };
+
+extern CListBox* List;

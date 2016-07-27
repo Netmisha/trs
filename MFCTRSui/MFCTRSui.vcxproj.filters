@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\TinyXML">
+      <UniqueIdentifier>{38b01b5e-98f7-41e4-b29d-e9c7d4db857e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -48,6 +51,18 @@
     <ClInclude Include="RunDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ProjectProperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjNameEdit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TRSLibrary\TinyXML\tinystr.h">
+      <Filter>Header Files\TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TRSLibrary\TinyXML\tinyxml.h">
+      <Filter>Header Files\TinyXML</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCTRSui.cpp">
@@ -73,6 +88,24 @@
     </ClCompile>
     <ClCompile Include="Functionality.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectProperties.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjNameEdit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinystr.cpp">
+      <Filter>Header Files\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxml.cpp">
+      <Filter>Header Files\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlerror.cpp">
+      <Filter>Header Files\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlparser.cpp">
+      <Filter>Header Files\TinyXML</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
