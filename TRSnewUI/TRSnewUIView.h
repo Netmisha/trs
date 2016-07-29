@@ -17,6 +17,7 @@
 #include "resource.h"
 #include "afxwin.h"
 #include "TRSnewUIDoc.h"
+#include "afxcmn.h"
 
 class CTRSnewUIView : public CFormView
 {
@@ -58,11 +59,15 @@ protected:
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
 public:
-	CListBox m_ListRoot;
 	afx_msg void OnButtonadd();
-	afx_msg void OnLbnSelchangeListroot();
 	afx_msg void OnButtondelete();
 	afx_msg void OnUpdateButtondelete(CCmdUI *pCmdUI);
+	afx_msg void OnButtonrun();
+	afx_msg void OnUpdateButtonrun(CCmdUI *pCmdUI);
+protected:
+	CListCtrl m_ListCtrl;
+public:
+	afx_msg void OnLvnItemchangedListRoot(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
 #ifndef _DEBUG  // debug version in TRSnewUIView.cpp
