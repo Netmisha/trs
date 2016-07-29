@@ -18,6 +18,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CreateExe", "CreateExe\Crea
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TRSUI", "MFCTRSui\MFCTRSui.vcxproj", "{F16C4AD9-7605-4AAC-AC25-9B5529510685}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TRSnewUI", "TRSnewUI\TRSnewUI.vcxproj", "{9E9FA586-9B15-4045-A311-A54E392B72DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -48,6 +50,10 @@ Global
 		{F16C4AD9-7605-4AAC-AC25-9B5529510685}.Debug|Win32.Build.0 = Debug|Win32
 		{F16C4AD9-7605-4AAC-AC25-9B5529510685}.Release|Win32.ActiveCfg = Release|Win32
 		{F16C4AD9-7605-4AAC-AC25-9B5529510685}.Release|Win32.Build.0 = Release|Win32
+		{9E9FA586-9B15-4045-A311-A54E392B72DD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9E9FA586-9B15-4045-A311-A54E392B72DD}.Debug|Win32.Build.0 = Debug|Win32
+		{9E9FA586-9B15-4045-A311-A54E392B72DD}.Release|Win32.ActiveCfg = Release|Win32
+		{9E9FA586-9B15-4045-A311-A54E392B72DD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
