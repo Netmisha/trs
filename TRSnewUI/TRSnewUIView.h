@@ -16,7 +16,7 @@
 
 #include "resource.h"
 #include "afxwin.h"
-
+#include "TRSnewUIDoc.h"
 
 class CTRSnewUIView : public CFormView
 {
@@ -60,6 +60,9 @@ protected:
 public:
 	CListBox m_ListRoot;
 	afx_msg void OnButtonadd();
+	afx_msg void OnLbnSelchangeListroot();
+	afx_msg void OnButtondelete();
+	afx_msg void OnUpdateButtondelete(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // debug version in TRSnewUIView.cpp

@@ -15,12 +15,51 @@
 
 #pragma once
 
+#include <vector>
+
+class SuiteRoot
+{
+public:
+	SuiteRoot()
+	{
+		dRoot = nullptr;
+	}
+	SuiteRoot(TCHAR* path)
+	{
+		int size = wcslen(path);
+		dRoot = new TCHAR[size + 1];
+		wcscpy_s(dRoot, size + 1, path);
+	}
+	SuiteRoot(const SuiteRoot& var)
+	{
+		int size = wcslen(var.dRoot);
+		dRoot = new TCHAR[size + 1];
+		wcscpy_s(dRoot, size + 1, var.dRoot);
+	}
+	inline TCHAR* get_path()
+	{
+		return dRoot;
+	}
+
+	~SuiteRoot()
+	{
+		delete[] dRoot;
+	}
+private:
+	TCHAR* dRoot;
+};
+
+
 
 class CTRSnewUIDoc : public CDocument
 {
 protected: // create from serialization only
 	CTRSnewUIDoc();
 	DECLARE_DYNCREATE(CTRSnewUIDoc)
+
+public:
+	// TODO: add access interface to m_SelectedRoots
+	std::vector<SuiteRoot> m_SelectedRoots;
 
 // Attributes
 public:

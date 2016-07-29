@@ -35,6 +35,9 @@ BEGIN_MESSAGE_MAP(CTRSnewUIView, CFormView)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
 	ON_COMMAND(ID_BUTTONADD, &CTRSnewUIView::OnButtonadd)
+	ON_LBN_SELCHANGE(ID_LISTROOT, &CTRSnewUIView::OnLbnSelchangeListroot)
+	ON_COMMAND(ID_BUTTONDELETE, &CTRSnewUIView::OnButtondelete)
+	ON_UPDATE_COMMAND_UI(ID_BUTTONDELETE, &CTRSnewUIView::OnUpdateButtondelete)
 END_MESSAGE_MAP()
 
 // CTRSnewUIView construction/destruction
@@ -107,20 +110,6 @@ CTRSnewUIDoc* CTRSnewUIView::GetDocument() const // non-debug version is inline
 #endif //_DEBUG
 
 
-char* convertToChar(TCHAR*path)//create buffer to set info to tinyXML doc constructor
-{
-	char* buf = new char[MAX_PATH];
-	char help = path[0];
-	int i = 0;
-	while (help)//i tried to use memcpy,but it didn't work so i used while=(
-	{
-		buf[i] = help;
-		++i;
-		help = path[i];
-	}
-	buf[i] = '\0';
-	return buf;
-}
 
 void CTRSnewUIView::OnButtonadd()
 {
@@ -133,12 +122,11 @@ void CTRSnewUIView::OnButtonadd()
 		TCHAR path[MAX_PATH];
 		SHGetPathFromIDList(pidl, path);
 
-	/*	char* pathA = nullptr;
+		char* pathA = nullptr;
 		int size = WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, 0, NULL, NULL);
 
 		pathA = new char[size];
 		WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, size, NULL, NULL);
-	*/	char* pathA = convertToChar(path);
 
 		if (!Manager.Verify(pathA, nullptr, nullptr))
 			m_ListRoot.AddString(path);
@@ -155,4 +143,80 @@ void CTRSnewUIView::OnButtonadd()
 			imalloc->Release();
 		}
 	}
+}
+
+
+void CTRSnewUIView::OnLbnSelchangeListroot()
+{
+	int count = m_ListRoot.GetSelCount();
+	int* array = new int[count];
+
+	// making RunButton visible only when at least one element is selected
+	/*if (count > 0)
+	{
+		if (m_Menu)
+		{
+			m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_ENABLED);
+			m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_ENABLED);
+		}
+	}
+	else
+	{
+		if (m_Menu)
+		{
+			m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+			m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		}
+	}*/
+
+	m_ListRoot.GetSelItems(count, array);
+
+	GetDocument()->m_SelectedRoots.clear();
+	GetDocument()->m_SelectedRoots.reserve(count);
+
+	for (int i = 0; i < count; ++i)
+	{
+		TCHAR root[MAX_PATH];
+		m_ListRoot.GetText(array[i], root);
+		GetDocument()->m_SelectedRoots.push_back(root);
+	}
+
+	/*if (count == 1)
+		Info(GetDocument()->m_SelectedRoots.front().get_path());
+	else
+		m_Tree.DeleteAllItems();*/
+
+	delete[] array;
+}
+
+
+void CTRSnewUIView::OnButtondelete()
+{
+	if (GetDocument()->m_SelectedRoots.size())
+	{
+		//if (m_Menu)
+		//{
+		//	//m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		//}
+		//m_Tree.DeleteAllItems();
+		for each (auto to_delete in GetDocument()->m_SelectedRoots)
+		{
+			int index = m_ListRoot.FindString(-1, to_delete.get_path());
+			m_ListRoot.DeleteString(index);
+		}
+		GetDocument()->m_SelectedRoots.clear();
+		//if (RootList.GetCount() == 0)
+		//{
+		//	m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		//}
+	}
+}
+
+
+void CTRSnewUIView::OnUpdateButtondelete(CCmdUI *pCmdUI)
+{
+	if (GetDocument()->m_SelectedRoots.size())
+		pCmdUI->Enable();
+	else
+		pCmdUI->Enable(false);
 }
