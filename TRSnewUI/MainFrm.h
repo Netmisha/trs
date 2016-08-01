@@ -63,6 +63,11 @@ protected:
 
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
+
+	BOOL m_CheckConsoleState;
+public:
+	afx_msg void OnCheckConsole();
+	afx_msg void OnUpdateCheckConsole(CCmdUI *pCmdUI);
 };
 
 
