@@ -5,10 +5,11 @@
 #include "RunDialog.h"
 #include "afxdialogex.h"
 
-bool ifCancelPressed=true;
+
 char* tag = nullptr;
 char* name = nullptr;
 char* threads = nullptr;
+bool checkRunParameters;
 // RunDialog dialog
 
 IMPLEMENT_DYNAMIC(RunDialog, CDialogEx)
