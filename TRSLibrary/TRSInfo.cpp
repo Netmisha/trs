@@ -227,86 +227,137 @@ char* TRSInfo::getDisable() const
 
 char* TRSInfo::getExecutablePath() const
 {
-	if (parameters && executablePath&& executableName)
-	{
-		int sizePath = strlen(executablePath);
-		int sizeName = strlen(executableName);
-		int sizeParam = strlen(parameters);
-		char* result;
-		if (executablePath[sizeName - 1] == '\\')
-		{
-			result = new char[sizePath + sizeName + sizeParam + 2];
-			strncpy_s(result, sizePath + 1, executablePath, sizePath);
-			strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
-		}
-		else
-		{
-			result = new char[sizePath + sizeName + sizeParam + 3];
-			strncpy_s(result, sizePath + 1, executablePath, sizePath);
-			strncpy_s(result + sizePath, 2, "\\", 1);
-			strncpy_s(result + sizePath+1, sizeName + 1, executableName, sizeName);
+	if (!path || !executableName)
+		return nullptr;
 
-		}
-		
-		DWORD dwAttrib = GetFileAttributesA(result);
-		if (dwAttrib == INVALID_FILE_ATTRIBUTES && (dwAttrib == ERROR_FILE_NOT_FOUND))
-		{
-			delete[] result;
-			return nullptr;
-		}
-		else
-		{
-			strncpy_s(result + sizePath + sizeName + 1, 2, " ", 1);
-			strncpy_s(result + sizePath + sizeName + 2, sizeParam + 1, parameters, sizeParam);
-			return result;
-		}
+	int path_size = strlen(path);
+	int exename_size = strlen(executableName);
+	int exepath_size = executablePath ? strlen(executablePath) + 1: 0; // + 1 in case that we will need to add slesh-separator between exepath and exename
+	int parameters_size = parameters ? strlen(parameters) + 1 : 0; // + 1 for the space-separator between exepath and parameters
+
+	char* result;
+	int size;
+	if (executablePath && *executablePath != '.')
+	{
+		size = exepath_size + exename_size + parameters_size;
+		result = new char[size + 1];
+		*result = 0;
+		strcat_s(result, size + 1, executablePath);
+	}
+	else if (executablePath && *executablePath == '.')
+	{
+		size = path_size + exepath_size + exename_size + parameters_size;
+		result = new char[size + 1];
+		*result = 0;
+		strcat_s(result, size + 1, path);
+		strcat_s(result, size + 1, executablePath);
 	}
 	else
-	{
-		if (parameters && !executablePath && executableName)
-		{
-			int sizePath = strlen(path);
-			int sizeName = strlen(executableName);
-			int sizeParam = strlen(parameters);
-			char* result = new char[sizePath + sizeParam + sizeName + 2];
-			strncpy_s(result, sizePath + 1, path, sizePath);
-			strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
-			strncpy_s(result + sizePath + sizeName, 2, " ", 1);
-			strncpy_s(result + sizePath + sizeName + 1, sizeParam + 1, parameters, sizeParam);
-			return result;
-		}
-		if (executablePath && !parameters&& executableName)
-		{
-			int sizePath = strlen(executablePath);
-			int sizeName = strlen(executableName);
-			char* result;
-			if (executablePath[sizeName - 1] == '//')
-			{
-				result = new char[sizePath + sizeName  + 1];
-				strncpy_s(result, sizePath + 1, executablePath, sizePath);
-				strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
-			}
-			else
-			{
-				result = new char[sizePath + sizeName  + 2];
-				strncpy_s(result, sizePath + 1, executablePath, sizePath);
-				strncpy_s(result + sizePath, 2, "//", 1);
-				strncpy_s(result + sizePath + 1, sizeName + 1, executableName, sizeName);
-
-			}
-			return result;
-		}
-		if (!parameters && !executablePath&& executableName)
-		{
-			int sizePath = strlen(path);
-			int sizeName = strlen(executableName);
-			char* result = new char[sizePath + sizeName + 1];
-			strncpy_s(result, sizePath + 1, path, sizePath);
-			strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
-
-			return result;
-		}
+	{// executable path was not supplied
+		size = path_size + exename_size + parameters_size;
+		result = new char[size + 1];
+		*result = 0;
+		strcat_s(result, size + 1, path);
 	}
+	
+
+	// adding slesh-separetor before contantenation exe name to the its path
+	if (result[strlen(result) - 1] != '\\')
+		strcat_s(result, size + 1, "\\");
+
+	strcat_s(result, size + 1, executableName);
+
+	if (parameters)
+	{
+		strcat_s(result, size + 1, " ");
+		strcat_s(result, size + 1, parameters);
+	}
+
+
+
+	return result;
+
+	//if (parameters && executablePath && executableName)
+	//{
+	//	int sizePath = strlen(path);
+	//	int sizeExePath = strlen(executablePath);
+	//	int sizeName = strlen(executableName);
+	//	int sizeParam = strlen(parameters);
+	//	char* result;
+	//	if (executablePath[sizeName - 1] == '\\')
+	//	{
+	//		result = new char[sizeExePath + sizeName + sizeParam + 2];
+	//		strncpy_s(result, sizeExePath + 1, executablePath, sizeExePath);
+	//		strncpy_s(result + sizeExePath, sizeName + 1, executableName, sizeName);
+	//	}
+	//	else
+	//	{
+	//		result = new char[sizeExePath + sizeName + sizeParam + 3];
+	//		strncpy_s(result, sizeExePath + 1, executablePath, sizeExePath);
+	//		strncpy_s(result + sizeExePath, 2, "\\", 1);
+	//		strncpy_s(result + sizeExePath + 1, sizeName + 1, executableName, sizeName);
+
+	//	}
+	//	
+	//	DWORD dwAttrib = GetFileAttributesA(result);
+	//	if (dwAttrib == INVALID_FILE_ATTRIBUTES && (dwAttrib == ERROR_FILE_NOT_FOUND))
+	//	{
+	//		delete[] result;
+	//		return nullptr;
+	//	}
+	//	else
+	//	{
+	//		strncpy_s(result + sizePath + sizeName + 1, 2, " ", 1);
+	//		strncpy_s(result + sizePath + sizeName + 2, sizeParam + 1, parameters, sizeParam);
+	//		return result;
+	//	}
+	//}
+	//else
+	//{
+	//	if (parameters && !executablePath && executableName)
+	//	{
+	//		int sizePath = strlen(path);
+	//		int sizeName = strlen(executableName);
+	//		int sizeParam = strlen(parameters);
+	//		char* result = new char[sizePath + sizeParam + sizeName + 2];
+	//		strncpy_s(result, sizePath + 1, path, sizePath);
+	//		strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
+	//		strncpy_s(result + sizePath + sizeName, 2, " ", 1);
+	//		strncpy_s(result + sizePath + sizeName + 1, sizeParam + 1, parameters, sizeParam);
+	//		return result;
+	//	}
+	//	if (executablePath && !parameters&& executableName)
+	//	{
+	//		int sizePath = strlen(executablePath);
+	//		int sizeName = strlen(executableName);
+	//		char* result;
+	//		if (executablePath[sizeName - 1] == '//')
+	//		{
+	//			result = new char[sizePath + sizeName  + 1];
+	//			strncpy_s(result, sizePath + 1, executablePath, sizePath);
+	//			strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
+	//		}
+	//		else
+	//		{
+	//			result = new char[sizePath + sizeName  + 2];
+	//			strncpy_s(result, sizePath + 1, executablePath, sizePath);
+	//			strncpy_s(result + sizePath, 2, "//", 1);
+	//			strncpy_s(result + sizePath + 1, sizeName + 1, executableName, sizeName);
+
+	//		}
+	//		return result;
+	//	}
+	//	if (!parameters && !executablePath && executableName)
+	//	{
+	//		int sizePath = strlen(path);
+	//		int sizeName = strlen(executableName);
+	//		char* result = new char[sizePath + sizeName + 1];
+	//		strncpy_s(result, sizePath + 1, path, sizePath);
+	//		strncpy_s(result + sizePath, sizeName + 1, executableName, sizeName);
+
+	//		return result;
+	//	}
+	//}
 }
 
 char* TRSInfo::getPath() const
