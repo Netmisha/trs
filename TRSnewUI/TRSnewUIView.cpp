@@ -87,9 +87,9 @@ void CTRSnewUIView::OnInitialUpdate()
 	
 
 	m_ListCtrl.SetExtendedStyle(m_ListCtrl.GetExtendedStyle() | LVS_EX_CHECKBOXES | LVS_EX_TRANSPARENTSHADOWTEXT);
-	m_ListCtrl.InsertItem(0, _T("D:\\Repository\\trs\\TestData"));
-	m_ListCtrl.InsertItem(0, _T("D:\\Repository\\Suite root"));
-	m_ListCtrl.InsertItem(0, _T("D:\\Repository\\Suite root\\Suite 2"));
+//	m_ListCtrl.InsertItem(0, _T("D:\\Repository\\trs\\TestData"));
+//	m_ListCtrl.InsertItem(0, _T("D:\\Repository\\Suite root"));
+//	m_ListCtrl.InsertItem(0, _T("D:\\Repository\\Suite root\\Suite 2"));
 }
 
 void CTRSnewUIView::OnRButtonUp(UINT /* nFlags */, CPoint point)
