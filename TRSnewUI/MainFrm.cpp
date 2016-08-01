@@ -30,6 +30,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_COMMAND_RANGE(ID_VIEW_APPLOOK_WIN_2000, ID_VIEW_APPLOOK_WINDOWS_7, &CMainFrame::OnApplicationLook)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_APPLOOK_WIN_2000, ID_VIEW_APPLOOK_WINDOWS_7, &CMainFrame::OnUpdateApplicationLook)
 	ON_WM_SETTINGCHANGE()
+	ON_COMMAND(ID_CHECK_CONSOLE, &CMainFrame::OnCheckConsole)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_CONSOLE, &CMainFrame::OnUpdateCheckConsole)
 END_MESSAGE_MAP()
 
 // CMainFrame construction/destruction
@@ -38,6 +40,7 @@ CMainFrame::CMainFrame()
 {
 	// TODO: add member initialization code here
 	theApp.m_nAppLook = theApp.GetInt(_T("ApplicationLook"), ID_VIEW_APPLOOK_OFF_2007_BLUE);
+	m_CheckConsoleState = false;
 }
 
 CMainFrame::~CMainFrame()
@@ -143,6 +146,7 @@ BOOL CMainFrame::CreateDockingWindows()
 		TRACE0("Failed to create Output window\n");
 		return FALSE; // failed to create
 	}
+	
 
 	// Create properties window
 	CString strPropertiesWnd;
@@ -280,4 +284,21 @@ void CMainFrame::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 {
 	CFrameWndEx::OnSettingChange(uFlags, lpszSection);
 	m_wndOutput.UpdateFonts();
+}
+
+
+void CMainFrame::OnCheckConsole()
+{
+	m_CheckConsoleState = !m_CheckConsoleState;
+	if (m_CheckConsoleState)
+		m_wndOutput.ShowPane(TRUE, FALSE, TRUE);
+	else
+		m_wndOutput.ShowPane(FALSE, FALSE, TRUE);
+}
+
+
+void CMainFrame::OnUpdateCheckConsole(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable();
+	pCmdUI->SetCheck(m_CheckConsoleState ? 1 : 0);
 }
