@@ -116,3 +116,4 @@ public:
 };
 
 extern CListBox* List;
+extern bool checkRunParameters;

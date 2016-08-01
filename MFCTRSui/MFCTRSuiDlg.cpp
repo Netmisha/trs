@@ -23,7 +23,7 @@
 #define RAW_RESIZIBLE 2
 // CMFCTRSuiDlg dialog
 
-
+bool ifCancelPressed;
 bool RunEndCheck;
 CToolBar* ToolBar;
 CToolBar* Bar;
@@ -531,13 +531,13 @@ DWORD WINAPI Timer(LPVOID arg)
 			edit->ReplaceSel(L"00:");
 			if (count > 9)
 			{
-				mes.Format(L"%d", count / 60);
+				mes.Format(L"%d", count );
 				edit->ReplaceSel(mes);
 			}
 			else
 			{
 				edit->ReplaceSel(L"0");
-				mes.Format(L"%d", count / 60);
+				mes.Format(L"%d", count );
 				edit->ReplaceSel(mes);
 			}
 		}
@@ -978,14 +978,17 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 		m_Progress.SetPos(0);
 		RunDialog Dlg;
 		Dlg.DoModal();
-		ReportManager* reportManag = new ReportManager;
-		ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
-		reportManag->addReporter(reporter);
-		ToRunParameters* to_run = new ToRunParameters(dRoots, reportManag, &m_Progress, &subm_Progress);
-		HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
-		HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
-		CloseHandle(hThread);
-		CloseHandle(hTimer);
+		if (ifCancelPressed)
+		{
+			ReportManager* reportManag = new ReportManager;
+			ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
+			reportManag->addReporter(reporter);
+			ToRunParameters* to_run = new ToRunParameters(dRoots, reportManag, &m_Progress, &subm_Progress);
+			HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
+			HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
+			CloseHandle(hThread);
+			CloseHandle(hTimer);
+		}
 	}
 }
 
