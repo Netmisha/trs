@@ -66,8 +66,16 @@ public:
 	afx_msg void OnUpdateButtonrun(CCmdUI *pCmdUI);
 protected:
 	CListCtrl m_ListCtrl;
+	void Info(TCHAR* path,HTREEITEM& item);
+	std::vector<HTREEITEM*> TreeItemsColl;
 public:
 	afx_msg void OnLvnItemchangedListRoot(NMHDR *pNMHDR, LRESULT *pResult);
+	CProgressCtrl Progress_upper;
+	CProgressCtrl Progress_lower;
+	CTreeCtrl Tree_control;
+	afx_msg void OnUpdateEdit2(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateEdit3(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateSpin2(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // debug version in TRSnewUIView.cpp

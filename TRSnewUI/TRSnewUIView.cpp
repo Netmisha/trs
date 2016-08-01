@@ -22,7 +22,7 @@
 #include "TRSnewUIDoc.h"
 #include "TRSnewUIView.h"
 #include <algorithm>
-
+#include "Functionality.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -41,6 +41,9 @@ BEGIN_MESSAGE_MAP(CTRSnewUIView, CFormView)
 	ON_COMMAND(ID_BUTTONRUN, &CTRSnewUIView::OnButtonrun)
 	ON_UPDATE_COMMAND_UI(ID_BUTTONRUN, &CTRSnewUIView::OnUpdateButtonrun)
 	ON_NOTIFY(LVN_ITEMCHANGED, ID_LIST_ROOT, &CTRSnewUIView::OnLvnItemchangedListRoot)
+	ON_UPDATE_COMMAND_UI(ID_EDIT2, &CTRSnewUIView::OnUpdateEdit2)
+	ON_UPDATE_COMMAND_UI(ID_EDIT3, &CTRSnewUIView::OnUpdateEdit3)
+	ON_UPDATE_COMMAND_UI(ID_SPIN2, &CTRSnewUIView::OnUpdateSpin2)
 END_MESSAGE_MAP()
 
 // CTRSnewUIView construction/destruction
@@ -60,6 +63,9 @@ void CTRSnewUIView::DoDataExchange(CDataExchange* pDX)
 {
 	CFormView::DoDataExchange(pDX);
 	DDX_Control(pDX, ID_LIST_ROOT, m_ListCtrl);
+	DDX_Control(pDX, IDC_PROGRESS1, Progress_upper);
+	DDX_Control(pDX, IDC_PROGRESS3, Progress_lower);
+	DDX_Control(pDX, IDC_TREE1, Tree_control);
 }
 
 BOOL CTRSnewUIView::PreCreateWindow(CREATESTRUCT& cs)
@@ -172,9 +178,201 @@ void CTRSnewUIView::OnUpdateButtondelete(CCmdUI *pCmdUI)
 		pCmdUI->Enable(false);
 }
 
+bool checkDiff(int begin, char* source)
+{
+	int count = 0;
+	for (int i = begin; i < strlen(source); ++i)
+	{
+		if (source[i] == '\\')
+		{
+			++count;
+		}
+	}
+	return count == 1;
+}
+
+void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CTreeCtrl* Tree_control, int& count, HTREEITEM* hHead, std::list<Suite*>* checkList)
+{
+	if (count != suiteColl->size())
+	{
+		char* rootPath = new char[strlen((*it)->get_path()) + 1];
+		strncpy_s(rootPath, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
+		char* rootName = new char[strlen((*it)->getName()) + 1];
+		strncpy_s(rootName, strlen((*it)->getName()) + 1, (*it)->getName(), strlen((*it)->getName()));
+		HTREEITEM* hSuite = new HTREEITEM;
+		std::list<Suite*>::iterator itHelp = it;
+		for (it; it != suiteColl->end(); ++it)
+		{
+			if (count == suiteColl->size())
+			{
+				break;
+			}
+			std::list<Suite*>::iterator helper = std::find(checkList->begin(), checkList->end(), *it);
+			if (helper == (checkList->end()))
+			{
+				if (strlen((*it)->get_path()) != strlen(rootPath))
+				{
+					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
+					{
+						if (checkDiff(strlen(rootPath), (*it)->get_path()))
+							TreeParse(it, suiteColl, Tree_control, count, hSuite, checkList);
+					}
+
+				}
+				else
+				{
+					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)) && !strncmp((*it)->getName(), rootName, strlen(rootName)))
+					{
+						TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
+						convertToTCHAR(buf, (*it)->getName());
+						*hSuite = Tree_control->InsertItem(buf, *hHead);
+						++count;
+						HTREEITEM hTest;
+						std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+						for (iter; iter != (*it)->getList().end(); ++iter)
+						{
+							TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+							convertToTCHAR(subBuf, (*iter)->getName());
+							Tree_control->InsertItem(subBuf, *hSuite);
+							delete[] subBuf;
+						}
+						checkList->push_back((*it));
+						delete[] buf;
+					}
+
+				}
+			}
+		}
+		--it;
+		for (it; it != suiteColl->begin(); --it)
+		{
+
+			if (count == suiteColl->size())
+			{
+				break;
+			}
+			std::list<Suite*>::iterator helper = std::find(checkList->begin(), checkList->end(), *it);
+			if (helper == (checkList->end()))
+			{
+				if (strlen((*it)->get_path()) != strlen(rootPath))
+				{
+					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
+					{
+						if (checkDiff(strlen(rootPath), (*it)->get_path()))
+							TreeParse(it, suiteColl, Tree_control, count, hSuite, checkList);
+					}
+
+				}
+				else
+				{
+					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)) && !strncmp((*it)->getName(), rootName, strlen(rootName)))
+					{
+						TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
+						convertToTCHAR(buf, (*it)->getName());
+						*hSuite = Tree_control->InsertItem(buf, *hHead);
+						++count;
+						HTREEITEM hTest;
+						std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+						for (iter; iter != (*it)->getList().end(); ++iter)
+						{
+							TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+							convertToTCHAR(subBuf, (*iter)->getName());
+							Tree_control->InsertItem(subBuf, *hSuite);
+							delete[] subBuf;
+						}
+						checkList->push_back((*it));
+						delete[] buf;
+					}
+
+				}
+			}
+		}
+
+		if (count != suiteColl->size())
+		{
+			std::list<Suite*>::iterator helper = std::find(checkList->begin(), checkList->end(), *it);
+			if (helper == checkList->end())
+			{
+
+				if (strlen((*it)->get_path()) != strlen(rootPath))
+				{
+					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
+					{
+						if (checkDiff(strlen(rootPath), (*it)->get_path()))
+							TreeParse(it, suiteColl, Tree_control, count, hSuite, checkList);
+					}
+				}
+				else
+				{
+
+					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)) && !strncmp((*it)->getName(), rootName, strlen(rootName)))
+					{
+						TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
+						convertToTCHAR(buf, (*it)->getName());
+						*hSuite = Tree_control->InsertItem(buf, *hHead);
+						++count;
+						HTREEITEM hTest;
+						std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+						for (iter; iter != (*it)->getList().end(); ++iter)
+						{
+							TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+							convertToTCHAR(subBuf, (*iter)->getName());
+							Tree_control->InsertItem(subBuf, *hSuite);
+							delete[] subBuf;
+						}
+						checkList->push_back((*it));
+						delete[] buf;
+					}
+				}
+
+			}
+		}
+		it = itHelp;
+		delete hSuite;
+		delete[] rootName;
+		delete[] rootPath;
+	}
+}
+
+void CTRSnewUIView::Info(TCHAR* path,HTREEITEM& hHead)
+{
+	char* pathA = nullptr;
+	int size = WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, 0, NULL, NULL);
+	pathA = new char[size];
+	WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, size, NULL, NULL);
+
+	std::list<Suite*>* suiteColl = Manager.List(pathA, nullptr, nullptr);
+	hHead = Tree_control.InsertItem(L"Suites", TVI_ROOT);
+	int count = 0;
+	std::list<Suite*>::iterator it = suiteColl->begin();
+	count = strlen((*it)->get_path());
+	for (it; it != suiteColl->end(); ++it)
+	{
+		if (strlen((*it)->get_path()) < count)
+		{
+			count = strlen((*it)->get_path());
+		}
+	}
+	--it;
+	int lic = 0;
+	std::list<Suite*> checkList;
+	for (it; it != suiteColl->begin(); --it)
+	{
+		if (strlen((*it)->get_path()) == count)
+		{
+			TreeParse(it, suiteColl, &Tree_control, lic, &hHead, &checkList);
+		}
+	}
+	if (strlen((*it)->get_path()) == count)
+	{
+		TreeParse(it, suiteColl, &Tree_control, lic, &hHead, &checkList);
+	}
+	delete[] pathA;
+}
 
 void CTRSnewUIView::OnButtonrun()
 {
+	
 	// TODO: Add your command handler code here
 }
 
@@ -184,7 +382,9 @@ void CTRSnewUIView::OnUpdateButtonrun(CCmdUI *pCmdUI)
 	if (GetDocument()->m_SelectedRoots.size())
 		pCmdUI->Enable();
 	else
+	{
 		pCmdUI->Enable(false);
+	}
 }
 
 
@@ -200,6 +400,13 @@ void CTRSnewUIView::OnLvnItemchangedListRoot(NMHDR *pNMHDR, LRESULT *pResult)
 		case INDEXTOSTATEIMAGEMASK(BST_CHECKED + 1): // new state: checked
 		{ 
 			GetDocument()->m_SelectedRoots.push_back(pNMLV->iItem);
+			char* path = fromCStringToChar(m_ListCtrl.GetItemText(pNMLV->iItem, 0));
+			TCHAR* buf = new TCHAR[strlen(path) + 1];
+			convertToTCHAR(buf, path);
+			HTREEITEM* hHead=new HTREEITEM;
+			std::vector<HTREEITEM*>::iterator iterator = TreeItemsColl.begin();
+			TreeItemsColl.insert(iterator + pNMLV->iItem, hHead);
+			Info(buf,*hHead);
 			break;
 		}
 		case INDEXTOSTATEIMAGEMASK(BST_UNCHECKED + 1): // new state: unchecked
@@ -207,9 +414,55 @@ void CTRSnewUIView::OnLvnItemchangedListRoot(NMHDR *pNMHDR, LRESULT *pResult)
 			auto iter = std::find(GetDocument()->m_SelectedRoots.begin(), GetDocument()->m_SelectedRoots.end(), pNMLV->iItem);
 			if (iter != GetDocument()->m_SelectedRoots.end())
 				GetDocument()->m_SelectedRoots.erase(iter);
+			if (TreeItemsColl.size()>0)
+			if (*TreeItemsColl[pNMLV->iItem])
+			{
+				Tree_control.DeleteItem(*TreeItemsColl[pNMLV->iItem]);
+				auto it = std::find(TreeItemsColl.begin(), TreeItemsColl.end(), TreeItemsColl[pNMLV->iItem]);
+				if (it != TreeItemsColl.end())
+				{
+					delete *it;
+					TreeItemsColl.erase(it);
+				}
+			}
 			break;
 		}
 		}
 	}
 	*pResult = 0;
+}
+
+void CTRSnewUIView::OnUpdateEdit2(CCmdUI *pCmdUI)
+{
+	if (GetDocument()->m_SelectedRoots.size())
+		pCmdUI->Enable();
+	else
+	{
+		pCmdUI->Enable(false);
+	}
+	// TODO: Add your command update UI handler code here
+}
+
+
+void CTRSnewUIView::OnUpdateEdit3(CCmdUI *pCmdUI)
+{
+	if (GetDocument()->m_SelectedRoots.size())
+		pCmdUI->Enable();
+	else
+	{
+		pCmdUI->Enable(false);
+	}
+	// TODO: Add your command update UI handler code here
+}
+
+
+void CTRSnewUIView::OnUpdateSpin2(CCmdUI *pCmdUI)
+{
+	if (GetDocument()->m_SelectedRoots.size())
+		pCmdUI->Enable();
+	else
+	{
+		pCmdUI->Enable(false);
+	}
+	// TODO: Add your command update UI handler code here
 }

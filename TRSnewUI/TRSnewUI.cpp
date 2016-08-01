@@ -185,6 +185,9 @@ protected:
 // Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnEdit2();
+	afx_msg void OnUpdateEdit2(CCmdUI *pCmdUI);
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
@@ -197,6 +200,8 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+	ON_COMMAND(ID_EDIT2, &CAboutDlg::OnEdit2)
+	ON_UPDATE_COMMAND_UI(ID_EDIT2, &CAboutDlg::OnUpdateEdit2)
 END_MESSAGE_MAP()
 
 // App command to run the dialog
@@ -232,3 +237,16 @@ void CTRSnewUIApp::SaveCustomState()
 
 
 
+
+
+void CAboutDlg::OnEdit2()
+{
+	// TODO: Add your command handler code here
+}
+
+
+void CAboutDlg::OnUpdateEdit2(CCmdUI *pCmdUI)
+{
+	
+	// TODO: Add your command update UI handler code here
+}

@@ -974,7 +974,6 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 {
 	if (dRoots.size())
 	{
-
 		m_Progress.SetPos(0);
 		RunDialog Dlg;
 		Dlg.DoModal();

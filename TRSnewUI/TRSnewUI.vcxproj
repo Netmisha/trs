@@ -102,8 +102,11 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\TRSLibrary\TinyXML\tinystr.h" />
+    <ClInclude Include="..\TRSLibrary\TinyXML\tinyxml.h" />
     <ClInclude Include="ClassView.h" />
     <ClInclude Include="FileView.h" />
+    <ClInclude Include="Functionality.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="OutputWnd.h" />
     <ClInclude Include="PropertiesWnd.h" />
@@ -116,8 +119,13 @@
     <ClInclude Include="ViewTree.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinystr.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxml.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlerror.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlparser.cpp" />
     <ClCompile Include="ClassView.cpp" />
     <ClCompile Include="FileView.cpp" />
+    <ClCompile Include="Functionality.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="OutputWnd.cpp" />
     <ClCompile Include="PropertiesWnd.cpp" />
