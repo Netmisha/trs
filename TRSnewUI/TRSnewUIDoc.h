@@ -52,7 +52,7 @@ public:
 #endif
 
 protected:
-
+	void SetTitle(LPCTSTR lpszTitle) override;
 // Generated message map functions
 protected:
 	DECLARE_MESSAGE_MAP()

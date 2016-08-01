@@ -71,11 +71,13 @@ BOOL CTRSnewUIView::PreCreateWindow(CREATESTRUCT& cs)
 	return CFormView::PreCreateWindow(cs);
 }
 
+
 void CTRSnewUIView::OnInitialUpdate()
 {
 	CFormView::OnInitialUpdate();
 	GetParentFrame()->RecalcLayout();
 	ResizeParentToFit();
+
 
 	m_ListCtrl.SetExtendedStyle(m_ListCtrl.GetExtendedStyle() | LVS_EX_CHECKBOXES | LVS_EX_TRANSPARENTSHADOWTEXT);
 	m_ListCtrl.InsertItem(0, _T("First raw"));
