@@ -75,6 +75,11 @@ void CTRSnewUIDoc::Serialize(CArchive& ar)
 	}
 }
 
+void CTRSnewUIDoc::SetTitle(LPCTSTR lpszTitle)
+{
+	CDocument::SetTitle(_T("Test Running Solution"));
+}
+
 #ifdef SHARED_HANDLERS
 
 // Support for thumbnails

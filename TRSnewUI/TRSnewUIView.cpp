@@ -77,13 +77,18 @@ BOOL CTRSnewUIView::PreCreateWindow(CREATESTRUCT& cs)
 	return CFormView::PreCreateWindow(cs);
 }
 
+
 void CTRSnewUIView::OnInitialUpdate()
 {
 	CFormView::OnInitialUpdate();
 	GetParentFrame()->RecalcLayout();
 	ResizeParentToFit();
 
-	m_ListCtrl.SetExtendedStyle(m_ListCtrl.GetExtendedStyle() | LVS_EX_CHECKBOXES);
+
+	m_ListCtrl.SetExtendedStyle(m_ListCtrl.GetExtendedStyle() | LVS_EX_CHECKBOXES | LVS_EX_TRANSPARENTSHADOWTEXT);
+	m_ListCtrl.InsertItem(0, _T("First raw"));
+	m_ListCtrl.InsertItem(0, _T("Second raw"));
+	m_ListCtrl.InsertItem(0, _T("Third raw"));
 }
 
 void CTRSnewUIView::OnRButtonUp(UINT /* nFlags */, CPoint point)
@@ -158,7 +163,8 @@ void CTRSnewUIView::OnButtonadd()
 
 void CTRSnewUIView::OnButtondelete()
 {
-	//str = m_ListCtrl.GetItemText(pNMLV->iItem, 0);
+	// due to the fact, that we indentify elements by index, and after each deletion they shifted - we are forced delete from the biggest index.
+	std::sort(GetDocument()->m_SelectedRoots.begin(), GetDocument()->m_SelectedRoots.end(), std::greater<int>());
 	for (auto iter = GetDocument()->m_SelectedRoots.begin();
 		iter != GetDocument()->m_SelectedRoots.end(); 
 		++iter)
