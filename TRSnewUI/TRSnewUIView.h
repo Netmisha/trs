@@ -50,6 +50,10 @@ public:
 	virtual void Dump(CDumpContext& dc) const;
 #endif
 
+private:
+	void DeleteFromTree(int item);
+	void AddToTree(char* path,int item);
+
 protected:
 
 // Generated message map functions
@@ -66,7 +70,7 @@ public:
 	afx_msg void OnUpdateButtonrun(CCmdUI *pCmdUI);
 protected:
 	CListCtrl m_ListCtrl;
-	void Info(TCHAR* path,HTREEITEM& item);
+	
 	std::vector<HTREEITEM*> TreeItemsColl;
 public:
 	afx_msg void OnLvnItemchangedListRoot(NMHDR *pNMHDR, LRESULT *pResult);
@@ -76,6 +80,7 @@ public:
 	afx_msg void OnUpdateEdit2(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateEdit3(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateSpin2(CCmdUI *pCmdUI);
+	void Info(TCHAR* path, HTREEITEM& item);
 };
 
 #ifndef _DEBUG  // debug version in TRSnewUIView.cpp

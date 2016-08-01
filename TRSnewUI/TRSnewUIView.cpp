@@ -395,6 +395,37 @@ void CTRSnewUIView::OnUpdateButtonrun(CCmdUI *pCmdUI)
 }
 
 
+void CTRSnewUIView::AddToTree(char* path,int Item)
+{
+	TCHAR* buf = new TCHAR[strlen(path) + 1];
+	convertToTCHAR(buf, path);
+	HTREEITEM* hHead = new HTREEITEM;
+
+	if (TreeItemsColl.size() < Item)
+	{
+		TreeItemsColl.resize(Item);
+	}
+	std::vector<HTREEITEM*>::iterator iterator = TreeItemsColl.begin();
+	TreeItemsColl.insert(iterator + Item, hHead);
+	Info(buf, *hHead);
+}
+
+void CTRSnewUIView::DeleteFromTree(int item)
+{
+	if (TreeItemsColl.size()>0)
+	if (*TreeItemsColl[item])
+	{
+		Tree_control.DeleteItem(*TreeItemsColl[item]);
+		auto it = std::find(TreeItemsColl.begin(), TreeItemsColl.end(), TreeItemsColl[item]);
+		if (it != TreeItemsColl.end())
+		{
+			delete *it;
+
+		}
+	}
+}
+
+
 void CTRSnewUIView::OnLvnItemchangedListRoot(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW  pNMLV = reinterpret_cast<LPNMLISTVIEW >(pNMHDR);
@@ -408,17 +439,7 @@ void CTRSnewUIView::OnLvnItemchangedListRoot(NMHDR *pNMHDR, LRESULT *pResult)
 		{ 
 			GetDocument()->m_SelectedRoots.push_back(pNMLV->iItem);
 			char* path = fromCStringToChar(m_ListCtrl.GetItemText(pNMLV->iItem, 0));
-			TCHAR* buf = new TCHAR[strlen(path) + 1];
-			convertToTCHAR(buf, path);
-			HTREEITEM* hHead=new HTREEITEM;
-			
-			if (TreeItemsColl.size() < pNMLV->iItem)
-			{
-				TreeItemsColl.resize(pNMLV->iItem);
-			}
-			std::vector<HTREEITEM*>::iterator iterator = TreeItemsColl.begin();
-			TreeItemsColl.insert(iterator + pNMLV->iItem, hHead);
-			Info(buf,*hHead);
+			AddToTree(path, pNMLV->iItem);
 			break;
 		}
 		case INDEXTOSTATEIMAGEMASK(BST_UNCHECKED + 1): // new state: unchecked
@@ -426,17 +447,7 @@ void CTRSnewUIView::OnLvnItemchangedListRoot(NMHDR *pNMHDR, LRESULT *pResult)
 			auto iter = std::find(GetDocument()->m_SelectedRoots.begin(), GetDocument()->m_SelectedRoots.end(), pNMLV->iItem);
 			if (iter != GetDocument()->m_SelectedRoots.end())
 				GetDocument()->m_SelectedRoots.erase(iter);
-			if (TreeItemsColl.size()>0)
-			if (*TreeItemsColl[pNMLV->iItem])
-			{
-				Tree_control.DeleteItem(*TreeItemsColl[pNMLV->iItem]);
-				auto it = std::find(TreeItemsColl.begin(), TreeItemsColl.end(), TreeItemsColl[pNMLV->iItem]);
-				if (it != TreeItemsColl.end())
-				{
-					delete *it;
-					
-				}
-			}
+			DeleteFromTree(pNMLV->iItem);
 			break;
 		}
 		}
