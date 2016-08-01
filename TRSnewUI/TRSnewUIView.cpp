@@ -18,7 +18,7 @@
 #ifndef SHARED_HANDLERS
 #include "TRSnewUI.h"
 #endif
-
+#include "OutputWnd.h"
 #include "TRSnewUIDoc.h"
 #include "TRSnewUIView.h"
 #include <algorithm>
@@ -73,7 +73,7 @@ BOOL CTRSnewUIView::PreCreateWindow(CREATESTRUCT& cs)
 	// TODO: Modify the Window class or styles here by modifying
 	//  the CREATESTRUCT cs
 	//m_ListCtrl.SetExtendedStyle(m_ListCtrl.GetExtendedStyle() | LVS_EX_CHECKBOXES);
-
+	
 	return CFormView::PreCreateWindow(cs);
 }
 
@@ -83,7 +83,8 @@ void CTRSnewUIView::OnInitialUpdate()
 	CFormView::OnInitialUpdate();
 	GetParentFrame()->RecalcLayout();
 	ResizeParentToFit();
-
+	COutputWnd output;
+	
 
 	m_ListCtrl.SetExtendedStyle(m_ListCtrl.GetExtendedStyle() | LVS_EX_CHECKBOXES | LVS_EX_TRANSPARENTSHADOWTEXT);
 	m_ListCtrl.InsertItem(0, _T("D:\\Repository\\trs\\TestData"));
@@ -410,6 +411,11 @@ void CTRSnewUIView::OnLvnItemchangedListRoot(NMHDR *pNMHDR, LRESULT *pResult)
 			TCHAR* buf = new TCHAR[strlen(path) + 1];
 			convertToTCHAR(buf, path);
 			HTREEITEM* hHead=new HTREEITEM;
+			
+			if (TreeItemsColl.size() < pNMLV->iItem)
+			{
+				TreeItemsColl.resize(pNMLV->iItem);
+			}
 			std::vector<HTREEITEM*>::iterator iterator = TreeItemsColl.begin();
 			TreeItemsColl.insert(iterator + pNMLV->iItem, hHead);
 			Info(buf,*hHead);
@@ -428,7 +434,7 @@ void CTRSnewUIView::OnLvnItemchangedListRoot(NMHDR *pNMHDR, LRESULT *pResult)
 				if (it != TreeItemsColl.end())
 				{
 					delete *it;
-					TreeItemsColl.erase(it);
+					
 				}
 			}
 			break;
