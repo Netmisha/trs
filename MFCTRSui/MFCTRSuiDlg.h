@@ -60,7 +60,7 @@ public:
 // Implementation
 protected:
 	HICON m_hIcon;
-
+	std::vector<char*> TagColl;
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
@@ -113,6 +113,10 @@ public:
 	afx_msg void OnLoadProject();
 	afx_msg void OnProjectLastprojects();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	afx_msg void OnSaveAs();
+	CComboBox DropDown;
+	afx_msg void OnBnClickedCheck1();
+	CComboBox ThreadsComboBox;
 };
 
 extern CListBox* List;

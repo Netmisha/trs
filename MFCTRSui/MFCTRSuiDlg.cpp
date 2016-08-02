@@ -25,6 +25,7 @@
 
 bool ifCancelPressed;
 bool RunEndCheck;
+bool SaveAsPressed = true;
 CToolBar* ToolBar;
 CToolBar* Bar;
 
@@ -52,6 +53,8 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PROGRESS1, m_Progress);
 	DDX_Control(pDX, IDC_PROGRESS3, subm_Progress);
 	DDX_Control(pDX, IDC_EDIT1, Time_running_edit);
+	DDX_Control(pDX, IDC_COMBO1, DropDown);
+	DDX_Control(pDX, IDC_COMBO2, ThreadsComboBox);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -69,6 +72,8 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_WM_SYSCOMMAND(SC_CLOSE, &CMFCTRSuiDlg::OnSysCommand(UINT , LPARAM))
 	ON_COMMAND(ID_Load_Project, &CMFCTRSuiDlg::OnLoadProject)
 	ON_COMMAND(ID_PROJECT_LASTPROJECTS, &CMFCTRSuiDlg::OnProjectLastprojects)
+	ON_COMMAND(ID_Save_AS, &CMFCTRSuiDlg::OnSaveAs)
+	ON_BN_CLICKED(IDC_CHECK1, &CMFCTRSuiDlg::OnBnClickedCheck1)
 END_MESSAGE_MAP()
 
 
@@ -107,7 +112,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 			rectDlg.Width(), rectDlg.Height(), SWP_NOCOPYBITS);
 
 	}
-
+	console_output.ShowWindow(false);
 	LONG lStyle = GetWindowLong(m_hWnd, GWL_STYLE);
 	lStyle &= ~WS_CHILD;        //remove the CHILD style
 	lStyle &= ~WS_DISABLED;        //remove the DISABLED style
@@ -119,7 +124,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	lStyle |= WS_MAXIMIZEBOX;
 	
 	SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
-
+	DropDown.AddString(L"All");
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
@@ -141,6 +146,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		m_Menu->EnableMenuItem(ID_New_Project, MF_BYCOMMAND | MF_ENABLED );
 		m_Menu->EnableMenuItem(ID_Load_Project, MF_BYCOMMAND | MF_ENABLED);
 		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_DISABLED );
+		m_Menu->EnableMenuItem(ID_Save_AS, MF_BYCOMMAND | MF_DISABLED);
 	}
 
 
@@ -193,7 +199,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	RepositionBars(AFX_IDW_CONTROLBAR_FIRST,
 		AFX_IDW_CONTROLBAR_LAST, 0);
 
-
+	
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
@@ -201,7 +207,24 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	Bar = ToolBar;
 	List = &RootList;
 	// toolbar image config
+	CString mes;
+	CString helpMes;
 	
+	for (int i = 0; i < 100; ++i)
+	{
+		if (i < 9)
+		{
+			mes.Format(L"%S", "0");
+			helpMes.Format(L"%d", i + 1);
+			mes += helpMes;
+			ThreadsComboBox.AddString(mes);
+		}
+		else
+		{
+			mes.Format(L"%d", int(i + 1));
+			ThreadsComboBox.AddString(mes);
+		}
+	}
 	GetWindowRect(&old_rect);
 	ScreenToClient(&old_rect);
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -270,6 +293,13 @@ DWORD WINAPI RunSuits(LPVOID arg)
 	for each(auto it in coll)
 	{
 		count += it->getList().size();
+		for each(auto iter in it->getList())
+		{
+			if (iter->getRepeat())
+			{
+				count += atoi(iter->getRepeat());
+			}
+		}
 	}
 	param.progress->SetRange(0, count);
 	param.progress->SetStep(1);
@@ -799,6 +829,9 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 
 void CMFCTRSuiDlg::Info(TCHAR* path)
 {
+	TagColl.clear();
+	DropDown.ResetContent();
+	DropDown.AddString(L"All");
 	char* pathA = nullptr;
 	int size = WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, 0, NULL, NULL);
 	pathA = new char[size];
@@ -830,6 +863,47 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	if (strlen((*it)->get_path()) == count)
 	{
 		TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList);
+	}
+	for (it; it != suiteColl->end(); ++it)
+	{
+		std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+		
+		for (iter; iter != (*it)->getList().end(); ++iter)
+		{
+			std::vector<char*>::iterator iterator = TagColl.begin();
+			if (TagColl.size() == 0)
+			{
+				if ((*iter)->getTag())
+				{
+					TagColl.push_back((*iter)->getTag());
+				}
+			}
+			else
+			{
+				bool check = false;
+				for (iterator; iterator != TagColl.end(); ++iterator)
+				{
+					if (!strncmp(*iterator, (*iter)->getTag(), strlen((*iter)->getTag())))
+					{
+						check = true;
+						break;
+					}
+				
+				}
+				if (!check)
+				{
+					TagColl.push_back((*iter)->getTag());
+				}
+			}
+		}
+		
+	}
+	for (int i = 0; i < TagColl.size(); ++i)
+	{
+		TCHAR*buf = new TCHAR[strlen(TagColl[i]) + 1];
+		convertToTCHAR(buf, TagColl[i]);
+		DropDown.AddString(buf);
+		delete[] buf;
 	}
 	delete[] pathA;
 }
@@ -872,7 +946,7 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 
 	dRoots.clear(); 
 	dRoots.reserve(count);
-
+	
 	for (int i = 0; i < count; ++i)
 	{
 		TCHAR root[MAX_PATH];
@@ -884,7 +958,8 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 		Info(dRoots.front().get_path());
 	else
 		m_Tree.DeleteAllItems();
-
+	DropDown.SetCurSel(0);
+	ThreadsComboBox.SetCurSel(9);
 	delete[] array;
 }
 
@@ -934,6 +1009,7 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 		// free memory used
 		IMalloc * imalloc = 0;
 		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
+		m_Menu->EnableMenuItem(ID_Save_AS, MF_BYCOMMAND | MF_ENABLED);
 		if (SUCCEEDED(SHGetMalloc(&imalloc)))
 		{
 			imalloc->Free(pidl);
@@ -965,6 +1041,7 @@ void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
 		if (RootList.GetCount() == 0)
 		{
 			m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+			m_Menu->EnableMenuItem(ID_Save_AS, MF_BYCOMMAND | MF_DISABLED);
 		}
 	}
 }
@@ -975,10 +1052,25 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 	if (dRoots.size())
 	{
 		m_Progress.SetPos(0);
-		RunDialog Dlg;
-		Dlg.DoModal();
-		if (ifCancelPressed)
-		{
+		
+			short cIndex;
+			cIndex = DropDown.GetCurSel();
+			CString fontName;
+			DropDown.GetLBText(cIndex, fontName);
+			if (fontName != L"All")
+			{
+				tag = fromCStringToChar(fontName);
+			}
+			else
+			{
+				tag = nullptr;
+			}
+			cIndex = ThreadsComboBox.GetCurSel();
+			ThreadsComboBox.GetLBText(cIndex, fontName);
+			if (fontName != "")
+			{
+				threads = fromCStringToChar(fontName);
+			}
 			ReportManager* reportManag = new ReportManager;
 			ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
 			reportManag->addReporter(reporter);
@@ -987,7 +1079,8 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 			HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
 			CloseHandle(hThread);
 			CloseHandle(hTimer);
-		}
+			
+		
 	}
 }
 
@@ -1111,6 +1204,7 @@ void CMFCTRSuiDlg::OnLoadProject()
 	if (ValidateProjXML(path))
 	{
 		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
+		m_Menu->EnableMenuItem(ID_Save_AS, MF_BYCOMMAND | MF_ENABLED);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD,false);
 		RootList.ResetContent();
@@ -1159,6 +1253,7 @@ void CMFCTRSuiDlg::OnLoadProject()
 void CMFCTRSuiDlg::OnProjectLastprojects()
 {
 	m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
+	m_Menu->EnableMenuItem(ID_Save_AS, MF_BYCOMMAND | MF_ENABLED);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
 	RootList.ResetContent();
@@ -1236,13 +1331,22 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 					if (!CheckForModification(path, pro_.getName(), &RootList))
 					{
-						int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
-						if (res == IDYES)
+						if (SaveAsPressed)
 						{
-							pro_.SaveProject(&RootList);
-							delete[] path;
-							delete[] buf;
-							CDialogEx::OnOK();
+							int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
+							if (res == IDYES)
+							{
+								pro_.SaveProject(&RootList);
+								delete[] path;
+								delete[] buf;
+								CDialogEx::OnOK();
+							}
+							else
+							{
+								delete[] path;
+								delete[] buf;
+								CDialogEx::OnOK();
+							}
 						}
 						else
 						{
@@ -1271,4 +1375,68 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 
 	CWnd::OnSysCommand(nID, lParam);
+}
+
+void CMFCTRSuiDlg::OnSaveAs()
+{
+	CString filePath;
+	
+	CFileDialog dlgFile(FALSE);
+	dlgFile.m_ofn.lpstrTitle = L"Save XML File As";
+	if (dlgFile.DoModal() == IDOK)
+	{
+		filePath = dlgFile.GetPathName();
+		char* name = new char[filePath.GetLength()];
+		char help = filePath[filePath.GetLength() - 1];
+		int i = 0;
+		while (help != '\\')
+		{
+			name[i] = help;
+			++i;
+			help = filePath[filePath.GetLength() - i - 1];
+		}
+		name[i] = '\0';
+		for (int j = 0; j < strlen(name) / 2; ++j)
+		{
+			char time = name[j];
+			name[j] = name[strlen(name) - j - 1];
+			name[strlen(name) - j - 1] = time;
+		}
+		properties.setName(name);
+		char* path = new char[filePath.GetLength()];
+		for (int j = 0; j < filePath.GetLength() - strlen(name); ++j)
+		{
+			path[j] = help;
+			help = filePath[filePath.GetLength() - j - strlen(name)-1];
+		}
+		path[filePath.GetLength() - strlen(name)] = help;
+		path[filePath.GetLength() - strlen(name)+1 ] = '\0';
+		for (int j = 0; j < strlen(path)/2; ++j)
+		{
+			char time = path[j];
+			path[j] = path[strlen(path) - 1 - j];
+			path[strlen(path) - 1 - j] = time;
+		}
+		properties.setPath(path);
+		delete[] path;
+		delete[] name;
+
+		properties.SaveProject(&RootList);
+	}
+	SaveAsPressed = false;
+	// TODO: Add your command handler code here
+}
+
+
+void CMFCTRSuiDlg::OnBnClickedCheck1()
+{
+	if (console_output.IsWindowVisible())
+	{
+		console_output.ShowWindow(false);
+	}
+	else
+	{
+		console_output.ShowWindow(true);
+	}
+	// TODO: Add your control notification handler code here
 }
