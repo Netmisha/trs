@@ -278,12 +278,6 @@ void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
 }
 
 
-
-
-
-
-
-
 DWORD WINAPI RunSuits(LPVOID arg)
 {
 	RunParameters param;
