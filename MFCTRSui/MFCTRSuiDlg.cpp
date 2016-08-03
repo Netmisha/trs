@@ -55,6 +55,7 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT1, Time_running_edit);
 	DDX_Control(pDX, IDC_COMBO1, DropDown);
 	DDX_Control(pDX, IDC_COMBO2, ThreadsComboBox);
+	DDX_Control(pDX, IDC_CHECK1, checkB);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -74,6 +75,8 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_PROJECT_LASTPROJECTS, &CMFCTRSuiDlg::OnProjectLastprojects)
 	ON_COMMAND(ID_Save_AS, &CMFCTRSuiDlg::OnSaveAs)
 	ON_BN_CLICKED(IDC_CHECK1, &CMFCTRSuiDlg::OnBnClickedCheck1)
+	ON_BN_CLICKED(ID_STOP_BUTTON, &CMFCTRSuiDlg::OnStopButtonClicked)
+	ON_BN_CLICKED(ID_PAUSE_BUTTON, &CMFCTRSuiDlg::OnPauseButtonClicked)
 END_MESSAGE_MAP()
 
 
@@ -112,6 +115,14 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 			rectDlg.Width(), rectDlg.Height(), SWP_NOCOPYBITS);
 
 	}
+	
+	CFont *myFont = new CFont();
+	myFont->CreateFont(15, 0, 0, 0, FW_NORMAL, FALSE, false,
+		0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+		FIXED_PITCH | FF_MODERN, _T("Courier New"));
+	m_Tree.SetFont(myFont);
+	RootList.SetFont(myFont);
+	
 	console_output.ShowWindow(false);
 	LONG lStyle = GetWindowLong(m_hWnd, GWL_STYLE);
 	lStyle &= ~WS_CHILD;        //remove the CHILD style
@@ -120,6 +131,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	lStyle |= WS_POPUP;            //Add the POPUP style
 	//lStyle |= WS_VISIBLE;        //Add the VISIBLE style
 	lStyle |= WS_SYSMENU;
+	lStyle |= WS_BORDER;
 	lStyle |= WS_MINIMIZEBOX;
 	lStyle |= WS_MAXIMIZEBOX;
 	
@@ -149,14 +161,14 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		m_Menu->EnableMenuItem(ID_Save_AS, MF_BYCOMMAND | MF_DISABLED);
 	}
 
-
+	
 	// toolbar binding
 	if (!m_ToolBar.Create(this) || !m_ToolBar.LoadToolBar(MYAMAZINGTOOLBAR))
 	{
 		TRACE0("Failed to Create Dialog Toolbar\n");
 		EndDialog(IDCANCEL);
 	}
-
+	
 	
 	CRect	rcClientOld; // Old Client Rect
 	CRect	rcClientNew; // New Client Rect with Tollbar Added
@@ -203,6 +215,8 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
+	m_ToolBar.GetToolBarCtrl().HideButton(ID_STOP_BUTTON);
+	m_ToolBar.GetToolBarCtrl().HideButton(ID_PAUSE_BUTTON);
 	ToolBar = &m_ToolBar;
 	Bar = ToolBar;
 	List = &RootList;
@@ -226,7 +240,9 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		}
 	}
 	GetWindowRect(&old_rect);
-	ScreenToClient(&old_rect);
+	//this->SetBackgroundColor(RGB(32, 32, 32));
+	
+	//SetSysColors(2, aElements, aOldColors);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -1073,13 +1089,37 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 			HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
 			CloseHandle(hThread);
 			CloseHandle(hTimer);
-			
-		
+			m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
+			m_ToolBar.GetToolBarCtrl().HideButton(ID_STOP_BUTTON,false);
+			m_ToolBar.GetToolBarCtrl().HideButton(ID_PAUSE_BUTTON, false);
 	}
 }
 
 
 #pragma endregion stuff
+void CMFCTRSuiDlg::OnStopButtonClicked()
+{
+	for each (auto path in dRoots)
+	{
+		char* line = convertToChar(path.get_path());
+		Manager.Stop(line, name, tag);
+		delete[] line;
+	}
+	m_ToolBar.GetToolBarCtrl().HideButton(ID_STOP_BUTTON);
+	m_ToolBar.GetToolBarCtrl().HideButton(ID_PAUSE_BUTTON);
+	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN, false);
+}
+
+void CMFCTRSuiDlg::OnPauseButtonClicked()
+{
+	for each (auto path in dRoots)
+	{
+		char* line = convertToChar(path.get_path());
+		Manager.Stop(line, name, tag);
+		delete[] line;
+	}
+	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN, false);
+}
 
 void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 {
@@ -1170,6 +1210,33 @@ void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 		new_y = frame.top + height_diff;
 
 		Time_running_edit.MoveWindow(new_x, new_y, frame.Width(), frame.Height());
+	}
+	if (::IsWindow(ThreadsComboBox.m_hWnd))
+	{
+		ThreadsComboBox.GetWindowRect(&frame);
+		ScreenToClient(&frame);
+		new_x = frame.left + left_diff;
+		new_y = frame.top + height_diff;
+
+		ThreadsComboBox.MoveWindow(new_x, new_y, frame.Width(), frame.Height());
+	}
+	if (::IsWindow(DropDown.m_hWnd))
+	{
+		DropDown.GetWindowRect(&frame);
+		ScreenToClient(&frame);
+		new_x = frame.left + left_diff;
+		new_y = frame.top + height_diff;
+
+		DropDown.MoveWindow(new_x, new_y, frame.Width(), frame.Height());
+	}
+	if (::IsWindow(checkB.m_hWnd))
+	{
+		checkB.GetWindowRect(&frame);
+		ScreenToClient(&frame);
+		new_x = frame.left + left_diff;
+		new_y = frame.top + height_diff;
+
+		checkB.MoveWindow(new_x, new_y, frame.Width(), frame.Height());
 	}
 	old_rect = new_rect;
 }

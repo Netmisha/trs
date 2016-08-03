@@ -108,7 +108,8 @@ public:
 	afx_msg void OnProgramAddfolder();
 	afx_msg void OnProgramDeleteselecteditems();
 	afx_msg void OnProgramRunsel();
-
+	afx_msg void OnStopButtonClicked();
+	afx_msg void OnPauseButtonClicked();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnLoadProject();
 	afx_msg void OnProjectLastprojects();
@@ -117,6 +118,7 @@ public:
 	CComboBox DropDown;
 	afx_msg void OnBnClickedCheck1();
 	CComboBox ThreadsComboBox;
+	CButton checkB;
 };
 
 extern CListBox* List;
