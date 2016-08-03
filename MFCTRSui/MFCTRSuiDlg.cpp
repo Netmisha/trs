@@ -75,8 +75,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_PROJECT_LASTPROJECTS, &CMFCTRSuiDlg::OnProjectLastprojects)
 	ON_COMMAND(ID_Save_AS, &CMFCTRSuiDlg::OnSaveAs)
 	ON_BN_CLICKED(IDC_CHECK1, &CMFCTRSuiDlg::OnBnClickedCheck1)
-	ON_BN_CLICKED(ID_STOP_BUTTON, &CMFCTRSuiDlg::OnStopButtonClicked)
-	ON_BN_CLICKED(ID_PAUSE_BUTTON, &CMFCTRSuiDlg::OnPauseButtonClicked)
+
 END_MESSAGE_MAP()
 
 
@@ -215,8 +214,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
-	m_ToolBar.GetToolBarCtrl().HideButton(ID_STOP_BUTTON);
-	m_ToolBar.GetToolBarCtrl().HideButton(ID_PAUSE_BUTTON);
+
 	ToolBar = &m_ToolBar;
 	Bar = ToolBar;
 	List = &RootList;
@@ -1090,36 +1088,13 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 			CloseHandle(hThread);
 			CloseHandle(hTimer);
 			m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
-			m_ToolBar.GetToolBarCtrl().HideButton(ID_STOP_BUTTON,false);
-			m_ToolBar.GetToolBarCtrl().HideButton(ID_PAUSE_BUTTON, false);
+			
 	}
 }
 
 
 #pragma endregion stuff
-void CMFCTRSuiDlg::OnStopButtonClicked()
-{
-	for each (auto path in dRoots)
-	{
-		char* line = convertToChar(path.get_path());
-		Manager.Stop(line, name, tag);
-		delete[] line;
-	}
-	m_ToolBar.GetToolBarCtrl().HideButton(ID_STOP_BUTTON);
-	m_ToolBar.GetToolBarCtrl().HideButton(ID_PAUSE_BUTTON);
-	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN, false);
-}
 
-void CMFCTRSuiDlg::OnPauseButtonClicked()
-{
-	for each (auto path in dRoots)
-	{
-		char* line = convertToChar(path.get_path());
-		Manager.Stop(line, name, tag);
-		delete[] line;
-	}
-	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN, false);
-}
 
 void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 {
@@ -1253,6 +1228,15 @@ void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
 
 void CMFCTRSuiDlg::OnLoadProject()
 {
+	if (pro_.getName() && pro_.getPath())
+	{
+		int res = MessageBox(_T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
+		if (res == IDYES)
+		{
+			pro_.SaveProject(List);
+			MessageBox(_T("Project was saved"), _T("Info"), MB_ICONINFORMATION | MB_OK);
+		}
+	}
 	CString filePath;
 	CFileDialog dlgFile(TRUE);
 	OPENFILENAME& ofn = dlgFile.GetOFN();
@@ -1313,6 +1297,15 @@ void CMFCTRSuiDlg::OnLoadProject()
 
 void CMFCTRSuiDlg::OnProjectLastprojects()
 {
+	if (pro_.getName() && pro_.getPath())
+	{
+		int res = MessageBox( _T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
+		if (res == IDYES)
+		{
+			pro_.SaveProject(List);
+			MessageBox( _T("Project was saved"), _T("Info"), MB_ICONINFORMATION | MB_OK);
+		}
+	}
 	m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
 	m_Menu->EnableMenuItem(ID_Save_AS, MF_BYCOMMAND | MF_ENABLED);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);

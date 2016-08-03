@@ -6,8 +6,8 @@
 #include "Functionality.h"
 class ProjectProperties
 {
-	char* path;
-	char* name;
+	char* path=nullptr;
+	char* name=nullptr;
 public:
 	ProjectProperties(char* path, char* name);
 	ProjectProperties();

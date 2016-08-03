@@ -122,6 +122,15 @@ void CMFCTRSuiApp::OnBnClickedButton2()
 
 void CMFCTRSuiApp::OnNewProject()
 {
+	if (pro_.getName()&&pro_.getPath())
+	{
+		int res = MessageBox(NULL,_T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION|MB_YESNO);
+		if (res == IDYES)
+		{
+			pro_.SaveProject(List);
+			MessageBox(NULL, _T("Project was saved"), _T("Info"), MB_ICONINFORMATION|MB_OK);
+		}
+	}
 	BROWSEINFO bi = { 0 };
 	bi.lpszTitle = _T("Select Folder");
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
