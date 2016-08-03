@@ -19,6 +19,8 @@
 #include "TRSnewUIDoc.h"
 #include "afxcmn.h"
 
+extern enum class STYLE { BLACK, AQUA, SILVER, WIN7, BLUE };
+
 class CTRSnewUIView : public CFormView
 {
 protected: // create from serialization only
@@ -68,6 +70,9 @@ public:
 	afx_msg void OnUpdateButtondelete(CCmdUI *pCmdUI);
 	afx_msg void OnButtonrun();
 	afx_msg void OnUpdateButtonrun(CCmdUI *pCmdUI);
+	afx_msg LRESULT OnMyThemeChanged(WPARAM wParam, LPARAM lParam);
+//	afx_msg void NiceTry(UINT id);
+	 void UpdateNiceTry(STYLE style);
 protected:
 	CListCtrl m_ListCtrl;
 	
@@ -81,6 +86,7 @@ public:
 	afx_msg void OnUpdateEdit3(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateSpin2(CCmdUI *pCmdUI);
 	void Info(TCHAR* path, HTREEITEM& item);
+	afx_msg void OnNMThemeChangedListRoot(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
 #ifndef _DEBUG  // debug version in TRSnewUIView.cpp

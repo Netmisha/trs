@@ -9,7 +9,9 @@ struct ToRunParameters
 	ReportManager* manager;
 	CProgressCtrl* progress;
 	CProgressCtrl* subProgress;
-	ToRunParameters(std::vector<SuiteRoot> coll_, ReportManager* manager_, CProgressCtrl*progress, CProgressCtrl* subProgress);
+	CMFCTRSuiDlg* dialog;
+
+//	ToRunParameters(std::vector<SuiteRoot> coll_, ReportManager* manager_, CProgressCtrl*progress, CProgressCtrl* subProgress);
 };
 
 #endif

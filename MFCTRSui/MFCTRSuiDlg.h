@@ -10,6 +10,16 @@
 #include "RunDialog.h"
 #include "ProjNameEdit.h"
 
+
+#define PROJECT_UPLOADED 1
+#define PROJECT_NOTLOADED 2
+#define RUN_CLICKED 4
+#define RUN_UNCLICKED 8
+
+#define SPACE_BETWEEN_CONTROLERS 5
+#define CONTROL_AMOUNT 6
+#define RUN_CONTROL_AMOUNT 3
+
 class SuiteRoot
 {
 public:
@@ -78,7 +88,6 @@ public:
 
 	afx_msg void OnBnClickedButton2();
 	CEdit console_output;
-	
 
 	afx_msg void OnBnClickedButton();
 protected:
@@ -95,8 +104,10 @@ protected:
 	int resizible_column = 2;
 
 	CRect old_rect;
-
 public:
+	void UpdateToolbar(int = 0);
+
+
 	afx_msg void OnEnChangeEdit3();
 	CProgressCtrl m_Progress;
 	afx_msg void OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult);
@@ -113,6 +124,13 @@ public:
 	afx_msg void OnLoadProject();
 	afx_msg void OnProjectLastprojects();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	afx_msg void OnViewConsole();
+protected:
+	void ConsoleHide();
+	void ConsoleShow();
+
+	void RunToolsHide();
+	void RunToolsShow();
 };
 
 extern CListBox* List;

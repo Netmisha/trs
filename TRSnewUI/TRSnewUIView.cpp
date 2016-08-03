@@ -44,6 +44,10 @@ BEGIN_MESSAGE_MAP(CTRSnewUIView, CFormView)
 	ON_UPDATE_COMMAND_UI(ID_EDIT2, &CTRSnewUIView::OnUpdateEdit2)
 	ON_UPDATE_COMMAND_UI(ID_EDIT3, &CTRSnewUIView::OnUpdateEdit3)
 	ON_UPDATE_COMMAND_UI(ID_SPIN2, &CTRSnewUIView::OnUpdateSpin2)
+
+	//ON_COMMAND_RANGE(ID_VIEW_APPLOOK_WIN_2000, ID_VIEW_APPLOOK_WINDOWS_7, &CTRSnewUIView::NiceTry)
+//	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_APPLOOK_WIN_2000, ID_VIEW_APPLOOK_WINDOWS_7, &CTRSnewUIView::UpdateNiceTry)
+	ON_NOTIFY(NM_THEMECHANGED, ID_LIST_ROOT, &CTRSnewUIView::OnNMThemeChangedListRoot)
 END_MESSAGE_MAP()
 
 // CTRSnewUIView construction/destruction
@@ -77,7 +81,6 @@ BOOL CTRSnewUIView::PreCreateWindow(CREATESTRUCT& cs)
 	return CFormView::PreCreateWindow(cs);
 }
 
-
 void CTRSnewUIView::OnInitialUpdate()
 {
 	CFormView::OnInitialUpdate();
@@ -85,7 +88,7 @@ void CTRSnewUIView::OnInitialUpdate()
 	ResizeParentToFit();
 	COutputWnd output;
 	
-
+	
 	m_ListCtrl.SetExtendedStyle(m_ListCtrl.GetExtendedStyle() | LVS_EX_CHECKBOXES | LVS_EX_TRANSPARENTSHADOWTEXT);
 //	m_ListCtrl.InsertItem(0, _T("D:\\Repository\\trs\\TestData"));
 //	m_ListCtrl.InsertItem(0, _T("D:\\Repository\\Suite root"));
@@ -126,10 +129,42 @@ CTRSnewUIDoc* CTRSnewUIView::GetDocument() const // non-debug version is inline
 }
 #endif //_DEBUG
 
+LRESULT CTRSnewUIView::OnMyThemeChanged(WPARAM wParam, LPARAM lParam)
+{
+	// do something useful
 
+	return (LRESULT)1;
+};
 
+//void CTRSnewUIView::NiceTry(UINT id)
+//{
+//
+//}
+//
+void CTRSnewUIView::UpdateNiceTry(STYLE style)
+{
+	switch (style)
+	{
+	case STYLE::AQUA:
+		m_ListCtrl.SetBkColor(RGB(0, 255, 255));
+		break;
+	case STYLE::BLACK:
+		m_ListCtrl.SetBkColor(RGB(0, 0, 0));
+		break;
+	case STYLE::BLUE:
+		m_ListCtrl.SetBkColor(RGB(0, 0, 255));
+		break;
+	case STYLE::SILVER:
+		m_ListCtrl.SetBkColor(RGB(224, 224, 224));
+		break;
+	case STYLE::WIN7:
+		m_ListCtrl.SetBkColor(RGB(255, 178, 102));
+		break;
+	}
+}
 void CTRSnewUIView::OnButtonadd()
 {
+	m_ListCtrl.SetBkColor(RGB(0, 0, 0));
 	BROWSEINFO bi = { 0 };
 	bi.lpszTitle = _T("Select Folder");
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
@@ -490,3 +525,43 @@ void CTRSnewUIView::OnUpdateSpin2(CCmdUI *pCmdUI)
 	// TODO: Add your command update UI handler code here
 }
 
+
+
+void CTRSnewUIView::OnNMThemeChangedListRoot(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// This feature requires Windows XP or greater.
+	// The symbol _WIN32_WINNT must be >= 0x0501.
+	// TODO: Add your control notification handler code here
+	BROWSEINFO bi = { 0 };
+	bi.lpszTitle = _T("Select Folder");
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	if (pidl != 0)
+	{
+		// get the name of the folder
+		TCHAR path[MAX_PATH];
+		SHGetPathFromIDList(pidl, path);
+
+		char* pathA = nullptr;
+		int size = WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, 0, NULL, NULL);
+
+		pathA = new char[size];
+		WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, size, NULL, NULL);
+
+		if (!Manager.Verify(pathA, nullptr, nullptr))
+			m_ListCtrl.InsertItem(0, path);
+		else
+			MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
+
+		delete[] pathA;
+		// free memory used
+		IMalloc * imalloc = 0;
+		//		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
+		if (SUCCEEDED(SHGetMalloc(&imalloc)))
+		{
+			imalloc->Free(pidl);
+			imalloc->Release();
+		}
+	}
+
+	*pResult = 0;
+}

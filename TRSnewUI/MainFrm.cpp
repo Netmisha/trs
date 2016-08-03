@@ -36,10 +36,12 @@ END_MESSAGE_MAP()
 
 // CMainFrame construction/destruction
 
+
 CMainFrame::CMainFrame()
 {
 	// TODO: add member initialization code here
 	theApp.m_nAppLook = theApp.GetInt(_T("ApplicationLook"), ID_VIEW_APPLOOK_OFF_2007_BLUE);
+
 	m_CheckConsoleState = false;
 }
 
@@ -86,6 +88,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		TRACE0("Failed to create docking windows\n");
 		return -1;
 	}
+	
 
 	m_wndFileView.EnableDocking(CBRS_ALIGN_ANY);
 	m_wndClassView.EnableDocking(CBRS_ALIGN_ANY);
@@ -98,8 +101,11 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DockPane(&m_wndProperties);
 
 	// set the visual manager and style based on persisted value
-	OnApplicationLook(theApp.m_nAppLook);
+	OnApplicationLook(ID_VIEW_APPLOOK_OFF_2007_BLUE);
 
+	CTRSnewUIView* ptr = (CTRSnewUIView*)GetActiveView();
+	ptr->UpdateNiceTry(STYLE::BLUE);
+	//style = STYLE::BLUE;
 	return 0;
 }
 
@@ -194,13 +200,11 @@ void CMainFrame::Dump(CDumpContext& dc) const
 
 
 // CMainFrame message handlers
-
 void CMainFrame::OnApplicationLook(UINT id)
 {
 	CWaitCursor wait;
-
+	STYLE style;
 	theApp.m_nAppLook = id;
-
 	switch (theApp.m_nAppLook)
 	{
 	case ID_VIEW_APPLOOK_WIN_2000:
@@ -241,6 +245,7 @@ void CMainFrame::OnApplicationLook(UINT id)
 		CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows7));
 		CDockingManager::SetDockingMode(DT_SMART);
 		m_wndRibbonBar.SetWindows7Look(TRUE);
+		style = STYLE::WIN7;
 		break;
 
 	default:
@@ -248,18 +253,22 @@ void CMainFrame::OnApplicationLook(UINT id)
 		{
 		case ID_VIEW_APPLOOK_OFF_2007_BLUE:
 			CMFCVisualManagerOffice2007::SetStyle(CMFCVisualManagerOffice2007::Office2007_LunaBlue);
+			style = STYLE::BLUE;
 			break;
 
 		case ID_VIEW_APPLOOK_OFF_2007_BLACK:
 			CMFCVisualManagerOffice2007::SetStyle(CMFCVisualManagerOffice2007::Office2007_ObsidianBlack);
+			style = STYLE::BLACK;
 			break;
 
 		case ID_VIEW_APPLOOK_OFF_2007_SILVER:
 			CMFCVisualManagerOffice2007::SetStyle(CMFCVisualManagerOffice2007::Office2007_Silver);
+			style = STYLE::SILVER;
 			break;
 
 		case ID_VIEW_APPLOOK_OFF_2007_AQUA:
 			CMFCVisualManagerOffice2007::SetStyle(CMFCVisualManagerOffice2007::Office2007_Aqua);
+			style = STYLE::AQUA;
 			break;
 		}
 
@@ -272,6 +281,8 @@ void CMainFrame::OnApplicationLook(UINT id)
 	RedrawWindow(NULL, NULL, RDW_ALLCHILDREN | RDW_INVALIDATE | RDW_UPDATENOW | RDW_FRAME | RDW_ERASE);
 
 	theApp.WriteInt(_T("ApplicationLook"), theApp.m_nAppLook);
+	CTRSnewUIView* ptr = (CTRSnewUIView*)GetActiveView();
+	ptr->UpdateNiceTry(style);
 }
 
 void CMainFrame::OnUpdateApplicationLook(CCmdUI* pCmdUI)

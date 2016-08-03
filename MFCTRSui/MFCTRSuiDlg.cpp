@@ -69,6 +69,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_WM_SYSCOMMAND(SC_CLOSE, &CMFCTRSuiDlg::OnSysCommand(UINT , LPARAM))
 	ON_COMMAND(ID_Load_Project, &CMFCTRSuiDlg::OnLoadProject)
 	ON_COMMAND(ID_PROJECT_LASTPROJECTS, &CMFCTRSuiDlg::OnProjectLastprojects)
+	ON_COMMAND(ID_VIEW_CONSOLE, &CMFCTRSuiDlg::OnViewConsole)
 END_MESSAGE_MAP()
 
 
@@ -129,20 +130,11 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 
 	// menu hiding
 	m_Menu = GetMenu();
-	if (m_Menu)
+	if (!m_Menu)
 	{
-		WIN32_FIND_DATA FindFileData;
-		HANDLE handle = FindFirstFile(L"Last Project.xml", &FindFileData);
-		int found = handle != INVALID_HANDLE_VALUE;
-		if (found)
-		{
-			m_Menu->EnableMenuItem(ID_PROJECT_LASTPROJECTS, MF_BYCOMMAND | MF_ENABLED);
-		}
-		m_Menu->EnableMenuItem(ID_New_Project, MF_BYCOMMAND | MF_ENABLED );
-		m_Menu->EnableMenuItem(ID_Load_Project, MF_BYCOMMAND | MF_ENABLED);
-		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_DISABLED );
+		TRACE0("Failed to upload Menu\n");
+		EndDialog(IDCANCEL);
 	}
-
 
 	// toolbar binding
 	if (!m_ToolBar.Create(this) || !m_ToolBar.LoadToolBar(MYAMAZINGTOOLBAR))
@@ -151,52 +143,49 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		EndDialog(IDCANCEL);
 	}
 
-	
 	CRect	rcClientOld; // Old Client Rect
 	CRect	rcClientNew; // New Client Rect with Tollbar Added
 	GetClientRect(rcClientOld); // Retrive the Old Client WindowSize
 
-	// Called to reposition and resize control bars in the client 
-	// area of a window. The reposQuery FLAG does not really traw the 
-	// Toolbar.  It only does the calculations. And puts the new 
-	// ClientRect values in rcClientNew so we can do the rest of the 
-	// Math.
-	RepositionBars(AFX_IDW_CONTROLBAR_FIRST,
-		AFX_IDW_CONTROLBAR_LAST, 0, reposQuery, rcClientNew);
-
-	// All of the Child Windows (Controls) now need to be moved so 
-	// the Tollbar does not cover them up. Offest to move all child 
-	// controls after adding Tollbar
-	CPoint ptOffset(rcClientNew.left - rcClientOld.left,
-		rcClientNew.top - rcClientOld.top);
-	CRect	rcChild;
-
-	// Handle to the Dialog Controls
-	CWnd*	pwndChild = GetWindow(GW_CHILD);
-	while (pwndChild) // Cycle through all child controls
-	{
-		pwndChild->GetWindowRect(rcChild); // Get the child control RECT
-		ScreenToClient(rcChild);
-		// Changes the Child Rect by the values of the claculated offset
-		rcChild.OffsetRect(ptOffset);
-		pwndChild->MoveWindow(rcChild, FALSE); // Move the Child Control
-		pwndChild = pwndChild->GetNextWindow();
-	}
-	CRect	rcWindow;
-	GetWindowRect(rcWindow); // Get the RECT of the Dialog
-	// Increase width to new Client Width
-	rcWindow.right += rcClientOld.Width() - rcClientNew.Width();
-	// Increase height to new Client Height
-	rcWindow.bottom += rcClientOld.Height() - rcClientNew.Height();
-	MoveWindow(rcWindow, FALSE); // Redraw Window
-	// Now we REALLY Redraw the Toolbar
+	//// Called to reposition and resize control bars in the client 
+	//// area of a window. The reposQuery FLAG does not really traw the 
+	//// Toolbar.  It only does the calculations. And puts the new 
+	//// ClientRect values in rcClientNew so we can do the rest of the 
+	//// Math.
+	//RepositionBars(AFX_IDW_CONTROLBAR_FIRST,
+	//	AFX_IDW_CONTROLBAR_LAST, 0, reposQuery, rcClientNew);
+	//
+	//// All of the Child Windows (Controls) now need to be moved so 
+	//// the Tollbar does not cover them up. Offest to move all child 
+	//// controls after adding Tollbar
+	//CPoint ptOffset(rcClientNew.left - rcClientOld.left,
+	//	rcClientNew.top - rcClientOld.top);
+	//CRect	rcChild;
+	//
+	//// Handle to the Dialog Controls
+	//CWnd*	pwndChild = GetWindow(GW_CHILD);
+	//while (pwndChild) // Cycle through all child controls
+	//{
+	//	pwndChild->GetWindowRect(rcChild); // Get the child control RECT
+	//	ScreenToClient(rcChild);
+	//	// Changes the Child Rect by the values of the claculated offset
+	//	rcChild.OffsetRect(ptOffset);
+	//	pwndChild->MoveWindow(rcChild, FALSE); // Move the Child Control
+	//	pwndChild = pwndChild->GetNextWindow();
+	//}
+	//CRect	rcWindow;
+	//GetWindowRect(rcWindow); // Get the RECT of the Dialog
+	//// Increase width to new Client Width
+	//rcWindow.right += rcClientOld.Width() - rcClientNew.Width();
+	//// Increase height to new Client Height
+	//rcWindow.bottom += rcClientOld.Height() - rcClientNew.Height();
+	//MoveWindow(rcWindow, FALSE); // Redraw Window
+	// //Now we REALLY Redraw the Toolbar
 	RepositionBars(AFX_IDW_CONTROLBAR_FIRST,
 		AFX_IDW_CONTROLBAR_LAST, 0);
 
 
-	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
-	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
-	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
+
 	ToolBar = &m_ToolBar;
 	Bar = ToolBar;
 	List = &RootList;
@@ -204,6 +193,9 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	
 	GetWindowRect(&old_rect);
 	ScreenToClient(&old_rect);
+
+	dRoots.clear();
+	UpdateToolbar(PROJECT_NOTLOADED);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -245,6 +237,172 @@ HCURSOR CMFCTRSuiDlg::OnQueryDragIcon()
 }
 
 
+void CMFCTRSuiDlg::OnLbnSelchangeListroot()
+{
+	int count = RootList.GetSelCount();
+	int* array = new int[count];
+
+	RootList.GetSelItems(count, array);
+
+	dRoots.clear();
+	dRoots.reserve(count);
+
+	for (int i = 0; i < count; ++i)
+	{
+		TCHAR root[MAX_PATH];
+		RootList.GetText(array[i], root);
+		dRoots.push_back(root);
+	}
+
+	// making RunButton visible only when at least one element is selected
+	UpdateToolbar();
+	if (count == 1)
+		Info(dRoots.front().get_path());
+	else
+		m_Tree.DeleteAllItems();
+
+	delete[] array;
+}
+
+void CMFCTRSuiDlg::UpdateToolbar(int mask)
+{
+	static bool first_initialization = true;
+
+	if (first_initialization)
+	{
+		first_initialization = false;
+
+		WIN32_FIND_DATA FindFileData;
+		HANDLE handle = FindFirstFile(L"Last Project.xml", &FindFileData);
+
+		if (handle != INVALID_HANDLE_VALUE)
+		{
+			m_Menu->EnableMenuItem(ID_PROJECT_LASTPROJECTS, MF_BYCOMMAND | MF_ENABLED);
+		}
+		m_Menu->EnableMenuItem(ID_New_Project, MF_BYCOMMAND | MF_ENABLED);
+		m_Menu->EnableMenuItem(ID_Load_Project, MF_BYCOMMAND | MF_ENABLED);
+	}
+
+	if (mask & PROJECT_UPLOADED)
+	{// mask = PROJECT_UPLOADED | ...
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
+
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY);
+
+
+		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
+	}
+	else if (mask & PROJECT_NOTLOADED)
+	{
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS);
+
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY, false);
+
+		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
+		ConsoleHide();
+		RunToolsHide();
+	}
+
+	if (dRoots.size())
+	{
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE, false);
+
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY);
+
+		m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_ENABLED);
+		m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_ENABLED);
+	}
+	else
+	{
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
+
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY, false);
+
+		m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+
+		m_Tree.DeleteAllItems();
+	}
+
+
+	if (mask & RUN_CLICKED)
+	{// mask = RUN_CLICKED | ...
+		RunToolsShow();
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY);
+
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP, false);
+
+		m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+	}
+	else if (mask & RUN_UNCLICKED)
+	{
+		RunToolsHide();
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
+
+		m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_ENABLED);
+		m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_ENABLED);
+	}
+
+}
+
+
+void CMFCTRSuiDlg::OnProgramAddfolder()
+{
+	BROWSEINFO bi = { 0 };
+	bi.lpszTitle = _T("Select Folder");
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	if (pidl != 0)
+	{
+		// get the name of the folder
+		TCHAR path[MAX_PATH];
+		SHGetPathFromIDList(pidl, path);
+		char* pathA = convertToChar(path);
+		if (!Manager.Verify(pathA, nullptr, nullptr))
+			RootList.AddString(path);
+		else
+			MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
+
+		delete[] pathA;
+		// free memory used
+		IMalloc * imalloc = 0;
+		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
+		if (SUCCEEDED(SHGetMalloc(&imalloc)))
+		{
+			imalloc->Free(pidl);
+			imalloc->Release();
+		}
+	}
+}
+
+
+void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
+{
+	if (dRoots.size())
+	{
+		for each (auto to_delete in dRoots)
+		{
+			int index = RootList.FindString(-1, to_delete.get_path());
+			RootList.DeleteString(index);
+		}
+		dRoots.clear();
+		UpdateToolbar();
+	}
+}
 
 
 void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
@@ -253,12 +411,6 @@ void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
 	// TODO: Add your control notification handler code here
 	*pResult = 0;
 }
-
-
-
-
-
-
 
 
 DWORD WINAPI RunSuits(LPVOID arg)
@@ -282,9 +434,11 @@ DWORD WINAPI ToRun(LPVOID arg)
 	RunEndCheck = true;
 	ToRunParameters* param = (ToRunParameters*)arg;
 	param->manager->Begin();
+	param->dialog->UpdateToolbar(RUN_CLICKED);
+
 	HANDLE hThread = 0;
-	param->progress->ShowWindow(true);
-	param->subProgress->ShowWindow(true);
+//	param->progress->ShowWindow(true);
+//	param->subProgress->ShowWindow(true);
 	param->progress->SetRange(0, param->coll.size());
 	param->progress->SetStep(1);
 	for each(auto to_delete in param->coll)
@@ -304,18 +458,17 @@ DWORD WINAPI ToRun(LPVOID arg)
 		param->subProgress->SetPos(0);
 	}
 	param->manager->End();
-	Manager.Destroy();
 	delete param->manager;
+	param->dialog->UpdateToolbar(RUN_UNCLICKED);
 	delete param;
 	RunEndCheck = false;
 	return 0;
 }
 
-
 DWORD WINAPI Timer(LPVOID arg)
 {
 	CEdit* edit = (CEdit*)arg;
-	edit->ShowWindow(true);
+//	edit->ShowWindow(true);
 	int count = 0;
 	CString mes;
 	int last;
@@ -637,7 +790,26 @@ DWORD WINAPI Timer(LPVOID arg)
 	return 0;
 }
 
-
+void CMFCTRSuiDlg::OnProgramRunsel()
+{
+	if (dRoots.size())
+	{
+		m_Progress.SetPos(0);
+		RunDialog Dlg;
+		Dlg.DoModal();
+		if (ifCancelPressed)
+		{
+			ReportManager* reportManag = new ReportManager;
+			ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
+			reportManag->addReporter(reporter);
+			ToRunParameters* to_run = new ToRunParameters{ dRoots, reportManag, &m_Progress, &subm_Progress, this };
+			HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
+			HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
+			CloseHandle(hThread);
+			CloseHandle(hTimer);
+		}
+	}
+}
 
 
 bool checkDiff(int begin, char* source)
@@ -834,67 +1006,6 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	delete[] pathA;
 }
 
-void CMFCTRSuiDlg::OnLbnSelchangeListroot()
-{
-	int count = RootList.GetSelCount();
-	int* array = new int[count];
-
-	// making RunBuuon visible only when at least one element is selected
-	if (count > 0)
-	{
-
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN, false);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE, false);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY);
-		if (m_Menu)
-		{
-			m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_ENABLED);
-			m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_ENABLED);
-		}
-	}
-	else
-	{
-
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY, false);
-
-		if (m_Menu)
-		{
-			m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
-			m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
-		}
-	}
-	 
-	RootList.GetSelItems(count,	array);
-
-	dRoots.clear(); 
-	dRoots.reserve(count);
-
-	for (int i = 0; i < count; ++i)
-	{
-		TCHAR root[MAX_PATH];
-		RootList.GetText(array[i], root);
-		dRoots.push_back(root);
-	}
-
-	if (count == 1)
-		Info(dRoots.front().get_path());
-	else
-		m_Tree.DeleteAllItems();
-
-	delete[] array;
-}
-
-
-
-
-
-
-
-
 
 void CMFCTRSuiDlg::OnEnChangeEdit3()
 {
@@ -914,83 +1025,6 @@ void CMFCTRSuiDlg::OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
-void CMFCTRSuiDlg::OnProgramAddfolder()
-{
-	BROWSEINFO bi = { 0 };
-	bi.lpszTitle = _T("Select Folder");
-	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-	if (pidl != 0)
-	{
-		// get the name of the folder
-		TCHAR path[MAX_PATH];
-		SHGetPathFromIDList(pidl, path);
-		char* pathA = convertToChar(path);
-		if (!Manager.Verify(pathA, nullptr, nullptr))
-			RootList.AddString(path);
-		else
-			MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
-
-		delete[] pathA;
-		// free memory used
-		IMalloc * imalloc = 0;
-		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
-		if (SUCCEEDED(SHGetMalloc(&imalloc)))
-		{
-			imalloc->Free(pidl);
-			imalloc->Release();
-		}
-	}
-}
-
-
-void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
-{
-	if (dRoots.size())
-	{
-		if (m_Menu)
-		{
-			//m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
-		}
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY, false);
-		m_Tree.DeleteAllItems();
-		for each (auto to_delete in dRoots)
-		{
-			int index = RootList.FindString(-1, to_delete.get_path());
-			RootList.DeleteString(index);
-		}
-		dRoots.clear();
-		if (RootList.GetCount() == 0)
-		{
-			m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
-		}
-	}
-}
-
-
-void CMFCTRSuiDlg::OnProgramRunsel()
-{
-	if (dRoots.size())
-	{
-		m_Progress.SetPos(0);
-		RunDialog Dlg;
-		Dlg.DoModal();
-		if (ifCancelPressed)
-		{
-			ReportManager* reportManag = new ReportManager;
-			ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
-			reportManag->addReporter(reporter);
-			ToRunParameters* to_run = new ToRunParameters(dRoots, reportManag, &m_Progress, &subm_Progress);
-			HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
-			HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
-			CloseHandle(hThread);
-			CloseHandle(hTimer);
-		}
-	}
-}
-
 
 #pragma endregion stuff
 
@@ -999,7 +1033,7 @@ void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 	CRect new_rect;
 	this->GetWindowRect(&new_rect);
 	ScreenToClient(&new_rect);
-	if (!validate(nType, cxx, cyy)) return;
+//	if (!validate(nType, cxx, cyy)) return;
 	long left_diff = new_rect.left - old_rect.left;
 	long right_diff = new_rect.right - old_rect.right;
 	long bottom_diff = new_rect.bottom - old_rect.bottom;
@@ -1110,9 +1144,6 @@ void CMFCTRSuiDlg::OnLoadProject()
 	char* path = convertToChar(p);
 	if (ValidateProjXML(path))
 	{
-		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD,false);
 		RootList.ResetContent();
 		TiXmlDocument doc(path);
 		doc.LoadFile();
@@ -1147,6 +1178,7 @@ void CMFCTRSuiDlg::OnLoadProject()
 			
 		}
 		
+		UpdateToolbar(PROJECT_UPLOADED);
 	}
 	else
 	{
@@ -1154,7 +1186,6 @@ void CMFCTRSuiDlg::OnLoadProject()
 	}
 	// TODO: Add your command handler code here
 }
-
 
 void CMFCTRSuiDlg::OnProjectLastprojects()
 {
@@ -1271,4 +1302,125 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 
 	CWnd::OnSysCommand(nID, lParam);
+}
+
+void CMFCTRSuiDlg::OnViewConsole()
+{
+	if (console_output.IsWindowVisible())
+		ConsoleHide();
+	else
+		ConsoleShow();
+}
+
+
+void CMFCTRSuiDlg::ConsoleHide()
+{
+	console_output.ShowWindow(false);
+	CRect console_rect;
+	console_output.GetWindowRect(&console_rect);
+	ScreenToClient(&console_rect);
+
+	CRect list_rect;
+	RootList.GetWindowRect(&list_rect);
+	ScreenToClient(&list_rect);
+
+	RootList.MoveWindow(list_rect.left, list_rect.top, list_rect.Width(), console_rect.bottom - list_rect.top);
+
+	CRect tree_rect;
+	m_Tree.GetWindowRect(&tree_rect);
+	ScreenToClient(&tree_rect);
+
+	m_Tree.MoveWindow(tree_rect.left, tree_rect.top, tree_rect.Width(), console_rect.bottom - tree_rect.top);
+}
+
+void CMFCTRSuiDlg::ConsoleShow()
+{
+	CRect console_rect;
+	console_output.GetWindowRect(&console_rect);
+	ScreenToClient(&console_rect);
+
+	CRect list_rect;
+	RootList.GetWindowRect(&list_rect);
+	ScreenToClient(&list_rect);
+
+	RootList.MoveWindow(list_rect.left, list_rect.top, list_rect.Width(), console_rect.top - list_rect.top - SPACE_BETWEEN_CONTROLERS);
+
+	CRect tree_rect;
+	m_Tree.GetWindowRect(&tree_rect);
+	ScreenToClient(&tree_rect);
+
+	m_Tree.MoveWindow(tree_rect.left, tree_rect.top, tree_rect.Width(), console_rect.top - tree_rect.top - SPACE_BETWEEN_CONTROLERS);
+
+	console_output.ShowWindow(true);
+}
+
+void CMFCTRSuiDlg::RunToolsHide()
+{
+	m_Progress.ShowWindow(false);
+	subm_Progress.ShowWindow(false);
+	Time_running_edit.ShowWindow(false);
+
+	CRect lowest_run_tool;
+	m_Progress.GetWindowRect(&lowest_run_tool);
+	ScreenToClient(&lowest_run_tool);
+
+	CWnd* windows[CONTROL_AMOUNT - RUN_CONTROL_AMOUNT];
+
+	windows[0] = &RootList;
+	windows[1] = &m_Tree;
+	windows[2] = &console_output;
+
+	CRect control;
+	for (int i = 0; i < CONTROL_AMOUNT - RUN_CONTROL_AMOUNT; ++i)
+	{
+		windows[i]->GetWindowRect(&control);
+		ScreenToClient(&control);
+
+		if (i == CONTROL_AMOUNT - RUN_CONTROL_AMOUNT - 1)
+		{
+			windows[i]->MoveWindow(control.left, control.top + (lowest_run_tool.bottom - control.bottom), control.Width(), control.Height());
+			break;
+		}
+
+		windows[i]->MoveWindow(control.left, control.top, control.Width(), lowest_run_tool.bottom - control.top);
+	}
+	// just a little magic :)
+	console_output.IsWindowVisible() ? ConsoleShow() : ConsoleHide();
+}
+
+void CMFCTRSuiDlg::RunToolsShow()
+{
+	CRect higher_run_tool;
+	subm_Progress.GetWindowRect(&higher_run_tool);
+	ScreenToClient(&higher_run_tool);
+
+	CRect lowest_run_tool;
+	m_Progress.GetWindowRect(&lowest_run_tool);
+	ScreenToClient(&lowest_run_tool);
+
+	CWnd* windows[CONTROL_AMOUNT - RUN_CONTROL_AMOUNT];
+
+	windows[0] = &RootList;
+	windows[1] = &m_Tree;
+	windows[2] = &console_output;
+
+	CRect control;
+	for (int i = 0; i < CONTROL_AMOUNT - RUN_CONTROL_AMOUNT; ++i)
+	{
+		windows[i]->GetWindowRect(control);
+		ScreenToClient(control);
+
+		if (i == CONTROL_AMOUNT - RUN_CONTROL_AMOUNT - 1)
+		{
+			windows[i]->MoveWindow(control.left, control.top - (lowest_run_tool.bottom - higher_run_tool.top) - SPACE_BETWEEN_CONTROLERS, control.Width(), control.Height());
+			break;
+		}
+
+		int new_height = control.Height() - (lowest_run_tool.bottom - higher_run_tool.top) - SPACE_BETWEEN_CONTROLERS;
+		windows[i]->MoveWindow(control.left, control.top, control.Width(), new_height);
+	}
+
+	m_Progress.ShowWindow(true);
+	subm_Progress.ShowWindow(true);
+	Time_running_edit.ShowWindow(true);
 }

@@ -17,6 +17,7 @@
 #include "ClassView.h"
 #include "OutputWnd.h"
 #include "PropertiesWnd.h"
+#include "TRSnewUIView.h"
 
 class CMainFrame : public CFrameWndEx
 {
@@ -52,7 +53,6 @@ protected:  // control bar embedded members
 	CClassView        m_wndClassView;
 	COutputWnd        m_wndOutput;
 	CPropertiesWnd    m_wndProperties;
-
 // Generated message map functions
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
