@@ -1159,7 +1159,7 @@ void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 		new_x = frame.left + left_diff;
 		new_y = frame.top + top_diff;
 
-		new_width = frame.Width();
+		new_width = frame.Width() + width_diff/2;
 		new_height = frame.Height() + height_diff;
 		RootList.MoveWindow(new_x, new_y, new_width, new_height);
 	}
@@ -1168,11 +1168,11 @@ void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 	{
 		m_Tree.GetWindowRect(&frame);
 		ScreenToClient(&frame);
-		new_x = frame.left + left_diff;
+		new_x = frame.left + left_diff + width_diff / 2;
 		new_y = frame.top + top_diff;
 		
-		new_width = frame.Width() + width_diff;
-		new_height = frame.Height() + height_diff / 2;
+		new_width = frame.Width() + width_diff - width_diff / 2;
+		new_height = frame.Height() + height_diff;
 
 		m_Tree.MoveWindow(new_x, new_y, new_width, new_height);
 	}
@@ -1182,10 +1182,10 @@ void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 		console_output.GetWindowRect(&frame);
 		ScreenToClient(&frame);
 		new_x = frame.left + left_diff;
-		new_y = frame.top + height_diff / 2;
+		new_y = frame.top + height_diff;
 
 		new_width = frame.Width() + width_diff;
-		new_height = frame.Height() + height_diff - height_diff / 2;
+		new_height = frame.Height();
 
 		console_output.MoveWindow(new_x, new_y, new_width, new_height);
 	}
@@ -1223,24 +1223,6 @@ void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 
 		Time_running_edit.MoveWindow(new_x, new_y, frame.Width(), frame.Height());
 	}
-	if (::IsWindow(ThreadsComboBox.m_hWnd))
-	{
-		ThreadsComboBox.GetWindowRect(&frame);
-		ScreenToClient(&frame);
-		new_x = frame.left + left_diff;
-		new_y = frame.top + height_diff;
-
-		ThreadsComboBox.MoveWindow(new_x, new_y, frame.Width(), frame.Height());
-	}
-	if (::IsWindow(DropDown.m_hWnd))
-	{
-		DropDown.GetWindowRect(&frame);
-		ScreenToClient(&frame);
-		new_x = frame.left + left_diff;
-		new_y = frame.top + height_diff;
-
-		DropDown.MoveWindow(new_x, new_y, frame.Width(), frame.Height());
-	}
 
 	old_rect = new_rect;
 }
@@ -1252,8 +1234,6 @@ void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
 	mx->ptMinTrackSize.y = 500;
 	CDialogEx::OnGetMinMaxInfo(mx);
 }
-
-
 
 void CMFCTRSuiDlg::OnLoadProject()
 {
