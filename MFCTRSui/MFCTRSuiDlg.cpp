@@ -25,6 +25,7 @@
 
 bool ifCancelPressed;
 bool RunEndCheck;
+bool SaveAsPressed = true;
 CToolBar* ToolBar;
 CToolBar* Bar;
 
@@ -52,6 +53,8 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PROGRESS1, m_Progress);
 	DDX_Control(pDX, IDC_PROGRESS3, subm_Progress);
 	DDX_Control(pDX, IDC_EDIT1, Time_running_edit);
+	DDX_Control(pDX, IDC_COMBO1, DropDown);
+	DDX_Control(pDX, IDC_COMBO2, ThreadsComboBox);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -70,6 +73,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_Load_Project, &CMFCTRSuiDlg::OnLoadProject)
 	ON_COMMAND(ID_PROJECT_LASTPROJECTS, &CMFCTRSuiDlg::OnProjectLastprojects)
 	ON_COMMAND(ID_VIEW_CONSOLE, &CMFCTRSuiDlg::OnViewConsole)
+	ON_COMMAND(TOOLBAR_SAVEAS, &CMFCTRSuiDlg::OnSaveAs)
 END_MESSAGE_MAP()
 
 
@@ -108,7 +112,15 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 			rectDlg.Width(), rectDlg.Height(), SWP_NOCOPYBITS);
 
 	}
-
+	
+	CFont *myFont = new CFont();
+	myFont->CreateFont(15, 0, 0, 0, FW_NORMAL, FALSE, false,
+		0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+		FIXED_PITCH | FF_MODERN, _T("Courier New"));
+	m_Tree.SetFont(myFont);
+	RootList.SetFont(myFont);
+	
+	console_output.ShowWindow(false);
 	LONG lStyle = GetWindowLong(m_hWnd, GWL_STYLE);
 	lStyle &= ~WS_CHILD;        //remove the CHILD style
 	lStyle &= ~WS_DISABLED;        //remove the DISABLED style
@@ -116,11 +128,12 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	lStyle |= WS_POPUP;            //Add the POPUP style
 	//lStyle |= WS_VISIBLE;        //Add the VISIBLE style
 	lStyle |= WS_SYSMENU;
+	lStyle |= WS_BORDER;
 	lStyle |= WS_MINIMIZEBOX;
 	lStyle |= WS_MAXIMIZEBOX;
 	
 	SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
-
+	DropDown.AddString(L"All");
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
@@ -137,16 +150,17 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	}
 
 	// toolbar binding
+
 	if (!m_ToolBar.Create(this) || !m_ToolBar.LoadToolBar(MYAMAZINGTOOLBAR))
 	{
 		TRACE0("Failed to Create Dialog Toolbar\n");
 		EndDialog(IDCANCEL);
 	}
-
-	CRect	rcClientOld; // Old Client Rect
-	CRect	rcClientNew; // New Client Rect with Tollbar Added
-	GetClientRect(rcClientOld); // Retrive the Old Client WindowSize
-
+	
+	
+	//CRect	rcClientOld; // Old Client Rect
+	//CRect	rcClientNew; // New Client Rect with Tollbar Added
+	//GetClientRect(rcClientOld); // Retrive the Old Client WindowSize
 	//// Called to reposition and resize control bars in the client 
 	//// area of a window. The reposQuery FLAG does not really traw the 
 	//// Toolbar.  It only does the calculations. And puts the new 
@@ -181,21 +195,42 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	//rcWindow.bottom += rcClientOld.Height() - rcClientNew.Height();
 	//MoveWindow(rcWindow, FALSE); // Redraw Window
 	// //Now we REALLY Redraw the Toolbar
+
 	RepositionBars(AFX_IDW_CONTROLBAR_FIRST,
 		AFX_IDW_CONTROLBAR_LAST, 0);
-
-
 
 	ToolBar = &m_ToolBar;
 	Bar = ToolBar;
 	List = &RootList;
 	// toolbar image config
+	CString mes;
+	CString helpMes;
 	
+	for (int i = 0; i < 100; ++i)
+	{
+		if (i < 9)
+		{
+			mes.Format(L"%S", "0");
+			helpMes.Format(L"%d", i + 1);
+			mes += helpMes;
+			ThreadsComboBox.AddString(mes);
+		}
+		else
+		{
+			mes.Format(L"%d", int(i + 1));
+			ThreadsComboBox.AddString(mes);
+		}
+	}
 	GetWindowRect(&old_rect);
 	ScreenToClient(&old_rect);
 
 	dRoots.clear();
 	UpdateToolbar(PROJECT_NOTLOADED);
+
+	//this->SetBackgroundColor(RGB(32, 32, 32));
+	
+	//SetSysColors(2, aElements, aOldColors);
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -261,6 +296,9 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 	else
 		m_Tree.DeleteAllItems();
 
+	DropDown.SetCurSel(0);
+	ThreadsComboBox.SetCurSel(9);
+
 	delete[] array;
 }
 
@@ -294,7 +332,8 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY);
 
 
-		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
+		m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_ENABLED);
+		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_ENABLED);
 	}
 	else if (mask & PROJECT_NOTLOADED)
 	{
@@ -304,7 +343,8 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY, false);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY, false);
 
-		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
@@ -412,7 +452,6 @@ void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
-
 DWORD WINAPI RunSuits(LPVOID arg)
 {
 	RunParameters param;
@@ -422,6 +461,13 @@ DWORD WINAPI RunSuits(LPVOID arg)
 	for each(auto it in coll)
 	{
 		count += it->getList().size();
+		for each(auto iter in it->getList())
+		{
+			if (iter->getRepeat())
+			{
+				count += atoi(iter->getRepeat());
+			}
+		}
 	}
 	param.progress->SetRange(0, count);
 	param.progress->SetStep(1);
@@ -795,22 +841,37 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 	if (dRoots.size())
 	{
 		m_Progress.SetPos(0);
-		RunDialog Dlg;
-		Dlg.DoModal();
-		if (ifCancelPressed)
+
+		short cIndex;
+		cIndex = DropDown.GetCurSel();
+		CString fontName;
+		DropDown.GetLBText(cIndex, fontName);
+		if (fontName != L"All")
 		{
-			ReportManager* reportManag = new ReportManager;
-			ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
-			reportManag->addReporter(reporter);
-			ToRunParameters* to_run = new ToRunParameters{ dRoots, reportManag, &m_Progress, &subm_Progress, this };
-			HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
-			HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
-			CloseHandle(hThread);
-			CloseHandle(hTimer);
+			tag = fromCStringToChar(fontName);
 		}
+		else
+		{
+			tag = nullptr;
+		}
+		cIndex = ThreadsComboBox.GetCurSel();
+		ThreadsComboBox.GetLBText(cIndex, fontName);
+		if (fontName != "")
+		{
+			threads = fromCStringToChar(fontName);
+		}
+		ReportManager* reportManag = new ReportManager;
+		ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
+		reportManag->addReporter(reporter);
+		ToRunParameters* to_run = new ToRunParameters{dRoots, reportManag, &m_Progress, &subm_Progress, this};
+		HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
+		HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
+		CloseHandle(hThread);
+		CloseHandle(hTimer);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
+
 	}
 }
-
 
 bool checkDiff(int begin, char* source)
 {
@@ -971,6 +1032,9 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 
 void CMFCTRSuiDlg::Info(TCHAR* path)
 {
+	TagColl.clear();
+	DropDown.ResetContent();
+	DropDown.AddString(L"All");
 	char* pathA = nullptr;
 	int size = WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, 0, NULL, NULL);
 	pathA = new char[size];
@@ -1003,6 +1067,47 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	{
 		TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList);
 	}
+	for (it; it != suiteColl->end(); ++it)
+	{
+		std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+		
+		for (iter; iter != (*it)->getList().end(); ++iter)
+		{
+			std::vector<char*>::iterator iterator = TagColl.begin();
+			if (TagColl.size() == 0)
+			{
+				if ((*iter)->getTag())
+				{
+					TagColl.push_back((*iter)->getTag());
+				}
+			}
+			else
+			{
+				bool check = false;
+				for (iterator; iterator != TagColl.end(); ++iterator)
+				{
+					if (!strncmp(*iterator, (*iter)->getTag(), strlen((*iter)->getTag())))
+					{
+						check = true;
+						break;
+					}
+				
+				}
+				if (!check)
+				{
+					TagColl.push_back((*iter)->getTag());
+				}
+			}
+		}
+		
+	}
+	for (int i = 0; i < TagColl.size(); ++i)
+	{
+		TCHAR*buf = new TCHAR[strlen(TagColl[i]) + 1];
+		convertToTCHAR(buf, TagColl[i]);
+		DropDown.AddString(buf);
+		delete[] buf;
+	}
 	delete[] pathA;
 }
 
@@ -1025,8 +1130,8 @@ void CMFCTRSuiDlg::OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
-
 #pragma endregion stuff
+
 
 void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 {
@@ -1118,6 +1223,25 @@ void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 
 		Time_running_edit.MoveWindow(new_x, new_y, frame.Width(), frame.Height());
 	}
+	if (::IsWindow(ThreadsComboBox.m_hWnd))
+	{
+		ThreadsComboBox.GetWindowRect(&frame);
+		ScreenToClient(&frame);
+		new_x = frame.left + left_diff;
+		new_y = frame.top + height_diff;
+
+		ThreadsComboBox.MoveWindow(new_x, new_y, frame.Width(), frame.Height());
+	}
+	if (::IsWindow(DropDown.m_hWnd))
+	{
+		DropDown.GetWindowRect(&frame);
+		ScreenToClient(&frame);
+		new_x = frame.left + left_diff;
+		new_y = frame.top + height_diff;
+
+		DropDown.MoveWindow(new_x, new_y, frame.Width(), frame.Height());
+	}
+
 	old_rect = new_rect;
 }
 
@@ -1133,6 +1257,15 @@ void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
 
 void CMFCTRSuiDlg::OnLoadProject()
 {
+	if (pro_.getName() && pro_.getPath())
+	{
+		int res = MessageBox(_T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
+		if (res == IDYES)
+		{
+			pro_.SaveProject(List);
+			MessageBox(_T("Project was saved"), _T("Info"), MB_ICONINFORMATION | MB_OK);
+		}
+	}
 	CString filePath;
 	CFileDialog dlgFile(TRUE);
 	OPENFILENAME& ofn = dlgFile.GetOFN();
@@ -1189,7 +1322,17 @@ void CMFCTRSuiDlg::OnLoadProject()
 
 void CMFCTRSuiDlg::OnProjectLastprojects()
 {
+	if (pro_.getName() && pro_.getPath())
+	{
+		int res = MessageBox(_T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
+		if (res == IDYES)
+		{
+			pro_.SaveProject(List);
+			MessageBox(_T("Project was saved"), _T("Info"), MB_ICONINFORMATION | MB_OK);
+		}
+	}
 	m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
+	m_Menu->EnableMenuItem(ID_Save_AS, MF_BYCOMMAND | MF_ENABLED);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
 	RootList.ResetContent();
@@ -1267,13 +1410,22 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 					if (!CheckForModification(path, pro_.getName(), &RootList))
 					{
-						int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
-						if (res == IDYES)
+						if (SaveAsPressed)
 						{
-							pro_.SaveProject(&RootList);
-							delete[] path;
-							delete[] buf;
-							CDialogEx::OnOK();
+							int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
+							if (res == IDYES)
+							{
+								pro_.SaveProject(&RootList);
+								delete[] path;
+								delete[] buf;
+								CDialogEx::OnOK();
+							}
+							else
+							{
+								delete[] path;
+								delete[] buf;
+								CDialogEx::OnOK();
+							}
 						}
 						else
 						{
@@ -1303,6 +1455,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 	CWnd::OnSysCommand(nID, lParam);
 }
+
 
 void CMFCTRSuiDlg::OnViewConsole()
 {
@@ -1423,4 +1576,55 @@ void CMFCTRSuiDlg::RunToolsShow()
 	m_Progress.ShowWindow(true);
 	subm_Progress.ShowWindow(true);
 	Time_running_edit.ShowWindow(true);
+}
+
+
+void CMFCTRSuiDlg::OnSaveAs()
+{
+	CString filePath;
+	
+	CFileDialog dlgFile(FALSE);
+	dlgFile.m_ofn.lpstrTitle = L"Save XML File As";
+	if (dlgFile.DoModal() == IDOK)
+	{
+		filePath = dlgFile.GetPathName();
+		char* name = new char[filePath.GetLength()];
+		char help = filePath[filePath.GetLength() - 1];
+		int i = 0;
+		while (help != '\\')
+		{
+			name[i] = help;
+			++i;
+			help = filePath[filePath.GetLength() - i - 1];
+		}
+		name[i] = '\0';
+		for (int j = 0; j < strlen(name) / 2; ++j)
+		{
+			char time = name[j];
+			name[j] = name[strlen(name) - j - 1];
+			name[strlen(name) - j - 1] = time;
+		}
+		properties.setName(name);
+		char* path = new char[filePath.GetLength()];
+		for (int j = 0; j < filePath.GetLength() - strlen(name); ++j)
+		{
+			path[j] = help;
+			help = filePath[filePath.GetLength() - j - strlen(name)-1];
+		}
+		path[filePath.GetLength() - strlen(name)] = help;
+		path[filePath.GetLength() - strlen(name)+1 ] = '\0';
+		for (int j = 0; j < strlen(path)/2; ++j)
+		{
+			char time = path[j];
+			path[j] = path[strlen(path) - 1 - j];
+			path[strlen(path) - 1 - j] = time;
+		}
+		properties.setPath(path);
+		delete[] path;
+		delete[] name;
+
+		properties.SaveProject(&RootList);
+	}
+	SaveAsPressed = false;
+	// TODO: Add your command handler code here
 }

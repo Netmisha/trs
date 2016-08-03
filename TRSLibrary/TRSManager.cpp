@@ -250,6 +250,7 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 				coll.push_back((*iter)->getWaitFor());
 			}
 		}
+		if (!tag&&!name)
 		if (!VerifyWaitForList(collTests, coll))
 		{
 			logger << "There are tests that waiting for each other\n";
