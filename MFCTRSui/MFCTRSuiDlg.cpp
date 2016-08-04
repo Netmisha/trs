@@ -136,8 +136,9 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	DropDown.AddString(L"All");
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
-	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
+	
+	//SetIcon(m_hIcon, TRUE);			// Set big icon
+	//SetIcon(m_hIcon, FALSE);		// Set small icon
 	// TODO: Add extra initialization here
 	RootList.ResetContent();
 
@@ -226,7 +227,9 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 
 	dRoots.clear();
 	UpdateToolbar(PROJECT_NOTLOADED);
-
+	HICON icon;
+	HICON hIcon = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_ICON2));
+	SetIcon(hIcon, FALSE);
 	//this->SetBackgroundColor(RGB(32, 32, 32));
 	
 	//SetSysColors(2, aElements, aOldColors);
@@ -466,6 +469,7 @@ DWORD WINAPI RunSuits(LPVOID arg)
 			if (iter->getRepeat())
 			{
 				count += atoi(iter->getRepeat());
+				--count;
 			}
 		}
 	}
@@ -517,7 +521,7 @@ DWORD WINAPI Timer(LPVOID arg)
 //	edit->ShowWindow(true);
 	int count = 0;
 	CString mes;
-	int last;
+	int last=0;
 	while (RunEndCheck)
 	{
 		last = edit->GetWindowTextLength();
@@ -1257,6 +1261,7 @@ void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
 
 void CMFCTRSuiDlg::OnLoadProject()
 {
+	UpdateToolbar(PROJECT_NOTLOADED);
 	if (pro_.getName() && pro_.getPath())
 	{
 		int res = MessageBox(_T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
@@ -1308,7 +1313,6 @@ void CMFCTRSuiDlg::OnLoadProject()
 					RootList.AddString(buf);
 				}
 			}
-			
 		}
 		
 		UpdateToolbar(PROJECT_UPLOADED);
