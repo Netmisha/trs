@@ -8,6 +8,6 @@ void convertToTCHAR(TCHAR*dest, const char* path);
 char* convertToChar(TCHAR*path);
 char* fromCStringToChar(CString string);
 bool ValidateProjXML(char* path);
-bool CheckForModification(char* path, char* name, CListBox*List);
+bool CheckForModification(char* path, char* name, CListBox*List,CComboBox* Tag,CComboBox* threads);
 BOOL validate(UINT nType, int cxx, int cyy);
 #endif

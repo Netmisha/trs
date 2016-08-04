@@ -42,6 +42,9 @@ ProjectProperties::~ProjectProperties()
 {
 	delete[] name;
 	delete[] path;
+	delete[] threads;
+	delete[] tag;
+	delete[] testName;
 }
 
 bool ProjectProperties::setName(const char* name_)
@@ -61,6 +64,66 @@ bool ProjectProperties::setName(const char* name_)
 		return true;
 	}
 	return false;
+}
+
+bool ProjectProperties::setTag(char* tag_)
+{
+	if (tag_)
+	{
+		if (tag)
+		{
+			delete[] tag;
+			tag = new char[strlen(tag_) + 1];
+			strncpy_s(tag, strlen(tag_) + 1, tag_, strlen(tag_));
+			return true;
+		}
+		else
+		{
+			tag = new char[strlen(tag_) + 1];
+			strncpy_s(tag, strlen(tag_) + 1, tag_, strlen(tag_));
+			return true;
+		}
+	}
+}
+
+bool ProjectProperties::setThreads(char* threads_)
+{
+	if (threads_)
+	{
+		if (threads)
+		{
+			delete[] threads;
+			threads = new char[strlen(threads_) + 1];
+			strncpy_s(threads, strlen(threads_) + 1, threads_, strlen(threads_));
+			return true;
+		}
+		else
+		{
+			threads = new char[strlen(threads_) + 1];
+			strncpy_s(threads, strlen(threads_) + 1, threads_, strlen(threads_));
+			return true;
+		}
+	}
+}
+
+bool ProjectProperties::setTestName(char* testName_)
+{
+	if (testName_)
+	{
+		if (testName)
+		{
+			delete[] testName;
+			testName = new char[strlen(testName_) + 1];
+			strncpy_s(testName, strlen(testName_) + 1, testName_, strlen(testName_));
+			return true;
+		}
+		else
+		{
+			testName = new char[strlen(testName_) + 1];
+			strncpy_s(testName, strlen(testName_) + 1, testName_, strlen(testName_));
+			return true;
+		}
+	}
 }
 
 bool ProjectProperties::setPath(const char* path_)
@@ -92,10 +155,28 @@ char* ProjectProperties::getPath()
 	return path;
 }
 
+char* ProjectProperties::getTag()
+{
+	return tag;
+}
+
+char* ProjectProperties::getThreads()
+{
+	return threads;
+}
+
+char* ProjectProperties::getTestName()
+{
+	return testName;
+}
+
 ProjectProperties& ProjectProperties::operator=(ProjectProperties& pro)
 {
 	path = pro.getPath();
 	name = pro.getName();
+	threads = pro.getThreads();
+	tag = pro.getTag();
+	testName = pro.getTestName();
 	return *this;
 }
 
@@ -134,6 +215,51 @@ bool ProjectProperties::SaveProject(CListBox*List)
 				subEl->LinkEndChild(text);
 				delete[] path;
 			}
+			if (List->GetSelCount())
+			{
+				TiXmlElement* ListSel = new TiXmlElement("ListSelection");
+				element->LinkEndChild(ListSel);
+				for (int j = 0; j < List->GetCount(); ++j)
+				{
+					if (List->GetSel(j))
+					{
+						TiXmlElement* curSel = new TiXmlElement("selection");
+						ListSel->LinkEndChild(curSel);
+						int count = j;
+						int lic = 2;
+						while (count /= 10)
+						{
+							++lic;
+						}
+						char* cur = new char[lic];
+						sprintf_s(cur, lic, "%d", j);
+						TiXmlText* text = new TiXmlText(cur);
+						curSel->LinkEndChild(text);
+						delete[] cur;
+					}
+				}
+			}
+		}
+		if (tag)
+		{
+			TiXmlElement* Tag = new TiXmlElement("tag");
+			element->LinkEndChild(Tag);
+			TiXmlText*text = new TiXmlText(tag);
+			Tag->LinkEndChild(text);
+		}
+		if (threads)
+		{
+			TiXmlElement* Threads = new TiXmlElement("threads");
+			element->LinkEndChild(Threads);
+			TiXmlText* text = new TiXmlText(threads);
+			Threads->LinkEndChild(text);
+		}
+		if (testName)
+		{
+			TiXmlElement* TestName = new TiXmlElement("testName");
+			element->LinkEndChild(TestName);
+			TiXmlText* text = new TiXmlText(testName);
+			TestName->LinkEndChild(text);
 		}
 		if (doc.SaveFile(fullPath))
 		{

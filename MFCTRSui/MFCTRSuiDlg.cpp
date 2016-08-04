@@ -74,6 +74,8 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_PROJECT_LASTPROJECTS, &CMFCTRSuiDlg::OnProjectLastprojects)
 	ON_COMMAND(ID_VIEW_CONSOLE, &CMFCTRSuiDlg::OnViewConsole)
 	ON_COMMAND(TOOLBAR_SAVEAS, &CMFCTRSuiDlg::OnSaveAs)
+	ON_CBN_SELCHANGE(IDC_COMBO1, &CMFCTRSuiDlg::OnCbnSelchangeCombo1)
+	ON_CBN_SELCHANGE(IDC_COMBO2, &CMFCTRSuiDlg::OnCbnSelchangeCombo2)
 END_MESSAGE_MAP()
 
 
@@ -227,12 +229,10 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 
 	dRoots.clear();
 	UpdateToolbar(PROJECT_NOTLOADED);
-	HICON icon;
-	//HICON hIcon = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_ICON2));
-	//SetIcon(hIcon, FALSE);
-	//this->SetBackgroundColor(RGB(32, 32, 32));
 	
-	//SetSysColors(2, aElements, aOldColors);
+	HICON hIcon = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_ICON2));
+	SetIcon(hIcon, FALSE);
+	SetWindowText(L"Test manager");
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -301,7 +301,8 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 
 	DropDown.SetCurSel(0);
 	ThreadsComboBox.SetCurSel(9);
-
+	CMFCTRSuiDlg::OnCbnSelchangeCombo1();
+	CMFCTRSuiDlg::OnCbnSelchangeCombo2();
 	delete[] array;
 }
 
@@ -1292,6 +1293,29 @@ void CMFCTRSuiDlg::OnLoadProject()
 					convertToTCHAR(buf, text->Value());
 					RootList.AddString(buf);
 				}
+				if (!strncmp(head->Value(), "ListSelection", strlen("ListSelection")))
+				{
+					TiXmlNode* subList = head->FirstChild();
+					for (subList; subList != 0; subList = subList->NextSibling())
+					{
+						TiXmlNode* node = subList->FirstChild();
+						List->SetSel(atoi(node->Value()));
+
+					}
+					CMFCTRSuiDlg::OnLbnSelchangeListroot();
+				}
+				if (!strncmp(head->Value(), "tag", strlen("tag"))&&List->GetSelCount())
+				{
+					TiXmlNode* node = head->FirstChild();
+					DropDown.SetCurSel(atoi(node->Value()));
+					CMFCTRSuiDlg::OnCbnSelchangeCombo1();
+				}
+				if (!strncmp(head->Value(), "threads", strlen("threads")))
+				{
+					TiXmlNode* node = head->FirstChild();
+					ThreadsComboBox.SetCurSel(atoi(node->Value()));
+					CMFCTRSuiDlg::OnCbnSelchangeCombo2();
+				}
 			}
 		}
 		
@@ -1350,6 +1374,29 @@ void CMFCTRSuiDlg::OnProjectLastprojects()
 				convertToTCHAR(buf, text->Value());
 				RootList.AddString(buf);
 			}
+			if (!strncmp(head->Value(), "ListSelection", strlen("ListSelection")))
+			{
+				TiXmlNode* subList = head->FirstChild();
+				for (subList; subList != 0; subList = subList->NextSibling())
+				{
+					TiXmlNode* node = subList->FirstChild();
+					List->SetSel(atoi(node->Value()));
+
+				}
+				CMFCTRSuiDlg::OnLbnSelchangeListroot();
+			}
+			if (!strncmp(head->Value(), "tag", strlen("tag")) && List->GetSelCount())
+			{
+				TiXmlNode* node = head->FirstChild();
+				DropDown.SetCurSel(atoi(node->Value()));
+				CMFCTRSuiDlg::OnCbnSelchangeCombo1();
+			}
+			if (!strncmp(head->Value(), "threads", strlen("threads")))
+			{
+				TiXmlNode* node = head->FirstChild();
+				ThreadsComboBox.SetCurSel(atoi(node->Value()));
+				CMFCTRSuiDlg::OnCbnSelchangeCombo2();
+			}
 		}
 
 	}
@@ -1392,7 +1439,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 				else
 				{
 
-					if (!CheckForModification(path, pro_.getName(), &RootList))
+					if (!CheckForModification(path, pro_.getName(), &RootList,&DropDown,&ThreadsComboBox))
 					{
 						if (SaveAsPressed)
 						{
@@ -1611,4 +1658,36 @@ void CMFCTRSuiDlg::OnSaveAs()
 	}
 	SaveAsPressed = false;
 	// TODO: Add your command handler code here
+}
+
+
+void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
+{
+	int count = DropDown.GetCurSel();
+	int lic = 2;
+	while (count /= 10)
+	{
+		++lic;
+	}
+	char* tag_ = new char[lic];
+	sprintf_s(tag_, lic,"%d", DropDown.GetCurSel());
+	pro_.setTag(tag_);
+	delete[] tag_;
+	// TODO: Add your control notification handler code here
+}
+
+
+void CMFCTRSuiDlg::OnCbnSelchangeCombo2()
+{
+	int count = ThreadsComboBox.GetCurSel();
+	int lic = 2;
+	while (count /= 10)
+	{
+		++lic;
+	}
+	char* threads_ = new char[lic];
+	sprintf_s(threads_, lic, "%d", ThreadsComboBox.GetCurSel());
+	pro_.setThreads(threads_);
+	delete[] threads_;
+	// TODO: Add your control notification handler code here
 }

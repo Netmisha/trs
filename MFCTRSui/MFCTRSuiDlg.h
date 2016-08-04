@@ -135,6 +135,9 @@ protected:
 	afx_msg void OnSaveAs();
 	CComboBox DropDown;
 	CComboBox ThreadsComboBox;
+public:
+	afx_msg void OnCbnSelchangeCombo1();
+	afx_msg void OnCbnSelchangeCombo2();
 };
 
 extern CListBox* List;

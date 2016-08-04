@@ -125,5 +125,8 @@
     <Image Include="res\toolbar3.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\icon2.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
