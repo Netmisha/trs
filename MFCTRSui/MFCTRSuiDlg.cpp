@@ -55,6 +55,7 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT1, Time_running_edit);
 	DDX_Control(pDX, IDC_COMBO1, DropDown);
 	DDX_Control(pDX, IDC_COMBO2, ThreadsComboBox);
+	DDX_Control(pDX, IDC_COMBO3, m_NameBox);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -197,11 +198,27 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	//MoveWindow(rcWindow, FALSE); // Redraw Window
 	// //Now we REALLY Redraw the Toolbar
 
-	RepositionBars(AFX_IDW_CONTROLBAR_FIRST,
-		AFX_IDW_CONTROLBAR_LAST, 0);
+	if (!m_secondToolBar.Create(this) || !m_secondToolBar.LoadToolBar(IDR_TOOLBAR1))
+	{
+		TRACE0("Failed to Create Dialog Toolbar\n");
+		EndDialog(IDCANCEL);
+	} 
+	CRect	rcClientOld;
+	GetClientRect(&rcClientOld);
+	rcClientOld.right = 600;
+	RepositionBars(AFX_IDW_CONTROLBAR_FIRST, AFX_IDW_CONTROLBAR_LAST, 0, 0, 0, &rcClientOld);
 
-	ToolBar = &m_ToolBar;
-	Bar = ToolBar;
+	CRect rect1, rect2;
+	m_ToolBar.GetWindowRect(&rect1);
+	ScreenToClient(&rect1);
+
+	m_secondToolBar.GetWindowRect(&rect2);
+	ScreenToClient(&rect2);
+
+	m_secondToolBar.GetToolBarCtrl().MoveWindow(rect1.right, rect1.top, rect2.Width(), rect2.Height());
+//	GetDlgItem(IDR_TOOLBAR1)->SetWindowPos(NULL, rect1.right, rect1.top, rect2.Width(), rect2.Height(), SWP_NOZORDER | SWP_NOMOVE | SWP_SHOWWINDOW);
+
+
 	List = &RootList;
 	// toolbar image config
 	CString mes;
@@ -228,10 +245,10 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	dRoots.clear();
 	UpdateToolbar(PROJECT_NOTLOADED);
 	HICON icon;
+
 	//HICON hIcon = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_ICON2));
 	//SetIcon(hIcon, FALSE);
 	//this->SetBackgroundColor(RGB(32, 32, 32));
-	
 	//SetSysColors(2, aElements, aOldColors);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -349,7 +366,7 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 		m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
 		ConsoleHide();
 		RunToolsHide();
@@ -357,10 +374,10 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 
 	if (dRoots.size())
 	{
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN, false);
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN, false);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE, false);
 
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY);
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY);
 
 		m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_ENABLED);
@@ -368,10 +385,10 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 	}
 	else
 	{
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
 
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY, false);
 
 		m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
@@ -384,10 +401,10 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 	if (mask & RUN_CLICKED)
 	{// mask = RUN_CLICKED | ...
 		RunToolsShow();
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY);
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY);
 
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP, false);
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP, false);
 
 		m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 		m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
@@ -395,7 +412,7 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 	else if (mask & RUN_UNCLICKED)
 	{
 		RunToolsHide();
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
 
 		m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_ENABLED);
 		m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_ENABLED);
@@ -1234,7 +1251,7 @@ void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 
 void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
 {
-	mx->ptMinTrackSize.x = 700; //minimum 400x300 size
+	mx->ptMinTrackSize.x = 770;
 	mx->ptMinTrackSize.y = 500;
 	CDialogEx::OnGetMinMaxInfo(mx);
 }

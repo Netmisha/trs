@@ -97,6 +97,7 @@ protected:
 	void Info(TCHAR* path);
 
 	CToolBar m_ToolBar;
+	CToolBar m_secondToolBar;
 	CMenu* m_Menu;
 	ProjectProperties properties;
 	afx_msg void OnLbnSelchangeListroot();
@@ -113,7 +114,6 @@ public:
 	afx_msg void OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult);
 
 	CProgressCtrl subm_Progress;
-
 	CEdit Time_running_edit;
 
 	afx_msg void OnProgramAddfolder();
@@ -126,6 +126,7 @@ public:
 	afx_msg void OnProjectLastprojects();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnViewConsole();
+	
 protected:
 	void ConsoleHide();
 	void ConsoleShow();
@@ -135,6 +136,8 @@ protected:
 	afx_msg void OnSaveAs();
 	CComboBox DropDown;
 	CComboBox ThreadsComboBox;
+public:
+	CComboBox m_NameBox;
 };
 
 extern CListBox* List;
