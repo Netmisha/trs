@@ -228,8 +228,8 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	dRoots.clear();
 	UpdateToolbar(PROJECT_NOTLOADED);
 	HICON icon;
-	HICON hIcon = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_ICON2));
-	SetIcon(hIcon, FALSE);
+	//HICON hIcon = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_ICON2));
+	//SetIcon(hIcon, FALSE);
 	//this->SetBackgroundColor(RGB(32, 32, 32));
 	
 	//SetSysColors(2, aElements, aOldColors);
