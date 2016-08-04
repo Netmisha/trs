@@ -8,6 +8,9 @@ class ProjectProperties
 {
 	char* path;
 	char* name;
+	char* tag=nullptr;
+	char* testName=nullptr;
+	char* threads=nullptr;
 public:
 	ProjectProperties(char* path, char* name);
 	ProjectProperties();
@@ -16,10 +19,16 @@ public:
 
 	bool setPath(const char* path);
 	bool setName(const char* name);
+	bool setTag(char* tag);
+	bool setThreads(char* threads);
+	bool setTestName(char* testName);
 	char* getProjPath();
 	bool SaveProject(CListBox*List);
 	char* getPath();
 	char* getName();
+	char* getThreads();
+	char* getTag();
+	char* getTestName();
 };
 
 #endif

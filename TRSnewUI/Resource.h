@@ -108,7 +108,7 @@
 #define ID_CHECK2                       32777
 #define ID_CHECK_CONSOLE                32777
 #define ID_CHECK3                       32779
-
+#define IDI_ICON2                       32780
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

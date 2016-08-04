@@ -126,6 +126,7 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\toolbar1.bmp">
+    <Image Include="res\icon2.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

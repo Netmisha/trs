@@ -138,6 +138,8 @@ protected:
 	CComboBox ThreadsComboBox;
 public:
 	CComboBox m_NameBox;
+	afx_msg void OnCbnSelchangeCombo1();
+	afx_msg void OnCbnSelchangeCombo2();
 };
 
 extern CListBox* List;

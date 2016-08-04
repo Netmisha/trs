@@ -145,6 +145,7 @@
     <None Include="res\MFCTRSui.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\icon2.ico" />
     <Image Include="res\MFCTRSui.ico" />
     <Image Include="res\toolbar1.bmp" />
     <Image Include="res\toolbar3.bmp" />

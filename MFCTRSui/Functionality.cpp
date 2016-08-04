@@ -89,7 +89,19 @@ bool ValidateProjXML(char* path)
 			{
 				if (strncmp(head->Value(), "path",strlen(head->Value())))
 				{
-					return false;
+					if (strncmp(head->Value(), "ListSelection", strlen("ListSelection")))
+					{
+						if (strncmp(head->Value(), "tag", strlen("tag")))
+						{
+							if (strncmp(head->Value(), "threads", strlen("threads")))
+							{
+								if (strncmp(head->Value(), "testName", strlen("testName")))
+								{
+									return false;
+								}
+							}
+						}
+					}
 				}
 			}
 			return true;
@@ -110,9 +122,11 @@ BOOL validate(UINT nType, int cxx, int cyy)
 	return counter * 3 + cxx != a - cyy + 6;
 }
 
-bool CheckForModification(char* path, char* name, CListBox* List)
+bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_,CComboBox* threads_)
 {
 	TiXmlDocument doc(path);
+	bool check = false;
+	bool threadsCheck = false;
 	if (doc.LoadFile())
 	{
 		TiXmlNode* first = doc.FirstChild();
@@ -151,10 +165,68 @@ bool CheckForModification(char* path, char* name, CListBox* List)
 						delete[] p;
 					}
 				}
+				if (!strncmp(head->Value(), "ListSelection", strlen("ListSelection")))
+				{
+					--i;
+					int count = List->GetSelCount();
+					TiXmlNode* subList = head->FirstChild();
+					for (subList; subList != 0; subList = subList->NextSibling())
+					{
+						TiXmlNode* text = subList->FirstChild();
+						if (!List->GetSel(atoi(text->Value())))
+						{
+							return false;
+						}
+						--count;
+					}
+					if (count != 0)
+					{
+						return false;
+					}
+				}
+				if (!strncmp(head->Value(), "tag", strlen("tag")))
+				{
+					--i;
+					check = true;
+					TiXmlNode* text = head->FirstChild();
+					if (atoi(text->Value()) != tag_->GetCurSel())
+					{
+						return false;
+					}
+				}
+				if (!strncmp(head->Value(), "threads", strlen("threads")))
+				{
+					--i;
+					threadsCheck = true;
+					TiXmlNode* text = head->FirstChild();
+					if (atoi(text->Value()) != threads_->GetCurSel())
+					{
+						return false;
+					}
+				}
+				if (!strncmp(head->Value(), "textName", strlen("testName")))
+				{
+					--i;
+
+				}
 			}
 			if (i != count)
 			{
 				return false;
+			}
+			if (!check)
+			{
+				if (tag_->GetCurSel())
+				{
+					return false;
+				}
+			}
+			if (!threadsCheck)
+			{
+				if (threads_->GetCurSel())
+				{
+					return false;
+				}
 			}
 			return true;
 		}
