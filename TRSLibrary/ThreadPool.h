@@ -65,9 +65,10 @@ public:
 	// adding task to the queue
 	BOOL AddTask(routine, PVOID);
 	BOOL JoinAll(DWORD max_time);
+	BOOL TerminateAll();
 
 	BOOL InitPool(DWORD max_queue_size);
-	BOOL DestroyPool();
+	BOOL DestroyPool(bool ignore_queue);
 
 private:
 

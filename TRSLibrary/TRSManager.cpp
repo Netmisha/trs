@@ -118,6 +118,8 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 	if (Verify(path, name, tag) != SUCCEEDED || threads_amount > MAX_THREADS)
 		return false;
 
+	running_ = true;
+
 	std::list<Suite*> arr = *List(path, name, tag);
 	if (arr.size() == 0)
 		return false;
@@ -128,7 +130,7 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 		coll.push_back(**var);
 
 	// TODO: add parameter to Console command line
-	SuiteCollection suits(coll, threads_amount, pResult);
+	SuiteCollection suits(coll, threads_amount, &running_, pResult);
 
 	bool ret_val = suits.Run();
 	logger->info("Exit Run function with result: {0}", ret_val);
@@ -275,17 +277,19 @@ bool TRSManager::Pause(char* path, char* name, char* tag)
 	return false;
 }
 
-bool TRSManager::Stop(char* path, char* name, char* tag)
+bool TRSManager::Stop(/*char* path, char* name, char* tag*/)
 {
-	logger->info("Entered Stop function with path: {}", path);
-	if (name)
-		logger->info("name: {} ", name);
-	if (tag)
-		logger->info("name: {} ", tag);
+	logger->info("Entered Stop function" /* with path: {}", path*/);
+	//if (name)
+	//	logger->info("name: {} ", name);
+	//if (tag)
+	//	logger->info("name: {} ", tag);
 
-	if (!Verify(path, name, tag))
-		return false;
-	return false;
+	//if (!Verify(path, name, tag))
+	//	return false;
+
+	running_ = false;
+	return true;
 }
 
 int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suiteCollection, std::vector<TRSTest*>testList)

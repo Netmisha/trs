@@ -16,8 +16,10 @@
 class SuiteCollection
 {
 public:
-	SuiteCollection(const std::list<Suite>&, unsigned threads_amount, ReportManager* pReport = nullptr);
+	SuiteCollection(const std::list<Suite>&, unsigned threads_amount, bool* running, ReportManager* pReport = nullptr);
 	~SuiteCollection();
+
+	inline void stop();
 
 	bool Run();
 private:
@@ -26,6 +28,7 @@ private:
 	std::list<ProcessCollection> suits_;
 	HANDLE global_semaphore_;
 	ThreadPool threads_;
+	bool* running_;
 };
 
 #endif

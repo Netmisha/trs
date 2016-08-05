@@ -18,8 +18,8 @@ ProcessData::ProcessData( ProcessInfo* info, HANDLE handles[SEMAPHORES_AMOUNT]) 
 
 // =========================================================================================================================================================
 
-ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphores[SEMAPHORES_AMOUNT], ThreadPool* threads, ReportManager* pReporter) : 
-test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(pReporter), result_description_(nullptr), threads_(threads)
+ProcessInfo::ProcessInfo(const TRSTest& test, char* path, HANDLE semaphores[SEMAPHORES_AMOUNT], ThreadPool* threads, bool* running, ReportManager* pReporter) : 
+test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(pReporter), result_description_(nullptr), threads_(threads), running_(running)
 {
 	InitializeCriticalSection(&crt_);
 	semaphores_[OWNED_SEMAPHORE] = semaphores[OWNED_SEMAPHORE];
@@ -58,7 +58,7 @@ test_(test), status_(Status::Waiting), result_(false), duration_(0), pReporter_(
 }
 
 ProcessInfo::ProcessInfo(const ProcessInfo& instance):
-test_(instance.test_), status_(instance.status_), pReporter_(instance.pReporter_), result_description_(instance.result_description_),
+test_(instance.test_), status_(instance.status_), pReporter_(instance.pReporter_), result_description_(instance.result_description_), running_(instance.running_),
 result_(instance.result_), process_information_(instance.process_information_), duration_(instance.duration_), max_time_(instance.max_time_), threads_(instance.threads_)
 {
 	InitializeCriticalSection(&crt_);
@@ -224,6 +224,9 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 	ZeroMemory(&startup_info, sizeof(startup_info));
 	startup_info.cb = sizeof(startup_info);
 
+	if (!data->running_process->running_)
+		return 0;
+
 	// starting our desirable executable file
 	bool create_result = CreateProcess(NULL, data->running_process->command_line_, NULL, NULL, FALSE, CREATE_NO_WINDOW,
 		NULL, NULL, &startup_info, &data->running_process->process_information_);
@@ -298,6 +301,8 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 	data->running_process->duration_ = duration_cast<milliseconds>(t2 - t1);
 
+	if (!data->running_process->running_)
+		return 0;
 
 	data->running_process->pReporter_->afterExecution(data->running_process->test_, *data->running_process);
 

@@ -207,7 +207,6 @@ void CTRSnewUIView::OnButtondelete()
 	{
 		m_ListCtrl.DeleteItem(*iter);
 	}
-
 	GetDocument()->m_SelectedRoots.clear();
 }
 

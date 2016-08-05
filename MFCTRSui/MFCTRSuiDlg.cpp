@@ -6,9 +6,10 @@
 #include "MFCTRSui.h"
 #include "MFCTRSuiDlg.h"
 #include "afxdialogex.h"
+#include <list>
+
 #include "ConsoleReporter.h"
 #include "TRSLibrary\TRSManager.h"
-#include <list>
 #include "ToRunParameters.h"
 #include "RunParameters.h"
 #include "Functionality.h"
@@ -68,6 +69,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT3, &CMFCTRSuiDlg::OnEnChangeEdit3)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PROGRESS1, &CMFCTRSuiDlg::OnNMCustomdrawProgress1)
 	ON_COMMAND(ID_PROGRAM_ADDFOLDER, &CMFCTRSuiDlg::OnProgramAddfolder)
+	ON_COMMAND(TOOLBAR_STOP, &CMFCTRSuiDlg::OnStopButtonClicked)
 	ON_COMMAND(ID_PROGRAM_DELETESELECTEDITEMS, &CMFCTRSuiDlg::OnProgramDeleteselecteditems)
 	ON_COMMAND(ID_PROGRAM_RUNSEL, &CMFCTRSuiDlg::OnProgramRunsel)
 	ON_WM_SYSCOMMAND(SC_CLOSE, &CMFCTRSuiDlg::OnSysCommand(UINT , LPARAM))
@@ -241,8 +243,6 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 			ThreadsComboBox.AddString(mes);
 		}
 	}
-	GetWindowRect(&old_rect);
-	ScreenToClient(&old_rect);
 
 	dRoots.clear();
 	UpdateToolbar(PROJECT_NOTLOADED);
@@ -290,6 +290,7 @@ void CMFCTRSuiDlg::OnPaint()
 	{
 		CDialogEx::OnPaint();
 	}
+
 }
 
 // The system calls this function to obtain the cursor to display while the user drags
@@ -483,25 +484,25 @@ void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
 
 DWORD WINAPI RunSuits(LPVOID arg)
 {
-	RunParameters param;
-	param = *(RunParameters*)arg;
-	std::list<Suite*> coll = *Manager.List(param.path, param.name, param.tag);
-	int count = 0;
-	for each(auto it in coll)
-	{
-		count += it->getList().size();
-		for each(auto iter in it->getList())
-		{
-			if (iter->getRepeat())
-			{
-				count += atoi(iter->getRepeat());
-				--count;
-			}
-		}
-	}
-	param.progress->SetRange(0, count);
-	param.progress->SetStep(1);
-	Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
+	//RunParameters param;
+	//param = *(RunParameters*)arg;
+	//std::list<Suite*> coll = *Manager.List(param.path, param.name, param.tag);
+	//int count = 0;
+	//for each(auto it in coll)
+	//{
+	//	count += it->getList().size();
+	//	for each(auto iter in it->getList())
+	//	{
+	//		if (iter->getRepeat())
+	//		{
+	//			count += atoi(iter->getRepeat());
+	//			--count;
+	//		}
+	//	}
+	//}
+	//param.progress->SetRange(0, count);
+	//param.progress->SetStep(1);
+	//Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
 	return 0;
 }
 
@@ -525,11 +526,29 @@ DWORD WINAPI ToRun(LPVOID arg)
 		{
 			Thread_amount = atoi(threads);
 		}
-		RunParameters* parameters = new RunParameters(path, name, tag, Thread_amount, param->manager,param->subProgress);
-		DWORD ident;
-		hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
+	//	RunParameters* parameters = new RunParameters(path, name, tag, Thread_amount, param->manager,param->subProgress);
+	//	DWORD ident;
+		/*hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
 		WaitForSingleObject(hThread, INFINITE);
-		CloseHandle(hThread);
+		CloseHandle(hThread);*/
+		std::list<Suite*> coll = *Manager.List(path, name, tag);
+		int count = 0;
+		for each(auto it in coll)
+		{
+			count += it->getList().size();
+			for each(auto iter in it->getList())
+			{
+				if (iter->getRepeat())
+				{
+					count += atoi(iter->getRepeat());
+					--count;
+				}
+			}
+		}
+		param->subProgress->SetRange(0, count);
+		param->subProgress->SetStep(1);
+		Manager.Run(path, name, tag, Thread_amount, param->manager);
+
 		param->progress->StepIt();
 		param->subProgress->SetPos(0);
 	}
@@ -890,7 +909,7 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 		{
 			threads = fromCStringToChar(fontName);
 		}
-		ReportManager* reportManag = new ReportManager;
+		reportManag = new ReportManager;
 		ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
 		reportManag->addReporter(reporter);
 		ToRunParameters* to_run = new ToRunParameters{dRoots, reportManag, &m_Progress, &subm_Progress, this};
@@ -1512,7 +1531,6 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	CWnd::OnSysCommand(nID, lParam);
 }
 
-
 void CMFCTRSuiDlg::OnViewConsole()
 {
 	if (console_output.IsWindowVisible())
@@ -1520,7 +1538,6 @@ void CMFCTRSuiDlg::OnViewConsole()
 	else
 		ConsoleShow();
 }
-
 
 void CMFCTRSuiDlg::ConsoleHide()
 {
@@ -1716,3 +1733,38 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo2()
 	delete[] threads_;
 	// TODO: Add your control notification handler code here
 }
+
+void CMFCTRSuiDlg::OnStopButtonClicked()
+{
+	Manager.Stop();
+}
+
+//void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
+//{
+	//m_ListCtrl.GetItemText(item);
+	//LPNMLISTVIEW  pNMLV = reinterpret_cast<LPNMLISTVIEW >(pNMHDR);
+
+	//if (pNMLV->uChanged & LVIF_STATE) // item state has been changed
+	//{
+	//	CString str;
+	//	switch (pNMLV->uNewState & LVIS_STATEIMAGEMASK)
+	//	{
+	//	case INDEXTOSTATEIMAGEMASK(BST_CHECKED + 1): // new state: checked
+	//	{
+	//		m_SelectedRoots.push_back(pNMLV->iItem);
+	//		char* path = fromCStringToChar(m_ListCtrl.GetItemText(pNMLV->iItem, 0));
+	//		AddToTree(path, pNMLV->iItem);
+	//		break;
+	//	}
+	//	case INDEXTOSTATEIMAGEMASK(BST_UNCHECKED + 1): // new state: unchecked
+	//	{
+	//		 auto iter = std::find(m_SelectedRoots.begin(), m_SelectedRoots.end(), pNMLV->iItem);
+	//													   if (iter != m_SelectedRoots.end())
+	//														   m_SelectedRoots.erase(iter);
+	//													   DeleteFromTree(pNMLV->iItem);
+	//													   break;
+	//	}
+	//	}
+	//}
+	//*pResult = 0;
+//}

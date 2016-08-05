@@ -18,12 +18,12 @@
 
 enum class Status{ Waiting, Done, Running, Closed };
 
-class ProcessInfo;
+//class ProcessInfo;
 
 class ProcessInfo
 {
 public:
-	ProcessInfo(const TRSTest&, char*, HANDLE[SEMAPHORES_AMOUNT], ThreadPool*, ReportManager* pReporter = nullptr);
+	ProcessInfo(const TRSTest&, char*, HANDLE[SEMAPHORES_AMOUNT], ThreadPool*, bool* running,  ReportManager* pReporter = nullptr);
 	ProcessInfo(const ProcessInfo&);
 	~ProcessInfo();
 
@@ -63,6 +63,7 @@ private:
 	char* result_description_;
 	HANDLE semaphores_[SEMAPHORES_AMOUNT];
 
+	bool* running_;
 	char* path_;
 	wchar_t* command_line_;
 
