@@ -11,12 +11,13 @@ class ProjectProperties
 	char* tag=nullptr;
 	char* testName=nullptr;
 	char* threads=nullptr;
+	bool ConsoleVisible = false;
 public:
 	ProjectProperties(char* path, char* name);
 	ProjectProperties();
 	~ProjectProperties();
 	ProjectProperties& operator=(ProjectProperties& pro);
-
+	void setConsole(bool check);
 	bool setPath(const char* path);
 	bool setName(const char* name);
 	bool setTag(char* tag);
@@ -29,6 +30,7 @@ public:
 	char* getThreads();
 	char* getTag();
 	char* getTestName();
+	bool getConsole();
 };
 
 #endif

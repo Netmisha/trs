@@ -170,6 +170,16 @@ char* ProjectProperties::getTestName()
 	return testName;
 }
 
+void ProjectProperties::setConsole(bool check)
+{
+	ConsoleVisible = check;
+}
+
+bool ProjectProperties::getConsole()
+{
+	return ConsoleVisible;
+}
+
 ProjectProperties& ProjectProperties::operator=(ProjectProperties& pro)
 {
 	path = pro.getPath();
@@ -260,6 +270,20 @@ bool ProjectProperties::SaveProject(CListBox*List)
 			element->LinkEndChild(TestName);
 			TiXmlText* text = new TiXmlText(testName);
 			TestName->LinkEndChild(text);
+		}
+		if (ConsoleVisible)
+		{
+			TiXmlElement* console = new TiXmlElement("console");
+			element->LinkEndChild(console);
+			TiXmlText* text = new TiXmlText("visible");
+			console->LinkEndChild(text);
+		}
+		else
+		{
+			TiXmlElement* console = new TiXmlElement("console");
+			element->LinkEndChild(console);
+			TiXmlText* text = new TiXmlText("invisible");
+			console->LinkEndChild(text);
 		}
 		if (doc.SaveFile(fullPath))
 		{

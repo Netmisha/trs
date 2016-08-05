@@ -1323,7 +1323,7 @@ void CMFCTRSuiDlg::OnLoadProject()
 	if (pro_.getName() && pro_.getPath())
 	{
 		char* path = pro_.getProjPath();
-		if (!CheckForModification(path, pro_.getName(), List, Tag, Threads, Name))
+		if (!CheckForModification(path, pro_.getName(), List, Tag, Threads, Name,console_output.IsWindowVisible()))
 		{
 			int res = MessageBox(_T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
 			if (res == IDYES)
@@ -1386,7 +1386,6 @@ void CMFCTRSuiDlg::OnLoadProject()
 					}
 					CMFCTRSuiDlg::OnLbnSelchangeListroot();
 				}
-				CMFCTRSuiDlg::OnLbnSelchangeListroot();
 				if (!strncmp(head->Value(), "tag", strlen("tag"))&&List->GetSelCount())
 				{
 					TiXmlNode* node = head->FirstChild();
@@ -1405,6 +1404,20 @@ void CMFCTRSuiDlg::OnLoadProject()
 					m_NameBox.SetCurSel(atoi(node->Value()));
 					CMFCTRSuiDlg::OnCbnSelchangeCombo3();
 				}
+				if (!strncmp(head->Value(), "console", strlen("console")))
+				{
+					TiXmlNode* node = head->FirstChild();
+					if (!strncmp(node->Value(), "visible", strlen("visible")))
+					{
+						console_output.ShowWindow(true);
+						CMFCTRSuiDlg::ConsoleShow();
+					}
+					else
+					{
+						console_output.ShowWindow(false);
+						CMFCTRSuiDlg::ConsoleHide();
+					}
+				}
 			}
 		}
 		
@@ -1422,7 +1435,7 @@ void CMFCTRSuiDlg::OnProjectLastprojects()
 	if (pro_.getName() && pro_.getPath())
 	{
 		char* path = pro_.getProjPath();
-		if (!CheckForModification(path, pro_.getName(), List, Tag, Threads, Name))
+		if (!CheckForModification(path, pro_.getName(), List, Tag, Threads, Name, console_output.IsWindowVisible()))
 		{
 			int res = MessageBox(_T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
 			if (res == IDYES)
@@ -1497,6 +1510,20 @@ void CMFCTRSuiDlg::OnProjectLastprojects()
 				m_NameBox.SetCurSel(atoi(node->Value()));
 				CMFCTRSuiDlg::OnCbnSelchangeCombo3();
 			}
+			if (!strncmp(head->Value(), "console", strlen("console")))
+			{
+				TiXmlNode* node = head->FirstChild();
+				if (!strncmp(node->Value(), "visible", strlen("visible")))
+				{
+					console_output.ShowWindow(true);
+					CMFCTRSuiDlg::ConsoleShow();
+				}
+				else
+				{
+					console_output.ShowWindow(false);
+					CMFCTRSuiDlg::ConsoleHide();
+				}
+			}
 		}
 
 	}
@@ -1539,7 +1566,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 				else
 				{
 
-					if (!CheckForModification(path, pro_.getName(), &RootList,&DropDown,&ThreadsComboBox,&m_NameBox))
+					if (!CheckForModification(path, pro_.getName(), &RootList, &DropDown, &ThreadsComboBox, &m_NameBox, console_output.IsWindowVisible()))
 					{
 						if (SaveAsPressed)
 						{
@@ -1591,9 +1618,15 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 void CMFCTRSuiDlg::OnViewConsole()
 {
 	if (console_output.IsWindowVisible())
+	{
 		ConsoleHide();
+		pro_.setConsole(false);
+	}
 	else
+	{
 		ConsoleShow();
+		pro_.setConsole(true);
+	}
 }
 
 
@@ -1815,7 +1848,7 @@ void CMFCTRSuiDlg::OnNewProject()
 	if (pro_.getName() && pro_.getPath())
 	{
 		char* path = pro_.getProjPath();
-		if (!CheckForModification(path, pro_.getName(), List, Tag, Threads, Name))
+		if (!CheckForModification(path, pro_.getName(), List, Tag, Threads, Name, console_output.IsWindowVisible()))
 		{
 			int res = MessageBox( _T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
 			if (res == IDYES)
