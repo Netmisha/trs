@@ -73,6 +73,7 @@ public:
 protected:
 	HICON m_hIcon;
 	std::vector<char*> TagColl;
+	std::vector<char*> NameColl;
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
@@ -144,7 +145,12 @@ public:
 	CComboBox m_NameBox;
 	afx_msg void OnCbnSelchangeCombo1();
 	afx_msg void OnCbnSelchangeCombo2();
+
 	CListCtrl m_ListCtrl;
+
+	afx_msg void OnCbnSelchangeCombo3();
+	afx_msg void OnNewProject();
+
 };
 
 extern CListBox* List;

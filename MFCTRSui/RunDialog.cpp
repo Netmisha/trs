@@ -9,6 +9,7 @@
 char* tag = nullptr;
 char* name = nullptr;
 char* threads = nullptr;
+char* testName = nullptr;
 bool checkRunParameters;
 // RunDialog dialog
 

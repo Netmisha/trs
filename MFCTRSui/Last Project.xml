@@ -8,4 +8,6 @@
     </ListSelection>
     <tag>0</tag>
     <threads>9</threads>
+    <testName>0</testName>
+    <console>invisible</console>
 </TRSProject>

@@ -97,7 +97,11 @@ bool ValidateProjXML(char* path)
 							{
 								if (strncmp(head->Value(), "testName", strlen("testName")))
 								{
-									return false;
+									if (strncmp(head->Value(), "console", strlen("console")))
+									{
+										return false;
+									}
+									
 								}
 							}
 						}
@@ -122,11 +126,13 @@ BOOL validate(UINT nType, int cxx, int cyy)
 	return counter * 3 + cxx != a - cyy + 6;
 }
 
-bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_,CComboBox* threads_)
+bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_,CComboBox* threads_,CComboBox* name_,bool Console)
 {
 	TiXmlDocument doc(path);
 	bool check = false;
 	bool threadsCheck = false;
+	bool nameCheck = false;
+	bool consoleCheck = false;
 	if (doc.LoadFile())
 	{
 		TiXmlNode* first = doc.FirstChild();
@@ -204,10 +210,42 @@ bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_
 						return false;
 					}
 				}
-				if (!strncmp(head->Value(), "textName", strlen("testName")))
+				if (!strncmp(head->Value(), "testName", strlen("testName")))
 				{
 					--i;
-
+					nameCheck = true;
+					TiXmlNode* text = head->FirstChild();
+					if (atoi(text->Value()) != name_->GetCurSel())
+					{
+						return false;
+					}
+				}
+				if (!strncmp(head->Value(), "console", strlen("console")))
+				{
+					--i;
+					TiXmlNode* text = head->FirstChild();
+					if (strncmp(text->Value(), "visible", strlen("visible")))
+					{
+						if (strncmp(text->Value(), "invisible", strlen("invisible")))
+						{
+							return false;
+						}
+						else
+						{
+							if (Console)
+							{
+								return false;
+							}
+						}
+					}
+					else
+					{
+						if (!Console)
+						{
+							return false;
+						}
+					}
+					consoleCheck = true;
 				}
 			}
 			if (i != count)
@@ -224,6 +262,20 @@ bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_
 			if (!threadsCheck)
 			{
 				if (threads_->GetCurSel())
+				{
+					return false;
+				}
+			}
+			if (!nameCheck)
+			{
+				if (name_->GetCurSel())
+				{
+					return false;
+				}
+			}
+			if (!consoleCheck)
+			{
+				if (Console)
 				{
 					return false;
 				}
