@@ -34,4 +34,5 @@ extern bool ifCancelPressed;
 extern char* tag;
 extern char* name;
 extern char* threads;
+extern char* testName;
 #endif

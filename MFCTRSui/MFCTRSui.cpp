@@ -22,7 +22,6 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiApp, CWinApp)
 	ON_BN_CLICKED(IDOK, &CMFCTRSuiApp::OnBnClickedOk)
 	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiApp::OnEnChangeEdit1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CMFCTRSuiApp::OnBnClickedButton2)
-	ON_COMMAND(ID_New_Project, &CMFCTRSuiApp::OnNewProject)
 	ON_COMMAND(TOOLBAR_SAVE, &CMFCTRSuiApp::OnSaveProject)
 END_MESSAGE_MAP()
 
@@ -120,47 +119,7 @@ void CMFCTRSuiApp::OnBnClickedButton2()
 
 
 
-void CMFCTRSuiApp::OnNewProject()
-{
-	if (pro_.getName() && pro_.getPath())
-	{
-		int res = MessageBox(NULL, _T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
-		if (res == IDYES)
-		{
-			pro_.SaveProject(List);
-			MessageBox(NULL, _T("Project was saved"), _T("Info"), MB_ICONINFORMATION | MB_OK);
-		}
-	}
 
-	BROWSEINFO bi = { 0 };
-	bi.lpszTitle = _T("Select Folder");
-	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-	if (pidl != 0)
-	{
-		// get the name of the folder
-		TCHAR path[MAX_PATH];
-		SHGetPathFromIDList(pidl, path);
-		char* pathA = convertToChar(path);
-		pro_.setPath(pathA);
-		ProjNameEdit NameDlg;
-		NameDlg.DoModal();
-		Bar->GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
-		Bar->GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
-		Bar->GetToolBarCtrl().HideButton(TOOLBAR_RUN);
-		Bar->GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
-		Bar->GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
-		Bar->GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY, false);
-		List->ResetContent();
-		IMalloc * imalloc = 0;
-		if (SUCCEEDED(SHGetMalloc(&imalloc)))
-		{
-			imalloc->Free(pidl);
-			imalloc->Release();
-		}
-	}
-	
-	// TODO: Add your command handler code here
-}
 
 void CMFCTRSuiApp::OnSaveProject()
 {

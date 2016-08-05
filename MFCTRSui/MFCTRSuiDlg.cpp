@@ -28,7 +28,9 @@ bool RunEndCheck;
 bool SaveAsPressed = true;
 CToolBar* ToolBar;
 CToolBar* Bar;
-
+CComboBox* Tag;
+CComboBox* Threads;
+CComboBox* Name;
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
@@ -77,6 +79,8 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(TOOLBAR_SAVEAS, &CMFCTRSuiDlg::OnSaveAs)
 	ON_CBN_SELCHANGE(IDC_COMBO1, &CMFCTRSuiDlg::OnCbnSelchangeCombo1)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &CMFCTRSuiDlg::OnCbnSelchangeCombo2)
+	ON_CBN_SELCHANGE(IDC_COMBO3, &CMFCTRSuiDlg::OnCbnSelchangeCombo3)
+	ON_COMMAND(ID_New_Project, &CMFCTRSuiDlg::OnNewProject)
 END_MESSAGE_MAP()
 
 
@@ -137,6 +141,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	
 	SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
 	DropDown.AddString(L"All");
+	m_NameBox.AddString(L"All");
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	
@@ -258,7 +263,11 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	HICON hIcon = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_ICON2));
 	SetIcon(hIcon, FALSE);
 	SetWindowText(L"Test manager");
-
+	Tag = &DropDown;
+	Threads = &ThreadsComboBox;
+	ToolBar = &m_ToolBar;
+	Name = &m_NameBox;
+	Bar = ToolBar;
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -325,9 +334,11 @@ void CMFCTRSuiDlg::OnLbnSelchangeListroot()
 		m_Tree.DeleteAllItems();
 
 	DropDown.SetCurSel(0);
+	m_NameBox.SetCurSel(0);
 	ThreadsComboBox.SetCurSel(9);
 	CMFCTRSuiDlg::OnCbnSelchangeCombo1();
 	CMFCTRSuiDlg::OnCbnSelchangeCombo2();
+	CMFCTRSuiDlg::OnCbnSelchangeCombo3();
 	delete[] array;
 }
 
@@ -525,7 +536,7 @@ DWORD WINAPI ToRun(LPVOID arg)
 		{
 			Thread_amount = atoi(threads);
 		}
-		RunParameters* parameters = new RunParameters(path, name, tag, Thread_amount, param->manager,param->subProgress);
+		RunParameters* parameters = new RunParameters(path, testName, tag, Thread_amount, param->manager,param->subProgress);
 		DWORD ident;
 		hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
 		WaitForSingleObject(hThread, INFINITE);
@@ -890,6 +901,12 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 		{
 			threads = fromCStringToChar(fontName);
 		}
+		cIndex = m_NameBox.GetCurSel();
+		m_NameBox.GetLBText(cIndex, fontName);
+		if (fontName != "ALL")
+		{
+			testName = fromCStringToChar(fontName);
+		}
 		ReportManager* reportManag = new ReportManager;
 		ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
 		reportManag->addReporter(reporter);
@@ -1063,8 +1080,11 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 void CMFCTRSuiDlg::Info(TCHAR* path)
 {
 	TagColl.clear();
+	NameColl.clear();
 	DropDown.ResetContent();
 	DropDown.AddString(L"All");
+	m_NameBox.ResetContent();
+	m_NameBox.AddString(L"All");
 	char* pathA = nullptr;
 	int size = WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, 0, NULL, NULL);
 	pathA = new char[size];
@@ -1128,6 +1148,31 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 					TagColl.push_back((*iter)->getTag());
 				}
 			}
+			std::vector<char*>::iterator Nameit = NameColl.begin();
+			if (NameColl.size() == 0)
+			{
+				if ((*iter)->getName())
+				{
+					NameColl.push_back((*iter)->getName());
+				}
+			}
+			else
+			{
+				bool checkSecond = false;
+				for (Nameit; Nameit != NameColl.end(); ++Nameit)
+				{
+					if (!strncmp(*Nameit, (*iter)->getName(), strlen((*iter)->getName())))
+					{
+						checkSecond = true;
+						break;
+					}
+
+				}
+				if (!checkSecond)
+				{
+					NameColl.push_back((*iter)->getName());
+				}
+			}
 		}
 		
 	}
@@ -1136,6 +1181,13 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 		TCHAR*buf = new TCHAR[strlen(TagColl[i]) + 1];
 		convertToTCHAR(buf, TagColl[i]);
 		DropDown.AddString(buf);
+		delete[] buf;
+	}
+	for (int i = 0; i < NameColl.size(); ++i)
+	{
+		TCHAR*buf = new TCHAR[strlen(NameColl[i]) + 1];
+		convertToTCHAR(buf, NameColl[i]);
+		m_NameBox.AddString(buf);
 		delete[] buf;
 	}
 	delete[] pathA;
@@ -1270,12 +1322,17 @@ void CMFCTRSuiDlg::OnLoadProject()
 	UpdateToolbar(PROJECT_NOTLOADED);
 	if (pro_.getName() && pro_.getPath())
 	{
-		int res = MessageBox(_T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
-		if (res == IDYES)
+		char* path = pro_.getProjPath();
+		if (!CheckForModification(path, pro_.getName(), List, Tag, Threads, Name))
 		{
-			pro_.SaveProject(List);
-			MessageBox(_T("Project was saved"), _T("Info"), MB_ICONINFORMATION | MB_OK);
+			int res = MessageBox(_T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
+			if (res == IDYES)
+			{
+				pro_.SaveProject(List);
+				MessageBox(_T("Project was saved"), _T("Info"), MB_ICONINFORMATION | MB_OK);
+			}
 		}
+		delete[] path;
 	}
 	CString filePath;
 	CFileDialog dlgFile(TRUE);
@@ -1329,6 +1386,7 @@ void CMFCTRSuiDlg::OnLoadProject()
 					}
 					CMFCTRSuiDlg::OnLbnSelchangeListroot();
 				}
+				CMFCTRSuiDlg::OnLbnSelchangeListroot();
 				if (!strncmp(head->Value(), "tag", strlen("tag"))&&List->GetSelCount())
 				{
 					TiXmlNode* node = head->FirstChild();
@@ -1340,6 +1398,12 @@ void CMFCTRSuiDlg::OnLoadProject()
 					TiXmlNode* node = head->FirstChild();
 					ThreadsComboBox.SetCurSel(atoi(node->Value()));
 					CMFCTRSuiDlg::OnCbnSelchangeCombo2();
+				}
+				if (!strncmp(head->Value(), "testName", strlen("testName")))
+				{
+					TiXmlNode* node = head->FirstChild();
+					m_NameBox.SetCurSel(atoi(node->Value()));
+					CMFCTRSuiDlg::OnCbnSelchangeCombo3();
 				}
 			}
 		}
@@ -1357,12 +1421,17 @@ void CMFCTRSuiDlg::OnProjectLastprojects()
 {
 	if (pro_.getName() && pro_.getPath())
 	{
-		int res = MessageBox(_T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
-		if (res == IDYES)
+		char* path = pro_.getProjPath();
+		if (!CheckForModification(path, pro_.getName(), List, Tag, Threads, Name))
 		{
-			pro_.SaveProject(List);
-			MessageBox(_T("Project was saved"), _T("Info"), MB_ICONINFORMATION | MB_OK);
+			int res = MessageBox(_T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
+			if (res == IDYES)
+			{
+				pro_.SaveProject(List);
+				MessageBox(_T("Project was saved"), _T("Info"), MB_ICONINFORMATION | MB_OK);
+			}
 		}
+		delete[] path;
 	}
 	m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
 	m_Menu->EnableMenuItem(ID_Save_AS, MF_BYCOMMAND | MF_ENABLED);
@@ -1422,6 +1491,12 @@ void CMFCTRSuiDlg::OnProjectLastprojects()
 				ThreadsComboBox.SetCurSel(atoi(node->Value()));
 				CMFCTRSuiDlg::OnCbnSelchangeCombo2();
 			}
+			if (!strncmp(head->Value(), "testName", strlen("testName")))
+			{
+				TiXmlNode* node = head->FirstChild();
+				m_NameBox.SetCurSel(atoi(node->Value()));
+				CMFCTRSuiDlg::OnCbnSelchangeCombo3();
+			}
 		}
 
 	}
@@ -1464,7 +1539,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 				else
 				{
 
-					if (!CheckForModification(path, pro_.getName(), &RootList,&DropDown,&ThreadsComboBox))
+					if (!CheckForModification(path, pro_.getName(), &RootList,&DropDown,&ThreadsComboBox,&m_NameBox))
 					{
 						if (SaveAsPressed)
 						{
@@ -1715,4 +1790,73 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo2()
 	pro_.setThreads(threads_);
 	delete[] threads_;
 	// TODO: Add your control notification handler code here
+}
+
+
+void CMFCTRSuiDlg::OnCbnSelchangeCombo3()
+{
+	int count = m_NameBox.GetCurSel();
+	int lic = 2;
+	while (count /= 10)
+	{
+		++lic;
+	}
+	char* name_ = new char[lic];
+	sprintf_s(name_, lic, "%d", m_NameBox.GetCurSel());
+	pro_.setTestName(name_);
+	delete[] name_;
+	// TODO: Add your control notification handler code here
+}
+
+
+void CMFCTRSuiDlg::OnNewProject()
+{
+	
+	if (pro_.getName() && pro_.getPath())
+	{
+		char* path = pro_.getProjPath();
+		if (!CheckForModification(path, pro_.getName(), List, Tag, Threads, Name))
+		{
+			int res = MessageBox( _T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
+			if (res == IDYES)
+			{
+				pro_.SaveProject(List);
+				MessageBox( _T("Project was saved"), _T("Info"), MB_ICONINFORMATION | MB_OK);
+			}
+		}
+		delete[] path;
+	}
+
+	BROWSEINFO bi = { 0 };
+	bi.lpszTitle = _T("Select Folder");
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	if (pidl != 0)
+	{
+		// get the name of the folder
+		TCHAR path[MAX_PATH];
+		SHGetPathFromIDList(pidl, path);
+		char* pathA = convertToChar(path);
+		pro_.setPath(pathA);
+		ProjNameEdit NameDlg;
+		NameDlg.DoModal();
+		
+		List->ResetContent();
+		IMalloc * imalloc = 0;
+		if (SUCCEEDED(SHGetMalloc(&imalloc)))
+		{
+			imalloc->Free(pidl);
+			imalloc->Release();
+		}
+	}
+	int size = strlen("Test manager : ");
+	char* WindowLine = new char[size + strlen(pro_.getName()) + 1];
+	strncpy_s(WindowLine, size + 1, "Test manager : ", size);
+	strncpy_s(WindowLine + size, strlen(pro_.getName())+1, pro_.getName(),strlen(pro_.getName()));
+	TCHAR* WinBuf = new TCHAR[strlen(WindowLine) + 1];
+	convertToTCHAR(WinBuf, WindowLine);
+	SetWindowText(WinBuf);
+	delete[] WindowLine;
+	delete[] WinBuf;
+	UpdateToolbar(PROJECT_UPLOADED);
+	// TODO: Add your command handler code here
 }

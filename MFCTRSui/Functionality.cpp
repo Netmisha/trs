@@ -122,11 +122,12 @@ BOOL validate(UINT nType, int cxx, int cyy)
 	return counter * 3 + cxx != a - cyy + 6;
 }
 
-bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_,CComboBox* threads_)
+bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_,CComboBox* threads_,CComboBox* name_)
 {
 	TiXmlDocument doc(path);
 	bool check = false;
 	bool threadsCheck = false;
+	bool nameCheck = false;
 	if (doc.LoadFile())
 	{
 		TiXmlNode* first = doc.FirstChild();
@@ -204,10 +205,15 @@ bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_
 						return false;
 					}
 				}
-				if (!strncmp(head->Value(), "textName", strlen("testName")))
+				if (!strncmp(head->Value(), "testName", strlen("testName")))
 				{
 					--i;
-
+					nameCheck = true;
+					TiXmlNode* text = head->FirstChild();
+					if (atoi(text->Value()) != name_->GetCurSel())
+					{
+						return false;
+					}
 				}
 			}
 			if (i != count)
@@ -224,6 +230,13 @@ bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_
 			if (!threadsCheck)
 			{
 				if (threads_->GetCurSel())
+				{
+					return false;
+				}
+			}
+			if (!nameCheck)
+			{
+				if (name_->GetCurSel())
 				{
 					return false;
 				}
