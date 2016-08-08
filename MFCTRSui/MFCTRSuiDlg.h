@@ -97,7 +97,7 @@ protected:
 	CListBox RootList;
 	std::vector<SuiteRoot> dRoots;
 	std::vector<int> m_SelectedRoots;
-
+	CImageList m_ImageList;
 	void Info(TCHAR* path);
 
 	CToolBar m_ToolBar;

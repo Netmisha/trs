@@ -316,6 +316,27 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		}
 	}
 
+
+	
+
+	CBitmap m_Bitmap1,m_Bitmap2;
+
+	
+	m_ImageList.Create(16, 16, ILC_COLORDDB , 2, 2);
+
+	m_Bitmap1.LoadBitmap(IDB_BITMAP1);
+	m_Bitmap2.LoadBitmap(IDB_BITMAP2);
+
+	m_ImageList.Add(&m_Bitmap1, RGB(0,0,0));
+	m_ImageList.Add(&m_Bitmap2, RGB(0, 0, 0));
+
+	/*m_Tree.Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP |
+		TVS_HASLINES | TVS_HASBUTTONS | TVS_LINESATROOT |
+		TVS_SINGLEEXPAND | TVS_SHOWSELALWAYS |
+		TVS_TRACKSELECT,
+		CRect(10, 10, 200, 240), this, 0x1221);*/
+
+	m_Tree.SetImageList(&m_ImageList, TVSIL_NORMAL);
 	dRoots.clear();
 	UpdateToolbar(PROJECT_NOTLOADED);
 
@@ -611,7 +632,7 @@ DWORD WINAPI ToRun(LPVOID arg)
 
 		WaitForSingleObject(hThread, INFINITE);
 		CloseHandle(hThread);*/
-		std::list<Suite*> coll = *Manager.List(path , name, tag);
+		std::list<Suite*> coll = *Manager.List(path , testName, tag);
 		int count = 0;
 		for each(auto it in coll)
 		{
@@ -627,7 +648,7 @@ DWORD WINAPI ToRun(LPVOID arg)
 		}
 		param->subProgress->SetRange(0, count);
 		param->subProgress->SetStep(1);
-		Manager.Run(path, name, tag, Thread_amount, param->manager);
+		Manager.Run(path, testName, tag, Thread_amount, param->manager);
 
 		param->progress->StepIt();
 		param->subProgress->SetPos(0);
@@ -1057,7 +1078,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 					{
 						TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 						convertToTCHAR(buf, (*it)->getName());
-						*hSuite = m_Tree->InsertItem(buf, *hHead);
+						*hSuite = m_Tree->InsertItem(buf, 0,0,*hHead);
 						++count;
 						HTREEITEM hTest;
 						std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
@@ -1065,7 +1086,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 						{
 							TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 							convertToTCHAR(subBuf, (*iter)->getName());
-							m_Tree->InsertItem(subBuf, *hSuite);
+							m_Tree->InsertItem(subBuf, 3,3,*hSuite);
 							delete[] subBuf;
 						}
 						checkList->push_back((*it));
@@ -1101,7 +1122,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 						{
 							TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 							convertToTCHAR(buf, (*it)->getName());
-							*hSuite = m_Tree->InsertItem(buf, *hHead);
+							*hSuite = m_Tree->InsertItem(buf, 0,0,*hHead);
 							++count;
 							HTREEITEM hTest;
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
@@ -1109,7 +1130,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 							{
 								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 								convertToTCHAR(subBuf, (*iter)->getName());
-								m_Tree->InsertItem(subBuf, *hSuite);
+								m_Tree->InsertItem(subBuf, 3,3,*hSuite);
 								delete[] subBuf;
 							}
 							checkList->push_back((*it));
@@ -1141,7 +1162,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 						{
 							TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 							convertToTCHAR(buf, (*it)->getName());
-							*hSuite = m_Tree->InsertItem(buf, *hHead);
+							*hSuite = m_Tree->InsertItem(buf,0,0, *hHead);
 							++count;
 							HTREEITEM hTest;
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
@@ -1149,7 +1170,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 							{
 								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 								convertToTCHAR(subBuf, (*iter)->getName());
-								m_Tree->InsertItem(subBuf, *hSuite);
+								m_Tree->InsertItem(subBuf, 3,3,*hSuite);
 								delete[] subBuf;
 							}
 							checkList->push_back((*it));
@@ -1179,10 +1200,13 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	int size = WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, 0, NULL, NULL);
 	pathA = new char[size];
 	WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, size, NULL, NULL);
-
+	HIMAGELIST imList=0;
+	int Flag = ILC_COLOR24;
+	imList = ImageList_Create(5, 5, Flag, 2, 0);
+	
 	std::list<Suite*>* suiteColl = Manager.List(pathA, nullptr, nullptr);
 	HTREEITEM hHead;
-	hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
+	hHead = m_Tree.InsertItem(L"Suites", 0,0,TVI_ROOT);
 	int count = 0;
 	std::list<Suite*>::iterator it = suiteColl->begin();
 	count = strlen((*it)->get_path());
@@ -1994,25 +2018,29 @@ void CMFCTRSuiDlg::OnNewProject()
 		char* pathA = convertToChar(path);
 		pro_.setPath(pathA);
 		ProjNameEdit NameDlg;
-		NameDlg.DoModal();
-		
-		List->ResetContent();
-		IMalloc * imalloc = 0;
-		if (SUCCEEDED(SHGetMalloc(&imalloc)))
+		int res = NameDlg.DoModal();
+		if (res == IDOK)
 		{
-			imalloc->Free(pidl);
-			imalloc->Release();
+			List->ResetContent();
+			IMalloc * imalloc = 0;
+			if (SUCCEEDED(SHGetMalloc(&imalloc)))
+			{
+				imalloc->Free(pidl);
+				imalloc->Release();
+			}
 		}
+
+
+		int size = strlen("Test manager : ");
+		char* WindowLine = new char[size + strlen(pro_.getName()) + 1];
+		strncpy_s(WindowLine, size + 1, "Test manager : ", size);
+		strncpy_s(WindowLine + size, strlen(pro_.getName()) + 1, pro_.getName(), strlen(pro_.getName()));
+		TCHAR* WinBuf = new TCHAR[strlen(WindowLine) + 1];
+		convertToTCHAR(WinBuf, WindowLine);
+		SetWindowText(WinBuf);
+		delete[] WindowLine;
+		delete[] WinBuf;
+		UpdateToolbar(PROJECT_UPLOADED);
 	}
-	int size = strlen("Test manager : ");
-	char* WindowLine = new char[size + strlen(pro_.getName()) + 1];
-	strncpy_s(WindowLine, size + 1, "Test manager : ", size);
-	strncpy_s(WindowLine + size, strlen(pro_.getName())+1, pro_.getName(),strlen(pro_.getName()));
-	TCHAR* WinBuf = new TCHAR[strlen(WindowLine) + 1];
-	convertToTCHAR(WinBuf, WindowLine);
-	SetWindowText(WinBuf);
-	delete[] WindowLine;
-	delete[] WinBuf;
-	UpdateToolbar(PROJECT_UPLOADED);
 	// TODO: Add your command handler code here
 }

@@ -166,16 +166,34 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 			if (!((*iter)->getName()))
 			{
 				logger << "There are one(or more) test(s) without name\n";
+				std::list<Suite*>::iterator Delit = suiteCollection->begin();
+				for (Delit; Delit != suiteCollection->end(); ++Delit)
+				{
+					delete (*Delit);
+				}
+				delete suiteCollection;
 				return INVALID_NAME;
 			}
 			if ((!(*iter)->get_executableName()))
 			{
 				logger << "There are one (or more) test(s) that has wrong execution name\n";
+				std::list<Suite*>::iterator Delit = suiteCollection->begin();
+				for (Delit; Delit != suiteCollection->end(); ++Delit)
+				{
+					delete (*Delit);
+				}
+				delete suiteCollection;
 				return INVALID_EXECUTION_NAME;
 			}
 			if ((!(*iter)->get_expectedResult()))
 			{
 				logger << "There are one (or more) test(s) that has wrong result\n";
+				std::list<Suite*>::iterator Delit = suiteCollection->begin();
+				for (Delit; Delit != suiteCollection->end(); ++Delit)
+				{
+					delete (*Delit);
+				}
+				delete suiteCollection;
 				return INVALID_RESULT;
 			}
 			else
@@ -186,6 +204,12 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					if (!isdigit(res[i]))
 					{
 						logger << "There are one (or more) test(s) that has wrong result (use decimal numbers only)\n";
+						std::list<Suite*>::iterator Delit = suiteCollection->begin();
+						for (Delit; Delit != suiteCollection->end(); ++Delit)
+						{
+							delete (*Delit);
+						}
+						delete suiteCollection;
 						return WRONG_PARAMETERS;
 					}
 				}
@@ -203,6 +227,12 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 				if (fFile == INVALID_FILE_ATTRIBUTES && !(fFile == ERROR_FILE_NOT_FOUND))
 				{
 					logger << "There are one (or more) test(s) that has wrong path to exe file\n";
+					std::list<Suite*>::iterator Delit = suiteCollection->begin();
+					for (Delit; Delit != suiteCollection->end(); ++Delit)
+					{
+						delete (*Delit);
+					}
+					delete suiteCollection;
 					return WRONG_PATH_EXECUTION;
 				}
 				delete[] convPath;
@@ -216,6 +246,12 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					if (!isdigit(res[i]))
 					{
 						logger << "There are one (or more) test(s) that has wrong repeat (use decimal numbers only)\n";
+						std::list<Suite*>::iterator Delit = suiteCollection->begin();
+						for (Delit; Delit != suiteCollection->end(); ++Delit)
+						{
+							delete (*Delit);
+						}
+						delete suiteCollection;
 						return WRONG_PARAMETERS;
 					}
 				}
@@ -228,6 +264,12 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					if (!isdigit(res[i]))
 					{
 						logger << "There are one (or more) test(s) that has wrong maxThreads (use decimal numbers only)\n";
+						std::list<Suite*>::iterator Delit = suiteCollection->begin();
+						for (Delit; Delit != suiteCollection->end(); ++Delit)
+						{
+							delete (*Delit);
+						}
+						delete suiteCollection;
 						return WRONG_PARAMETERS;
 					}
 				}
@@ -240,6 +282,12 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 			{
 				delete[] buf;
 				logger << "There are no exe file for one or more test(s)\n";
+				std::list<Suite*>::iterator Delit = suiteCollection->begin();
+				for (Delit; Delit != suiteCollection->end(); ++Delit)
+				{
+					delete (*Delit);
+				}
+				delete suiteCollection;
 				return INVALID_EXE_FILE;
 			}
 			else
@@ -256,10 +304,22 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 		if (!VerifyWaitForList(collTests, coll))
 		{
 			logger << "There are tests that waiting for each other\n";
+			std::list<Suite*>::iterator Delit = suiteCollection->begin();
+			for (Delit; Delit != suiteCollection->end(); ++Delit)
+			{
+				delete (*Delit);
+			}
+			delete suiteCollection;
 			return WRONG_WAITFOR;
 		}
 	}
 	logger << "Verify Succeeded\n";
+	std::list<Suite*>::iterator Delit = suiteCollection->begin();
+	for (Delit; Delit != suiteCollection->end(); ++Delit)
+	{
+		delete (*Delit);
+	}
+	delete suiteCollection;
 	return SUCCEEDED;
 }
 

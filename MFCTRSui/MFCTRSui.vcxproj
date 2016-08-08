@@ -171,6 +171,8 @@
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470675274_cross.ico" />
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\Oxygen-Icons.org-Oxygen-Actions-document-save-as.ico" />
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\Oxygen-Icons.org-Oxygen-Actions-folder-new.ico" />
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\bitmap2.bmp" />
     <Image Include="res\icon2.ico" />
     <Image Include="res\MFCTRSui.ico" />
     <Image Include="res\toolbar1.bmp" />

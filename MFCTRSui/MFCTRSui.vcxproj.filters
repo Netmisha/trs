@@ -66,6 +66,8 @@
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470675125_stop.ico" />
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470675263_add.ico" />
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470675274_cross.ico" />
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\bitmap2.bmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\MFCTRSui.rc2" />
