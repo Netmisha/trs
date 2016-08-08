@@ -1013,9 +1013,13 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 
 		cIndex = m_NameBox.GetCurSel();
 		m_NameBox.GetLBText(cIndex, fontName);
-		if (fontName != "ALL")
+		if (fontName != "All")
 		{
 			testName = fromCStringToChar(fontName);
+		}
+		else
+		{
+			testName = nullptr;
 		}
 
 		reportManag = new ReportManager;
