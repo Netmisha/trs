@@ -1,133 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Header Files\TinyXML">
-      <UniqueIdentifier>{38b01b5e-98f7-41e4-b29d-e9c7d4db857e}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinystr.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxml.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlerror.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlparser.cpp" />
+    <ClCompile Include="ConsoleReporter.cpp" />
+    <ClCompile Include="Functionality.cpp" />
+    <ClCompile Include="MFCTRSui.cpp" />
+    <ClCompile Include="MFCTRSuiDlg.cpp" />
+    <ClCompile Include="ProjectProperties.cpp" />
+    <ClCompile Include="ProjNameEdit.cpp" />
+    <ClCompile Include="RunDialog.cpp" />
+    <ClCompile Include="RunParameters.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="ToRunParameters.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\TRSLibrary\TinyXML\tinystr.h" />
+    <ClInclude Include="..\TRSLibrary\TinyXML\tinyxml.h" />
+    <ClInclude Include="ConsoleReporter.h" />
+    <ClInclude Include="Functionality.h" />
+    <ClInclude Include="MFCTRSui.h" />
+    <ClInclude Include="MFCTRSuiDlg.h" />
+    <ClInclude Include="ProjectProperties.h" />
+    <ClInclude Include="ProjNameEdit.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="RunDialog.h" />
+    <ClInclude Include="RunParameters.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="ToRunParameters.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MFCTRSui.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\icon2.ico" />
+    <Image Include="res\MFCTRSui.ico" />
+    <Image Include="res\toolbar1.bmp" />
+    <Image Include="res\toolbar3.bmp" />
+    <Image Include="C:\Users\mykhailo.oleksyn\Downloads\o_d2e1f9b470110242-0.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\MFCTRSui.rc2" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="MFCTRSui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MFCTRSuiDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConsoleReporter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RunParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ToRunParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Functionality.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RunDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectProperties.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjNameEdit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\TRSLibrary\TinyXML\tinystr.h">
-      <Filter>Header Files\TinyXML</Filter>
-    </ClInclude>
-    <ClInclude Include="..\TRSLibrary\TinyXML\tinyxml.h">
-      <Filter>Header Files\TinyXML</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="MFCTRSui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MFCTRSuiDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ConsoleReporter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RunParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ToRunParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RunDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Functionality.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjectProperties.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjNameEdit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\TRSLibrary\TinyXML\tinystr.cpp">
-      <Filter>Header Files\TinyXML</Filter>
-    </ClCompile>
-    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxml.cpp">
-      <Filter>Header Files\TinyXML</Filter>
-    </ClCompile>
-    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlerror.cpp">
-      <Filter>Header Files\TinyXML</Filter>
-    </ClCompile>
-    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlparser.cpp">
-      <Filter>Header Files\TinyXML</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="MFCTRSui.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\MFCTRSui.rc2">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\MFCTRSui.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\toolbar3.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\toolbar1.bmp">
-    <Image Include="res\icon2.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>

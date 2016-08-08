@@ -1089,7 +1089,10 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	int size = WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, 0, NULL, NULL);
 	pathA = new char[size];
 	WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, size, NULL, NULL);
-
+	HIMAGELIST imList=0;
+	int Flag = ILC_COLOR24;
+	imList = ImageList_Create(5, 5, Flag, 2, 0);
+	
 	std::list<Suite*>* suiteColl = Manager.List(pathA, nullptr, nullptr);
 	HTREEITEM hHead;
 	hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
