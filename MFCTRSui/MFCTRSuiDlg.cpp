@@ -83,6 +83,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &CMFCTRSuiDlg::OnCbnSelchangeCombo2)
 	ON_CBN_SELCHANGE(IDC_COMBO3, &CMFCTRSuiDlg::OnCbnSelchangeCombo3)
 	ON_COMMAND(ID_New_Project, &CMFCTRSuiDlg::OnNewProject)
+	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 END_MESSAGE_MAP()
 
 
@@ -212,6 +213,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		TRACE0("Failed to Create Dialog Toolbar\n");
 		EndDialog(IDCANCEL);
 	} 
+
 	CRect	rcClientOld;
 	GetClientRect(&rcClientOld);
 	rcClientOld.right = 600;
@@ -293,6 +295,10 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 
 		m_secondToolBar.Invalidate();
 	}
+	m_ToolBar.SetBarStyle(m_ToolBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
+
+	m_secondToolBar.SetBarStyle(m_secondToolBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
+	EnableToolTips(TRUE);
 	// =======================================================================================================================================
 
 	List = &RootList;
@@ -2047,4 +2053,31 @@ void CMFCTRSuiDlg::OnNewProject()
 		UpdateToolbar(PROJECT_UPLOADED);
 	}
 	// TODO: Add your command handler code here
+}
+
+BOOL CMFCTRSuiDlg::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
+{
+	UNREFERENCED_PARAMETER(id);
+
+	NMTTDISPINFO *pTTT = (NMTTDISPINFO *)pNMHDR;
+	UINT_PTR nID = pNMHDR->idFrom;
+	BOOL bRet = FALSE;
+
+	if (pTTT->uFlags & TTF_IDISHWND)
+	{
+		// idFrom is actually the HWND of the tool
+		nID = ::GetDlgCtrlID((HWND)nID);
+		if (nID)
+		{
+			//_stprintf_s(pTTT->szText, sizeof(pTTT->szText) / sizeof(TCHAR),
+			//	_T("Control ID = %d"), nID);
+			wcscpy_s(pTTT->szText, 80 ,L"\nhello\n");
+	//		pTTT->hinst = AfxGetResourceHandle();
+			bRet = TRUE;
+		}
+	}
+
+	*pResult = 0;
+
+	return bRet;
 }

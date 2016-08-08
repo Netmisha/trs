@@ -130,6 +130,8 @@ public:
 	afx_msg void OnProjectLastprojects();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnViewConsole();
+
+	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
 	
 protected:
 	void ConsoleHide();
