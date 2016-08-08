@@ -78,8 +78,3 @@ bool SuiteCollection::IsUndone()
 
 	return false;
 }
-
-void SuiteCollection::stop()
-{
-	running_ = false;
-}

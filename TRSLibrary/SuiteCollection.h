@@ -19,8 +19,6 @@ public:
 	SuiteCollection(const std::list<Suite>&, unsigned threads_amount, bool* running, ReportManager* pReport = nullptr);
 	~SuiteCollection();
 
-	inline void stop();
-
 	bool Run();
 private:
 	bool IsUndone();

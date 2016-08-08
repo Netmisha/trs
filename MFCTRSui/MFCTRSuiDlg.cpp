@@ -228,6 +228,73 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 //	GetDlgItem(IDR_TOOLBAR1)->SetWindowPos(NULL, rect1.right, rect1.top, rect2.Width(), rect2.Height(), SWP_NOZORDER | SWP_NOMOVE | SWP_SHOWWINDOW);
 
 
+	// ====================================================================================================================================
+	// image setting
+	CToolBarCtrl& bar = m_ToolBar.GetToolBarCtrl();
+
+	CImageList *pList = bar.GetImageList();
+
+	HICON hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON4));
+	pList->Replace(0, hIcon_1); // not 5 as a separate is not an image
+
+	hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON5));
+	pList->Replace(1, hIcon_1);
+
+	hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON_SAVE));
+	pList->Replace(2, hIcon_1);
+
+	hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON_SAVE_DISABLED));
+	pList->Replace(3, hIcon_1);
+
+	hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON_SAVEAS));
+	pList->Replace(4, hIcon_1);
+
+	hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON_SAVEAS_DISABLED));
+	pList->Replace(5, hIcon_1);
+
+	hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON6));
+	pList->Replace(6, hIcon_1);
+
+	hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON13));
+	pList->Replace(7, hIcon_1);
+
+	hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON_DELETE));
+	pList->Replace(8, hIcon_1);
+
+	hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON14));
+	pList->Replace(9, hIcon_1);
+
+	bar.SetImageList(pList);
+
+	m_ToolBar.Invalidate();
+
+
+	{
+		CToolBarCtrl& bar = m_secondToolBar.GetToolBarCtrl();
+
+		CImageList *pList = bar.GetImageList();
+
+		HICON hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON11));
+		pList->Replace(0, hIcon_1); // not 5 as a separate is not an image
+
+		hIcon_1 = LoadIconW(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON12));
+		pList->Replace(1, hIcon_1); // not 5 as a separate is not an image
+
+		hIcon_1 = LoadIconW(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON3));
+		pList->Replace(2, hIcon_1); // not 5 as a separate is not an image
+
+		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON7));
+		pList->Replace(3, hIcon_1); // not 5 as a separate is not an image
+
+		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON9));
+		pList->Replace(4, hIcon_1); // not 5 as a separate is not an image
+	
+		bar.SetImageList(pList);
+
+		m_secondToolBar.Invalidate();
+	}
+	// =======================================================================================================================================
+
 	List = &RootList;
 	// toolbar image config
 	CString mes;

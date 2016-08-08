@@ -3,10 +3,6 @@
     <path>D:\Repository\Suite root</path>
     <path>D:\Repository\Suite root</path>
     <path>D:\Repository\trs\TestData</path>
-    <ListSelection>
-        <selection>2</selection>
-    </ListSelection>
-    <tag>0</tag>
     <threads>9</threads>
     <testName>0</testName>
     <console>invisible</console>
