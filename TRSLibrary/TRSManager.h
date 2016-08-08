@@ -38,7 +38,7 @@ public:
 	int Verify(char* path, char* name, char* tag);
 	bool Run(char* path, char* name, char* tag, unsigned threads_amount = 1, ReportManager* pReport=nullptr);
 	bool Pause(char* path, char* name, char* tag);
-	bool Stop(char* path, char* name, char* tag);
+	bool Stop(/*char* path, char* name, char* tag*/);
 	std::list<Suite*>* List(char* path, char* name, char* tag);
 	bool Status(char* path, char* name, char* tag);
 	bool Info(char* path, char* name, char* tag);
@@ -46,6 +46,7 @@ public:
 	bool SetReport(char* path,char* name,char* tag, unsigned threads_amount = 1, ReportManager* manager=nullptr);
 private:
 	bool VerifyParameters(char* path, char* name, char* tag);
+	bool running_ = true;
 };
 
 class TRSManager_API Logger

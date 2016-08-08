@@ -10,6 +10,8 @@
 #include "RunDialog.h"
 #include "ProjNameEdit.h"
 
+#include "afxdialogex.h"
+#include "TRSLibrary\TRSManager.h"
 
 #define PROJECT_UPLOADED 1
 #define PROJECT_NOTLOADED 2
@@ -94,7 +96,8 @@ public:
 protected:
 	CListBox RootList;
 	std::vector<SuiteRoot> dRoots;
-
+	std::vector<int> m_SelectedRoots;
+	CImageList m_ImageList;
 	void Info(TCHAR* path);
 
 	CToolBar m_ToolBar;
@@ -137,12 +140,17 @@ protected:
 	afx_msg void OnSaveAs();
 	CComboBox DropDown;
 	CComboBox ThreadsComboBox;
+	ReportManager* reportManag;
 public:
 	CComboBox m_NameBox;
 	afx_msg void OnCbnSelchangeCombo1();
 	afx_msg void OnCbnSelchangeCombo2();
+
+	CListCtrl m_ListCtrl;
+
 	afx_msg void OnCbnSelchangeCombo3();
 	afx_msg void OnNewProject();
+
 };
 
 extern CListBox* List;

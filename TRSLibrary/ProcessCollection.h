@@ -18,7 +18,7 @@
 class ProcessCollection
 {
 public:
-	ProcessCollection(const Suite&, HANDLE semaphore, ThreadPool*, ReportManager* pReport = nullptr);
+	ProcessCollection(const Suite&, HANDLE semaphore, ThreadPool*, bool* running, ReportManager* pReport = nullptr);
 	ProcessCollection(const ProcessCollection&);
 	~ProcessCollection();
 
@@ -42,6 +42,7 @@ private:
 	int IsDone(char* name, _Outptr_ bool& res);
 
 private:
+	bool* running_;
 	int undone_tests_;
 	char* path_;
 	ThreadPool* threads_;

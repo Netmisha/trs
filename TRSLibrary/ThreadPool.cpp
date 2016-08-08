@@ -104,7 +104,7 @@ BOOL ThreadPool::InitPool(DWORD max_queue_size)
 }
 
 
-BOOL ThreadPool::DestroyPool()
+BOOL ThreadPool::DestroyPool(bool ignore_queue)
 {
 	if (!ResetEvent(event_))
 	{
@@ -112,8 +112,8 @@ BOOL ThreadPool::DestroyPool()
 		std::cerr << "=====" << GetLastError() << "======" << endl;
 		return FALSE;
 	}
-	// if for avoiding waiting for queue to become empty when it is already empty
-	if (tasks_.size())
+	// for avoiding waiting for queue to become empty when it is already empty
+	if (tasks_.size() && !ignore_queue)
 	{
 		WaitForSingleObject(event_, INFINITE);
 	}
@@ -186,6 +186,14 @@ BOOL ThreadPool::JoinAll(DWORD max_time)
 	case WAIT_TIMEOUT:
 		return false;
 	}
+}
+
+BOOL ThreadPool::TerminateAll()
+{
+	int succeeded = 0;
+	for (int i = 0; i < size_; ++i)
+		succeeded += TerminateThread(threads_[i], 0);
+	return succeeded == size_;
 }
 
 

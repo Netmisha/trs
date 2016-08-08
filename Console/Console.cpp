@@ -62,7 +62,7 @@ int ProcessFunction(char* name, char* tag, char* path, int threads)
 	}
 	else if (!_stricmp(__argv[1], "Stop"))
 	{
-		Manager.Stop(path, name, tag);
+		Manager.Stop();
 		return 0;
 	}
 

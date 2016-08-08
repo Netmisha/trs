@@ -118,6 +118,8 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 	if (Verify(path, name, tag) != SUCCEEDED || threads_amount > MAX_THREADS)
 		return false;
 
+	running_ = true;
+
 	std::list<Suite*> arr = *List(path, name, tag);
 	if (arr.size() == 0)
 		return false;
@@ -128,7 +130,7 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 		coll.push_back(**var);
 
 	// TODO: add parameter to Console command line
-	SuiteCollection suits(coll, threads_amount, pResult);
+	SuiteCollection suits(coll, threads_amount, &running_, pResult);
 
 	bool ret_val = suits.Run();
 	logger->info("Exit Run function with result: {0}", ret_val);
@@ -164,16 +166,34 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 			if (!((*iter)->getName()))
 			{
 				logger << "There are one(or more) test(s) without name\n";
+				std::list<Suite*>::iterator Delit = suiteCollection->begin();
+				for (Delit; Delit != suiteCollection->end(); ++Delit)
+				{
+					delete (*Delit);
+				}
+				delete suiteCollection;
 				return INVALID_NAME;
 			}
 			if ((!(*iter)->get_executableName()))
 			{
 				logger << "There are one (or more) test(s) that has wrong execution name\n";
+				std::list<Suite*>::iterator Delit = suiteCollection->begin();
+				for (Delit; Delit != suiteCollection->end(); ++Delit)
+				{
+					delete (*Delit);
+				}
+				delete suiteCollection;
 				return INVALID_EXECUTION_NAME;
 			}
 			if ((!(*iter)->get_expectedResult()))
 			{
 				logger << "There are one (or more) test(s) that has wrong result\n";
+				std::list<Suite*>::iterator Delit = suiteCollection->begin();
+				for (Delit; Delit != suiteCollection->end(); ++Delit)
+				{
+					delete (*Delit);
+				}
+				delete suiteCollection;
 				return INVALID_RESULT;
 			}
 			else
@@ -184,6 +204,12 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					if (!isdigit(res[i]))
 					{
 						logger << "There are one (or more) test(s) that has wrong result (use decimal numbers only)\n";
+						std::list<Suite*>::iterator Delit = suiteCollection->begin();
+						for (Delit; Delit != suiteCollection->end(); ++Delit)
+						{
+							delete (*Delit);
+						}
+						delete suiteCollection;
 						return WRONG_PARAMETERS;
 					}
 				}
@@ -201,6 +227,12 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 				if (fFile == INVALID_FILE_ATTRIBUTES && !(fFile == ERROR_FILE_NOT_FOUND))
 				{
 					logger << "There are one (or more) test(s) that has wrong path to exe file\n";
+					std::list<Suite*>::iterator Delit = suiteCollection->begin();
+					for (Delit; Delit != suiteCollection->end(); ++Delit)
+					{
+						delete (*Delit);
+					}
+					delete suiteCollection;
 					return WRONG_PATH_EXECUTION;
 				}
 				delete[] convPath;
@@ -214,6 +246,12 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					if (!isdigit(res[i]))
 					{
 						logger << "There are one (or more) test(s) that has wrong repeat (use decimal numbers only)\n";
+						std::list<Suite*>::iterator Delit = suiteCollection->begin();
+						for (Delit; Delit != suiteCollection->end(); ++Delit)
+						{
+							delete (*Delit);
+						}
+						delete suiteCollection;
 						return WRONG_PARAMETERS;
 					}
 				}
@@ -226,6 +264,12 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 					if (!isdigit(res[i]))
 					{
 						logger << "There are one (or more) test(s) that has wrong maxThreads (use decimal numbers only)\n";
+						std::list<Suite*>::iterator Delit = suiteCollection->begin();
+						for (Delit; Delit != suiteCollection->end(); ++Delit)
+						{
+							delete (*Delit);
+						}
+						delete suiteCollection;
 						return WRONG_PARAMETERS;
 					}
 				}
@@ -238,6 +282,12 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 			{
 				delete[] buf;
 				logger << "There are no exe file for one or more test(s)\n";
+				std::list<Suite*>::iterator Delit = suiteCollection->begin();
+				for (Delit; Delit != suiteCollection->end(); ++Delit)
+				{
+					delete (*Delit);
+				}
+				delete suiteCollection;
 				return INVALID_EXE_FILE;
 			}
 			else
@@ -254,10 +304,22 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 		if (!VerifyWaitForList(collTests, coll))
 		{
 			logger << "There are tests that waiting for each other\n";
+			std::list<Suite*>::iterator Delit = suiteCollection->begin();
+			for (Delit; Delit != suiteCollection->end(); ++Delit)
+			{
+				delete (*Delit);
+			}
+			delete suiteCollection;
 			return WRONG_WAITFOR;
 		}
 	}
 	logger << "Verify Succeeded\n";
+	std::list<Suite*>::iterator Delit = suiteCollection->begin();
+	for (Delit; Delit != suiteCollection->end(); ++Delit)
+	{
+		delete (*Delit);
+	}
+	delete suiteCollection;
 	return SUCCEEDED;
 }
 
@@ -275,17 +337,19 @@ bool TRSManager::Pause(char* path, char* name, char* tag)
 	return false;
 }
 
-bool TRSManager::Stop(char* path, char* name, char* tag)
+bool TRSManager::Stop(/*char* path, char* name, char* tag*/)
 {
-	logger->info("Entered Stop function with path: {}", path);
-	if (name)
-		logger->info("name: {} ", name);
-	if (tag)
-		logger->info("name: {} ", tag);
+	logger->info("Entered Stop function" /* with path: {}", path*/);
+	//if (name)
+	//	logger->info("name: {} ", name);
+	//if (tag)
+	//	logger->info("name: {} ", tag);
 
-	if (!Verify(path, name, tag))
-		return false;
-	return false;
+	//if (!Verify(path, name, tag))
+	//	return false;
+
+	running_ = false;
+	return true;
 }
 
 int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suiteCollection, std::vector<TRSTest*>testList)

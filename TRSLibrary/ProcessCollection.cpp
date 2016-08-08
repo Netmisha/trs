@@ -6,7 +6,7 @@
 
 
 // futher implementation of priority will be added
-ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, ThreadPool* threads, ReportManager* pReport) : threads_(threads)
+ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, ThreadPool* threads, bool* running, ReportManager* pReport) : threads_(threads), running_(running)
 {
 	int max_threads = atoi(suite.getMaxThreads());
 
@@ -27,7 +27,7 @@ ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, Threa
 	undone_tests_ = 0;
 	for each (TRSTest* var in suite.getList())
 	{
-		ProcessInfo info(*var, path_, semaphores_, threads_, pReport);
+		ProcessInfo info(*var, path_, semaphores_, threads_, running_, pReport);
 		if (!info.IsDisable())
 		{
 			int repeat = atoi(var->getRepeat());
@@ -59,7 +59,7 @@ ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, Threa
 }
 
 
-ProcessCollection::ProcessCollection(const ProcessCollection& var) : undone_tests_(var.undone_tests_), tests_(var.tests_), threads_(var.threads_)
+ProcessCollection::ProcessCollection(const ProcessCollection& var) : undone_tests_(var.undone_tests_), tests_(var.tests_), threads_(var.threads_), running_(var.running_)
 {
 	// TODO: made all operation with array in loops && made all unclear indexes initialized by macros
 	semaphores_[OWNED_SEMAPHORE] = var.semaphores_[OWNED_SEMAPHORE];

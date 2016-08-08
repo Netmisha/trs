@@ -23,8 +23,9 @@ public:
 	void errorOutput(TRSResult& res,char* mess );
 	void errorMessage(char* mes);
 private:
-	std::list<TRSReport*> reportList;
+	std::list<TRSReport*>* reportList = new std::list<TRSReport*>();
 	CRITICAL_SECTION critical_section_;
+	static int count;
 };
 
 #endif

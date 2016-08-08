@@ -6,9 +6,10 @@
 #include "MFCTRSui.h"
 #include "MFCTRSuiDlg.h"
 #include "afxdialogex.h"
+#include <list>
+
 #include "ConsoleReporter.h"
 #include "TRSLibrary\TRSManager.h"
-#include <list>
 #include "ToRunParameters.h"
 #include "RunParameters.h"
 #include "Functionality.h"
@@ -70,6 +71,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT3, &CMFCTRSuiDlg::OnEnChangeEdit3)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PROGRESS1, &CMFCTRSuiDlg::OnNMCustomdrawProgress1)
 	ON_COMMAND(ID_PROGRAM_ADDFOLDER, &CMFCTRSuiDlg::OnProgramAddfolder)
+	ON_COMMAND(TOOLBAR_STOP, &CMFCTRSuiDlg::OnStopButtonClicked)
 	ON_COMMAND(ID_PROGRAM_DELETESELECTEDITEMS, &CMFCTRSuiDlg::OnProgramDeleteselecteditems)
 	ON_COMMAND(ID_PROGRAM_RUNSEL, &CMFCTRSuiDlg::OnProgramRunsel)
 	ON_WM_SYSCOMMAND(SC_CLOSE, &CMFCTRSuiDlg::OnSysCommand(UINT , LPARAM))
@@ -246,9 +248,28 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 			ThreadsComboBox.AddString(mes);
 		}
 	}
-	GetWindowRect(&old_rect);
-	ScreenToClient(&old_rect);
 
+
+	
+
+	CBitmap m_Bitmap1,m_Bitmap2;
+
+	
+	m_ImageList.Create(16, 16, ILC_COLORDDB , 2, 2);
+
+	m_Bitmap1.LoadBitmap(IDB_BITMAP1);
+	m_Bitmap2.LoadBitmap(IDB_BITMAP2);
+
+	m_ImageList.Add(&m_Bitmap1, RGB(0,0,0));
+	m_ImageList.Add(&m_Bitmap2, RGB(0, 0, 0));
+
+	/*m_Tree.Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP |
+		TVS_HASLINES | TVS_HASBUTTONS | TVS_LINESATROOT |
+		TVS_SINGLEEXPAND | TVS_SHOWSELALWAYS |
+		TVS_TRACKSELECT,
+		CRect(10, 10, 200, 240), this, 0x1221);*/
+
+	m_Tree.SetImageList(&m_ImageList, TVSIL_NORMAL);
 	dRoots.clear();
 	UpdateToolbar(PROJECT_NOTLOADED);
 
@@ -299,6 +320,7 @@ void CMFCTRSuiDlg::OnPaint()
 	{
 		CDialogEx::OnPaint();
 	}
+
 }
 
 // The system calls this function to obtain the cursor to display while the user drags
@@ -494,25 +516,25 @@ void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
 
 DWORD WINAPI RunSuits(LPVOID arg)
 {
-	RunParameters param;
-	param = *(RunParameters*)arg;
-	std::list<Suite*> coll = *Manager.List(param.path, param.name, param.tag);
-	int count = 0;
-	for each(auto it in coll)
-	{
-		count += it->getList().size();
-		for each(auto iter in it->getList())
-		{
-			if (iter->getRepeat())
-			{
-				count += atoi(iter->getRepeat());
-				--count;
-			}
-		}
-	}
-	param.progress->SetRange(0, count);
-	param.progress->SetStep(1);
-	Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
+	//RunParameters param;
+	//param = *(RunParameters*)arg;
+	//std::list<Suite*> coll = *Manager.List(param.path, param.name, param.tag);
+	//int count = 0;
+	//for each(auto it in coll)
+	//{
+	//	count += it->getList().size();
+	//	for each(auto iter in it->getList())
+	//	{
+	//		if (iter->getRepeat())
+	//		{
+	//			count += atoi(iter->getRepeat());
+	//			--count;
+	//		}
+	//	}
+	//}
+	//param.progress->SetRange(0, count);
+	//param.progress->SetStep(1);
+	//Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
 	return 0;
 }
 
@@ -536,11 +558,31 @@ DWORD WINAPI ToRun(LPVOID arg)
 		{
 			Thread_amount = atoi(threads);
 		}
+		/*
 		RunParameters* parameters = new RunParameters(path, testName, tag, Thread_amount, param->manager,param->subProgress);
 		DWORD ident;
 		hThread = CreateThread(NULL, 0, RunSuits, parameters, 0, &ident);
+
 		WaitForSingleObject(hThread, INFINITE);
-		CloseHandle(hThread);
+		CloseHandle(hThread);*/
+		std::list<Suite*> coll = *Manager.List(path , testName, tag);
+		int count = 0;
+		for each(auto it in coll)
+		{
+			count += it->getList().size();
+			for each(auto iter in it->getList())
+			{
+				if (iter->getRepeat())
+				{
+					count += atoi(iter->getRepeat());
+					--count;
+				}
+			}
+		}
+		param->subProgress->SetRange(0, count);
+		param->subProgress->SetStep(1);
+		Manager.Run(path, testName, tag, Thread_amount, param->manager);
+
 		param->progress->StepIt();
 		param->subProgress->SetPos(0);
 	}
@@ -901,13 +943,15 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 		{
 			threads = fromCStringToChar(fontName);
 		}
+
 		cIndex = m_NameBox.GetCurSel();
 		m_NameBox.GetLBText(cIndex, fontName);
 		if (fontName != "ALL")
 		{
 			testName = fromCStringToChar(fontName);
 		}
-		ReportManager* reportManag = new ReportManager;
+
+		reportManag = new ReportManager;
 		ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
 		reportManag->addReporter(reporter);
 		ToRunParameters* to_run = new ToRunParameters{dRoots, reportManag, &m_Progress, &subm_Progress, this};
@@ -967,7 +1011,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 					{
 						TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 						convertToTCHAR(buf, (*it)->getName());
-						*hSuite = m_Tree->InsertItem(buf, *hHead);
+						*hSuite = m_Tree->InsertItem(buf, 0,0,*hHead);
 						++count;
 						HTREEITEM hTest;
 						std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
@@ -975,7 +1019,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 						{
 							TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 							convertToTCHAR(subBuf, (*iter)->getName());
-							m_Tree->InsertItem(subBuf, *hSuite);
+							m_Tree->InsertItem(subBuf, 3,3,*hSuite);
 							delete[] subBuf;
 						}
 						checkList->push_back((*it));
@@ -1011,7 +1055,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 						{
 							TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 							convertToTCHAR(buf, (*it)->getName());
-							*hSuite = m_Tree->InsertItem(buf, *hHead);
+							*hSuite = m_Tree->InsertItem(buf, 0,0,*hHead);
 							++count;
 							HTREEITEM hTest;
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
@@ -1019,7 +1063,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 							{
 								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 								convertToTCHAR(subBuf, (*iter)->getName());
-								m_Tree->InsertItem(subBuf, *hSuite);
+								m_Tree->InsertItem(subBuf, 3,3,*hSuite);
 								delete[] subBuf;
 							}
 							checkList->push_back((*it));
@@ -1051,7 +1095,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 						{
 							TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 							convertToTCHAR(buf, (*it)->getName());
-							*hSuite = m_Tree->InsertItem(buf, *hHead);
+							*hSuite = m_Tree->InsertItem(buf,0,0, *hHead);
 							++count;
 							HTREEITEM hTest;
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
@@ -1059,7 +1103,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 							{
 								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 								convertToTCHAR(subBuf, (*iter)->getName());
-								m_Tree->InsertItem(subBuf, *hSuite);
+								m_Tree->InsertItem(subBuf, 3,3,*hSuite);
 								delete[] subBuf;
 							}
 							checkList->push_back((*it));
@@ -1095,7 +1139,7 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	
 	std::list<Suite*>* suiteColl = Manager.List(pathA, nullptr, nullptr);
 	HTREEITEM hHead;
-	hHead = m_Tree.InsertItem(L"Suites", TVI_ROOT);
+	hHead = m_Tree.InsertItem(L"Suites", 0,0,TVI_ROOT);
 	int count = 0;
 	std::list<Suite*>::iterator it = suiteColl->begin();
 	count = strlen((*it)->get_path());
@@ -1617,7 +1661,6 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	CWnd::OnSysCommand(nID, lParam);
 }
 
-
 void CMFCTRSuiDlg::OnViewConsole()
 {
 	if (console_output.IsWindowVisible())
@@ -1631,7 +1674,6 @@ void CMFCTRSuiDlg::OnViewConsole()
 		pro_.setConsole(true);
 	}
 }
-
 
 void CMFCTRSuiDlg::ConsoleHide()
 {
@@ -1829,6 +1871,41 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo2()
 }
 
 
+void CMFCTRSuiDlg::OnStopButtonClicked()
+{
+	Manager.Stop();
+}
+
+//void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
+//{
+	//m_ListCtrl.GetItemText(item);
+	//LPNMLISTVIEW  pNMLV = reinterpret_cast<LPNMLISTVIEW >(pNMHDR);
+
+	//if (pNMLV->uChanged & LVIF_STATE) // item state has been changed
+	//{
+	//	CString str;
+	//	switch (pNMLV->uNewState & LVIS_STATEIMAGEMASK)
+	//	{
+	//	case INDEXTOSTATEIMAGEMASK(BST_CHECKED + 1): // new state: checked
+	//	{
+	//		m_SelectedRoots.push_back(pNMLV->iItem);
+	//		char* path = fromCStringToChar(m_ListCtrl.GetItemText(pNMLV->iItem, 0));
+	//		AddToTree(path, pNMLV->iItem);
+	//		break;
+	//	}
+	//	case INDEXTOSTATEIMAGEMASK(BST_UNCHECKED + 1): // new state: unchecked
+	//	{
+	//		 auto iter = std::find(m_SelectedRoots.begin(), m_SelectedRoots.end(), pNMLV->iItem);
+	//													   if (iter != m_SelectedRoots.end())
+	//														   m_SelectedRoots.erase(iter);
+	//													   DeleteFromTree(pNMLV->iItem);
+	//													   break;
+	//	}
+	//	}
+	//}
+	//*pResult = 0;
+//}
+
 void CMFCTRSuiDlg::OnCbnSelchangeCombo3()
 {
 	int count = m_NameBox.GetCurSel();
@@ -1874,25 +1951,29 @@ void CMFCTRSuiDlg::OnNewProject()
 		char* pathA = convertToChar(path);
 		pro_.setPath(pathA);
 		ProjNameEdit NameDlg;
-		NameDlg.DoModal();
-		
-		List->ResetContent();
-		IMalloc * imalloc = 0;
-		if (SUCCEEDED(SHGetMalloc(&imalloc)))
+		int res = NameDlg.DoModal();
+		if (res == IDOK)
 		{
-			imalloc->Free(pidl);
-			imalloc->Release();
+			List->ResetContent();
+			IMalloc * imalloc = 0;
+			if (SUCCEEDED(SHGetMalloc(&imalloc)))
+			{
+				imalloc->Free(pidl);
+				imalloc->Release();
+			}
 		}
+
+
+		int size = strlen("Test manager : ");
+		char* WindowLine = new char[size + strlen(pro_.getName()) + 1];
+		strncpy_s(WindowLine, size + 1, "Test manager : ", size);
+		strncpy_s(WindowLine + size, strlen(pro_.getName()) + 1, pro_.getName(), strlen(pro_.getName()));
+		TCHAR* WinBuf = new TCHAR[strlen(WindowLine) + 1];
+		convertToTCHAR(WinBuf, WindowLine);
+		SetWindowText(WinBuf);
+		delete[] WindowLine;
+		delete[] WinBuf;
+		UpdateToolbar(PROJECT_UPLOADED);
 	}
-	int size = strlen("Test manager : ");
-	char* WindowLine = new char[size + strlen(pro_.getName()) + 1];
-	strncpy_s(WindowLine, size + 1, "Test manager : ", size);
-	strncpy_s(WindowLine + size, strlen(pro_.getName())+1, pro_.getName(),strlen(pro_.getName()));
-	TCHAR* WinBuf = new TCHAR[strlen(WindowLine) + 1];
-	convertToTCHAR(WinBuf, WindowLine);
-	SetWindowText(WinBuf);
-	delete[] WindowLine;
-	delete[] WinBuf;
-	UpdateToolbar(PROJECT_UPLOADED);
 	// TODO: Add your command handler code here
 }
