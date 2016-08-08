@@ -83,7 +83,9 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &CMFCTRSuiDlg::OnCbnSelchangeCombo2)
 	ON_CBN_SELCHANGE(IDC_COMBO3, &CMFCTRSuiDlg::OnCbnSelchangeCombo3)
 	ON_COMMAND(ID_New_Project, &CMFCTRSuiDlg::OnNewProject)
-	ON_NOTIFY_EX(TTN_NEEDTEXT, 0, &CMFCTRSuiDlg::OnTtnNeedText)
+	ON_NOTIFY_EX(TTN_NEEDTEXTA, 0, &CMFCTRSuiDlg::OnTtnNeedText)
+	ON_NOTIFY_EX(TTN_NEEDTEXTW, 0, &CMFCTRSuiDlg::OnTtnNeedText)
+	
 END_MESSAGE_MAP()
 
 
@@ -2063,20 +2065,173 @@ BOOL CMFCTRSuiDlg::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	UINT_PTR nID = pNMHDR->idFrom;
 	BOOL bRet = FALSE;
 
-	if (pTTT->uFlags & TTF_IDISHWND)
-	{
-		// idFrom is actually the HWND of the tool
-		nID = ::GetDlgCtrlID((HWND)nID);
-		if (nID)
-		{
-			//_stprintf_s(pTTT->szText, sizeof(pTTT->szText) / sizeof(TCHAR),
-			//	_T("Control ID = %d"), nID);
-			wcscpy_s(pTTT->szText, 80 ,L"\nhello\n");
+	//if (pTTT->uFlags)
+	//{
+	//	// idFrom is actually the HWND of the tool
+	//	nID = ::GetDlgCtrlID((HWND)nID);
+	//	if (nID)
+	//	{
+	//		//_stprintf_s(pTTT->szText, sizeof(pTTT->szText) / sizeof(TCHAR),
+	//		//	_T("Control ID = %d"), nID);
+	//		wchar_t* ptr = new wchar_t[6];
+	//		wcscpy_s(ptr, 6, L"hello");
+	//		pTTT->lpszText = ptr;
+	//		wcscpy_s(pTTT->szText, 80 ,L"\nhello\n");
 	//		pTTT->hinst = AfxGetResourceHandle();
-			bRet = TRUE;
+	//		bRet = TRUE;
+	//	}
+	//}
+
+	if (pNMHDR->code == TTN_NEEDTEXTW)
+	{
+		TOOLTIPTEXTW* ttext = (TOOLTIPTEXTW*)pNMHDR;
+		CStringW sw;
+		switch (nID)
+		{
+		case ID_New_Project:
+		{
+			sw = "New Project";
+			lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
+			break;
+		}
+		case ID_Load_Project:
+		{
+			sw = "Load Project";
+			lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
+			break;
+		}
+		case TOOLBAR_SAVE_GREY:
+		case TOOLBAR_SAVE:
+		{
+								sw = "Save Project";
+								lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
+								break;
+		}
+		case TOOLBAR_SAVEAS_GREY:
+		case TOOLBAR_SAVEAS:
+		{
+								sw = "Save As..";
+								lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
+								break;
+		}
+		case TOOLBAR_ADDGREY:
+		case TOOLBAR_ADD:
+		{
+								sw = "Add Folder";
+								lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
+								break;
+		}
+		case TOOLBAR_DELETEGREY:
+		case TOOLBAR_DELETE:
+		{
+								sw = "Delete Folder";
+								lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
+								break;
+		}
+		case TOOLBAR_RUNGREY:
+		case TOOLBAR_RUN:
+		{
+								sw = "Run";
+								lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
+								break;
+		}
+		case TOOLBAR_STOP:
+		{
+								sw = "Stop";
+								lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
+								break;
+		}
+		case ID_VIEW_CONSOLE:
+		{
+								sw = "Show/Hide Console";
+								lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
+								break;
+		}
+		case TOOLBAR_SETTINGS:
+		{
+								sw = "Settings";
+								lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
+								break;
+		}
+		default:
+			break;
 		}
 	}
-
+	else
+	{
+		TOOLTIPTEXTA* ttext = (TOOLTIPTEXTA*)pNMHDR;
+		CStringA sa;
+		switch (nID)
+		{
+		case ID_New_Project:
+		{
+							   sa = "New Project";
+							   lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
+							   break;
+		}
+		case ID_Load_Project:
+		{
+								sa = "Load Project";
+								lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
+								break;
+		}
+		case TOOLBAR_SAVE_GREY:
+		case TOOLBAR_SAVE:
+		{
+							 sa = "Save Project";
+							 lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
+							 break;
+		}
+		case TOOLBAR_SAVEAS_GREY:
+		case TOOLBAR_SAVEAS:
+		{
+							   sa = "Save As..";
+							   lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
+							   break;
+		}
+		case TOOLBAR_ADDGREY:
+		case TOOLBAR_ADD:
+		{
+							sa = "Add Folder";
+							lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
+							break;
+		}
+		case TOOLBAR_DELETEGREY:
+		case TOOLBAR_DELETE:
+		{
+							   sa = "Delete Folder";
+							   lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
+							   break;
+		}
+		case TOOLBAR_RUNGREY:
+		case TOOLBAR_RUN:
+		{
+							sa = "Run";
+							lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
+							break;
+		}
+		case TOOLBAR_STOP:
+		{
+							 sa = "Stop";
+							 lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
+							 break;
+		}
+		case ID_VIEW_CONSOLE:
+		{
+								sa = "Show/Hide Console";
+								lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
+								break;
+		}
+		case TOOLBAR_SETTINGS:
+		{
+								 sa = "Settings";
+								 lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
+								 break;
+		}
+		default:
+			break;
+		}
+	}
 	*pResult = 0;
 
 	return bRet;
