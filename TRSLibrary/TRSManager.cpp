@@ -435,12 +435,17 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 						if (loadOk)
 						{
 							Suite* currentSuite = new Suite();
-							currentSuite->Parse(&doc, name, tag, testList);
-							char*SuiteWay = convertToChar(currentDir);
-							currentSuite->setDir(SuiteWay);
-							delete[] SuiteWay;
-							suiteCollection->push_back(currentSuite);
-
+							if (currentSuite->Parse(&doc, name, tag, testList))
+							{
+								char*SuiteWay = convertToChar(currentDir);
+								currentSuite->setDir(SuiteWay);
+								delete[] SuiteWay;
+								suiteCollection->push_back(currentSuite);
+							}
+							else
+							{
+								return INVALID_XML_FILE;
+							}
 						}
 						delete[] way;
 					}
@@ -471,7 +476,8 @@ std::list<Suite*>* TRSManager::List(char* path, char* name, char* tag)
 
 	std::list<Suite*>*suiteCollection = new std::list<Suite*>;
 	std::vector<TRSTest*> testWait;
-	if (FillList(path, name, tag, suiteCollection, testWait) != EXE_OR_XML_ABSENT)
+	int res = FillList(path, name, tag, suiteCollection, testWait);
+	if ( (res!= EXE_OR_XML_ABSENT)&&(res!=INVALID_XML_FILE))
 	{
 		std::list<Suite*>::iterator it = suiteCollection->begin();
 		for (it; it != suiteCollection->end(); ++it)
