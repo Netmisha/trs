@@ -488,34 +488,9 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 		RunToolsHide();
 	}
 
-	if (dRoots.size())
-	{
-		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN, false);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE, false);
-
-		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY);
-
-		m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_ENABLED);
-		m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_ENABLED);
-	}
-	else
-	{
-		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
-
-		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY, false);
-
-		m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
-		m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
-
-		m_Tree.DeleteAllItems();
-	}
-
-
 	if (mask & RUN_CLICKED)
 	{// mask = RUN_CLICKED | ...
+		is_running = true;
 		RunToolsShow();
 		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
 		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY);
@@ -527,13 +502,40 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 	}
 	else if (mask & RUN_UNCLICKED)
 	{
+		is_running = false;
 		RunToolsHide();
 		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
 
 		m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_ENABLED);
 		m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_ENABLED);
 	}
+	if (!is_running)
+	{
+		if (dRoots.size())
+		{
+			m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN, false);
+			m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE, false);
 
+			m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY);
+			m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY);
+
+			m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_ENABLED);
+			m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_ENABLED);
+		}
+		else
+		{
+			m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
+			m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETE);
+
+			m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUNGREY, false);
+			m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_DELETEGREY, false);
+
+			m_Menu->EnableMenuItem(TOOLBAR_DELETE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+			m_Menu->EnableMenuItem(TOOLBAR_RUN, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+
+			m_Tree.DeleteAllItems();
+		}
+	}
 }
 
 
@@ -549,9 +551,17 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 		SHGetPathFromIDList(pidl, path);
 		char* pathA = convertToChar(path);
 		if (!Manager.Verify(pathA, nullptr, nullptr))
-			RootList.InsertItem(RootList.GetItemCount(), path);
+		{
+			int index = RootList.InsertItem(RootList.GetItemCount(), path);
+			if (index >= 0)
+				RootList.SetCheck(index);
+			else
+				MessageBox(_T("Can not insert the item!"), _T("Error"), MB_ICONERROR | MB_OK);
+		}
 		else
-			MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
+		{
+			MessageBox(_T("Current path is invalid!"), _T("Error"), MB_ICONERROR | MB_OK);
+		}
 
 		delete[] pathA;
 		// free memory used
@@ -582,7 +592,7 @@ void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
 	std::sort(dRoots.begin(), dRoots.end(), std::greater<int>());
 	for (auto iter = dRoots.begin(); iter != dRoots.end(); ++iter)
 	{
-		m_ListCtrl.DeleteItem(*iter);
+		RootList.DeleteItem(*iter);
 	}
 	UpdateToolbar();
 	dRoots.clear();
@@ -1047,14 +1057,11 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 		{
 			roots.push_back(SuiteRoot(RootList.GetItemText(*iter, 0)));
 		}
-
-
 		ToRunParameters* to_run = new ToRunParameters{roots, reportManag, &m_Progress, &subm_Progress, this};
 		HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
 		HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
 		CloseHandle(hThread);
 		CloseHandle(hTimer);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_RUN);
 
 	}
 }

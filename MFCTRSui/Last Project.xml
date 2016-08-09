@@ -1,10 +1,9 @@
 <?xml version="1.0" ?>
 <TRSProject name="MihanProj" ProjectPath="D:\Repository\">
     <path>D:\Repository\Suite root</path>
-    <path>D:\Repository\Suite root</path>
     <path>D:\Repository\trs\TestData</path>
     <ListSelection>
-        <selection>2</selection>
+        <selection>1</selection>
     </ListSelection>
     <tag>0</tag>
     <threads>9</threads>
