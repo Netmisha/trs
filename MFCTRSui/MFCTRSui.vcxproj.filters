@@ -15,6 +15,7 @@
     <ClCompile Include="RunParameters.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="ToRunParameters.cpp" />
+    <ClCompile Include="TestInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleReporter.h">
@@ -59,6 +60,7 @@
     <ClInclude Include="ToRunParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TestInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470668670_Security_guard.ico">

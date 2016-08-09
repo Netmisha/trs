@@ -11,6 +11,7 @@
 #include "ConsoleReporter.h"
 #include "TRSLibrary\TRSManager.h"
 #include "ToRunParameters.h"
+#include "TestInfo.h"
 #include "RunParameters.h"
 #include "Functionality.h"
 #include <ctime>
@@ -88,6 +89,8 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_NOTIFY_EX(TTN_NEEDTEXTW, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
+	ON_NOTIFY(NM_RCLICK, IDC_TREE1, &CMFCTRSuiDlg::OnNMRClickTree1)
+	ON_COMMAND(ID_INFO_INFO, &CMFCTRSuiDlg::OnInfoInfo)
 END_MESSAGE_MAP()
 
 
@@ -148,7 +151,9 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	
 	SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
 	DropDown.AddString(L"All");
+	//DropDown.SetCurSel(0);
 	m_NameBox.AddString(L"All");
+	//m_NameBox.SetCurSel(0);
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
 	
@@ -1072,7 +1077,7 @@ bool checkDiff(int begin, char* source)
 	return count == 1;
 }
 
-void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CTreeCtrl* m_Tree, int& count, HTREEITEM* hHead,std::list<Suite*>* checkList)
+void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CTreeCtrl* m_Tree, int& count, HTREEITEM* hHead, std::list<Suite*>* checkList, std::vector<HTREEITEM*>* TreeControlsList)
 {
 	if (count != suiteColl->size())
 	{
@@ -1096,7 +1101,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
 					{
 						if (checkDiff(strlen(rootPath), (*it)->get_path()))
-							TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList);
+							TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList, TreeControlsList);
 					}
 
 				}
@@ -1106,15 +1111,18 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 					{
 						TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 						convertToTCHAR(buf, (*it)->getName());
-						*hSuite = m_Tree->InsertItem(buf, 0,0,*hHead);
+						*hSuite = m_Tree->InsertItem(buf, 0, 0, *hHead);
 						++count;
-						HTREEITEM hTest;
+						
 						std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
 						for (iter; iter != (*it)->getList().end(); ++iter)
 						{
+							HTREEITEM* hTest = new HTREEITEM;
 							TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 							convertToTCHAR(subBuf, (*iter)->getName());
-							m_Tree->InsertItem(subBuf, 3,3,*hSuite);
+							*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+							m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+							TreeControlsList->push_back(hTest);
 							delete[] subBuf;
 						}
 						checkList->push_back((*it));
@@ -1140,7 +1148,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
 					{
 						if (checkDiff(strlen(rootPath), (*it)->get_path()))
-						TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList);
+							TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList, TreeControlsList);
 					}
 					
 				}
@@ -1150,15 +1158,18 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 						{
 							TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 							convertToTCHAR(buf, (*it)->getName());
-							*hSuite = m_Tree->InsertItem(buf, 0,0,*hHead);
+							*hSuite = m_Tree->InsertItem(buf, 0, 0, *hHead);
 							++count;
-							HTREEITEM hTest;
+							
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
 							for (iter; iter != (*it)->getList().end(); ++iter)
 							{
+								HTREEITEM* hTest = new HTREEITEM;
 								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 								convertToTCHAR(subBuf, (*iter)->getName());
-								m_Tree->InsertItem(subBuf, 3,3,*hSuite);
+								*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+								m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+								TreeControlsList->push_back(hTest);
 								delete[] subBuf;
 							}
 							checkList->push_back((*it));
@@ -1180,7 +1191,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
 					{
 						if (checkDiff(strlen(rootPath), (*it)->get_path()))
-						TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList);
+							TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList, TreeControlsList);
 					}
 				}
 				else
@@ -1192,13 +1203,16 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 							convertToTCHAR(buf, (*it)->getName());
 							*hSuite = m_Tree->InsertItem(buf,0,0, *hHead);
 							++count;
-							HTREEITEM hTest;
+							
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
 							for (iter; iter != (*it)->getList().end(); ++iter)
 							{
+								HTREEITEM* hTest = new HTREEITEM;
 								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 								convertToTCHAR(subBuf, (*iter)->getName());
-								m_Tree->InsertItem(subBuf, 3,3,*hSuite);
+								*hTest=m_Tree->InsertItem(subBuf, 3,3,*hSuite);
+								m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+								TreeControlsList->push_back(hTest);
 								delete[] subBuf;
 							}
 							checkList->push_back((*it));
@@ -1252,12 +1266,12 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	{
 		if (strlen((*it)->get_path()) == count)
 		{
-			TreeParse(it, suiteColl, &m_Tree, lic, &hHead,&checkList);
+			TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList, &TreeControlsList);
 		}
 	}
 	if (strlen((*it)->get_path()) == count)
 	{
-		TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList);
+		TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList, &TreeControlsList);
 	}
 	for (it; it != suiteColl->end(); ++it)
 	{
@@ -2231,6 +2245,12 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 		case INDEXTOSTATEIMAGEMASK(BST_CHECKED + 1): // new state: checked
 		{
 			dRoots.push_back(pNMLV->iItem);
+				DropDown.SetCurSel(0);
+				m_NameBox.SetCurSel(0);
+				ThreadsComboBox.SetCurSel(9);
+				CMFCTRSuiDlg::OnCbnSelchangeCombo1();
+				CMFCTRSuiDlg::OnCbnSelchangeCombo2();
+				CMFCTRSuiDlg::OnCbnSelchangeCombo3();
 			break;
 		}
 		case INDEXTOSTATEIMAGEMASK(BST_UNCHECKED + 1): // new state: unchecked
@@ -2238,6 +2258,25 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 			auto iter = std::find(dRoots.begin(), dRoots.end(), pNMLV->iItem);
 			if (iter != dRoots.end())
 			   dRoots.erase(iter);
+			if (DropDown.GetCurSel() > 0)
+			{
+				DropDown.SetCurSel(-1);
+				CMFCTRSuiDlg::OnCbnSelchangeCombo1();
+			}
+			if (m_NameBox.GetCurSel() > 0)
+			{
+				m_NameBox.SetCurSel(-1);
+				CMFCTRSuiDlg::OnCbnSelchangeCombo2();
+			}
+			if (ThreadsComboBox.GetCurSel() > 0)
+			{
+				ThreadsComboBox.SetCurSel(-1);
+				CMFCTRSuiDlg::OnCbnSelchangeCombo3();
+			}
+			
+			
+			
+			
 			break;
 		}
 		default:
@@ -2249,4 +2288,36 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 	}
 	UpdateToolbar();
 	*pResult = 0;
+}
+
+
+void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: Add your control notification handler code here
+	CMenu *mnuPopupSubmit = new CMenu;
+	mnuPopupSubmit->LoadMenu(IDR_MENU4);
+	CMenu* nextMenu = mnuPopupSubmit->GetSubMenu(0);
+	ASSERT(nextMenu);
+	NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
+	HTREEITEM hTest = m_Tree.GetSelectedItem();
+	for (int i = 0; i < TreeControlsList.size(); ++i)
+	{
+		if (*TreeControlsList[i] == hTest)
+		{
+			TestForInfo = (TRSTest*)m_Tree.GetItemData(*TreeControlsList[i]);
+		}
+	}
+	CString sString = m_Tree.GetItemText(hTest);
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	nextMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, mousePos.x, mousePos.y, this);
+	*pResult = 0;
+}
+
+
+void CMFCTRSuiDlg::OnInfoInfo()
+{
+	TestInfo dlg;
+	dlg.DoModal();
+	// TODO: Add your command handler code here
 }
