@@ -1714,6 +1714,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if (nID == SC_CLOSE)
 	{
+		int res=0;
 		if (RootList.GetItemCount() > 0)
 		{
 			char* path = pro_.getProjPath();
@@ -1726,7 +1727,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 				int found = handle != INVALID_HANDLE_VALUE;
 				if (!found)
 				{
-					int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
+					res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
 					if (res == IDYES)
 					{
 						pro_.SaveProject(&RootList);
@@ -1734,11 +1735,17 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 						delete[] buf;
 						CDialogEx::OnOK();
 					}
-					else
+					if (res==IDNO)
 					{
 						delete[] path;
 						delete[] buf;
 						CDialogEx::OnOK();
+					}
+					if (res == IDCANCEL)
+					{
+						delete[] path;
+						delete[] buf;
+						return;
 					}
 				}
 				else
@@ -1748,7 +1755,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 					{
 						if (SaveAsPressed)
 						{
-							int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
+							int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
 							if (res == IDYES)
 							{
 								pro_.SaveProject(&RootList);
@@ -1756,11 +1763,17 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 								delete[] buf;
 								CDialogEx::OnOK();
 							}
-							else
+							if (res==IDNO)
 							{
 								delete[] path;
 								delete[] buf;
 								CDialogEx::OnOK();
+							}
+							if (res == IDCANCEL)
+							{
+								delete[] path;
+								delete[] buf;
+								return;
 							}
 						}
 						else
@@ -1973,15 +1986,18 @@ void CMFCTRSuiDlg::OnSaveAs()
 void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 {
 	int count = DropDown.GetCurSel();
-	int lic = 2;
-	while (count /= 10)
+	if (count > -1)
 	{
-		++lic;
+		int lic = 2;
+		while (count /= 10)
+		{
+			++lic;
+		}
+		char* tag_ = new char[lic];
+		sprintf_s(tag_, lic, "%d", DropDown.GetCurSel());
+		pro_.setTag(tag_);
+		delete[] tag_;
 	}
-	char* tag_ = new char[lic];
-	sprintf_s(tag_, lic,"%d", DropDown.GetCurSel());
-	pro_.setTag(tag_);
-	delete[] tag_;
 	// TODO: Add your control notification handler code here
 }
 
@@ -1989,15 +2005,18 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 void CMFCTRSuiDlg::OnCbnSelchangeCombo2()
 {
 	int count = ThreadsComboBox.GetCurSel();
-	int lic = 2;
-	while (count /= 10)
+	if (count > -1)
 	{
-		++lic;
+		int lic = 2;
+		while (count /= 10)
+		{
+			++lic;
+		}
+		char* threads_ = new char[lic];
+		sprintf_s(threads_, lic, "%d", ThreadsComboBox.GetCurSel());
+		pro_.setThreads(threads_);
+		delete[] threads_;
 	}
-	char* threads_ = new char[lic];
-	sprintf_s(threads_, lic, "%d", ThreadsComboBox.GetCurSel());
-	pro_.setThreads(threads_);
-	delete[] threads_;
 	// TODO: Add your control notification handler code here
 }
 
@@ -2010,28 +2029,31 @@ void CMFCTRSuiDlg::OnStopButtonClicked()
 void CMFCTRSuiDlg::OnCbnSelchangeCombo3()
 {
 	int count = m_NameBox.GetCurSel();
-	int lic = 2;
-	while (count /= 10)
+	if (count > -1)
 	{
-		++lic;
+		int lic = 2;
+		while (count /= 10)
+		{
+			++lic;
+		}
+		char* name_ = new char[lic];
+		sprintf_s(name_, lic, "%d", m_NameBox.GetCurSel());
+		pro_.setTestName(name_);
+		delete[] name_;
 	}
-	char* name_ = new char[lic];
-	sprintf_s(name_, lic, "%d", m_NameBox.GetCurSel());
-	pro_.setTestName(name_);
-	delete[] name_;
 	// TODO: Add your control notification handler code here
 }
 
 
 void CMFCTRSuiDlg::OnNewProject()
 {
-	
+	int res=0;
 	if (pro_.getName() && pro_.getPath())
 	{
 		char* path = pro_.getProjPath();
 		if (!CheckForModification(path, pro_.getName(), List, Tag, Threads, Name, console_output.IsWindowVisible()))
 		{
-			int res = MessageBox( _T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
+			res = MessageBox( _T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNOCANCEL);
 			if (res == IDYES)
 			{
 				pro_.SaveProject(List);
@@ -2040,41 +2062,43 @@ void CMFCTRSuiDlg::OnNewProject()
 		}
 		delete[] path;
 	}
-
-	BROWSEINFO bi = { 0 };
-	bi.lpszTitle = _T("Select Folder");
-	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-	if (pidl != 0)
+	if (res != IDCANCEL)
 	{
-		// get the name of the folder
-		TCHAR path[MAX_PATH];
-		SHGetPathFromIDList(pidl, path);
-		char* pathA = convertToChar(path);
-		pro_.setPath(pathA);
-		ProjNameEdit NameDlg;
-		int res = NameDlg.DoModal();
-		if (res == IDOK)
+		BROWSEINFO bi = { 0 };
+		bi.lpszTitle = _T("Select Folder");
+		LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+		if (pidl != 0)
 		{
-//			List->ResetContent();
-			IMalloc * imalloc = 0;
-			if (SUCCEEDED(SHGetMalloc(&imalloc)))
+			// get the name of the folder
+			TCHAR path[MAX_PATH];
+			SHGetPathFromIDList(pidl, path);
+			char* pathA = convertToChar(path);
+			pro_.setPath(pathA);
+			ProjNameEdit NameDlg;
+			int res = NameDlg.DoModal();
+			if (res == IDOK)
 			{
-				imalloc->Free(pidl);
-				imalloc->Release();
+				//			List->ResetContent();
+				IMalloc * imalloc = 0;
+				if (SUCCEEDED(SHGetMalloc(&imalloc)))
+				{
+					imalloc->Free(pidl);
+					imalloc->Release();
+				}
 			}
+
+
+			int size = strlen("Test manager : ");
+			char* WindowLine = new char[size + strlen(pro_.getName()) + 1];
+			strncpy_s(WindowLine, size + 1, "Test manager : ", size);
+			strncpy_s(WindowLine + size, strlen(pro_.getName()) + 1, pro_.getName(), strlen(pro_.getName()));
+			TCHAR* WinBuf = new TCHAR[strlen(WindowLine) + 1];
+			convertToTCHAR(WinBuf, WindowLine);
+			SetWindowText(WinBuf);
+			delete[] WindowLine;
+			delete[] WinBuf;
+			UpdateToolbar(PROJECT_UPLOADED);
 		}
-
-
-		int size = strlen("Test manager : ");
-		char* WindowLine = new char[size + strlen(pro_.getName()) + 1];
-		strncpy_s(WindowLine, size + 1, "Test manager : ", size);
-		strncpy_s(WindowLine + size, strlen(pro_.getName()) + 1, pro_.getName(), strlen(pro_.getName()));
-		TCHAR* WinBuf = new TCHAR[strlen(WindowLine) + 1];
-		convertToTCHAR(WinBuf, WindowLine);
-		SetWindowText(WinBuf);
-		delete[] WindowLine;
-		delete[] WinBuf;
-		UpdateToolbar(PROJECT_UPLOADED);
 	}
 	// TODO: Add your command handler code here
 }
@@ -2293,9 +2317,6 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 					CMFCTRSuiDlg::OnCbnSelchangeCombo3();
 				}
 			}
-			
-			
-			
 			break;
 		}
 		default:
