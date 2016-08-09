@@ -152,6 +152,8 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count,std::v
 			}
 			TRSTest* currentTest = new TRSTest;
 			currentTest->Parse(pParent);
+			Metadata* curMet = new Metadata(*this->getMetadata());
+			currentTest->setMetadata(curMet);
 			tests.push_back(currentTest);
 			if (name_)
 			{

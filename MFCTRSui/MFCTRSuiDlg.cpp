@@ -2238,6 +2238,16 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW  pNMLV = reinterpret_cast<LPNMLISTVIEW >(pNMHDR);
 
+	bool check = false;
+	for (int i = 0; i < RootList.GetItemCount(); ++i)
+	{
+		if (RootList.GetCheck(i))
+		{
+			check = true;
+			break;
+		}
+	}
+
 	if (pNMLV->uChanged & LVIF_STATE) // item state has been changed
 	{
 		switch (pNMLV->uNewState & LVIS_STATEIMAGEMASK)
@@ -2258,22 +2268,24 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 			auto iter = std::find(dRoots.begin(), dRoots.end(), pNMLV->iItem);
 			if (iter != dRoots.end())
 			   dRoots.erase(iter);
-			if (DropDown.GetCurSel() > 0)
+			if (!check)
 			{
-				DropDown.SetCurSel(-1);
-				CMFCTRSuiDlg::OnCbnSelchangeCombo1();
+				if (DropDown.GetCurSel() > 0)
+				{
+					DropDown.SetCurSel(-1);
+					CMFCTRSuiDlg::OnCbnSelchangeCombo1();
+				}
+				if (m_NameBox.GetCurSel() > 0)
+				{
+					m_NameBox.SetCurSel(-1);
+					CMFCTRSuiDlg::OnCbnSelchangeCombo2();
+				}
+				if (ThreadsComboBox.GetCurSel() > 0)
+				{
+					ThreadsComboBox.SetCurSel(-1);
+					CMFCTRSuiDlg::OnCbnSelchangeCombo3();
+				}
 			}
-			if (m_NameBox.GetCurSel() > 0)
-			{
-				m_NameBox.SetCurSel(-1);
-				CMFCTRSuiDlg::OnCbnSelchangeCombo2();
-			}
-			if (ThreadsComboBox.GetCurSel() > 0)
-			{
-				ThreadsComboBox.SetCurSel(-1);
-				CMFCTRSuiDlg::OnCbnSelchangeCombo3();
-			}
-			
 			
 			
 			
@@ -2307,7 +2319,6 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 			TestForInfo = (TRSTest*)m_Tree.GetItemData(*TreeControlsList[i]);
 		}
 	}
-	CString sString = m_Tree.GetItemText(hTest);
 	POINT mousePos;
 	GetCursorPos(&mousePos);
 	nextMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, mousePos.x, mousePos.y, this);
@@ -2317,7 +2328,15 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CMFCTRSuiDlg::OnInfoInfo()
 {
-	TestInfo dlg;
-	dlg.DoModal();
+	if (TestForInfo)
+	{
+		TestInfo dlg;
+		dlg.DoModal();
+		TestForInfo = nullptr;
+	}
+	else
+	{
+		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
+	}
 	// TODO: Add your command handler code here
 }
