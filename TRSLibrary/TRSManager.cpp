@@ -120,10 +120,10 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 
 	running_ = true;
 
-	std::list<Suite*> arr = *List(path, name, tag);
-	//std::list<Suite*>* arr1 = List(path, name, tag);
-	//std::list<Suite*> arr = *arr1;
-	//delete arr1;
+//	std::list<Suite*> arr = *List(path, name, tag);
+	std::list<Suite*>* arr1 = List(path, name, tag);
+	std::list<Suite*> arr = *arr1;
+	delete arr1;
 
 	if (arr.size() == 0)
 		return false;

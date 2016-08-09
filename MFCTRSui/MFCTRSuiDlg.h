@@ -150,6 +150,8 @@ protected:
 	CComboBox DropDown;
 	CComboBox ThreadsComboBox;
 	ReportManager* reportManag;
+
+	bool is_running = false;
 public:
 	CComboBox m_NameBox;
 	afx_msg void OnCbnSelchangeCombo1();

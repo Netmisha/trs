@@ -60,7 +60,9 @@
     <ClInclude Include="ToRunParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TestInfo.h" />
+    <ClInclude Include="TestInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470668670_Security_guard.ico">
