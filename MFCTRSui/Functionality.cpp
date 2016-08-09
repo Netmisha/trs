@@ -126,7 +126,7 @@ BOOL validate(UINT nType, int cxx, int cyy)
 	return counter * 3 + cxx != a - cyy + 6;
 }
 
-bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_,CComboBox* threads_,CComboBox* name_,bool Console)
+bool CheckForModification(char* path, char* name, CListCtrl* List,CComboBox* tag_,CComboBox* threads_,CComboBox* name_,bool Console)
 {
 	TiXmlDocument doc(path);
 	bool check = false;
@@ -149,7 +149,7 @@ bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_
 			}
 			TiXmlNode* head = first->FirstChild();
 			int i;
-			int count = List->GetCount();
+			int count = List->GetItemCount();
 			for (head,i=0; head != 0; head = head->NextSibling(),++i)
 			{
 				if (!strncmp(head->Value(), "path", strlen(head->Value())))
@@ -161,8 +161,7 @@ bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_
 						{
 							text = text->NextSibling();
 						}
-						CString buffer;
-						List->GetText(i, buffer);
+						CString buffer = List->GetItemText(i, 0);
 						char* p = fromCStringToChar(buffer);
 						if (strncmp(text->Value(), p, strlen(p)))
 						{
@@ -174,12 +173,15 @@ bool CheckForModification(char* path, char* name, CListBox* List,CComboBox* tag_
 				if (!strncmp(head->Value(), "ListSelection", strlen("ListSelection")))
 				{
 					--i;
-					int count = List->GetSelCount();
+					int count = 0;
+					for (int i = 0; i < List->GetItemCount(); ++i)
+						count += List->GetCheck(i);
+
 					TiXmlNode* subList = head->FirstChild();
 					for (subList; subList != 0; subList = subList->NextSibling())
 					{
 						TiXmlNode* text = subList->FirstChild();
-						if (!List->GetSel(atoi(text->Value())))
+						if (!List->GetCheck(atoi(text->Value())))
 						{
 							return false;
 						}

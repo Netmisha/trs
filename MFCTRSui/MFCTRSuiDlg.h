@@ -35,6 +35,12 @@ public:
 		dRoot = new TCHAR[size + 1];
 		wcscpy_s(dRoot, size + 1, path);
 	}
+	SuiteRoot(CString path)
+	{
+		int size = _tcslen(path);
+		dRoot = new TCHAR[size + 1];
+		_tcscpy_s(dRoot, size + 1, path);
+	}
 	SuiteRoot(const SuiteRoot& var)
 	{
 		int size = wcslen(var.dRoot);
@@ -94,8 +100,9 @@ public:
 
 	afx_msg void OnBnClickedButton();
 protected:
-	CListBox RootList;
-	std::vector<SuiteRoot> dRoots;
+//	CListBox RootList;
+//	std::vector<SuiteRoot> dRoots;
+	std::vector<int> dRoots;
 	std::vector<int> m_SelectedRoots;
 	CImageList m_ImageList;
 	void Info(TCHAR* path);
@@ -104,7 +111,7 @@ protected:
 	CToolBar m_secondToolBar;
 	CMenu* m_Menu;
 	ProjectProperties properties;
-	afx_msg void OnLbnSelchangeListroot();
+///	afx_msg void OnLbnSelchangeListroot();
 	int resizible_raw = 2;
 	int resizible_column = 2;
 
@@ -153,7 +160,11 @@ public:
 	afx_msg void OnCbnSelchangeCombo3();
 	afx_msg void OnNewProject();
 
+	CListCtrl RootList;
+
+	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
-extern CListBox* List;
+//extern CListBox* List;
+extern CListCtrl* List;
 extern bool checkRunParameters;

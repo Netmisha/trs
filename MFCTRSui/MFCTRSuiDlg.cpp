@@ -52,13 +52,14 @@ void CMFCTRSuiDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_TREE1, m_Tree);
 	DDX_Control(pDX, IDC_EDIT3, console_output);
-	DDX_Control(pDX, IDC_ListRoot, RootList);
+//	DDX_Control(pDX, IDC_ListRoot, RootList);
 	DDX_Control(pDX, IDC_PROGRESS1, m_Progress);
 	DDX_Control(pDX, IDC_PROGRESS3, subm_Progress);
 	DDX_Control(pDX, IDC_EDIT1, Time_running_edit);
 	DDX_Control(pDX, IDC_COMBO1, DropDown);
 	DDX_Control(pDX, IDC_COMBO2, ThreadsComboBox);
 	DDX_Control(pDX, IDC_COMBO3, m_NameBox);
+	DDX_Control(pDX, IDC_LIST1, RootList);
 }
 
 BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
@@ -67,7 +68,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_WM_SIZE()
 	ON_WM_GETMINMAXINFO(MINMAXINFO *)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE1, &CMFCTRSuiDlg::OnTvnSelchangedTree1)
-	ON_LBN_SELCHANGE(IDC_ListRoot, &CMFCTRSuiDlg::OnLbnSelchangeListroot)
+//	ON_LBN_SELCHANGE(IDC_ListRoot, &CMFCTRSuiDlg::OnLbnSelchangeListroot)
 	ON_EN_CHANGE(IDC_EDIT3, &CMFCTRSuiDlg::OnEnChangeEdit3)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PROGRESS1, &CMFCTRSuiDlg::OnNMCustomdrawProgress1)
 	ON_COMMAND(ID_PROGRAM_ADDFOLDER, &CMFCTRSuiDlg::OnProgramAddfolder)
@@ -86,6 +87,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_NOTIFY_EX(TTN_NEEDTEXTA, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	ON_NOTIFY_EX(TTN_NEEDTEXTW, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
 END_MESSAGE_MAP()
 
 
@@ -153,7 +155,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	//SetIcon(m_hIcon, TRUE);			// Set big icon
 	//SetIcon(m_hIcon, FALSE);		// Set small icon
 	// TODO: Add extra initialization here
-	RootList.ResetContent();
+	//RootList.ResetContent();
 
 	// menu hiding
 	m_Menu = GetMenu();
@@ -302,7 +304,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	m_secondToolBar.SetBarStyle(m_secondToolBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY);
 	EnableToolTips(TRUE);
 	// =======================================================================================================================================
-
+	RootList.SetExtendedStyle(RootList.GetExtendedStyle() | LVS_EX_CHECKBOXES | LVS_EX_TRANSPARENTSHADOWTEXT);
 	List = &RootList;
 	// toolbar image config
 	CString mes;
@@ -323,9 +325,6 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 			ThreadsComboBox.AddString(mes);
 		}
 	}
-
-
-	
 
 	CBitmap m_Bitmap1,m_Bitmap2;
 
@@ -406,38 +405,38 @@ HCURSOR CMFCTRSuiDlg::OnQueryDragIcon()
 }
 
 
-void CMFCTRSuiDlg::OnLbnSelchangeListroot()
-{
-	int count = RootList.GetSelCount();
-	int* array = new int[count];
-
-	RootList.GetSelItems(count, array);
-
-	dRoots.clear();
-	dRoots.reserve(count);
-
-	for (int i = 0; i < count; ++i)
-	{
-		TCHAR root[MAX_PATH];
-		RootList.GetText(array[i], root);
-		dRoots.push_back(root);
-	}
-
-	// making RunButton visible only when at least one element is selected
-	UpdateToolbar();
-	if (count == 1)
-		Info(dRoots.front().get_path());
-	else
-		m_Tree.DeleteAllItems();
-
-	DropDown.SetCurSel(0);
-	m_NameBox.SetCurSel(0);
-	ThreadsComboBox.SetCurSel(9);
-	CMFCTRSuiDlg::OnCbnSelchangeCombo1();
-	CMFCTRSuiDlg::OnCbnSelchangeCombo2();
-	CMFCTRSuiDlg::OnCbnSelchangeCombo3();
-	delete[] array;
-}
+//void CMFCTRSuiDlg::OnLbnSelchangeListroot()
+//{
+//	int count = RootList.GetSelCount();
+//	int* array = new int[count];
+//
+//	RootList.GetSelItems(count, array);
+//
+//	dRoots.clear();
+//	dRoots.reserve(count);
+//
+//	for (int i = 0; i < count; ++i)
+//	{
+//		TCHAR root[MAX_PATH];
+//		RootList.GetText(array[i], root);
+//		dRoots.push_back(root);
+//	}
+//
+//	// making RunButton visible only when at least one element is selected
+//	UpdateToolbar();
+//	if (count == 1)
+//		Info(dRoots.front().get_path());
+//	else
+//		m_Tree.DeleteAllItems();
+//
+//	DropDown.SetCurSel(0);
+//	m_NameBox.SetCurSel(0);
+//	ThreadsComboBox.SetCurSel(9);
+//	CMFCTRSuiDlg::OnCbnSelchangeCombo1();
+//	CMFCTRSuiDlg::OnCbnSelchangeCombo2();
+//	CMFCTRSuiDlg::OnCbnSelchangeCombo3();
+//	delete[] array;
+//}
 
 void CMFCTRSuiDlg::UpdateToolbar(int mask)
 {
@@ -550,7 +549,7 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 		SHGetPathFromIDList(pidl, path);
 		char* pathA = convertToChar(path);
 		if (!Manager.Verify(pathA, nullptr, nullptr))
-			RootList.AddString(path);
+			RootList.InsertItem(RootList.GetItemCount(), path);
 		else
 			MessageBox(_T("Current path is invalid"), _T("Error"), MB_ICONERROR | MB_OK);
 
@@ -569,16 +568,24 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 
 void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
 {
-	if (dRoots.size())
+	//if (dRoots.size())
+	//{
+	//	for each (auto to_delete in dRoots)
+	//	{
+	//		int index = RootList.FindString(-1, to_delete.get_path());
+	//		RootList.DeleteString(index);
+	//	}
+	//	dRoots.clear();
+	//	UpdateToolbar();
+	//}
+	// due to the fact, that we indentify elements by index, and after each deletion they shifted - we are forced delete from the biggest index.
+	std::sort(dRoots.begin(), dRoots.end(), std::greater<int>());
+	for (auto iter = dRoots.begin(); iter != dRoots.end(); ++iter)
 	{
-		for each (auto to_delete in dRoots)
-		{
-			int index = RootList.FindString(-1, to_delete.get_path());
-			RootList.DeleteString(index);
-		}
-		dRoots.clear();
-		UpdateToolbar();
+		m_ListCtrl.DeleteItem(*iter);
 	}
+	UpdateToolbar();
+	dRoots.clear();
 }
 
 
@@ -625,10 +632,10 @@ DWORD WINAPI ToRun(LPVOID arg)
 //	param->subProgress->ShowWindow(true);
 	param->progress->SetRange(0, param->coll.size());
 	param->progress->SetStep(1);
-	for each(auto to_delete in param->coll)
+	for each(auto var in param->coll)
 	{
-		char* path = convertToChar(to_delete.get_path());
-		int Thread_amount=1;
+		char* path = convertToChar(var.get_path());
+		int Thread_amount = 1;
 		if (threads)
 		{
 			Thread_amount = atoi(threads);
@@ -1033,7 +1040,16 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 		reportManag = new ReportManager;
 		ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
 		reportManag->addReporter(reporter);
-		ToRunParameters* to_run = new ToRunParameters{dRoots, reportManag, &m_Progress, &subm_Progress, this};
+		std::vector<SuiteRoot> roots;
+		roots.reserve(dRoots.size());
+
+		for (auto iter = dRoots.begin(); iter != dRoots.end(); ++iter)
+		{
+			roots.push_back(SuiteRoot(RootList.GetItemText(*iter, 0)));
+		}
+
+
+		ToRunParameters* to_run = new ToRunParameters{roots, reportManag, &m_Progress, &subm_Progress, this};
 		HANDLE hThread = CreateThread(NULL, 0, ToRun, to_run, 0, 0);
 		HANDLE hTimer = CreateThread(NULL, 0, Timer, &Time_running_edit, 0, 0);
 		CloseHandle(hThread);
@@ -1471,7 +1487,7 @@ void CMFCTRSuiDlg::OnLoadProject()
 	char* path = convertToChar(p);
 	if (ValidateProjXML(path))
 	{
-		RootList.ResetContent();
+//		RootList.ResetContent();
 		TiXmlDocument doc(path);
 		doc.LoadFile();
 		TiXmlNode* first = doc.FirstChild();
@@ -1499,20 +1515,29 @@ void CMFCTRSuiDlg::OnLoadProject()
 					}
 					TCHAR* buf = new TCHAR[strlen(text->Value() + 1)];
 					convertToTCHAR(buf, text->Value());
-					RootList.AddString(buf);
+					RootList.InsertItem(RootList.GetItemCount(), buf);
 				}
 				if (!strncmp(head->Value(), "ListSelection", strlen("ListSelection")))
 				{
 					TiXmlNode* subList = head->FirstChild();
+					dRoots.clear();
+
 					for (subList; subList != 0; subList = subList->NextSibling())
 					{
 						TiXmlNode* node = subList->FirstChild();
-						List->SetSel(atoi(node->Value()));
 
+						//??????????????????????????????????????????????????????????????????????????????????????????
+						List->SetCheck(atoi(node->Value()));
+//						dRoots.push_back(atoi(node->Value()));
+						//??????????????????????????????????????????????????????????????????????????????????????????
 					}
-					CMFCTRSuiDlg::OnLbnSelchangeListroot();
+				//	CMFCTRSuiDlg::OnLbnSelchangeListroot();
+
 				}
-				if (!strncmp(head->Value(), "tag", strlen("tag"))&&List->GetSelCount())
+				int count = 0;
+				for (int i = 0; i < List->GetItemCount(); ++i)
+					count += List->GetCheck(i);
+				if (!strncmp(head->Value(), "tag", strlen("tag"))&&count)
 				{
 					TiXmlNode* node = head->FirstChild();
 					DropDown.SetCurSel(atoi(node->Value()));
@@ -1576,7 +1601,7 @@ void CMFCTRSuiDlg::OnProjectLastprojects()
 	m_Menu->EnableMenuItem(ID_Save_AS, MF_BYCOMMAND | MF_ENABLED);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
 	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
-	RootList.ResetContent();
+//	RootList.ResetContent();
 	
 	TiXmlDocument doc("Last Project.xml");
 	doc.LoadFile();
@@ -1605,20 +1630,26 @@ void CMFCTRSuiDlg::OnProjectLastprojects()
 				}
 				TCHAR* buf = new TCHAR[strlen(text->Value() + 1)];
 				convertToTCHAR(buf, text->Value());
-				RootList.AddString(buf);
+				RootList.InsertItem(RootList.GetItemCount(), buf);
 			}
 			if (!strncmp(head->Value(), "ListSelection", strlen("ListSelection")))
 			{
 				TiXmlNode* subList = head->FirstChild();
+				dRoots.clear();
 				for (subList; subList != 0; subList = subList->NextSibling())
 				{
 					TiXmlNode* node = subList->FirstChild();
-					List->SetSel(atoi(node->Value()));
-
+					// ???????????????????????????????????????????????????????????????????????????
+					List->SetCheck(atoi(node->Value()));
+					// ???????????????????????????????????????????????????????????????????????????
+		//			dRoots.push_back(atoi(node->Value()));
 				}
-				CMFCTRSuiDlg::OnLbnSelchangeListroot();
+	//			CMFCTRSuiDlg::OnLbnSelchangeListroot();
 			}
-			if (!strncmp(head->Value(), "tag", strlen("tag")) && List->GetSelCount())
+			int count = 0;
+			for (int i = 0; i < List->GetItemCount(); ++i)
+				count += List->GetCheck(i);
+			if (!strncmp(head->Value(), "tag", strlen("tag")) && count)
 			{
 				TiXmlNode* node = head->FirstChild();
 				DropDown.SetCurSel(atoi(node->Value()));
@@ -1662,7 +1693,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if (nID == SC_CLOSE)
 	{
-		if (RootList.GetCount() > 0)
+		if (RootList.GetItemCount() > 0)
 		{
 			char* path = pro_.getProjPath();
 			if (path)
@@ -1955,36 +1986,6 @@ void CMFCTRSuiDlg::OnStopButtonClicked()
 	Manager.Stop();
 }
 
-//void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
-//{
-	//m_ListCtrl.GetItemText(item);
-	//LPNMLISTVIEW  pNMLV = reinterpret_cast<LPNMLISTVIEW >(pNMHDR);
-
-	//if (pNMLV->uChanged & LVIF_STATE) // item state has been changed
-	//{
-	//	CString str;
-	//	switch (pNMLV->uNewState & LVIS_STATEIMAGEMASK)
-	//	{
-	//	case INDEXTOSTATEIMAGEMASK(BST_CHECKED + 1): // new state: checked
-	//	{
-	//		m_SelectedRoots.push_back(pNMLV->iItem);
-	//		char* path = fromCStringToChar(m_ListCtrl.GetItemText(pNMLV->iItem, 0));
-	//		AddToTree(path, pNMLV->iItem);
-	//		break;
-	//	}
-	//	case INDEXTOSTATEIMAGEMASK(BST_UNCHECKED + 1): // new state: unchecked
-	//	{
-	//		 auto iter = std::find(m_SelectedRoots.begin(), m_SelectedRoots.end(), pNMLV->iItem);
-	//													   if (iter != m_SelectedRoots.end())
-	//														   m_SelectedRoots.erase(iter);
-	//													   DeleteFromTree(pNMLV->iItem);
-	//													   break;
-	//	}
-	//	}
-	//}
-	//*pResult = 0;
-//}
-
 void CMFCTRSuiDlg::OnCbnSelchangeCombo3()
 {
 	int count = m_NameBox.GetCurSel();
@@ -2033,7 +2034,7 @@ void CMFCTRSuiDlg::OnNewProject()
 		int res = NameDlg.DoModal();
 		if (res == IDOK)
 		{
-			List->ResetContent();
+//			List->ResetContent();
 			IMalloc * imalloc = 0;
 			if (SUCCEEDED(SHGetMalloc(&imalloc)))
 			{
@@ -2063,24 +2064,6 @@ BOOL CMFCTRSuiDlg::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 
 	NMTTDISPINFO *pTTT = (NMTTDISPINFO *)pNMHDR;
 	UINT_PTR nID = pNMHDR->idFrom;
-	BOOL bRet = FALSE;
-
-	//if (pTTT->uFlags)
-	//{
-	//	// idFrom is actually the HWND of the tool
-	//	nID = ::GetDlgCtrlID((HWND)nID);
-	//	if (nID)
-	//	{
-	//		//_stprintf_s(pTTT->szText, sizeof(pTTT->szText) / sizeof(TCHAR),
-	//		//	_T("Control ID = %d"), nID);
-	//		wchar_t* ptr = new wchar_t[6];
-	//		wcscpy_s(ptr, 6, L"hello");
-	//		pTTT->lpszText = ptr;
-	//		wcscpy_s(pTTT->szText, 80 ,L"\nhello\n");
-	//		pTTT->hinst = AfxGetResourceHandle();
-	//		bRet = TRUE;
-	//	}
-	//}
 
 	if (pNMHDR->code == TTN_NEEDTEXTW)
 	{
@@ -2234,5 +2217,36 @@ BOOL CMFCTRSuiDlg::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 	}
 	*pResult = 0;
 
-	return bRet;
+	return true;
+}
+//char* path = fromCStringToChar(m_ListCtrl.GetItemText(pNMLV->iItem, 0));
+void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW  pNMLV = reinterpret_cast<LPNMLISTVIEW >(pNMHDR);
+
+	if (pNMLV->uChanged & LVIF_STATE) // item state has been changed
+	{
+		switch (pNMLV->uNewState & LVIS_STATEIMAGEMASK)
+		{
+		case INDEXTOSTATEIMAGEMASK(BST_CHECKED + 1): // new state: checked
+		{
+			dRoots.push_back(pNMLV->iItem);
+			break;
+		}
+		case INDEXTOSTATEIMAGEMASK(BST_UNCHECKED + 1): // new state: unchecked
+		{
+			auto iter = std::find(dRoots.begin(), dRoots.end(), pNMLV->iItem);
+			if (iter != dRoots.end())
+			   dRoots.erase(iter);
+			break;
+		}
+		default:
+			m_Tree.DeleteAllItems();
+			CString str = RootList.GetItemText(pNMLV->iItem, 0);
+			Info((TCHAR*)str.GetString());
+			break;
+		}
+	}
+	UpdateToolbar();
+	*pResult = 0;
 }

@@ -190,7 +190,7 @@ ProjectProperties& ProjectProperties::operator=(ProjectProperties& pro)
 	return *this;
 }
 
-bool ProjectProperties::SaveProject(CListBox*List)
+bool ProjectProperties::SaveProject(CListCtrl*List)
 {
 	if (name&&path)
 	{
@@ -210,13 +210,13 @@ bool ProjectProperties::SaveProject(CListBox*List)
 		doc.LinkEndChild(element);
 		CString buffer;
 		CString helpBuffer;
-		if (List->GetCount() > 0)
+		if (List->GetItemCount() > 0)
 		{
-			for (int i = 0; i < List->GetCount(); ++i)
+			for (int i = 0; i < List->GetItemCount(); ++i)
 			{
 				TiXmlElement* subEl = new TiXmlElement("path");
 				element->LinkEndChild(subEl);
-				List->GetText(i, buffer);
+				buffer = List->GetItemText(i, 0);
 
 				helpBuffer = buffer;
 				char* path = fromCStringToChar(helpBuffer);
@@ -225,13 +225,16 @@ bool ProjectProperties::SaveProject(CListBox*List)
 				subEl->LinkEndChild(text);
 				delete[] path;
 			}
-			if (List->GetSelCount())
+			int count = 0;
+			for (int i = 0; i < List->GetItemCount(); ++i)
+				count += List->GetCheck(i);
+			if (count)
 			{
 				TiXmlElement* ListSel = new TiXmlElement("ListSelection");
 				element->LinkEndChild(ListSel);
-				for (int j = 0; j < List->GetCount(); ++j)
+				for (int j = 0; j < List->GetItemCount(); ++j)
 				{
-					if (List->GetSel(j))
+					if (List->GetCheck(j))
 					{
 						TiXmlElement* curSel = new TiXmlElement("selection");
 						ListSel->LinkEndChild(curSel);

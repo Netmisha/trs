@@ -24,7 +24,7 @@ public:
 	bool setThreads(char* threads);
 	bool setTestName(char* testName);
 	char* getProjPath();
-	bool SaveProject(CListBox*List);
+	bool SaveProject(CListCtrl*List);
 	char* getPath();
 	char* getName();
 	char* getThreads();
