@@ -106,7 +106,7 @@ protected:
 	std::vector<int> m_SelectedRoots;
 	CImageList m_ImageList;
 	void Info(TCHAR* path);
-
+	std::vector<HTREEITEM*> TreeControlsList;
 	CToolBar m_ToolBar;
 	CToolBar m_secondToolBar;
 	CMenu* m_Menu;
@@ -165,6 +165,8 @@ public:
 	CListCtrl RootList;
 
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnInfoInfo();
 };
 
 //extern CListBox* List;

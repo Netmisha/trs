@@ -1,9 +1,16 @@
 <?xml version="1.0" ?>
+<<<<<<< HEAD
 <TRSProject name="MihanProj" ProjectPath="D:\Repository\">
     <path>D:\Repository\Suite root</path>
     <path>D:\Repository\trs\TestData</path>
     <ListSelection>
         <selection>1</selection>
+=======
+<TRSProject name="uykjyfujf" ProjectPath="D:\Mihan">
+    <path>D:\Mihan\Suite root</path>
+    <ListSelection>
+        <selection>0</selection>
+>>>>>>> 1fcce3c5f33dfa9525d4798f7b76a268194db998
     </ListSelection>
     <tag>0</tag>
     <threads>9</threads>
