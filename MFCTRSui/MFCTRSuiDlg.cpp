@@ -339,7 +339,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		}
 	}
 
-	CBitmap m_Bitmap1,m_Bitmap2,m_Bitmap3,m_Bitmap4;
+	CBitmap m_Bitmap1,m_Bitmap2,m_Bitmap3,m_Bitmap4,m_Bitmap6;
 
 	
 	m_ImageList.Create(16, 16, ILC_COLORDDB , 3, 3);
@@ -348,11 +348,13 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	m_Bitmap2.LoadBitmap(IDB_BITMAP2);
 	m_Bitmap3.LoadBitmap(IDB_BITMAP3);
 	m_Bitmap4.LoadBitmap(IDB_BITMAP4);
+	m_Bitmap6.LoadBitmap(IDB_BITMAP6);
 	m_ImageList.Add(&m_Bitmap1, RGB(0,0,0));
 
 	m_ImageList.Add(&m_Bitmap2, RGB(0, 0, 0));
 	m_ImageList.Add(&m_Bitmap3, RGB(0, 0, 0));
 	m_ImageList.Add(&m_Bitmap4, RGB(0, 0, 0));
+	m_ImageList.Add(&m_Bitmap6, RGB(0, 0, 0));
 	/*m_Tree.Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP |
 		TVS_HASLINES | TVS_HASBUTTONS | TVS_LINESATROOT |
 		TVS_SINGLEEXPAND | TVS_SHOWSELALWAYS |
@@ -722,7 +724,9 @@ DWORD WINAPI ToRun(LPVOID arg)
 	param->progress->SetRange(0, param->coll.size());
 	param->progress->SetStep(1);
 
+
 	int prev = 0;
+
 	for each(auto var in param->coll)
 	{
 		char* path = convertToChar(var.get_path());
@@ -752,15 +756,19 @@ DWORD WINAPI ToRun(LPVOID arg)
 				}
 			}
 		}
+
 		param->subProgress->SetRange(0, count);
 		param->subProgress->SetStep(1);
 		Manager.Run(path, testName, tag, Thread_amount, param->manager);
 		param->progress->StepIt();
 		param->subProgress->SetPos(0);
 
+
 		param->dialog->SetListItemState(!(FailedC.size() - prev), var);
 		prev = FailedC.size();
+
 	}
+
 	for (int i = 0; i < TREE->size(); ++i)
 	{
 		for (int j = 0; j < PassedC.size(); ++j)
@@ -1255,8 +1263,11 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 									HTREEITEM* hTest = new HTREEITEM;
 									TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 									convertToTCHAR(subBuf, (*iter)->getName());
+									if (!strncmp((*iter)->getDisable(),"false",strlen("false")))
 									*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
-									m_Tree->Expand(*hTest, TVE_EXPAND);
+									if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
+										*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
+									//m_Tree->Expand(*hTest, TVE_EXPAND);
 									m_Tree->SetItemData(*hTest, (DWORD)(*iter));
 									TreeControlsList->push_back(hTest);
 									delete[] subBuf;
@@ -1267,9 +1278,12 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 								HTREEITEM* hTest = new HTREEITEM;
 								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 								convertToTCHAR(subBuf, (*iter)->getName());
-								*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+								if (!strncmp((*iter)->getDisable(), "false", strlen("false")))
+									*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+								if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
+									*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
 								m_Tree->SetItemData(*hTest, (DWORD)(*iter));
-								m_Tree->Expand(*hTest, TVE_EXPAND);
+								//m_Tree->Expand(*hTest, TVE_EXPAND);
 								TreeControlsList->push_back(hTest);
 								delete[] subBuf;
 							}
@@ -1321,9 +1335,12 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 										HTREEITEM* hTest = new HTREEITEM;
 										TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 										convertToTCHAR(subBuf, (*iter)->getName());
-										*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+										if (!strncmp((*iter)->getDisable(), "false", strlen("false")))
+											*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+										if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
+											*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
 										m_Tree->SetItemData(*hTest, (DWORD)(*iter));
-										m_Tree->Expand(*hTest, TVE_EXPAND);
+										//m_Tree->Expand(*hTest, TVE_EXPAND);
 										TreeControlsList->push_back(hTest);
 										delete[] subBuf;
 									}
@@ -1333,9 +1350,12 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 									HTREEITEM* hTest = new HTREEITEM;
 									TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 									convertToTCHAR(subBuf, (*iter)->getName());
-									*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+									if (!strncmp((*iter)->getDisable(), "false", strlen("false")))
+										*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+									if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
+										*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
 									m_Tree->SetItemData(*hTest, (DWORD)(*iter));
-									m_Tree->Expand(*hTest, TVE_EXPAND);
+									//m_Tree->Expand(*hTest, TVE_EXPAND);
 									TreeControlsList->push_back(hTest);
 									delete[] subBuf;
 								}
@@ -1370,7 +1390,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 							TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 							convertToTCHAR(buf, (*it)->getName());
 							*hSuite = m_Tree->InsertItem(buf,0,0, *hHead);
-							m_Tree->Expand(*hSuite, TVE_EXPAND);
+							//m_Tree->Expand(*hSuite, TVE_EXPAND);
 							++count;
 							
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
@@ -1383,9 +1403,12 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 										HTREEITEM* hTest = new HTREEITEM;
 										TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 										convertToTCHAR(subBuf, (*iter)->getName());
-										*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+										if (!strncmp((*iter)->getDisable(), "false", strlen("false")))
+											*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+										if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
+											*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
 										m_Tree->SetItemData(*hTest, (DWORD)(*iter));
-										m_Tree->Expand(*hTest, TVE_EXPAND);
+										//m_Tree->Expand(*hTest, TVE_EXPAND);
 										TreeControlsList->push_back(hTest);
 										delete[] subBuf;
 									}
@@ -1395,9 +1418,12 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 									HTREEITEM* hTest = new HTREEITEM;
 									TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 									convertToTCHAR(subBuf, (*iter)->getName());
-									*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+									if (!strncmp((*iter)->getDisable(), "false", strlen("false")))
+										*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+									if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
+										*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
 									m_Tree->SetItemData(*hTest, (DWORD)(*iter));
-									m_Tree->Expand(*hTest, TVE_EXPAND);
+									//m_Tree->Expand(*hTest, TVE_EXPAND);
 									TreeControlsList->push_back(hTest);
 									delete[] subBuf;
 								}
@@ -1795,6 +1821,10 @@ void CMFCTRSuiDlg::OnLoadProject()
 		DropDown.EnableWindow(true);
 		ThreadsComboBox.EnableWindow(true);
 		m_NameBox.EnableWindow(true);
+		RootList.SetItemState(0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+		RootList.SetSelectionMark(0);
+		RootList.RedrawItems(0, 0);
+		RootList.UpdateWindow();
 	}
 	else
 	{
@@ -2384,6 +2414,8 @@ void CMFCTRSuiDlg::OnNewProject()
 			DropDown.EnableWindow(true);
 			ThreadsComboBox.EnableWindow(true);
 			m_NameBox.EnableWindow(true);
+			RootList.SetItemState(0, LVIS_SELECTED, LVIS_SELECTED);
+			RootList.SetSelectionMark(0);
 		}
 	}
 	// TODO: Add your command handler code here
