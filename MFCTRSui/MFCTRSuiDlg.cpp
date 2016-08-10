@@ -33,6 +33,8 @@ CToolBar* Bar;
 CComboBox* Tag;
 CComboBox* Threads;
 CComboBox* Name;
+std::vector<HTREEITEM*> PassedC;
+std::vector<HTREEITEM*> FailedC;
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
@@ -684,10 +686,10 @@ DWORD WINAPI ToRun(LPVOID arg)
 		param->subProgress->SetRange(0, count);
 		param->subProgress->SetStep(1);
 		Manager.Run(path, testName, tag, Thread_amount, param->manager);
-
 		param->progress->StepIt();
 		param->subProgress->SetPos(0);
 	}
+	
 	param->manager->End();
 	delete param->manager;
 	param->dialog->UpdateToolbar(RUN_UNCLICKED);
@@ -1062,7 +1064,8 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 		reportManag->addReporter(reporter);
 		std::vector<SuiteRoot> roots;
 		roots.reserve(dRoots.size());
-
+		PassedC = PassedTestsTreeItems;
+		FailedC = FailedTestsTreeItems;
 		for (auto iter = dRoots.begin(); iter != dRoots.end(); ++iter)
 		{
 			roots.push_back(SuiteRoot(RootList.GetItemText(*iter, 0)));
@@ -1649,6 +1652,9 @@ void CMFCTRSuiDlg::OnLoadProject()
 		}
 		
 		UpdateToolbar(PROJECT_UPLOADED);
+		DropDown.EnableWindow(true);
+		ThreadsComboBox.EnableWindow(true);
+		m_NameBox.EnableWindow(true);
 	}
 	else
 	{
@@ -1760,6 +1766,9 @@ void CMFCTRSuiDlg::OnProjectLastprojects()
 		}
 
 	}
+	DropDown.EnableWindow(true);
+	ThreadsComboBox.EnableWindow(true);
+	m_NameBox.EnableWindow(true);
 	Bar = ToolBar;
 	List = &RootList;
 	// TODO: Add your command handler code here
@@ -2229,6 +2238,9 @@ void CMFCTRSuiDlg::OnNewProject()
 			delete[] WindowLine;
 			delete[] WinBuf;
 			UpdateToolbar(PROJECT_UPLOADED);
+			DropDown.EnableWindow(true);
+			ThreadsComboBox.EnableWindow(true);
+			m_NameBox.EnableWindow(true);
 		}
 	}
 	// TODO: Add your command handler code here

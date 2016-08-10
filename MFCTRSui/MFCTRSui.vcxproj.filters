@@ -206,6 +206,9 @@
     <Image Include="res\toolbar3.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\bitmap3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

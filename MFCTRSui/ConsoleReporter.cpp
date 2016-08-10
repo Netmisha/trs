@@ -11,6 +11,7 @@ ConsoleReporter::ConsoleReporter(CEdit*edit, CProgressCtrl* progress_)
 	progress = progress_;
 }
 
+
 ConsoleReporter::~ConsoleReporter()
 {
 	int end = console_output->GetWindowTextLength();
@@ -204,6 +205,7 @@ void ConsoleReporter::Begin()
 void ConsoleReporter::AfterExecution(TRSInfo pInfo, TRSResult pResult)
 {
 	progress->StepIt();
+	
 	//HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	int end = console_output->GetWindowTextLength();
 	//console_output->SetSel(end, end);
