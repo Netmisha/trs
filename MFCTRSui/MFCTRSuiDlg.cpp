@@ -1717,6 +1717,10 @@ void CMFCTRSuiDlg::OnLoadProject()
 		DropDown.EnableWindow(true);
 		ThreadsComboBox.EnableWindow(true);
 		m_NameBox.EnableWindow(true);
+		RootList.SetItemState(0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+		RootList.SetSelectionMark(0);
+		RootList.RedrawItems(0, 0);
+		RootList.UpdateWindow();
 	}
 	else
 	{
@@ -2306,6 +2310,8 @@ void CMFCTRSuiDlg::OnNewProject()
 			DropDown.EnableWindow(true);
 			ThreadsComboBox.EnableWindow(true);
 			m_NameBox.EnableWindow(true);
+			RootList.SetItemState(0, LVIS_SELECTED, LVIS_SELECTED);
+			RootList.SetSelectionMark(0);
 		}
 	}
 	// TODO: Add your command handler code here

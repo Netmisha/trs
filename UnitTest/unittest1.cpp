@@ -415,7 +415,7 @@ namespace UnitTest
 		}
 		TEST_METHOD(Verify_SUCCEEDED)
 		{
-			Assert::IsTrue((int)Manager.Verify(R"(../TestData/TestStrcuture)", nullptr, nullptr) == (int)SUCCEEDED);
+			Assert::IsTrue((int)Manager.Verify(R"(../TestData/TestStrcuture)", nullptr, nullptr) == (int)TRSERR_SUCCEEDED);
 		}
 		TEST_METHOD(Memory_leak_for_List_function_detecting)
 		{
