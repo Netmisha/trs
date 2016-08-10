@@ -10,7 +10,7 @@
 #include "Metadata.h"
 
 #include "TinyXML\tinyxml.h"
-
+#include <time.h>
 
 
 class TRSInfo_API TRSInfo
@@ -29,11 +29,14 @@ class TRSInfo_API TRSInfo
 	char* parameters = nullptr;
 	char* executablePath = nullptr;
 	char* path = nullptr;
-	Metadata* metadata;
 	
+	Metadata* metadata;
+	int uniqueNumber;
 public:
+	
 	TRSInfo(char*Name, char*Description);
 	TRSInfo(const TRSInfo& val);
+	bool operator==(TRSInfo&cur);
 	TRSInfo();
 	virtual ~TRSInfo();
 	bool setDisable(char* disable_);
@@ -73,7 +76,7 @@ public:
 	char* getPriority() const;
 	char* getDisable() const;
 	Metadata* getMetadata() const;
-
+	int getUniqueNumber();
 	bool Parse(TiXmlNode* pParent);
 };
 #endif

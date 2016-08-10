@@ -107,8 +107,6 @@ protected:
 	CImageList m_ImageList;
 	void Info(TCHAR* path);
 	std::vector<HTREEITEM*> TreeControlsList;
-	std::vector<HTREEITEM*> PassedTestsTreeItems;
-	std::vector<HTREEITEM*> FailedTestsTreeItems;
 	CToolBar m_ToolBar;
 	CToolBar m_secondToolBar;
 	CMenu* m_Menu;

@@ -32,9 +32,11 @@ CToolBar* ToolBar;
 CToolBar* Bar;
 CComboBox* Tag;
 CComboBox* Threads;
+CTreeCtrl* TREECTRL;
 CComboBox* Name;
-std::vector<HTREEITEM*> PassedC;
-std::vector<HTREEITEM*> FailedC;
+std::vector<TRSInfo> PassedC;
+std::vector<TRSInfo> FailedC;
+std::vector<HTREEITEM*>* TREE;
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
@@ -103,7 +105,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 {
 
 	CDialogEx::OnInitDialog();
-
+	TREECTRL = &m_Tree;
 	CRect rectFrame, rectDlg;
 	CWnd* pMainWnd = AfxGetMainWnd();
 	if (pMainWnd != NULL)
@@ -334,17 +336,19 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		}
 	}
 
-	CBitmap m_Bitmap1,m_Bitmap2;
+	CBitmap m_Bitmap1,m_Bitmap2,m_Bitmap3,m_Bitmap4;
 
 	
-	m_ImageList.Create(16, 16, ILC_COLORDDB , 2, 2);
+	m_ImageList.Create(16, 16, ILC_COLORDDB , 3, 3);
 
 	m_Bitmap1.LoadBitmap(IDB_BITMAP1);
 	m_Bitmap2.LoadBitmap(IDB_BITMAP2);
-
+	m_Bitmap3.LoadBitmap(IDB_BITMAP3);
+	m_Bitmap4.LoadBitmap(IDB_BITMAP4);
 	m_ImageList.Add(&m_Bitmap1, RGB(0,0,0));
 	m_ImageList.Add(&m_Bitmap2, RGB(0, 0, 0));
-
+	m_ImageList.Add(&m_Bitmap3, RGB(0, 0, 0));
+	m_ImageList.Add(&m_Bitmap4, RGB(0, 0, 0));
 	/*m_Tree.Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP |
 		TVS_HASLINES | TVS_HASBUTTONS | TVS_LINESATROOT |
 		TVS_SINGLEEXPAND | TVS_SHOWSELALWAYS |
@@ -689,7 +693,25 @@ DWORD WINAPI ToRun(LPVOID arg)
 		param->progress->StepIt();
 		param->subProgress->SetPos(0);
 	}
-	
+	for (int i = 0; i < TREE->size(); ++i)
+	{
+		for (int j = 0; j < PassedC.size(); ++j)
+		{
+			TRSTest* curTest = (TRSTest*)TREECTRL->GetItemData(*((*TREE)[i]));
+			if (*curTest == PassedC[j])
+			{
+				TREECTRL->SetItemImage(*((*TREE)[i]), 6, 6);
+			}
+		}
+		for (int j = 0; j < FailedC.size(); ++j)
+		{
+			TRSTest* curTest = (TRSTest*)TREECTRL->GetItemData(*((*TREE)[i]));
+			if (*curTest == FailedC[j])
+			{
+				TREECTRL->SetItemImage(*((*TREE)[i]), 9, 9);
+			}
+		}
+	}
 	param->manager->End();
 	delete param->manager;
 	param->dialog->UpdateToolbar(RUN_UNCLICKED);
@@ -1061,11 +1083,11 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 
 		reportManag = new ReportManager;
 		ConsoleReporter* reporter = new ConsoleReporter(&console_output, &subm_Progress);
+		reporter->setPasCol(&PassedC);
+		reporter->setFailCol(&FailedC);
 		reportManag->addReporter(reporter);
 		std::vector<SuiteRoot> roots;
 		roots.reserve(dRoots.size());
-		PassedC = PassedTestsTreeItems;
-		FailedC = FailedTestsTreeItems;
 		for (auto iter = dRoots.begin(); iter != dRoots.end(); ++iter)
 		{
 			roots.push_back(SuiteRoot(RootList.GetItemText(*iter, 0)));
@@ -1290,6 +1312,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 		delete[] rootName;
 		delete[] rootPath;
 	}
+	TREE = TreeControlsList;
 }
 
 

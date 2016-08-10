@@ -1,8 +1,12 @@
 #include "stdafx.h"
-
+#include <stdio.h>
 #define TRSLibrary_EXPORT
 #include "TRSInfo.h"
 #include <iostream>
+#include <Windows.h>
+
+
+
 TRSInfo::TRSInfo(char*TestName, char*Description) 
 {
 	if (Name&&description)
@@ -14,8 +18,12 @@ TRSInfo::TRSInfo(char*TestName, char*Description)
 		description = new char[count];
 		strncpy_s(description, count + 1, Description, count);
 	}
+	
 }
-
+int TRSInfo::getUniqueNumber()
+{
+	return uniqueNumber;
+}
 TRSInfo::TRSInfo(const TRSInfo& val)
 {
 	if (val.metadata != nullptr)
@@ -106,6 +114,7 @@ TRSInfo::TRSInfo(const TRSInfo& val)
 		parameters = new char[size + 1];
 		strcpy_s(parameters, size + 1, val.parameters);
 	}
+	uniqueNumber = val.uniqueNumber;
 }
 
 TRSInfo::TRSInfo()
@@ -470,6 +479,12 @@ bool TRSInfo::setRepeat(char*Repeat)
 
 bool TRSInfo::setName(char*Name_)
 {
+	if (uniqueNumber == 0)
+	{
+		SYSTEMTIME st;
+		GetSystemTime(&st);
+		uniqueNumber = (int)st.wMilliseconds;
+	}
 	if (Name)
 	{
 		delete[] Name;
@@ -489,6 +504,229 @@ bool TRSInfo::setName(char*Name_)
 			return false;
 		}
 	}
+	
+}
+
+bool TRSInfo::operator==(TRSInfo& cur)
+{
+	if (strncmp(Name, cur.Name, strlen(Name)))
+	{
+		return false;
+	}
+	if (strncmp(tag, cur.tag, strlen(tag)))
+	{
+		return false;
+	}
+	if (description)
+	{
+		if (cur.description)
+		{
+			if (strncmp(description, cur.description, strlen(description)))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (cur.description)
+			return false;
+	}
+	if (repeat)
+	{
+		if (cur.repeat)
+		{
+			if (strncmp(repeat, cur.repeat, strlen(repeat)))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (cur.repeat)
+			return false;
+	}
+	if (maxTime)
+	{
+		if (cur.maxTime)
+		{
+			if (strncmp(maxTime, cur.maxTime, strlen(maxTime)))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (cur.maxTime)
+			return false;
+	}
+	if (expectedResult)
+	{
+		if (cur.expectedResult)
+		{
+			if (strncmp(expectedResult, cur.expectedResult, strlen(expectedResult)))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (cur.expectedResult)
+			return false;
+	}
+	if (executableName)
+	{
+		if (cur.executableName)
+		{
+			if (strncmp(executableName, cur.executableName, strlen(executableName)))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (cur.executableName)
+			return false;
+	}
+	if (waitfor)
+	{
+		if (cur.waitfor)
+		{
+			if (strncmp(waitfor, cur.waitfor, strlen(waitfor)))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (cur.waitfor)
+			return false;
+	}
+	if (priority)
+	{
+		if (cur.priority)
+		{
+			if (strncmp(priority, cur.priority, strlen(priority)))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (cur.priority)
+			return false;
+	}
+	if (disable)
+	{
+		if (cur.disable)
+		{
+			if (strncmp(disable, cur.disable, strlen(disable)))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (cur.disable)
+			return false;
+	}
+	if (parameters)
+	{
+		if (cur.parameters)
+		{
+			if (strncmp(parameters, cur.parameters, strlen(parameters)))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (cur.parameters)
+			return false;
+	}
+	if (executablePath)
+	{
+		if (cur.executablePath)
+		{
+			if (strncmp(executablePath, cur.executablePath, strlen(executablePath)))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (cur.executablePath)
+			return false;
+	}
+	if (path)
+	{
+		if (cur.path)
+		{
+			if (strncmp(path, cur.path, strlen(path)))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (cur.path)
+			return false;
+	}
+	return true;
 }
 
 bool TRSInfo::setDescription(char*Desc_)
@@ -523,7 +761,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 	bool checkSuite = false;
 	bool ifDone = false;
 	int t = pParent->Type();
-
+	
 	switch (t)
 	{
 	case TiXmlNode::TINYXML_ELEMENT:

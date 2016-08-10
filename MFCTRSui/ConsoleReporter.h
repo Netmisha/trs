@@ -19,7 +19,8 @@ public:
 	double getAmount();
 	double getPassedAmount();
 	double getFailedAmount();
-
+	bool setPasCol(std::vector<TRSInfo>* PC);
+	bool setFailCol(std::vector<TRSInfo>* FC);
 private:
 	double time = 0;
 	double amount = 0;
@@ -28,7 +29,8 @@ private:
 	int mCount = 1;
 	CEdit* console_output;
 	CProgressCtrl* progress;
-
+	std::vector<TRSInfo>* PasCol;
+	std::vector<TRSInfo>* FailCol;
 };
 
 #endif

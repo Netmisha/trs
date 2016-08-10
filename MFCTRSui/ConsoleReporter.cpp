@@ -11,6 +11,16 @@ ConsoleReporter::ConsoleReporter(CEdit*edit, CProgressCtrl* progress_)
 	progress = progress_;
 }
 
+bool ConsoleReporter::setPasCol(std::vector<TRSInfo>* PC)
+{
+	PasCol = PC;
+	return true;
+}
+bool ConsoleReporter::setFailCol(std::vector<TRSInfo>* FC)
+{
+	FailCol = FC;
+	return true;
+}
 
 ConsoleReporter::~ConsoleReporter()
 {
@@ -223,6 +233,8 @@ void ConsoleReporter::AfterExecution(TRSInfo pInfo, TRSResult pResult)
 	{
 		console_output->ReplaceSel(L"Passed");
 		++passedAmount;
+		if (PasCol)
+		PasCol->push_back(pInfo);
 	}
 	else
 	{
@@ -231,6 +243,8 @@ void ConsoleReporter::AfterExecution(TRSInfo pInfo, TRSResult pResult)
 		mess.Format(L"%S", pResult.get_description());
 		console_output->ReplaceSel(mess);
 		++failedAmount;
+		if (FailCol)
+		FailCol->push_back(pInfo);
 	}
 	time += pResult.get_duration().count();
 	++amount;

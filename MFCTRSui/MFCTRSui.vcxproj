@@ -176,6 +176,7 @@
     <Image Include="res\bitmap1.bmp" />
     <Image Include="res\bitmap2.bmp" />
     <Image Include="res\bitmap3.bmp" />
+    <Image Include="res\bitmap4.bmp" />
     <Image Include="res\icon2.ico" />
     <Image Include="res\Icons\1470669393_editor-floopy-dish-save-outline-stroke.ico" />
     <Image Include="res\Icons\1470670281_floppy_disk_save.ico" />
