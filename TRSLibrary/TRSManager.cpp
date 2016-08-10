@@ -115,7 +115,7 @@ bool TRSManager::Run(char* path, char* name, char* tag, unsigned threads_amount,
 		logger->info("name: {} ", tag);
 
 
-	if (Verify(path, name, tag) != SUCCEEDED || threads_amount > MAX_THREADS)
+	if (Verify(path, name, tag) != TRSERR_SUCCEEDED || threads_amount > MAX_THREADS)
 		return false;
 
 	running_ = true;
@@ -323,7 +323,7 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 		delete (*Delit);
 	}
 	delete suiteCollection;
-	return SUCCEEDED;
+	return TRSERR_SUCCEEDED;
 }
 
 
