@@ -705,6 +705,8 @@ DWORD WINAPI ToRun(LPVOID arg)
 //	param->subProgress->ShowWindow(true);
 	param->progress->SetRange(0, param->coll.size());
 	param->progress->SetStep(1);
+
+	int prev = 0;
 	for each(auto var in param->coll)
 	{
 		char* path = convertToChar(var.get_path());
@@ -739,6 +741,9 @@ DWORD WINAPI ToRun(LPVOID arg)
 		Manager.Run(path, testName, tag, Thread_amount, param->manager);
 		param->progress->StepIt();
 		param->subProgress->SetPos(0);
+
+		param->dialog->SetListItemState(!(FailedC.size() - prev), var);
+		prev = FailedC.size();
 	}
 	for (int i = 0; i < TREE->size(); ++i)
 	{
@@ -759,13 +764,38 @@ DWORD WINAPI ToRun(LPVOID arg)
 			}
 		}
 	}
+
+	if (FailedC.size())
+
 	param->manager->End();
 	delete param->manager;
 	param->dialog->UpdateToolbar(RUN_UNCLICKED);
 	delete param;
 	RunEndCheck = false;
+
+//	FailedC.clear();
+//	PassedC.clear();
 	return 0;
 }
+
+bool CMFCTRSuiDlg::SetListItemState(bool state, SuiteRoot text)
+{
+	int index = -1;
+	for (int i = 0; i < RootList.GetItemCount(); ++i)
+	{
+		if (!_tcsicmp(text.get_path(), RootList.GetItemText(i, 0)))
+		{
+			index = i;
+			break;
+		}
+	}
+	if (index == -1)
+		return false;
+
+	SetListItemImage(index, (int)state + 1);
+	return true;
+}
+
 
 DWORD WINAPI Timer(LPVOID arg)
 {
@@ -1582,6 +1612,9 @@ void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 		new_height = frame.Height();
 
 		console_output.MoveWindow(new_x, new_y, new_width, new_height);
+		
+		if (console_output.IsWindowVisible())
+			ConsoleShow();
 	}
 
 	if (::IsWindow(subm_Progress.m_hWnd))
