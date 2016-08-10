@@ -904,7 +904,15 @@ Metadata* TRSInfo::getMetadata()  const
 
 bool TRSInfo::setMetadata(Metadata*metadata_)
 {
-	metadata = metadata_;
+	if (metadata)
+	{
+		delete metadata;
+		metadata = metadata_;
+	}
+	else
+	{
+		metadata = metadata_;
+	}
 	return true;
 }
 

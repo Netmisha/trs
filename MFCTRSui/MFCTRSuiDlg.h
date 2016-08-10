@@ -150,7 +150,7 @@ protected:
 	CComboBox DropDown;
 	CComboBox ThreadsComboBox;
 	ReportManager* reportManag;
-
+	std::list<Suite*>* suiteColl;
 	bool is_running = false;
 public:
 	CComboBox m_NameBox;

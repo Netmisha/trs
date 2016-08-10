@@ -412,6 +412,12 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 						else
 						{
 							delete[] way;
+							std::list<Suite*>::iterator it = suiteCollection->begin();
+							for (it; it != suiteCollection->end(); ++it)
+							{
+								delete (*it);
+							}
+							delete suiteCollection;
 							return EXE_OR_XML_ABSENT;
 						}
 					}
@@ -444,6 +450,12 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 							}
 							else
 							{
+								std::list<Suite*>::iterator it = suiteCollection->begin();
+								for (it; it != suiteCollection->end(); ++it)
+								{
+									delete (*it);
+								}
+								delete suiteCollection;
 								return INVALID_XML_FILE;
 							}
 						}
