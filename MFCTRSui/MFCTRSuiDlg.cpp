@@ -1167,6 +1167,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 						TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 						convertToTCHAR(buf, (*it)->getName());
 						*hSuite = m_Tree->InsertItem(buf, 0, 0, *hHead);
+						m_Tree->Expand(*hSuite, TVE_EXPAND);
 						++count;
 						
 						std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
@@ -1180,6 +1181,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 									TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 									convertToTCHAR(subBuf, (*iter)->getName());
 									*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+									m_Tree->Expand(*hTest, TVE_EXPAND);
 									m_Tree->SetItemData(*hTest, (DWORD)(*iter));
 									TreeControlsList->push_back(hTest);
 									delete[] subBuf;
@@ -1192,6 +1194,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 								convertToTCHAR(subBuf, (*iter)->getName());
 								*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
 								m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+								m_Tree->Expand(*hTest, TVE_EXPAND);
 								TreeControlsList->push_back(hTest);
 								delete[] subBuf;
 							}
@@ -1230,6 +1233,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 							TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 							convertToTCHAR(buf, (*it)->getName());
 							*hSuite = m_Tree->InsertItem(buf, 0, 0, *hHead);
+							m_Tree->Expand(*hSuite, TVE_EXPAND);
 							++count;
 							
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
@@ -1244,6 +1248,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 										convertToTCHAR(subBuf, (*iter)->getName());
 										*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
 										m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+										m_Tree->Expand(*hTest, TVE_EXPAND);
 										TreeControlsList->push_back(hTest);
 										delete[] subBuf;
 									}
@@ -1255,6 +1260,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 									convertToTCHAR(subBuf, (*iter)->getName());
 									*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
 									m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+									m_Tree->Expand(*hTest, TVE_EXPAND);
 									TreeControlsList->push_back(hTest);
 									delete[] subBuf;
 								}
@@ -1289,6 +1295,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 							TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 							convertToTCHAR(buf, (*it)->getName());
 							*hSuite = m_Tree->InsertItem(buf,0,0, *hHead);
+							m_Tree->Expand(*hSuite, TVE_EXPAND);
 							++count;
 							
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
@@ -1303,6 +1310,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 										convertToTCHAR(subBuf, (*iter)->getName());
 										*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
 										m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+										m_Tree->Expand(*hTest, TVE_EXPAND);
 										TreeControlsList->push_back(hTest);
 										delete[] subBuf;
 									}
@@ -1314,6 +1322,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 									convertToTCHAR(subBuf, (*iter)->getName());
 									*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
 									m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+									m_Tree->Expand(*hTest, TVE_EXPAND);
 									TreeControlsList->push_back(hTest);
 									delete[] subBuf;
 								}
@@ -1333,6 +1342,14 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 	TREE = TreeControlsList;
 }
 
+void ExpandTree(CTreeCtrl& m_Tree, HTREEITEM& hHead)
+{
+	for (HTREEITEM hNext = m_Tree.GetChildItem(hHead); hNext != 0; hNext = m_Tree.GetNextItem(hNext, TVGN_NEXT))
+	{
+		m_Tree.Expand(hNext, TVE_EXPAND);
+		ExpandTree(m_Tree, hNext);
+	}
+}
 
 void CMFCTRSuiDlg::Info(TCHAR* path)
 {
@@ -1355,6 +1372,7 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	suiteColl = Manager.List(pathA, nullptr, nullptr);
 	HTREEITEM hHead;
 	hHead = m_Tree.InsertItem(L"Suites", 0,0,TVI_ROOT);
+	
 	int count = 0;
 	std::list<Suite*>::iterator it = suiteColl->begin();
 	count = strlen((*it)->get_path());
@@ -1453,7 +1471,10 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 		delete[] buf;
 	}
 	delete[] pathA;
+	m_Tree.Expand(hHead, TVE_EXPAND);
+	ExpandTree(m_Tree, hHead);
 }
+
 
 
 void CMFCTRSuiDlg::OnEnChangeEdit3()
