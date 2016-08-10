@@ -341,7 +341,6 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 
 	CBitmap m_Bitmap1,m_Bitmap2,m_Bitmap3,m_Bitmap4;
 
-
 	
 	m_ImageList.Create(16, 16, ILC_COLORDDB , 3, 3);
 
@@ -496,6 +495,12 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 
 		m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_ENABLED);
 		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_ENABLED);
+
+		if (RootList.GetItemCount())
+		{
+			RootList.SetSelectionMark(0);
+			RootList.SetItemState(0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+		}	//RootList.SetItemState(0, LVIS_SELECTED, LVIS_SELECTED);
 	}
 	else if (mask & PROJECT_NOTLOADED)
 	{
@@ -584,9 +589,18 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 		{
 			int index = RootList.InsertItem(RootList.GetItemCount(), path);
 			if (index >= 0)
+			{
 				RootList.SetCheck(index);
+				if (RootList.GetItemCount() == 1)
+				{
+					RootList.SetSelectionMark(0);
+					RootList.SetItemState(0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+				}
+			}
 			else
+			{
 				MessageBox(_T("Can not insert the item!"), _T("Error"), MB_ICONERROR | MB_OK);
+			}
 		}
 		else
 		{
@@ -625,7 +639,22 @@ void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
 		std::sort(dRoots.begin(), dRoots.end(), std::greater<int>());
 		for (auto iter = dRoots.begin(); iter != dRoots.end(); ++iter)
 		{
+
 			RootList.DeleteItem(*iter);
+		}
+		if (RootList.GetItemCount())
+		{
+			bool marked = false;
+			for (int i = 0; i < RootList.GetItemCount(); ++i)
+			{
+				if (RootList.GetItemState(i, LVIS_SELECTED))
+					marked = true;
+			}
+			if (!marked)
+			{
+				RootList.SetSelectionMark(0);
+				RootList.SetItemState(0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+			}
 		}
 		UpdateToolbar();
 		dRoots.clear();
@@ -2353,14 +2382,14 @@ BOOL CMFCTRSuiDlg::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 		case TOOLBAR_ADDGREY:
 		case TOOLBAR_ADD:
 		{
-								sw = "Add Folder";
+								sw = "Add Suite";
 								lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
 								break;
 		}
 		case TOOLBAR_DELETEGREY:
 		case TOOLBAR_DELETE:
 		{
-								sw = "Delete Folder";
+								sw = "Delete Suite";
 								lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
 								break;
 		}
@@ -2428,14 +2457,14 @@ BOOL CMFCTRSuiDlg::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 		case TOOLBAR_ADDGREY:
 		case TOOLBAR_ADD:
 		{
-							sa = "Add Folder";
+							sa = "Add Suite";
 							lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
 							break;
 		}
 		case TOOLBAR_DELETEGREY:
 		case TOOLBAR_DELETE:
 		{
-							   sa = "Delete Folder";
+							   sa = "Delete Suite";
 							   lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
 							   break;
 		}
@@ -2487,6 +2516,7 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 		}
 	}
 
+	UINT state = pNMLV->uOldState ^ pNMLV->uNewState;
 	if (pNMLV->uChanged & LVIF_STATE) // item state has been changed
 	{
 		switch (pNMLV->uNewState & LVIS_STATEIMAGEMASK)
@@ -2586,6 +2616,8 @@ void CMFCTRSuiDlg::OnInfoInfo()
 
 void CMFCTRSuiDlg::OnProgramSettings()
 {
+	//RootList.SetSelectionMark(0);
+	//RootList.SetItemState(0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 	//SetListItemImage(0, PASSED);
 	//SetListItemImage(1, FAILED);
 }
