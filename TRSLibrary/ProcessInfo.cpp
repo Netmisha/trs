@@ -193,7 +193,7 @@ int ProcessInfo::GetPriority() const
 
 char* ProcessInfo::ProcessTest(bool ignore_wait)
 {
-	// assuming that test is waiting
+	// checking wheather test is waiting for another test to execute
 	if (!ignore_wait && test_.getWaitFor() != nullptr)
 	{
 		return test_.getWaitFor();
@@ -212,40 +212,38 @@ char* ProcessInfo::ProcessTest(bool ignore_wait)
 
 DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 {
-	int id = GetCurrentThreadId();
 	// recording time in order to evaluate function duration
 	high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
 	ProcessData* data = (ProcessData*)parameters;
-	// recording time for reporter
-	data->running_process->pReporter_->beforeExecution(data->running_process->test_);
+	// telling to reportets that we started the execution of new test
+	if (data->running_process->pReporter_)
+		data->running_process->pReporter_->beforeExecution(data->running_process->test_);
 
-	STARTUPINFO startup_info;
-	ZeroMemory(&startup_info, sizeof(startup_info));
-	startup_info.cb = sizeof(startup_info);
-
+	// aborting the test's start if STOP was pressed, avoiding creating the process
 	if (!data->running_process->running_)
 		return 0;
+
+	STARTUPINFO startup_info{ sizeof(startup_info) };
 
 	// starting our desirable executable file
 	bool create_result = CreateProcess(NULL, data->running_process->command_line_, NULL, NULL, FALSE, CREATE_NO_WINDOW,
 		NULL, NULL, &startup_info, &data->running_process->process_information_);
 
 	char* message;
-
 	if (create_result)
 	{
-		// Successfully created the process.  Wait for it to finish no more than MAX_TIME
+		// Successfully created the process.  Wait for its completion no more than MAX_TIME milliseconds
 		int wait_result = WaitForSingleObject(data->running_process->process_information_.hProcess, data->running_process->max_time_);
 
 		switch (wait_result)
 		{
 		case WAIT_OBJECT_0:
-		{
+		{// waiting was successful
 			DWORD returned_value;
-			bool get_result = GetExitCodeProcess(data->running_process->process_information_.hProcess, &returned_value);
+
 			// setting apropriate description
-			if (get_result)
+			if (GetExitCodeProcess(data->running_process->process_information_.hProcess, &returned_value))
 			{
 				int expected_value = atoi(data->running_process->test_.get_expectedResult());
 				data->running_process->result_ = (expected_value == returned_value);
@@ -286,26 +284,36 @@ DWORD WINAPI ProcessInfo::StartThread(LPVOID parameters)
 		data->running_process->result_ = false;
 	}
 
+	// indicating to the ProcessCollection that test is really finished and it might 
+	// change CLOSED status to the DONE after decrementing its "undone_tests" counter
 	data->running_process->set_status(Status::Closed);
 
+	// signaling to the ProcessCollection, that test was executed (or an error occured)
 	if (!ReleaseSemaphore(data->semaphores[OWNED_SEMAPHORE], 1, NULL))
 		logger << "Incrementing OWNED_SEMAPHORE semaphore count is failed";
 
+	// signaling to the SuiteCollection, that test was executed (or an error occured)
 	if (!ReleaseSemaphore(data->semaphores[MANAGING_SEMAPHORE], 1, NULL))
 		logger << "Incrementing MANAGING_SEMAPHORE semaphore count is failed";
 
+	// allocating memory for the futher using of our structere by reporters
 	int size = strlen(message);
 	data->running_process->result_description_ = new char[size + 1];
 	strcpy_s(data->running_process->result_description_, size + 1, message);
 
+	// calculationg total time of test's execution
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 	data->running_process->duration_ = duration_cast<milliseconds>(t2 - t1);
 
+	// aborting the test's start if STOP was pressed, avoiding showing reporter's output message
 	if (!data->running_process->running_)
 		return 0;
 
-	data->running_process->pReporter_->afterExecution(data->running_process->test_, *data->running_process);
+	// telling to reporters that we ended test's execution
+	if (data->running_process->pReporter_)
+		data->running_process->pReporter_->afterExecution(data->running_process->test_, *data->running_process);
 
+	// releasing associated kernel objects
 	data->running_process->ReleaseResources();
 	delete parameters;
 	return 0;

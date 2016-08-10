@@ -8,7 +8,11 @@
 // futher implementation of priority will be added
 ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, ThreadPool* threads, bool* running, ReportManager* pReport) : threads_(threads), running_(running)
 {
-	int max_threads = atoi(suite.getMaxThreads());
+	int max_threads;
+	if (suite.getMaxThreads())
+		max_threads = atoi(suite.getMaxThreads());
+	else
+		max_threads = threads->GetCount();
 
 	if (max_threads <= 0)
 		logger << "Notpositive value in max_threas field";
@@ -86,6 +90,7 @@ bool ProcessCollection::TryRun()
 		if (wait_result == WAIT_OBJECT_0)
 		{
 			auto var = tests_.begin();
+
 			for (; var != tests_.end(); ++var)
 			{
 				if (var->get_status() == Status::Closed)
@@ -107,17 +112,20 @@ bool ProcessCollection::TryRun()
 					// if this test is waiting for test, which is already done
 					bool is_done;
 					int result = IsDone(name, is_done);
+					// during IsDone we might change some tests status from "Closed" to "Done" , so recalculationg remaining undone tests
 					undone_tests_ -= result;
 
+					// test on which current test is waiting for is already done so we are executing current test
 					if (is_done)
 					{
 						var->ProcessTest(true);
 						break;
 					}
 					// So, this test is wating fo another test which is still runnig.
-					// so it was not a test, which signaled to main thread. Continue searching
+					// and it was not a test, which signaled to the main thread. Continue searching
 				}
 			}
+
 			// if it is false - it means that test in another ProcessCollection signaled to main thread
 			// and we must continue searching
 			return var != tests_.end();
@@ -156,24 +164,18 @@ int ProcessCollection::IsDone(char* name, _Outptr_ bool &all_done)
 
 			switch (var->get_status())
 			{
-			case Status::Done:
-			{
-				 continue;
-			}
+			//case Status::Done:
+			//{
+			//	 continue;
+			//}
 			case Status::Closed:
 			{		
 				++ret_val;
 				var->set_status(Status::Done);
 			   break;
 			}
-
-			case Status::Running:
-			{
-				// if it is finished
-				all_done = false;
-				return ret_val;
-			}
 			case Status::Waiting:
+			case Status::Running:
 			{
 				all_done = false;
 				return ret_val;

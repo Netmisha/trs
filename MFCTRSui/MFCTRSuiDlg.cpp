@@ -314,6 +314,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	// toolbar image config
 	CString mes;
 	CString helpMes;
+
 	
 	for (int i = 0; i < 100; ++i)
 	{
@@ -489,6 +490,10 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 
 		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
+
+		dRoots.clear();
+		RootList.DeleteAllItems();
+
 		ConsoleHide();
 		RunToolsHide();
 	}
@@ -2040,6 +2045,7 @@ void CMFCTRSuiDlg::OnNewProject()
 		}
 		delete[] path;
 	}
+	UpdateToolbar(PROJECT_NOTLOADED);
 
 	BROWSEINFO bi = { 0 };
 	bi.lpszTitle = _T("Select Folder");
