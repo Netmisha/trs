@@ -585,6 +585,12 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 		TCHAR path[MAX_PATH];
 		SHGetPathFromIDList(pidl, path);
 		char* pathA = convertToChar(path);
+		if (ExistInList(path))
+		{
+			MessageBox(_T("This item is already in the list!"), _T("Error"), MB_ICONERROR | MB_OK);
+			delete[] pathA;
+			return;
+		}
 		if (!Manager.Verify(pathA, nullptr, nullptr))
 		{
 			int index = RootList.InsertItem(RootList.GetItemCount(), path);
@@ -610,13 +616,23 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 		delete[] pathA;
 		// free memory used
 		IMalloc * imalloc = 0;
-		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
+//		m_Menu->EnableMenuItem(ID_Save_Project, MF_BYCOMMAND | MF_ENABLED);
 		if (SUCCEEDED(SHGetMalloc(&imalloc)))
 		{
 			imalloc->Free(pidl);
 			imalloc->Release();
 		}
 	}
+}
+
+bool CMFCTRSuiDlg::ExistInList(TCHAR* path)
+{
+	for (int i = 0; i < RootList.GetItemCount(); ++i)
+	{
+		if (!_tcsicmp(path, RootList.GetItemText(i, 0)))
+			return true;
+	}
+	return false;
 }
 
 

@@ -165,6 +165,7 @@ public:
 	afx_msg void OnCbnSelchangeCombo2();
 	void SetListItemImage(DWORD index, DWORD image);
 	bool SetListItemState(bool state, SuiteRoot text);
+	bool ExistInList(TCHAR* path);
 
 	CListCtrl m_ListCtrl;
 
