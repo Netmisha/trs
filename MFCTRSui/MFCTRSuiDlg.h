@@ -152,8 +152,6 @@ protected:
 	void RunToolsHide();
 	void RunToolsShow();
 
-	void SetListItemImage(DWORD index, DWORD image);
-
 	afx_msg void OnSaveAs();
 	CComboBox DropDown;
 	CComboBox ThreadsComboBox;
@@ -165,6 +163,8 @@ public:
 	CComboBox m_NameBox;
 	afx_msg void OnCbnSelchangeCombo1();
 	afx_msg void OnCbnSelchangeCombo2();
+	void SetListItemImage(DWORD index, DWORD image);
+	bool SetListItemState(bool state, SuiteRoot text);
 
 	CListCtrl m_ListCtrl;
 
