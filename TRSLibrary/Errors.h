@@ -12,5 +12,5 @@
 #define WRONG_PATH_EXECUTION 9
 #define WRONG_WAITFOR 10
 #define WRONG_PARAMETERS 4
-
+#define INVALID_XML_FILE 11
 #endif

@@ -133,7 +133,8 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count,std::v
 
 	TiXmlNode* pChild;
 	TiXmlText* pText;
-
+	bool checkSuite = false;
+	bool ifDone = false;
 	int t = pParent->Type();
 
 	switch (t)
@@ -142,9 +143,12 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count,std::v
 		if ((strncmp(pParent->Value(), "suite", strlen("suite")) == 0)&&getName())
 		{
 			++count;
+			checkSuite = true;
+			ifDone = true;
 		}
 		if ((strncmp(pParent->Value(), "test", strlen("test")) == 0))
 		{
+			checkSuite = true;
 			if (count>1)
 			{
 				--count;
@@ -152,6 +156,8 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count,std::v
 			}
 			TRSTest* currentTest = new TRSTest;
 			currentTest->Parse(pParent);
+			Metadata* curMet = new Metadata(*this->getMetadata());
+			currentTest->setMetadata(curMet);
 			tests.push_back(currentTest);
 			if (name_)
 			{
@@ -236,6 +242,11 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count,std::v
 	for (pChild = pParent->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
 	{
 		ParseSuit(pChild, name_, tag_, count, tests);
+	}
+	if (ifDone)
+	if (!checkSuite)
+	{
+		return false;
 	}
 	return true;
 }

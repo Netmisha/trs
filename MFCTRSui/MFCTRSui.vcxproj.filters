@@ -206,6 +206,13 @@
     <Image Include="res\toolbar3.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\bitmap3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="C:\Users\oleh.onyshchak\Desktop\Delete.png" />
+    <Image Include="res\bitmap4.bmp" />
+    <Image Include="C:\Users\oleh.onyshchak\Desktop\1470844019_Check.bmp" />
+    <Image Include="res\bitmap5.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

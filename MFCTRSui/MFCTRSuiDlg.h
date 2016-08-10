@@ -22,6 +22,10 @@
 #define CONTROL_AMOUNT 6
 #define RUN_CONTROL_AMOUNT 3
 
+#define DEFAULT_IMAGE 0
+#define FAILED_IMAGE 1
+#define PASSED_IMAGE 2
+
 class SuiteRoot
 {
 public:
@@ -105,8 +109,11 @@ protected:
 	std::vector<int> dRoots;
 	std::vector<int> m_SelectedRoots;
 	CImageList m_ImageList;
+	CImageList m_PathImageList;
 	void Info(TCHAR* path);
 	std::vector<HTREEITEM*> TreeControlsList;
+	std::vector<HTREEITEM*> PassedTestsTreeItems;
+	std::vector<HTREEITEM*> FailedTestsTreeItems;
 	CToolBar m_ToolBar;
 	CToolBar m_secondToolBar;
 	CMenu* m_Menu;
@@ -127,6 +134,7 @@ public:
 	CProgressCtrl subm_Progress;
 	CEdit Time_running_edit;
 
+	afx_msg void OnProgramSettings();
 	afx_msg void OnProgramAddfolder();
 	afx_msg void OnProgramDeleteselecteditems();
 	afx_msg void OnProgramRunsel();
@@ -143,15 +151,18 @@ public:
 protected:
 	void ConsoleHide();
 	void ConsoleShow();
-
 	void RunToolsHide();
 	void RunToolsShow();
+
+	void SetListItemImage(DWORD index, DWORD image);
+
 	afx_msg void OnSaveAs();
 	CComboBox DropDown;
 	CComboBox ThreadsComboBox;
 	ReportManager* reportManag;
-
+	std::list<Suite*>* suiteColl;
 	bool is_running = false;
+//	CImageList* m_ImageList;
 public:
 	CComboBox m_NameBox;
 	afx_msg void OnCbnSelchangeCombo1();

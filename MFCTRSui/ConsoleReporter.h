@@ -1,7 +1,7 @@
 #ifndef CONSOLEREPORTER_H_
 #define CONSOLEREPORTER_H_
 #include "TRSLibrary\TRSReport.h"
-
+#include "vector"
 
 class ConsoleReporter :public  TRSReport
 {
@@ -19,6 +19,7 @@ public:
 	double getAmount();
 	double getPassedAmount();
 	double getFailedAmount();
+
 private:
 	double time = 0;
 	double amount = 0;
@@ -27,6 +28,7 @@ private:
 	int mCount = 1;
 	CEdit* console_output;
 	CProgressCtrl* progress;
+
 };
 
 #endif

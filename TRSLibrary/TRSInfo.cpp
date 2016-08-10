@@ -520,7 +520,8 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 	
 	TiXmlNode* pChild;
 	TiXmlText* pText;
-
+	bool checkSuite = false;
+	bool ifDone = false;
 	int t = pParent->Type();
 
 	switch (t)
@@ -529,13 +530,14 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		
 		if ((strncmp(pParent->Value(), "suite", strlen("suite")) == 0) || (strncmp(pParent->Value(), "test", strlen("test")) == 0))
 		{
-			
+			ifDone = true;
+			checkSuite = true;
 			if (getName())
 			{
 				return true;
 			}
 			TiXmlAttribute*atr = pParent->ToElement()->FirstAttribute();
-
+			if (atr)
 			if (!strncmp(atr->Name(),"name",strlen("name")))
 			{
 				char*name = new char[strlen(atr->Value()) + 1];
@@ -554,6 +556,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 					}
 				}
 			}	
+			if (atr)
 			if (!strncmp(atr->Name(), "description", strlen("description")))
 			{
 				char*desc = new char[strlen(atr->Value()) + 1];
@@ -565,6 +568,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		}
 		if ((strncmp(pParent->Value(), "tag", strlen("tag")) == 0))
 		{
+			checkSuite = true;
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
@@ -583,6 +587,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		}
 		if ((strncmp(pParent->Value(), "parameters", strlen("parameters")) == 0))
 		{
+			checkSuite = true;
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
@@ -601,6 +606,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		}
 		if ((strncmp(pParent->Value(), "priority", strlen("priority")) == 0))
 		{
+			checkSuite = true;
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
@@ -619,6 +625,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		}
 		if ((strncmp(pParent->Value(), "waitFor", strlen("waitFor")) == 0) &&getName())
 		{
+			checkSuite = true;
 			TiXmlNode* child = pParent->FirstChild();
 			if (child && child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
@@ -634,6 +641,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		}
 		if ((strncmp(pParent->Value(), "disable", strlen("disable")) == 0) &&getName())
 		{
+			checkSuite = true;
 			TiXmlNode* child = pParent->FirstChild();
 			if (child && child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
@@ -649,6 +657,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		}
 		if ((strncmp(pParent->Value(), "repeat", strlen("repeat")) == 0)&&getName())
 		{
+			checkSuite = true;
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
@@ -667,6 +676,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		}
 		if ((strncmp(pParent->Value(), "maxTime", strlen("maxTime")) == 0) &&getName())
 		{
+			checkSuite = true;
 			TiXmlNode* child = pParent->FirstChild();
 			if (child)
 			{
@@ -688,6 +698,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		}
 		if ((strncmp(pParent->Value(), "maxThreads", strlen("maxThreads")) == 0)&&getName())
 		{
+			checkSuite = true;
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
@@ -707,7 +718,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		if ((strncmp(pParent->Value(), "execution", strlen("execution")) == 0) &&getName())
 		{
 			TiXmlAttribute*atr = pParent->ToElement()->FirstAttribute();
-			
+			checkSuite = true;
 			if (atr)
 			{
 				if ((!strncmp(atr->Name(), "path", strlen("path"))))
@@ -724,6 +735,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
+				checkSuite = true;
 				if (child)
 				{
 					if (strlen(child->Value()) > 0)
@@ -742,6 +754,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		}
 		if ((strncmp(pParent->Value(), "result", strlen("result")) == 0)&&getName())
 		{
+			checkSuite = true;
 			TiXmlNode* child = pParent->FirstChild();
 			if (child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
@@ -760,7 +773,7 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		}
 		if ((strncmp(pParent->Value(), "metadata", strlen("metadata")) == 0) &&getName())
 		{
-			
+			checkSuite = true;
 			for (TiXmlNode* child = pParent->FirstChild(); child != 0; child = child->NextSibling())
 			{
 				if (child->Type() == TiXmlNode::TINYXML_ELEMENT)
@@ -876,6 +889,11 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 	{
 		Parse(pChild);
 	}
+	if (ifDone)
+	if (!checkSuite)
+	{
+		return false;
+	}
 	return true;
 }
 
@@ -886,7 +904,15 @@ Metadata* TRSInfo::getMetadata()  const
 
 bool TRSInfo::setMetadata(Metadata*metadata_)
 {
-	metadata = metadata_;
+	if (metadata)
+	{
+		delete metadata;
+		metadata = metadata_;
+	}
+	else
+	{
+		metadata = metadata_;
+	}
 	return true;
 }
 

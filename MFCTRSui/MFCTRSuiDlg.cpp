@@ -24,7 +24,7 @@
 
 #define RAW_RESIZIBLE 2
 // CMFCTRSuiDlg dialog
-
+static bool ifFirstTimeRunned = true;
 bool ifCancelPressed;
 bool RunEndCheck;
 bool SaveAsPressed = true;
@@ -33,6 +33,8 @@ CToolBar* Bar;
 CComboBox* Tag;
 CComboBox* Threads;
 CComboBox* Name;
+std::vector<HTREEITEM*> PassedC;
+std::vector<HTREEITEM*> FailedC;
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
@@ -40,6 +42,7 @@ CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	Manager.Init();
+	
 }
 
 CMFCTRSuiDlg::~CMFCTRSuiDlg()
@@ -76,6 +79,8 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(TOOLBAR_STOP, &CMFCTRSuiDlg::OnStopButtonClicked)
 	ON_COMMAND(ID_PROGRAM_DELETESELECTEDITEMS, &CMFCTRSuiDlg::OnProgramDeleteselecteditems)
 	ON_COMMAND(ID_PROGRAM_RUNSEL, &CMFCTRSuiDlg::OnProgramRunsel)
+	ON_COMMAND(TOOLBAR_SETTINGS, &CMFCTRSuiDlg::OnProgramSettings)
+
 	ON_WM_SYSCOMMAND(SC_CLOSE, &CMFCTRSuiDlg::OnSysCommand(UINT , LPARAM))
 	ON_COMMAND(ID_Load_Project, &CMFCTRSuiDlg::OnLoadProject)
 	ON_COMMAND(ID_PROJECT_LASTPROJECTS, &CMFCTRSuiDlg::OnProjectLastprojects)
@@ -136,7 +141,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		FIXED_PITCH | FF_MODERN, _T("Courier New"));
 	m_Tree.SetFont(myFont);
 	RootList.SetFont(myFont);
-	
+	DropDown.ModifyStyle(0, CBS_DROPDOWN);
 	console_output.ShowWindow(false);
 	LONG lStyle = GetWindowLong(m_hWnd, GWL_STYLE);
 	lStyle &= ~WS_CHILD;        //remove the CHILD style
@@ -334,13 +339,12 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 
 	CBitmap m_Bitmap1,m_Bitmap2;
 
-	
 	m_ImageList.Create(16, 16, ILC_COLORDDB , 2, 2);
 
 	m_Bitmap1.LoadBitmap(IDB_BITMAP1);
 	m_Bitmap2.LoadBitmap(IDB_BITMAP2);
 
-	m_ImageList.Add(&m_Bitmap1, RGB(0,0,0));
+	m_ImageList.Add(&m_Bitmap1, RGB(0, 0, 0));
 	m_ImageList.Add(&m_Bitmap2, RGB(0, 0, 0));
 
 	/*m_Tree.Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP |
@@ -350,10 +354,19 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		CRect(10, 10, 200, 240), this, 0x1221);*/
 
 	m_Tree.SetImageList(&m_ImageList, TVSIL_NORMAL);
-	dRoots.clear();
+
+	m_PathImageList.Create(32, 32, ILC_COLORDDB, 2, 2);
+
+	CBitmap m_Bitmap3;
+	m_Bitmap3.LoadBitmap(IDB_BITMAP5);
+	m_PathImageList.Add(&m_Bitmap3, RGB(0, 0, 0));
+
+	RootList.SetImageList(&m_PathImageList, LVSIL_SMALL);
+
+	
 	UpdateToolbar(PROJECT_NOTLOADED);
 
-//	HICON icon;
+	//HICON icon;
 
 	//HICON hIcon = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_ICON2));
 	//SetIcon(hIcon, FALSE);
@@ -599,13 +612,17 @@ void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
 	//	UpdateToolbar();
 	//}
 	// due to the fact, that we indentify elements by index, and after each deletion they shifted - we are forced delete from the biggest index.
-	std::sort(dRoots.begin(), dRoots.end(), std::greater<int>());
-	for (auto iter = dRoots.begin(); iter != dRoots.end(); ++iter)
+	int res = MessageBox(L"Do you really want to delete this item?", L"Confirmation", MB_ICONINFORMATION | MB_YESNO);
+	if (res == IDYES)
 	{
-		RootList.DeleteItem(*iter);
+		std::sort(dRoots.begin(), dRoots.end(), std::greater<int>());
+		for (auto iter = dRoots.begin(); iter != dRoots.end(); ++iter)
+		{
+			RootList.DeleteItem(*iter);
+		}
+		UpdateToolbar();
+		dRoots.clear();
 	}
-	UpdateToolbar();
-	dRoots.clear();
 }
 
 
@@ -684,10 +701,10 @@ DWORD WINAPI ToRun(LPVOID arg)
 		param->subProgress->SetRange(0, count);
 		param->subProgress->SetStep(1);
 		Manager.Run(path, testName, tag, Thread_amount, param->manager);
-
 		param->progress->StepIt();
 		param->subProgress->SetPos(0);
 	}
+	
 	param->manager->End();
 	delete param->manager;
 	param->dialog->UpdateToolbar(RUN_UNCLICKED);
@@ -1062,7 +1079,8 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 		reportManag->addReporter(reporter);
 		std::vector<SuiteRoot> roots;
 		roots.reserve(dRoots.size());
-
+		PassedC = PassedTestsTreeItems;
+		FailedC = FailedTestsTreeItems;
 		for (auto iter = dRoots.begin(); iter != dRoots.end(); ++iter)
 		{
 			roots.push_back(SuiteRoot(RootList.GetItemText(*iter, 0)));
@@ -1129,13 +1147,29 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 						std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
 						for (iter; iter != (*it)->getList().end(); ++iter)
 						{
-							HTREEITEM* hTest = new HTREEITEM;
-							TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
-							convertToTCHAR(subBuf, (*iter)->getName());
-							*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
-							m_Tree->SetItemData(*hTest, (DWORD)(*iter));
-							TreeControlsList->push_back(hTest);
-							delete[] subBuf;
+							if (tag)
+							{
+								if (!strncmp(tag, (*iter)->getTag(), strlen(tag)))
+								{
+									HTREEITEM* hTest = new HTREEITEM;
+									TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+									convertToTCHAR(subBuf, (*iter)->getName());
+									*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+									m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+									TreeControlsList->push_back(hTest);
+									delete[] subBuf;
+								}
+							}
+							else
+							{
+								HTREEITEM* hTest = new HTREEITEM;
+								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+								convertToTCHAR(subBuf, (*iter)->getName());
+								*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+								m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+								TreeControlsList->push_back(hTest);
+								delete[] subBuf;
+							}
 						}
 						checkList->push_back((*it));
 						delete[] buf;
@@ -1176,13 +1210,29 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
 							for (iter; iter != (*it)->getList().end(); ++iter)
 							{
-								HTREEITEM* hTest = new HTREEITEM;
-								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
-								convertToTCHAR(subBuf, (*iter)->getName());
-								*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
-								m_Tree->SetItemData(*hTest, (DWORD)(*iter));
-								TreeControlsList->push_back(hTest);
-								delete[] subBuf;
+								if (tag)
+								{
+									if (!strncmp(tag, (*iter)->getTag(), strlen(tag)))
+									{
+										HTREEITEM* hTest = new HTREEITEM;
+										TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+										convertToTCHAR(subBuf, (*iter)->getName());
+										*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+										m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+										TreeControlsList->push_back(hTest);
+										delete[] subBuf;
+									}
+								}
+								else
+								{
+									HTREEITEM* hTest = new HTREEITEM;
+									TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+									convertToTCHAR(subBuf, (*iter)->getName());
+									*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+									m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+									TreeControlsList->push_back(hTest);
+									delete[] subBuf;
+								}
 							}
 							checkList->push_back((*it));
 							delete[] buf;
@@ -1219,13 +1269,29 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
 							for (iter; iter != (*it)->getList().end(); ++iter)
 							{
-								HTREEITEM* hTest = new HTREEITEM;
-								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
-								convertToTCHAR(subBuf, (*iter)->getName());
-								*hTest=m_Tree->InsertItem(subBuf, 3,3,*hSuite);
-								m_Tree->SetItemData(*hTest, (DWORD)(*iter));
-								TreeControlsList->push_back(hTest);
-								delete[] subBuf;
+								if (tag)
+								{
+									if (!strncmp(tag, (*iter)->getTag(), strlen(tag)))
+									{
+										HTREEITEM* hTest = new HTREEITEM;
+										TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+										convertToTCHAR(subBuf, (*iter)->getName());
+										*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+										m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+										TreeControlsList->push_back(hTest);
+										delete[] subBuf;
+									}
+								}
+								else
+								{
+									HTREEITEM* hTest = new HTREEITEM;
+									TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+									convertToTCHAR(subBuf, (*iter)->getName());
+									*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+									m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+									TreeControlsList->push_back(hTest);
+									delete[] subBuf;
+								}
 							}
 							checkList->push_back((*it));
 							delete[] buf;
@@ -1248,8 +1314,10 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	NameColl.clear();
 	DropDown.ResetContent();
 	DropDown.AddString(L"All");
+	DropDown.SetCurSel(0);
 	m_NameBox.ResetContent();
 	m_NameBox.AddString(L"All");
+	m_NameBox.SetCurSel(0);
 	char* pathA = nullptr;
 	int size = WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, 0, NULL, NULL);
 	pathA = new char[size];
@@ -1258,7 +1326,7 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	int Flag = ILC_COLOR24;
 	imList = ImageList_Create(5, 5, Flag, 2, 0);
 	
-	std::list<Suite*>* suiteColl = Manager.List(pathA, nullptr, nullptr);
+	suiteColl = Manager.List(pathA, nullptr, nullptr);
 	HTREEITEM hHead;
 	hHead = m_Tree.InsertItem(L"Suites", 0,0,TVI_ROOT);
 	int count = 0;
@@ -1599,6 +1667,9 @@ void CMFCTRSuiDlg::OnLoadProject()
 		}
 		
 		UpdateToolbar(PROJECT_UPLOADED);
+		DropDown.EnableWindow(true);
+		ThreadsComboBox.EnableWindow(true);
+		m_NameBox.EnableWindow(true);
 	}
 	else
 	{
@@ -1710,6 +1781,9 @@ void CMFCTRSuiDlg::OnProjectLastprojects()
 		}
 
 	}
+	DropDown.EnableWindow(true);
+	ThreadsComboBox.EnableWindow(true);
+	m_NameBox.EnableWindow(true);
 	Bar = ToolBar;
 	List = &RootList;
 	// TODO: Add your command handler code here
@@ -1719,6 +1793,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if (nID == SC_CLOSE)
 	{
+		int res=0;
 		if (RootList.GetItemCount() > 0)
 		{
 			char* path = pro_.getProjPath();
@@ -1731,7 +1806,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 				int found = handle != INVALID_HANDLE_VALUE;
 				if (!found)
 				{
-					int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
+					res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
 					if (res == IDYES)
 					{
 						pro_.SaveProject(&RootList);
@@ -1739,11 +1814,17 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 						delete[] buf;
 						CDialogEx::OnOK();
 					}
-					else
+					if (res==IDNO)
 					{
 						delete[] path;
 						delete[] buf;
 						CDialogEx::OnOK();
+					}
+					if (res == IDCANCEL)
+					{
+						delete[] path;
+						delete[] buf;
+						return;
 					}
 				}
 				else
@@ -1753,7 +1834,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 					{
 						if (SaveAsPressed)
 						{
-							int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNO);
+							int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
 							if (res == IDYES)
 							{
 								pro_.SaveProject(&RootList);
@@ -1761,11 +1842,17 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 								delete[] buf;
 								CDialogEx::OnOK();
 							}
-							else
+							if (res==IDNO)
 							{
 								delete[] path;
 								delete[] buf;
 								CDialogEx::OnOK();
+							}
+							if (res == IDCANCEL)
+							{
+								delete[] path;
+								delete[] buf;
+								return;
 							}
 						}
 						else
@@ -1978,15 +2065,91 @@ void CMFCTRSuiDlg::OnSaveAs()
 void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 {
 	int count = DropDown.GetCurSel();
-	int lic = 2;
-	while (count /= 10)
+	if (count > -1)
 	{
-		++lic;
+		int lic = 2;
+		while (count /= 10)
+		{
+			++lic;
+		}
+		char* tag_ = new char[lic];
+		sprintf_s(tag_, lic, "%d", DropDown.GetCurSel());
+		pro_.setTag(tag_);
+		
+		if (!ifFirstTimeRunned)
+		{
+			m_Tree.DeleteAllItems();
+			int amount = 0;
+			HTREEITEM hHead;
+			char* pathA = nullptr;
+			int check = -1;
+			for (int i = 0; i < RootList.GetItemCount(); ++i)
+			{
+				if (RootList.GetCheck(i))
+				{
+					check = i;
+				}
+			}
+			if (check>-1&&suiteColl)
+			{
+				CString str = RootList.GetItemText(check, 0);
+				std::vector<HTREEITEM*>::iterator iteratorr = TreeControlsList.begin();
+				for (iteratorr; iteratorr != TreeControlsList.end(); ++iteratorr)
+				{
+					delete *iteratorr;
+				}
+				TreeControlsList.clear();
+				int size = WideCharToMultiByte(CP_ACP, 0, (TCHAR*)str.GetString(), -1, pathA, 0, NULL, NULL);
+				pathA = new char[size];
+				WideCharToMultiByte(CP_ACP, 0, (TCHAR*)str.GetString(), -1, pathA, size, NULL, NULL);
+				hHead = m_Tree.InsertItem(L"Suites", 0, 0, TVI_ROOT);
+				int count = 0;
+				CString TAG;
+				DropDown.GetLBText(atoi(tag_), TAG);
+				char* search = fromCStringToChar(TAG);
+				std::list<Suite*>::iterator Delit = suiteColl->begin();
+				for (Delit; Delit != suiteColl->end(); ++Delit)
+				{
+					delete (*Delit);
+				}
+				delete suiteColl;
+				if (!strncmp(search, "All", strlen("All")))
+				{
+					suiteColl = Manager.List(pathA, nullptr, nullptr);
+				}
+				else
+				{
+					suiteColl = Manager.List(pathA, nullptr, search);
+				}
+				delete[] search;
+				std::list<Suite*>::iterator it = suiteColl->begin();
+				count = strlen((*it)->get_path());
+				for (it; it != suiteColl->end(); ++it)
+				{
+					if (strlen((*it)->get_path()) < count)
+					{
+						count = strlen((*it)->get_path());
+					}
+				}
+				--it;
+				std::list<Suite*> checkList;
+				int chtoeto = 0;
+				for (it; it != suiteColl->begin(); --it)
+				{
+					if (strlen((*it)->get_path()) == count)
+					{
+						TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &TreeControlsList);
+					}
+				}
+				if (strlen((*it)->get_path()) == count)
+				{
+					TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &TreeControlsList);
+				}
+			}
+		}
+		ifFirstTimeRunned = false;
+		delete[] tag_;
 	}
-	char* tag_ = new char[lic];
-	sprintf_s(tag_, lic,"%d", DropDown.GetCurSel());
-	pro_.setTag(tag_);
-	delete[] tag_;
 	// TODO: Add your control notification handler code here
 }
 
@@ -1994,15 +2157,18 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 void CMFCTRSuiDlg::OnCbnSelchangeCombo2()
 {
 	int count = ThreadsComboBox.GetCurSel();
-	int lic = 2;
-	while (count /= 10)
+	if (count > -1)
 	{
-		++lic;
+		int lic = 2;
+		while (count /= 10)
+		{
+			++lic;
+		}
+		char* threads_ = new char[lic];
+		sprintf_s(threads_, lic, "%d", ThreadsComboBox.GetCurSel());
+		pro_.setThreads(threads_);
+		delete[] threads_;
 	}
-	char* threads_ = new char[lic];
-	sprintf_s(threads_, lic, "%d", ThreadsComboBox.GetCurSel());
-	pro_.setThreads(threads_);
-	delete[] threads_;
 	// TODO: Add your control notification handler code here
 }
 
@@ -2015,28 +2181,31 @@ void CMFCTRSuiDlg::OnStopButtonClicked()
 void CMFCTRSuiDlg::OnCbnSelchangeCombo3()
 {
 	int count = m_NameBox.GetCurSel();
-	int lic = 2;
-	while (count /= 10)
+	if (count > -1)
 	{
-		++lic;
+		int lic = 2;
+		while (count /= 10)
+		{
+			++lic;
+		}
+		char* name_ = new char[lic];
+		sprintf_s(name_, lic, "%d", m_NameBox.GetCurSel());
+		pro_.setTestName(name_);
+		delete[] name_;
 	}
-	char* name_ = new char[lic];
-	sprintf_s(name_, lic, "%d", m_NameBox.GetCurSel());
-	pro_.setTestName(name_);
-	delete[] name_;
 	// TODO: Add your control notification handler code here
 }
 
 
 void CMFCTRSuiDlg::OnNewProject()
 {
-	
+	int res=0;
 	if (pro_.getName() && pro_.getPath())
 	{
 		char* path = pro_.getProjPath();
 		if (!CheckForModification(path, pro_.getName(), List, Tag, Threads, Name, console_output.IsWindowVisible()))
 		{
-			int res = MessageBox( _T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNO);
+			res = MessageBox( _T("Do you want to save current project?"), _T("Not saved"), MB_ICONINFORMATION | MB_YESNOCANCEL);
 			if (res == IDYES)
 			{
 				pro_.SaveProject(List);
@@ -2045,42 +2214,52 @@ void CMFCTRSuiDlg::OnNewProject()
 		}
 		delete[] path;
 	}
+
 	UpdateToolbar(PROJECT_NOTLOADED);
 
-	BROWSEINFO bi = { 0 };
-	bi.lpszTitle = _T("Select Folder");
-	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-	if (pidl != 0)
+	if (res != IDCANCEL)
 	{
-		// get the name of the folder
-		TCHAR path[MAX_PATH];
-		SHGetPathFromIDList(pidl, path);
-		char* pathA = convertToChar(path);
-		pro_.setPath(pathA);
-		ProjNameEdit NameDlg;
-		int res = NameDlg.DoModal();
-		if (res == IDOK)
+		BROWSEINFO bi = { 0 };
+		bi.lpszTitle = _T("Select Folder");
+		LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+		if (pidl != 0)
 		{
-//			List->ResetContent();
-			IMalloc * imalloc = 0;
-			if (SUCCEEDED(SHGetMalloc(&imalloc)))
+			// get the name of the folder
+			TCHAR path[MAX_PATH];
+			SHGetPathFromIDList(pidl, path);
+			char* pathA = convertToChar(path);
+			pro_.setPath(pathA);
+			ProjNameEdit NameDlg;
+			int res = NameDlg.DoModal();
+			if (res == IDOK)
 			{
-				imalloc->Free(pidl);
-				imalloc->Release();
+				//			List->ResetContent();
+				IMalloc * imalloc = 0;
+				if (SUCCEEDED(SHGetMalloc(&imalloc)))
+				{
+					imalloc->Free(pidl);
+					imalloc->Release();
+				}
 			}
+			else
+			{
+				return;
+			}
+
+			int size = strlen("Test manager : ");
+			char* WindowLine = new char[size + strlen(pro_.getName()) + 1];
+			strncpy_s(WindowLine, size + 1, "Test manager : ", size);
+			strncpy_s(WindowLine + size, strlen(pro_.getName()) + 1, pro_.getName(), strlen(pro_.getName()));
+			TCHAR* WinBuf = new TCHAR[strlen(WindowLine) + 1];
+			convertToTCHAR(WinBuf, WindowLine);
+			SetWindowText(WinBuf);
+			delete[] WindowLine;
+			delete[] WinBuf;
+			UpdateToolbar(PROJECT_UPLOADED);
+			DropDown.EnableWindow(true);
+			ThreadsComboBox.EnableWindow(true);
+			m_NameBox.EnableWindow(true);
 		}
-
-
-		int size = strlen("Test manager : ");
-		char* WindowLine = new char[size + strlen(pro_.getName()) + 1];
-		strncpy_s(WindowLine, size + 1, "Test manager : ", size);
-		strncpy_s(WindowLine + size, strlen(pro_.getName()) + 1, pro_.getName(), strlen(pro_.getName()));
-		TCHAR* WinBuf = new TCHAR[strlen(WindowLine) + 1];
-		convertToTCHAR(WinBuf, WindowLine);
-		SetWindowText(WinBuf);
-		delete[] WindowLine;
-		delete[] WinBuf;
-		UpdateToolbar(PROJECT_UPLOADED);
 	}
 	// TODO: Add your command handler code here
 }
@@ -2251,6 +2430,16 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW  pNMLV = reinterpret_cast<LPNMLISTVIEW >(pNMHDR);
 
+	bool check = false;
+	for (int i = 0; i < RootList.GetItemCount(); ++i)
+	{
+		if (RootList.GetCheck(i))
+		{
+			check = true;
+			break;
+		}
+	}
+
 	if (pNMLV->uChanged & LVIF_STATE) // item state has been changed
 	{
 		switch (pNMLV->uNewState & LVIS_STATEIMAGEMASK)
@@ -2258,6 +2447,12 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 		case INDEXTOSTATEIMAGEMASK(BST_CHECKED + 1): // new state: checked
 		{
 			dRoots.push_back(pNMLV->iItem);
+			TagColl.clear();
+			NameColl.clear();
+			DropDown.ResetContent();
+			DropDown.AddString(L"All");
+			m_NameBox.ResetContent();
+			m_NameBox.AddString(L"All");
 				DropDown.SetCurSel(0);
 				m_NameBox.SetCurSel(0);
 				ThreadsComboBox.SetCurSel(9);
@@ -2271,25 +2466,25 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 			auto iter = std::find(dRoots.begin(), dRoots.end(), pNMLV->iItem);
 			if (iter != dRoots.end())
 			   dRoots.erase(iter);
-			if (DropDown.GetCurSel() > 0)
+			if (!check)
 			{
-				DropDown.SetCurSel(-1);
-				CMFCTRSuiDlg::OnCbnSelchangeCombo1();
+				if (DropDown.GetCurSel() > 0)
+				{
+					DropDown.SetCurSel(-1);
+					CMFCTRSuiDlg::OnCbnSelchangeCombo1();
+				}
+				if (m_NameBox.GetCurSel() > 0)
+				{
+					m_NameBox.SetCurSel(-1);
+					CMFCTRSuiDlg::OnCbnSelchangeCombo2();
+				}
+				if (ThreadsComboBox.GetCurSel() > 0)
+				{
+					ThreadsComboBox.SetCurSel(-1);
+					CMFCTRSuiDlg::OnCbnSelchangeCombo3();
+				}
+				ifFirstTimeRunned = true;
 			}
-			if (m_NameBox.GetCurSel() > 0)
-			{
-				m_NameBox.SetCurSel(-1);
-				CMFCTRSuiDlg::OnCbnSelchangeCombo2();
-			}
-			if (ThreadsComboBox.GetCurSel() > 0)
-			{
-				ThreadsComboBox.SetCurSel(-1);
-				CMFCTRSuiDlg::OnCbnSelchangeCombo3();
-			}
-			
-			
-			
-			
 			break;
 		}
 		default:
@@ -2320,7 +2515,6 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 			TestForInfo = (TRSTest*)m_Tree.GetItemData(*TreeControlsList[i]);
 		}
 	}
-	CString sString = m_Tree.GetItemText(hTest);
 	POINT mousePos;
 	GetCursorPos(&mousePos);
 	nextMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, mousePos.x, mousePos.y, this);
@@ -2330,7 +2524,31 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 
 void CMFCTRSuiDlg::OnInfoInfo()
 {
-	TestInfo dlg;
-	dlg.DoModal();
+	if (TestForInfo)
+	{
+		TestInfo dlg;
+		dlg.DoModal();
+		TestForInfo = nullptr;
+	}
+	else
+	{
+		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
+	}
 	// TODO: Add your command handler code here
+}
+
+void CMFCTRSuiDlg::OnProgramSettings()
+{
+	//SetListItemImage(0, PASSED);
+	//SetListItemImage(1, FAILED);
+}
+
+void CMFCTRSuiDlg::SetListItemImage(DWORD index, DWORD image)
+{
+	LVITEMW pitem{ LVIF_IMAGE };
+	pitem.iItem = index;
+	RootList.GetItem(&pitem);
+
+	pitem.iImage = image;
+	RootList.SetItem(&pitem);
 }

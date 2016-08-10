@@ -147,7 +147,9 @@
     <None Include="res\MFCTRSui.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="C:\Users\oleh.onyshchak\Desktop\1470844019_Check.bmp" />
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Artdesigner-Fliraneo-Photo.ico" />
+    <Image Include="C:\Users\oleh.onyshchak\Desktop\Delete.png" />
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470668670_Security_guard.ico" />
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470668899_editor-notebook-add-new-outline-stroke.ico" />
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470668925_editor-document-file-add-2-outline-stroke.ico" />
@@ -175,6 +177,9 @@
     <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\Oxygen-Icons.org-Oxygen-Actions-folder-new.ico" />
     <Image Include="res\bitmap1.bmp" />
     <Image Include="res\bitmap2.bmp" />
+    <Image Include="res\bitmap3.bmp" />
+    <Image Include="res\bitmap4.bmp" />
+    <Image Include="res\bitmap5.bmp" />
     <Image Include="res\icon2.ico" />
     <Image Include="res\Icons\1470669393_editor-floopy-dish-save-outline-stroke.ico" />
     <Image Include="res\Icons\1470670281_floppy_disk_save.ico" />
