@@ -219,8 +219,8 @@ char* TRSInfo::getPathForExe() const
 
 char* TRSInfo::getMaxThreads() const
 { 
-	if (!maxThreads)
-		return "1";
+	//if (!maxThreads)
+	//	return "1";
 	return maxThreads;
 }
 

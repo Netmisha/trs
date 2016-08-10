@@ -209,9 +209,16 @@
     <Image Include="res\bitmap3.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+<<<<<<< HEAD
     <Image Include="res\bitmap4.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+=======
+    <Image Include="C:\Users\oleh.onyshchak\Desktop\Delete.png" />
+    <Image Include="res\bitmap4.bmp" />
+    <Image Include="C:\Users\oleh.onyshchak\Desktop\1470844019_Check.bmp" />
+    <Image Include="res\bitmap5.bmp" />
+>>>>>>> 04c937e39163f300d65d303746d4274c3cb12a71
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

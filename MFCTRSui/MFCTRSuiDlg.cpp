@@ -81,6 +81,8 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(TOOLBAR_STOP, &CMFCTRSuiDlg::OnStopButtonClicked)
 	ON_COMMAND(ID_PROGRAM_DELETESELECTEDITEMS, &CMFCTRSuiDlg::OnProgramDeleteselecteditems)
 	ON_COMMAND(ID_PROGRAM_RUNSEL, &CMFCTRSuiDlg::OnProgramRunsel)
+	ON_COMMAND(TOOLBAR_SETTINGS, &CMFCTRSuiDlg::OnProgramSettings)
+
 	ON_WM_SYSCOMMAND(SC_CLOSE, &CMFCTRSuiDlg::OnSysCommand(UINT , LPARAM))
 	ON_COMMAND(ID_Load_Project, &CMFCTRSuiDlg::OnLoadProject)
 	ON_COMMAND(ID_PROJECT_LASTPROJECTS, &CMFCTRSuiDlg::OnProjectLastprojects)
@@ -319,6 +321,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	// toolbar image config
 	CString mes;
 	CString helpMes;
+
 	
 	for (int i = 0; i < 100; ++i)
 	{
@@ -338,6 +341,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 
 	CBitmap m_Bitmap1,m_Bitmap2,m_Bitmap3,m_Bitmap4;
 
+
 	
 	m_ImageList.Create(16, 16, ILC_COLORDDB , 3, 3);
 
@@ -346,6 +350,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	m_Bitmap3.LoadBitmap(IDB_BITMAP3);
 	m_Bitmap4.LoadBitmap(IDB_BITMAP4);
 	m_ImageList.Add(&m_Bitmap1, RGB(0,0,0));
+
 	m_ImageList.Add(&m_Bitmap2, RGB(0, 0, 0));
 	m_ImageList.Add(&m_Bitmap3, RGB(0, 0, 0));
 	m_ImageList.Add(&m_Bitmap4, RGB(0, 0, 0));
@@ -356,10 +361,19 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		CRect(10, 10, 200, 240), this, 0x1221);*/
 
 	m_Tree.SetImageList(&m_ImageList, TVSIL_NORMAL);
-	dRoots.clear();
+
+	m_PathImageList.Create(32, 32, ILC_COLORDDB, 2, 2);
+
+	CBitmap m_Bitmap5;
+	m_Bitmap5.LoadBitmap(IDB_BITMAP5);
+	m_PathImageList.Add(&m_Bitmap5, RGB(0, 0, 0));
+
+	RootList.SetImageList(&m_PathImageList, LVSIL_SMALL);
+
+	
 	UpdateToolbar(PROJECT_NOTLOADED);
 
-//	HICON icon;
+	//HICON icon;
 
 	//HICON hIcon = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_ICON2));
 	//SetIcon(hIcon, FALSE);
@@ -496,6 +510,10 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 
 		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
+
+		dRoots.clear();
+		RootList.DeleteAllItems();
+
 		ConsoleHide();
 		RunToolsHide();
 	}
@@ -2222,6 +2240,9 @@ void CMFCTRSuiDlg::OnNewProject()
 		}
 		delete[] path;
 	}
+
+	UpdateToolbar(PROJECT_NOTLOADED);
+
 	if (res != IDCANCEL)
 	{
 		BROWSEINFO bi = { 0 };
@@ -2540,4 +2561,20 @@ void CMFCTRSuiDlg::OnInfoInfo()
 		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
 	}
 	// TODO: Add your command handler code here
+}
+
+void CMFCTRSuiDlg::OnProgramSettings()
+{
+	//SetListItemImage(0, PASSED);
+	//SetListItemImage(1, FAILED);
+}
+
+void CMFCTRSuiDlg::SetListItemImage(DWORD index, DWORD image)
+{
+	LVITEMW pitem{ LVIF_IMAGE };
+	pitem.iItem = index;
+	RootList.GetItem(&pitem);
+
+	pitem.iImage = image;
+	RootList.SetItem(&pitem);
 }

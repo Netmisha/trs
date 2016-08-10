@@ -69,7 +69,7 @@ public:
 
 	BOOL InitPool(DWORD max_queue_size);
 	BOOL DestroyPool(bool ignore_queue);
-
+	inline DWORD GetCount(){ return size_; }
 private:
 
 	static DWORD WINAPI ConfigurateThread(PVOID);
