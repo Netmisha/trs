@@ -1205,6 +1205,7 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 	}
 }
 
+// $$$ isStraightSubdirectory(int begin, char* source) - is more approprate
 bool checkDiff(int begin, char* source)
 {
 	int count = 0;
@@ -1220,23 +1221,55 @@ bool checkDiff(int begin, char* source)
 // $$$ Do you really need a reference to a count parameter???
 void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CTreeCtrl* m_Tree, int& count, HTREEITEM* hHead, std::list<Suite*>* checkList, std::vector<HTREEITEM*>* TreeControlsList)
 {
+	// $$$ as I understood it is kind of a guard for redrawing Tree on exactly the same one?! 
 	if (count != suiteColl->size())
 	{
-		char* rootPath = new char[strlen((*it)->get_path()) + 1];
-		strncpy_s(rootPath, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
-		char* rootName = new char[strlen((*it)->getName()) + 1];
-		strncpy_s(rootName, strlen((*it)->getName()) + 1, (*it)->getName(), strlen((*it)->getName()));
-		HTREEITEM* hSuite=new HTREEITEM;
+		// $$$ Warning: if we change our code from using pointers to list to simple list this code crashes
+		// $$$ It is better to avoid calling strlen on the same string twice
+		// $$$ Not for sure, but, maybe, it will be better to use there strcpy_s instead of strncpy_s?!
+		//char* rootPath = new char[strlen((*it)->get_path()) + 1];
+		//strncpy_s(rootPath, strlen((*it)->get_path()) + 1, (*it)->get_path(), strlen((*it)->get_path()));
+		//char* rootName = new char[strlen((*it)->getName()) + 1];
+		//strncpy_s(rootName, strlen((*it)->getName()) + 1, (*it)->getName(), strlen((*it)->getName()));
+	
+		unsigned path_lenght = strlen((*it)->get_path());
+		char* rootPath = new char[path_lenght + 1];
+		strcpy_s(rootPath, path_lenght + 1, (*it)->get_path());
+
+		unsigned name_lenght = strlen((*it)->getName());
+		char* rootName = new char[name_lenght + 1];
+		strcpy_s(rootName, name_lenght + 1, (*it)->getName());
+
+		HTREEITEM* hSuite = new HTREEITEM;
+
+		// $$$ I left it as it was for you with comments to see what are you doing all the time
+		// $$$ It is not harm productivity as far as I know, but all code-styles which I read order to 
+		// keep variable in the smallest possible scope and the most closest to the code, where it used
+		// $$$ I did not remember, that some code-styles reccomended to use auto keyword instead of
+		// explicit iterator name and writing it explicitly is truly speeds up compilation time, but
+		// it is more readable and for sure save you from overtyping :)
+		// P.S. When you read code in notepad without intellisence this suggestion isn't working)
+		// EDIT: second suggestion is irrelavent in this situation because I incorectly thought that you are using this
+		// iterator to iterate the loop. But you done something like this before, so suggestion is still actual
+		// And try to name variable relavently because it is harder to understand what variables such as itHelper and helper
+		// must do.
 		std::list<Suite*>::iterator itHelp = it;
-		for (it; it != suiteColl->end(); ++it)
+
+		// $$$ writing variable name in the initializing section of for-statement is useless and just slowing the program
+		for (/*$$$ it*/; it != suiteColl->end(); ++it)
 		{
+			// $$$ I suggest you to move this checking into for-statement's condition expression in the same order, as I wrote lower
+			//  count == suiteColl->size() && it != suiteColl->end()
 			if (count == suiteColl->size())
 			{
 				break;
 			}
+
 			std::list<Suite*>::iterator helper = std::find(checkList->begin(), checkList->end(), *it);
+			// @ if this suite is already in the list
 			if (helper == (checkList->end()))
 			{
+				// @ checking whether we are not iterating the root path
 				if (strlen((*it)->get_path()) != strlen(rootPath))
 				{
 					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
@@ -1248,45 +1281,80 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 				}
 				else
 				{
+					// $$$ again, despite the path checking is correct, because this else is executed only when path sizes are equal
+					// there might be bugs when comparing names using strncmp function instead of strcmp
+					// $$$ What is the purpose to compare names when pathes are identical and it is imposible for two folders to have the same path. 
 					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)) && !strncmp((*it)->getName(), rootName, strlen(rootName)))
 					{
 						TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 						convertToTCHAR(buf, (*it)->getName());
+
 						*hSuite = m_Tree->InsertItem(buf, 0, 0, *hHead);
 						m_Tree->Expand(*hSuite, TVE_EXPAND);
 						++count;
 						
+						// $$$ the same suggestion about loops
+						// @ inserting all test to the tree-view
 						std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
 						for (iter; iter != (*it)->getList().end(); ++iter)
 						{
-							if (tag)
+							// $$$ The code, which is repeated, should not repetead! (c)
+							//if (tag)
+							//{
+							//	// $$$ again, this code will have a bug when (*iter)->getTag() is a substring of a tag
+							//	if (!strncmp(tag, (*iter)->getTag(), strlen(tag)))
+							//	{
+							//		HTREEITEM* hTest = new HTREEITEM;
+							//		TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+							//		convertToTCHAR(subBuf, (*iter)->getName());
+							//		if (!strncmp((*iter)->getDisable(),"false",strlen("false")))
+							//			*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+							//		if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
+							//			*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
+							//		//m_Tree->Expand(*hTest, TVE_EXPAND);
+							//		m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+							//		TreeControlsList->push_back(hTest);
+							//		delete[] subBuf;
+							//	}
+							//}
+							//else
+							//{
+							//	HTREEITEM* hTest = new HTREEITEM;
+							//	TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+							//	convertToTCHAR(subBuf, (*iter)->getName());
+							//	if (!strncmp((*iter)->getDisable(), "false", strlen("false")))
+							//		*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+							//	if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
+							//		*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
+							//	m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+							//	//m_Tree->Expand(*hTest, TVE_EXPAND);
+							//	TreeControlsList->push_back(hTest);
+							//	delete[] subBuf;
+							//}
+
+							if (!tag || !strcmp(tag, (*iter)->getTag()))
 							{
-								if (!strncmp(tag, (*iter)->getTag(), strlen(tag)))
-								{
-									HTREEITEM* hTest = new HTREEITEM;
-									TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
-									convertToTCHAR(subBuf, (*iter)->getName());
-									if (!strncmp((*iter)->getDisable(),"false",strlen("false")))
-									*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
-									if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
-										*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
-									//m_Tree->Expand(*hTest, TVE_EXPAND);
-									m_Tree->SetItemData(*hTest, (DWORD)(*iter));
-									TreeControlsList->push_back(hTest);
-									delete[] subBuf;
-								}
-							}
-							else
-							{
+								// @ releasing this memory is a TreeControlsList duty
 								HTREEITEM* hTest = new HTREEITEM;
+
+								// $$$ looping allocation/reallocation is a very hrinovyj style.
+								// You should consider some statical array and override it on each iteration
 								TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
 								convertToTCHAR(subBuf, (*iter)->getName());
-								if (!strncmp((*iter)->getDisable(), "false", strlen("false")))
+
+								// $$$ there also was strncmp. I changed it to strcmp
+
+								// $$$ Does you xml-verify check wheather in disable field there is either "true" or "false"?
+								// If yes, this code ispossible to change to faster-one with if-else construction
+								// If no, test wont be added to the list-control but to the TreeControlsList - will be. 
+								// So, it may cause serious consequences.
+								if (!strcmp((*iter)->getDisable(), "false"))
 									*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
-								if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
+								if (!strcmp((*iter)->getDisable(), "true"))
 									*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
-								m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+								
 								//m_Tree->Expand(*hTest, TVE_EXPAND);
+								m_Tree->SetItemData(*hTest, (DWORD)(*iter));
 								TreeControlsList->push_back(hTest);
 								delete[] subBuf;
 							}
@@ -1298,14 +1366,20 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 				}
 			}
 		}
+		// $$$ you intentionally isn't iterating throught the first element of a suiteColl?
+		// $$$ when you need the reverse loop you just can create another iterator and do this
+		// for (auto it = suiteColl->rbegin(); it != suiteColl->rend(); ++it
 		--it;
-		for (it; it != suiteColl->begin(); --it)
+
+		// $$$ For what reason your function looping within collection twice???
+		for (/*$$$ it*/; it != suiteColl->begin(); --it)
 		{
-			
+			// $$$ the same remark as to the loop above
 			if (count == suiteColl->size())
 			{
 				break;
 			}
+
 			std::list<Suite*>::iterator helper = std::find(checkList->begin(), checkList->end(), *it);
 			if (helper == (checkList->end()))
 			{
@@ -1331,24 +1405,39 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
 							for (iter; iter != (*it)->getList().end(); ++iter)
 							{
-								if (tag)
-								{
-									if (!strncmp(tag, (*iter)->getTag(), strlen(tag)))
-									{
-										HTREEITEM* hTest = new HTREEITEM;
-										TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
-										convertToTCHAR(subBuf, (*iter)->getName());
-										if (!strncmp((*iter)->getDisable(), "false", strlen("false")))
-											*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
-										if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
-											*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
-										m_Tree->SetItemData(*hTest, (DWORD)(*iter));
-										//m_Tree->Expand(*hTest, TVE_EXPAND);
-										TreeControlsList->push_back(hTest);
-										delete[] subBuf;
-									}
-								}
-								else
+								// $$$ the same, sa above
+								//if (tag)
+								//{
+								//	if (!strncmp(tag, (*iter)->getTag(), strlen(tag)))
+								//	{
+								//		HTREEITEM* hTest = new HTREEITEM;
+								//		TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+								//		convertToTCHAR(subBuf, (*iter)->getName());
+								//		if (!strncmp((*iter)->getDisable(), "false", strlen("false")))
+								//			*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+								//		if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
+								//			*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
+								//		m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+								//		//m_Tree->Expand(*hTest, TVE_EXPAND);
+								//		TreeControlsList->push_back(hTest);
+								//		delete[] subBuf;
+								//	}
+								//}
+								//else
+								//{
+								//	HTREEITEM* hTest = new HTREEITEM;
+								//	TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
+								//	convertToTCHAR(subBuf, (*iter)->getName());
+								//	if (!strncmp((*iter)->getDisable(), "false", strlen("false")))
+								//		*hTest = m_Tree->InsertItem(subBuf, 3, 3, *hSuite);
+								//	if (!strncmp((*iter)->getDisable(), "true", strlen("true")))
+								//		*hTest = m_Tree->InsertItem(subBuf, 12, 12, *hSuite);
+								//	m_Tree->SetItemData(*hTest, (DWORD)(*iter));
+								//	//m_Tree->Expand(*hTest, TVE_EXPAND);
+								//	TreeControlsList->push_back(hTest);
+								//	delete[] subBuf;
+								//}
+								if (!tag || !strncmp(tag, (*iter)->getTag(), strlen(tag)))
 								{
 									HTREEITEM* hTest = new HTREEITEM;
 									TCHAR* subBuf = new TCHAR[strlen((*iter)->getName()) + 1];
@@ -1361,6 +1450,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 									//m_Tree->Expand(*hTest, TVE_EXPAND);
 									TreeControlsList->push_back(hTest);
 									delete[] subBuf;
+
 								}
 							}
 							checkList->push_back((*it));
@@ -1370,7 +1460,8 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 				}
 			}
 		}
-		
+		// $$$ Eventually, I made your loop above using reverse iterator, because you yet need to process first element too)
+		// EDIT: I reconsider my descision =D
 		if (count != suiteColl->size())
 		{
 			std::list<Suite*>::iterator helper = std::find(checkList->begin(), checkList->end(), *it);
@@ -2274,7 +2365,11 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 				pathA = new char[size];
 				WideCharToMultiByte(CP_ACP, 0, (TCHAR*)str.GetString(), -1, pathA, size, NULL, NULL);
 				
+				// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				// $$$ set Suite's path here
 				HTREEITEM hHead = m_Tree.InsertItem(L"Suites", 0, 0, TVI_ROOT);// $$$ moved declaration there
+				// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 				// $$$ moved it lower : int count = 0;
 				//CString TAG;
 				//DropDown.GetLBText(atoi(tag_), TAG);
