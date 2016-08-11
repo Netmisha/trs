@@ -24,7 +24,10 @@
 
 #define RAW_RESIZIBLE 2
 // CMFCTRSuiDlg dialog
-static bool ifFirstTimeRunned = true;
+
+// $$$ you are using this variable only inside two CMFCTRSuiDlg methods.
+// It will be better to hide it inside the CMFCTRSuiDlg class
+static bool ifFirstTimeRunned = true; 
 bool ifCancelPressed;
 bool RunEndCheck;
 bool SaveAsPressed = true;
@@ -687,29 +690,29 @@ void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
-DWORD WINAPI RunSuits(LPVOID arg)
-{
-	//RunParameters param;
-	//param = *(RunParameters*)arg;
-	//std::list<Suite*> coll = *Manager.List(param.path, param.name, param.tag);
-	//int count = 0;
-	//for each(auto it in coll)
-	//{
-	//	count += it->getList().size();
-	//	for each(auto iter in it->getList())
-	//	{
-	//		if (iter->getRepeat())
-	//		{
-	//			count += atoi(iter->getRepeat());
-	//			--count;
-	//		}
-	//	}
-	//}
-	//param.progress->SetRange(0, count);
-	//param.progress->SetStep(1);
-	//Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
-	return 0;
-}
+//DWORD WINAPI RunSuits(LPVOID arg)
+//{
+//	//RunParameters param;
+//	//param = *(RunParameters*)arg;
+//	//std::list<Suite*> coll = *Manager.List(param.path, param.name, param.tag);
+//	//int count = 0;
+//	//for each(auto it in coll)
+//	//{
+//	//	count += it->getList().size();
+//	//	for each(auto iter in it->getList())
+//	//	{
+//	//		if (iter->getRepeat())
+//	//		{
+//	//			count += atoi(iter->getRepeat());
+//	//			--count;
+//	//		}
+//	//	}
+//	//}
+//	//param.progress->SetRange(0, count);
+//	//param.progress->SetStep(1);
+//	//Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
+//	return 0;
+//}
 
 DWORD WINAPI ToRun(LPVOID arg)
 {
@@ -1214,7 +1217,7 @@ bool checkDiff(int begin, char* source)
 	}
 	return count == 1;
 }
-
+// $$$ Do you really need a reference to a count parameter???
 void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CTreeCtrl* m_Tree, int& count, HTREEITEM* hHead, std::list<Suite*>* checkList, std::vector<HTREEITEM*>* TreeControlsList)
 {
 	if (count != suiteColl->size())
@@ -1472,7 +1475,7 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	
 	suiteColl = Manager.List(pathA, nullptr, nullptr);
 	HTREEITEM hHead;
-	hHead = m_Tree.InsertItem(L"Suites", 0,0,TVI_ROOT);
+	hHead = m_Tree.InsertItem(path, 0, 0, TVI_ROOT);
 	
 	int count = 0;
 	std::list<Suite*>::iterator it = suiteColl->begin();
@@ -1572,6 +1575,8 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 		delete[] buf;
 	}
 	delete[] pathA;
+
+	// ! expanding tree
 	m_Tree.Expand(hHead, TVE_EXPAND);
 	ExpandTree(m_Tree, hHead);
 }
@@ -2220,23 +2225,26 @@ void CMFCTRSuiDlg::OnSaveAs()
 void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 {
 	int count = DropDown.GetCurSel();
-	if (count > -1)
+	if (count > -1) // $$$ (count != CB_ERR) 
 	{
-		int lic = 2;
+		int lic = 2; // $$$ int digits_amount = 1; ( or simply digits )
 		while (count /= 10)
 		{
 			++lic;
 		}
-		char* tag_ = new char[lic];
-		sprintf_s(tag_, lic, "%d", DropDown.GetCurSel());
+		char* tag_ = new char[lic]; // $$$ char* tag = new char[digits + 1]; name tag_ with underscore is seems to belong to a class' data member
+		sprintf_s(tag_, lic, "%d", DropDown.GetCurSel()); // $$$ digits + 1
 		pro_.setTag(tag_);
 		
 		if (!ifFirstTimeRunned)
 		{
 			m_Tree.DeleteAllItems();
-			int amount = 0;
-			HTREEITEM hHead;
-			char* pathA = nullptr;
+			// $$$ I deleted this: int amount = 0;
+
+			// $$$ HTREEITEM hHead; I moved thise declarations closer to code where they are using
+			// $$$ char* pathA = nullptr;
+			
+			// @ will hold value of the last checked list item
 			int check = -1;
 			for (int i = 0; i < RootList.GetItemCount(); ++i)
 			{
@@ -2245,30 +2253,56 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 					check = i;
 				}
 			}
-			if (check>-1&&suiteColl)
+
+			if (check > -1 && suiteColl) // $$$ (check>-1&&suiteColl) - you did not make spaces between logical conditions and operators. It is really hard to read
 			{
 				CString str = RootList.GetItemText(check, 0);
-				std::vector<HTREEITEM*>::iterator iteratorr = TreeControlsList.begin();
-				for (iteratorr; iteratorr != TreeControlsList.end(); ++iteratorr)
+				// $$$
+				//std::vector<HTREEITEM*>::iterator iteratorr = TreeControlsList.begin();
+				//for (iteratorr; iteratorr != TreeControlsList.end(); ++iteratorr)
+				//{
+				//	delete *iteratorr;
+				//}
+				for (auto iterator = TreeControlsList.begin(); iterator != TreeControlsList.end(); ++iterator)
 				{
-					delete *iteratorr;
+					delete *iterator;
 				}
 				TreeControlsList.clear();
+
+				char* pathA = nullptr;// $$$ moved declaration there 
 				int size = WideCharToMultiByte(CP_ACP, 0, (TCHAR*)str.GetString(), -1, pathA, 0, NULL, NULL);
 				pathA = new char[size];
 				WideCharToMultiByte(CP_ACP, 0, (TCHAR*)str.GetString(), -1, pathA, size, NULL, NULL);
-				hHead = m_Tree.InsertItem(L"Suites", 0, 0, TVI_ROOT);
-				int count = 0;
+				
+				HTREEITEM hHead = m_Tree.InsertItem(L"Suites", 0, 0, TVI_ROOT);// $$$ moved declaration there
+				// $$$ moved it lower : int count = 0;
+				//CString TAG;
+				//DropDown.GetLBText(atoi(tag_), TAG);
+				//char* search = fromCStringToChar(TAG);
+
+				// $$$
+				//std::list<Suite*>::iterator Delit = suiteColl->begin();
+				//for (Delit; Delit != suiteColl->end(); ++Delit)
+				//{
+				//	delete (*Delit);
+				//}
+				// ===============================================================================
+				// $$$ you are constantly using code to delete pointed by container objects and then the container by itself
+				// It will be greate to move all this repeated code into separete function 
+				for (auto iterator = suiteColl->begin(); iterator != suiteColl->end(); ++iterator)
+				{
+					delete (*iterator);
+				}
+				delete suiteColl;
+				// ===============================================================================
+
 				CString TAG;
 				DropDown.GetLBText(atoi(tag_), TAG);
 				char* search = fromCStringToChar(TAG);
-				std::list<Suite*>::iterator Delit = suiteColl->begin();
-				for (Delit; Delit != suiteColl->end(); ++Delit)
-				{
-					delete (*Delit);
-				}
-				delete suiteColl;
-				if (!strncmp(search, "All", strlen("All")))
+
+				// $$$ I commented you if-condition, because it will fail as soon as some tag will start with "All" substring
+				//if (!strncmp(search, "All", strlen("All")))
+				if (!strcmp(search, "All"))
 				{
 					suiteColl = Manager.List(pathA, nullptr, nullptr);
 				}
@@ -2277,33 +2311,67 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 					suiteColl = Manager.List(pathA, nullptr, search);
 				}
 				delete[] search;
-				std::list<Suite*>::iterator it = suiteColl->begin();
-				count = strlen((*it)->get_path());
-				for (it; it != suiteColl->end(); ++it)
+				// $$$ your previous code is going to crash when Manager.List returns an empty list
+				// so I reccomend to add here the check-statement
+
+				//if (!suiteColl->size())
+				//	return;
+
+
+				// $$$ this algorithm is really unreadable and unsufficient. You wrote it with O(2n) time complexity
+				// but with a price of one additional iterator
+
+				//std::list<Suite*>::iterator it = suiteColl->begin();
+				//// $$$ I commented your declarition code of count variable but, as for me, you can freely use it
+				//// there because variable with the same name exust in the higher scope, which you are not using anymore
+ 
+				//count = strlen((*it)->get_path()); 
+				//for (it; it != suiteColl->end(); ++it)
+				//{
+				//	if (strlen((*it)->get_path()) < count)
+				//	{
+				//		count = strlen((*it)->get_path());
+				//	}
+				//}
+				//--it;
+
+				//std::list<Suite*> checkList;
+				//int chtoeto = 0; // I really love you, man)) Perfect variable)
+				//for (it; it != suiteColl->begin(); --it)
+				//{
+				//	if (strlen((*it)->get_path()) == count)
+				//	{
+				//		TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &TreeControlsList);
+				//	}
+				//}
+
+				//if (strlen((*it)->get_path()) == count)
+				//{
+				//	TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &TreeControlsList);
+				//}
+
+				auto root_suite = suiteColl->begin();
+				unsigned min_lenght = INT_MAX;
+
+				for (auto suite = suiteColl->begin(); suite != suiteColl->end(); ++suite)
 				{
-					if (strlen((*it)->get_path()) < count)
+					if (strlen((*suite)->get_path()) < min_lenght)
 					{
-						count = strlen((*it)->get_path());
+						min_lenght = strlen((*suite)->get_path());
+						root_suite = suite;
 					}
 				}
-				--it;
+				// $$$ if you create both this variable only to force TreeParse run, it will be better to 
+				// reconsider roles of TreeParse parameters and made some of them unnecessary
 				std::list<Suite*> checkList;
 				int chtoeto = 0;
-				for (it; it != suiteColl->begin(); --it)
-				{
-					if (strlen((*it)->get_path()) == count)
-					{
-						TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &TreeControlsList);
-					}
-				}
-				if (strlen((*it)->get_path()) == count)
-				{
-					TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &TreeControlsList);
-				}
+				TreeParse(root_suite, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &TreeControlsList);
+				
+				delete[] tag_;
 			}
 		}
+
 		ifFirstTimeRunned = false;
-		delete[] tag_;
 	}
 	// TODO: Add your control notification handler code here
 }
@@ -2312,8 +2380,9 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 void CMFCTRSuiDlg::OnCbnSelchangeCombo2()
 {
 	int count = ThreadsComboBox.GetCurSel();
-	if (count > -1)
+	if (count > -1) // $$$ (count != CB_ERR)
 	{
+		// $$$ the same suggestions as in OnCbnSelchangeCombo1 method
 		int lic = 2;
 		while (count /= 10)
 		{
@@ -2335,6 +2404,7 @@ void CMFCTRSuiDlg::OnStopButtonClicked()
 
 void CMFCTRSuiDlg::OnCbnSelchangeCombo3()
 {
+	// $$$ the same suggestions as in OnCbnSelchangeCombo1 method
 	int count = m_NameBox.GetCurSel();
 	if (count > -1)
 	{
@@ -2605,18 +2675,24 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 		case INDEXTOSTATEIMAGEMASK(BST_CHECKED + 1): // new state: checked
 		{
 			dRoots.push_back(pNMLV->iItem);
+
+			// $$$ Where you add appropriate names and tags to the comboboxes?
 			TagColl.clear();
-			NameColl.clear();
 			DropDown.ResetContent();
 			DropDown.AddString(L"All");
+			DropDown.SetCurSel(0);
+
+			NameColl.clear();
 			m_NameBox.ResetContent();
 			m_NameBox.AddString(L"All");
-				DropDown.SetCurSel(0);
-				m_NameBox.SetCurSel(0);
-				ThreadsComboBox.SetCurSel(9);
-				CMFCTRSuiDlg::OnCbnSelchangeCombo1();
-				CMFCTRSuiDlg::OnCbnSelchangeCombo2();
-				CMFCTRSuiDlg::OnCbnSelchangeCombo3();
+			
+			m_NameBox.SetCurSel(0);
+				
+			ThreadsComboBox.SetCurSel(9);
+				
+			CMFCTRSuiDlg::OnCbnSelchangeCombo1();
+			CMFCTRSuiDlg::OnCbnSelchangeCombo2();
+			CMFCTRSuiDlg::OnCbnSelchangeCombo3();
 			break;
 		}
 		case INDEXTOSTATEIMAGEMASK(BST_UNCHECKED + 1): // new state: unchecked

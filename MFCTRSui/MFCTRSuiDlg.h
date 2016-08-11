@@ -156,7 +156,8 @@ protected:
 	CComboBox DropDown;
 	CComboBox ThreadsComboBox;
 	ReportManager* reportManag;
-	std::list<Suite*>* suiteColl;
+
+	std::list<Suite*>* suiteColl; // $$$ I founded the code where you check size and iterate this list, but I did not find where you initialize it. EDIT: now I found it
 	bool is_running = false;
 //	CImageList* m_ImageList;
 public:

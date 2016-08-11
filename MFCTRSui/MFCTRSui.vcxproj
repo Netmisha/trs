@@ -147,34 +147,6 @@
     <None Include="res\MFCTRSui.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\1470844019_Check.bmp" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Artdesigner-Fliraneo-Photo.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Delete.png" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470668670_Security_guard.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470668899_editor-notebook-add-new-outline-stroke.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470668925_editor-document-file-add-2-outline-stroke.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470668967_editor-folder-add-glyph.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470669393_editor-floopy-dish-save-outline-stroke.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470669402_BT_save.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470670281_floppy_disk_save.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470670514_save_as.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470672115_command_line_prompt_shell.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470672123_hammer_tool.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470672433_Add.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470672719_folder-new.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470672725_document-open.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470672980_Cancel.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470672980_Cancel1111.bmp" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470672980_Cancel1111.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470674085_our_process_2.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470674240_Play.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470674385_Play.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470674393_play-triangle-media-shape.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470675125_stop.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470675263_add.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\1470675274_cross.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\Oxygen-Icons.org-Oxygen-Actions-document-save-as.ico" />
-    <Image Include="C:\Users\oleh.onyshchak\Desktop\Icons\Oxygen-Icons.org-Oxygen-Actions-folder-new.ico" />
     <Image Include="res\bitmap1.bmp" />
     <Image Include="res\bitmap2.bmp" />
     <Image Include="res\bitmap3.bmp" />

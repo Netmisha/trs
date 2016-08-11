@@ -92,6 +92,8 @@ bool ProjectProperties::setThreads(char* threads_)
 	{
 		if (threads)
 		{
+			// $$$ It will be better to check wheater threads can already contain 
+			// a new value and override it instead of reallocating
 			delete[] threads;
 			threads = new char[strlen(threads_) + 1];
 			strncpy_s(threads, strlen(threads_) + 1, threads_, strlen(threads_));
