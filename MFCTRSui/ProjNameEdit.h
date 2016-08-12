@@ -24,6 +24,12 @@ public:
 	afx_msg void OnBnClickedOk();
 	CEdit name_edit;
 	bool SaveProject();
+protected:
+	CButton m_ButtonBrowse;
+	CEdit m_EditLocation;
+	CString m_Location;
+public:
+	afx_msg void OnBnClickedBrowse();
 };
 
 extern ProjectProperties pro_;

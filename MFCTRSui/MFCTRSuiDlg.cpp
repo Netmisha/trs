@@ -2539,32 +2539,21 @@ void CMFCTRSuiDlg::OnNewProject()
 
 	if (res != IDCANCEL)
 	{
-		BROWSEINFO bi = { 0 };
-		bi.lpszTitle = _T("Select Folder");
-		LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-		if (pidl != 0)
-		{
-			// get the name of the folder
-			TCHAR path[MAX_PATH];
-			SHGetPathFromIDList(pidl, path);
-			char* pathA = convertToChar(path);
-			pro_.setPath(pathA);
+		//BROWSEINFO bi = { 0 };
+		//bi.lpszTitle = _T("Select Folder");
+		//LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+		//if (pidl != 0)
+		//{
+		//	// get the name of the folder
+		//	TCHAR path[MAX_PATH];
+		//	SHGetPathFromIDList(pidl, path);
+		//	char* pathA = convertToChar(path);
+		//	pro_.setPath(pathA);
+
 			ProjNameEdit NameDlg;
 			int res = NameDlg.DoModal();
-			if (res == IDOK)
-			{
-				//			List->ResetContent();
-				IMalloc * imalloc = 0;
-				if (SUCCEEDED(SHGetMalloc(&imalloc)))
-				{
-					imalloc->Free(pidl);
-					imalloc->Release();
-				}
-			}
-			else
-			{
+			if (res != IDOK)
 				return;
-			}
 
 			int size = strlen("Test manager : ");
 			char* WindowLine = new char[size + strlen(pro_.getName()) + 1];
@@ -2581,7 +2570,7 @@ void CMFCTRSuiDlg::OnNewProject()
 			m_NameBox.EnableWindow(true);
 			RootList.SetItemState(0, LVIS_SELECTED, LVIS_SELECTED);
 			RootList.SetSelectionMark(0);
-		}
+		//}
 	}
 	// TODO: Add your command handler code here
 }
