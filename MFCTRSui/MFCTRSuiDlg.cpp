@@ -307,7 +307,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON7));
 		pList->Replace(3, hIcon_1); // not 5 as a separate is not an image
 
-		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON9));
+		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON8));
 		pList->Replace(4, hIcon_1); // not 5 as a separate is not an image
 	
 		bar.SetImageList(pList);
@@ -485,6 +485,8 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 		}
 		m_Menu->EnableMenuItem(ID_New_Project, MF_BYCOMMAND | MF_ENABLED);
 		m_Menu->EnableMenuItem(ID_Load_Project, MF_BYCOMMAND | MF_ENABLED);
+
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_REFRESH);
 	}
 
 	if (mask & PROJECT_UPLOADED)
@@ -575,6 +577,20 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 
 			m_Tree.DeleteAllItems();
 		}
+		int index = -1;
+		for (int i = 0; i < RootList.GetItemCount(); ++i)
+		{
+			if (RootList.GetItemState(i, LVIS_SELECTED))
+			{
+				index = i;
+				break;
+			}
+		}
+
+		if (index < 0)
+			m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_REFRESH);
+		else
+			m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_REFRESH, false);
 	}
 }
 
@@ -2367,7 +2383,7 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 				
 				// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				// $$$ set Suite's path here
-				HTREEITEM hHead = m_Tree.InsertItem(L"Suites", 0, 0, TVI_ROOT);// $$$ moved declaration there
+				HTREEITEM hHead = m_Tree.InsertItem(str.GetString(), 0, 0, TVI_ROOT);// $$$ moved declaration there
 				// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 				// $$$ moved it lower : int count = 0;
@@ -2868,8 +2884,9 @@ void CMFCTRSuiDlg::OnProgramRefresh()
 				break;
 			}
 		}
-		//if (index < 0)
-		//	return;
+		if (index < 0)
+			return;
+
 		m_Tree.DeleteAllItems();
 
 		CString str = RootList.GetItemText(index, 0);
