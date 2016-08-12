@@ -22,7 +22,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiApp, CWinApp)
 	ON_BN_CLICKED(IDOK, &CMFCTRSuiApp::OnBnClickedOk)
 	ON_EN_CHANGE(IDC_EDIT1, &CMFCTRSuiApp::OnEnChangeEdit1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CMFCTRSuiApp::OnBnClickedButton2)
-	ON_COMMAND(TOOLBAR_SAVE, &CMFCTRSuiApp::OnSaveProject)
+//	ON_COMMAND(TOOLBAR_SAVE, &CMFCTRSuiApp::OnSaveProject)
 	ON_COMMAND(ID_INFO_INFO, &CMFCTRSuiApp::OnInfoInfo)
 END_MESSAGE_MAP()
 
@@ -122,12 +122,12 @@ void CMFCTRSuiApp::OnBnClickedButton2()
 
 
 
-void CMFCTRSuiApp::OnSaveProject()
-{
-	MessageBox(NULL, _T("Project was saved"), _T("Note:"), MB_ICONINFORMATION | MB_OK);
-	pro_.SaveProject(List);
-	// TODO: Add your command handler code here
-}
+//void CMFCTRSuiApp::OnSaveProject()
+//{
+//	MessageBox(NULL, _T("Project was saved"), _T("Note:"), MB_ICONINFORMATION | MB_OK);
+//	pro_.SaveProject(List);
+//	// TODO: Add your command handler code here
+//}
 
 
 void CMFCTRSuiApp::OnInfoInfo()

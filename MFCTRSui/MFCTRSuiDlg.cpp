@@ -96,6 +96,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO3, &CMFCTRSuiDlg::OnCbnSelchangeCombo3)
 	ON_COMMAND(ID_New_Project, &CMFCTRSuiDlg::OnNewProject)
 	ON_NOTIFY_EX(TTN_NEEDTEXTA, 0, &CMFCTRSuiDlg::OnTtnNeedText)
+	ON_COMMAND(TOOLBAR_SAVE, &CMFCTRSuiDlg::OnSaveProject)
 	ON_NOTIFY_EX(TTN_NEEDTEXTW, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
@@ -494,17 +495,17 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 
 	if (mask & PROJECT_UPLOADED)
 	{// mask = PROJECT_UPLOADED | ...
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE, false);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS, false);
-	//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
+	//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE, false);
+	//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS, false);
+	////	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
 
-	//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY);
+	////	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
+	//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY);
+	//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY);
 
 
-		m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_ENABLED);
-		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_ENABLED);
+	//	m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_ENABLED);
+	//	m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_ENABLED);
 
 		if (RootList.GetItemCount())
 		{
@@ -514,14 +515,14 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 	}
 	else if (mask & PROJECT_NOTLOADED)
 	{
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS);
+		//m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE);
+		//m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS);
 
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY, false);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY, false);
+		//m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY, false);
+		//m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY, false);
 
-		m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
-		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		//m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		//m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
 		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
 //		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
@@ -594,6 +595,32 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 			m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_REFRESH);
 		else
 			m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_REFRESH, false);
+	}
+	if (RootList.GetItemCount())
+	{
+
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS, false);
+		//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
+
+		//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY);
+
+
+		m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_ENABLED);
+		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_ENABLED);
+	}
+	else
+	{
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS);
+
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY, false);
+
+		m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 	}
 }
 
@@ -2073,6 +2100,8 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	if (nID == SC_CLOSE)
 	{
 		int res=0;
+
+
 		if (RootList.GetItemCount() > 0)
 		{
 			char* path = pro_.getProjPath();
@@ -2524,6 +2553,18 @@ void CMFCTRSuiDlg::OnStopButtonClicked()
 {
 	Manager.Stop();
 }
+
+void CMFCTRSuiDlg::OnSaveProject()
+{
+	if (!(pro_.getName() && pro_.getPath()))
+		OnSaveAs();
+	else
+		pro_.SaveProject(List);
+
+	MessageBox( _T("Project was saved"), _T(""), MB_ICONINFORMATION | MB_OK);
+	// TODO: Add your command handler code here
+}
+
 
 void CMFCTRSuiDlg::OnCbnSelchangeCombo3()
 {

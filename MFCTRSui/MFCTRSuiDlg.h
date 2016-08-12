@@ -140,6 +140,7 @@ public:
 	afx_msg void OnPauseButtonClicked();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnLoadProject();
+	afx_msg void OnSaveProject();
 	afx_msg void OnProjectLastprojects();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnViewConsole();
