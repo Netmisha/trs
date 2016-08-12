@@ -84,7 +84,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(TOOLBAR_STOP, &CMFCTRSuiDlg::OnStopButtonClicked)
 	ON_COMMAND(ID_PROGRAM_DELETESELECTEDITEMS, &CMFCTRSuiDlg::OnProgramDeleteselecteditems)
 	ON_COMMAND(ID_PROGRAM_RUNSEL, &CMFCTRSuiDlg::OnProgramRunsel)
-	ON_COMMAND(TOOLBAR_SETTINGS, &CMFCTRSuiDlg::OnProgramSettings)
+	ON_COMMAND(TOOLBAR_REFRESH, &CMFCTRSuiDlg::OnProgramRefresh)
 
 	ON_WM_SYSCOMMAND(SC_CLOSE, &CMFCTRSuiDlg::OnSysCommand(UINT , LPARAM))
 	ON_COMMAND(ID_Load_Project, &CMFCTRSuiDlg::OnLoadProject)
@@ -2649,7 +2649,7 @@ BOOL CMFCTRSuiDlg::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 		}
 		case TOOLBAR_SETTINGS:
 		{
-								sw = "Settings";
+								sw = "Refresh";
 								lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
 								break;
 		}
@@ -2724,7 +2724,7 @@ BOOL CMFCTRSuiDlg::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 		}
 		case TOOLBAR_SETTINGS:
 		{
-								 sa = "Settings";
+								 sa = "Refresh";
 								 lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
 								 break;
 		}
@@ -2855,12 +2855,80 @@ void CMFCTRSuiDlg::OnInfoInfo()
 	// TODO: Add your command handler code here
 }
 
-void CMFCTRSuiDlg::OnProgramSettings()
+void CMFCTRSuiDlg::OnProgramRefresh()
 {
-	//RootList.SetSelectionMark(0);
-	//RootList.SetItemState(0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-	//SetListItemImage(0, PASSED);
-	//SetListItemImage(1, FAILED);
+	if (RootList.GetItemCount())
+	{
+		int index = -1;
+		for (int i = 0; i < RootList.GetItemCount(); ++i)
+		{
+			if (RootList.GetItemState(i, LVIS_SELECTED))
+			{
+				index = i;
+				break;
+			}
+		}
+		//if (index < 0)
+		//	return;
+		m_Tree.DeleteAllItems();
+
+		CString str = RootList.GetItemText(index, 0);
+		for (auto iterator = TreeControlsList.begin(); iterator != TreeControlsList.end(); ++iterator)
+		{
+			delete *iterator;
+		}
+		TreeControlsList.clear();
+
+		char path[MAX_PATH];
+		WideCharToMultiByte(CP_ACP, 0, (TCHAR*)str.GetString(), -1, path, MAX_PATH, NULL, NULL);
+
+
+		HTREEITEM hHead = m_Tree.InsertItem(str.GetString(), 0, 0, TVI_ROOT);
+
+		for (auto iterator = suiteColl->begin(); iterator != suiteColl->end(); ++iterator)
+		{
+			delete (*iterator);
+		}
+		delete suiteColl;
+		// ===============================================================================
+
+
+		int count = DropDown.GetCurSel();
+		// $$$ I commented you if-condition, because it will fail as soon as some tag will start with "All" substring
+		//if (!strncmp(search, "All", strlen("All")))
+		if (count > 0)
+		{
+			CString tag;
+			DropDown.GetLBText(count, tag);
+			char * tagA = new char[DropDown.GetLBTextLen(count) + 1];
+			WideCharToMultiByte(CP_ACP, 0, (TCHAR*)str.GetString(), -1, path, DropDown.GetLBTextLen(count) + 1, NULL, NULL);
+
+			suiteColl = Manager.List(path, nullptr, tagA);
+			delete tagA;
+		}
+		else
+		{
+			suiteColl = Manager.List(path, nullptr, nullptr);
+		}
+
+
+		auto root_suite = suiteColl->begin();
+		unsigned min_lenght = INT_MAX;
+
+		for (auto suite = suiteColl->begin(); suite != suiteColl->end(); ++suite)
+		{
+			if (strlen((*suite)->get_path()) < min_lenght)
+			{
+				min_lenght = strlen((*suite)->get_path());
+				root_suite = suite;
+			}
+		}
+
+		std::list<Suite*> checkList;
+		int chtoeto = 0;
+		TreeParse(root_suite, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &TreeControlsList);
+		m_Tree.Expand(hHead, TVE_EXPAND);
+	}
 }
 
 void CMFCTRSuiDlg::SetListItemImage(DWORD index, DWORD image)

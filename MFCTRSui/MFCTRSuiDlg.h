@@ -132,7 +132,7 @@ public:
 	CProgressCtrl subm_Progress;
 	CEdit Time_running_edit;
 
-	afx_msg void OnProgramSettings();
+	afx_msg void OnProgramRefresh();
 	afx_msg void OnProgramAddfolder();
 	afx_msg void OnProgramDeleteselecteditems();
 	afx_msg void OnProgramRunsel();
