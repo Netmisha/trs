@@ -101,6 +101,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
 	ON_NOTIFY(NM_RCLICK, IDC_TREE1, &CMFCTRSuiDlg::OnNMRClickTree1)
 	ON_COMMAND(ID_INFO_INFO, &CMFCTRSuiDlg::OnInfoInfo)
+	ON_COMMAND(ID_EXIT, &CMFCTRSuiDlg::OnExit)
 END_MESSAGE_MAP()
 
 
@@ -2956,4 +2957,10 @@ void CMFCTRSuiDlg::SetListItemImage(DWORD index, DWORD image)
 
 	pitem.iImage = image;
 	RootList.SetItem(&pitem);
+}
+
+void CMFCTRSuiDlg::OnExit()
+{
+	OnSysCommand(SC_CLOSE, NULL);
+//	EndDialog(IDCANCEL);
 }

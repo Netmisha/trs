@@ -178,6 +178,7 @@ public:
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnInfoInfo();
+	afx_msg void OnExit();
 };
 
 //extern CListBox* List;
