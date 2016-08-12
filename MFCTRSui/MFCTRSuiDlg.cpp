@@ -488,15 +488,17 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 		m_Menu->EnableMenuItem(ID_Load_Project, MF_BYCOMMAND | MF_ENABLED);
 
 		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_REFRESH);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
 	}
 
 	if (mask & PROJECT_UPLOADED)
 	{// mask = PROJECT_UPLOADED | ...
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE, false);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS, false);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
+	//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
 
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
+	//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY);
 
@@ -522,7 +524,7 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
 		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
+//		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
 
 		dRoots.clear();
 		RootList.DeleteAllItems();
@@ -1172,6 +1174,14 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 	{
 		m_Progress.SetPos(0);
 
+		if (!(pro_.getName() && pro_.getPath()))
+		{
+			MessageBox(TEXT("You must create a new project!"), TEXT(""), MB_ICONINFORMATION | MB_OK);
+			OnNewProject();
+			if (!(pro_.getName() && pro_.getPath()))
+				return;
+		}
+
 		short cIndex;
 		cIndex = DropDown.GetCurSel();
 		CString fontName;
@@ -1235,6 +1245,7 @@ bool checkDiff(int begin, char* source)
 	}
 	return count == 1;
 }
+
 // $$$ Do you really need a reference to a count parameter???
 void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CTreeCtrl* m_Tree, int& count, HTREEITEM* hHead, std::list<Suite*>* checkList, std::vector<HTREEITEM*>* TreeControlsList)
 {
@@ -2550,23 +2561,11 @@ void CMFCTRSuiDlg::OnNewProject()
 			}
 		}
 		delete[] path;
+		UpdateToolbar(PROJECT_NOTLOADED);
 	}
-
-	UpdateToolbar(PROJECT_NOTLOADED);
 
 	if (res != IDCANCEL)
 	{
-		//BROWSEINFO bi = { 0 };
-		//bi.lpszTitle = _T("Select Folder");
-		//LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-		//if (pidl != 0)
-		//{
-		//	// get the name of the folder
-		//	TCHAR path[MAX_PATH];
-		//	SHGetPathFromIDList(pidl, path);
-		//	char* pathA = convertToChar(path);
-		//	pro_.setPath(pathA);
-
 			ProjNameEdit NameDlg;
 			int res = NameDlg.DoModal();
 			if (res != IDOK)
@@ -2581,13 +2580,11 @@ void CMFCTRSuiDlg::OnNewProject()
 			SetWindowText(WinBuf);
 			delete[] WindowLine;
 			delete[] WinBuf;
+
 			UpdateToolbar(PROJECT_UPLOADED);
 			DropDown.EnableWindow(true);
 			ThreadsComboBox.EnableWindow(true);
 			m_NameBox.EnableWindow(true);
-			RootList.SetItemState(0, LVIS_SELECTED, LVIS_SELECTED);
-			RootList.SetSelectionMark(0);
-		//}
 	}
 	// TODO: Add your command handler code here
 }
