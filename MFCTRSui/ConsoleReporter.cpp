@@ -9,6 +9,11 @@ ConsoleReporter::ConsoleReporter(CEdit*edit, CProgressCtrl* progress_)
 	failedAmount = 0;
 	console_output = edit;
 	progress = progress_;
+//	console_output->SetSel(0, -1);
+	//int start = 0;
+	//int end = edit->GetWindowTextLength();
+	//edit->SetSel(start, end);
+	//edit->Clear();
 }
 
 bool ConsoleReporter::setPasCol(std::vector<TRSInfo>* PC)
@@ -134,14 +139,13 @@ void ConsoleReporter::End()
 
 void ConsoleReporter::Begin()
 {
-
 	SYSTEMTIME time;
 
 	GetLocalTime(&time);
 	SYSTEM_INFO siSysInfo;
 	GetSystemInfo(&siSysInfo);
 	int end = console_output->GetWindowTextLength();
-	console_output->SetSel(end, end);
+	console_output->SetSel(0, end);
 	console_output->ReplaceSel(L"System info: ");
 	CString mess;
 	mess.Format(L"%d", siSysInfo.dwProcessorType);

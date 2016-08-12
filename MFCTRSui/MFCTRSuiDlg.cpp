@@ -808,7 +808,7 @@ DWORD WINAPI ToRun(LPVOID arg)
 		}
 	}
 
-	if (FailedC.size())
+//	if (FailedC.size())
 
 	param->manager->End();
 	delete param->manager;
