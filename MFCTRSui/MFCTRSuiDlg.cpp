@@ -33,6 +33,7 @@ bool RunEndCheck;
 bool SaveAsPressed = true;
 int ListSelection;
 CToolBar* ToolBar;
+//CListCtrl* List;
 CToolBar* Bar;
 CComboBox* Tag;
 CComboBox* Threads;
@@ -403,6 +404,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	COLL = &mapOfColls;
 	FAIL = &FailMap;
 	PASS = &PasMap;
+	
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -865,7 +867,7 @@ DWORD WINAPI ToRun(LPVOID arg)
 		}
 		TREECTRL->DeleteAllItems();
 		MainDialog->Info(var.get_path());
-
+		
 
 	}
 	
@@ -1232,6 +1234,8 @@ DWORD WINAPI Timer(LPVOID arg)
 
 void CMFCTRSuiDlg::OnProgramRunsel()
 {
+	TestsTimerDialog dlg;
+	dlg.DoModal();
 	if (dRoots.size())
 	{
 		m_Progress.SetPos(0);
@@ -1640,6 +1644,7 @@ void ExpandTree(CTreeCtrl& m_Tree, HTREEITEM& hHead)
 
 std::vector<HTREEITEM*> CMFCTRSuiDlg::Info(TCHAR* path)
 {
+	
 	TagColl.clear();
 	NameColl.clear();
 	DropDown.ResetContent();
@@ -1648,7 +1653,7 @@ std::vector<HTREEITEM*> CMFCTRSuiDlg::Info(TCHAR* path)
 	m_NameBox.ResetContent();
 	m_NameBox.AddString(L"All");
 	m_NameBox.SetCurSel(0);
-	
+
 	char* pathA = nullptr;
 	int size = WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, 0, NULL, NULL);
 	pathA = new char[size];

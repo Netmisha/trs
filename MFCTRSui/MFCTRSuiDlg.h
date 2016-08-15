@@ -9,7 +9,7 @@
 #include "Resource.h"
 #include "RunDialog.h"
 #include "ProjNameEdit.h"
-
+#include "TestsTimerDialog.h"
 #include "afxdialogex.h"
 #include "TRSLibrary\TRSManager.h"
 

@@ -13,7 +13,7 @@
 #define new DEBUG_NEW
 #endif
 
-CListCtrl* List;
+
 
 // CMFCTRSuiApp
 

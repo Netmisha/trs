@@ -119,6 +119,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestInfo.h" />
+    <ClInclude Include="TestsTimerDialog.h" />
     <ClInclude Include="ToRunParameters.h" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +140,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TestInfo.cpp" />
+    <ClCompile Include="TestsTimerDialog.cpp" />
     <ClCompile Include="ToRunParameters.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -169,10 +171,8 @@
     <Image Include="res\Icons\1470675125_stop.ico" />
     <Image Include="res\Icons\1470675263_add.ico" />
     <Image Include="res\Icons\1470675274_cross.ico" />
-
     <Image Include="res\Icons\1471017338_view-refresh.ico" />
     <Image Include="res\icons\icon8.ico" />
-
     <Image Include="res\Icons\Oxygen-Icons.org-Oxygen-Actions-document-save-as.ico" />
     <Image Include="res\MFCTRSui.ico" />
     <Image Include="res\toolbar1.bmp" />

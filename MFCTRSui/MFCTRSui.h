@@ -42,3 +42,4 @@ extern CToolBar* Bar;
 extern CComboBox* Tag;
 extern CComboBox* Threads;
 extern CComboBox* Name;
+extern CListCtrl* List;
