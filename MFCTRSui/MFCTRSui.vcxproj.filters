@@ -170,6 +170,8 @@
     <Image Include="res\toolbar3.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\icons\icon8.ico" />
+    <Image Include="res\Icons\1471017338_view-refresh.ico" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">

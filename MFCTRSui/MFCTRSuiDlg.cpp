@@ -89,7 +89,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(TOOLBAR_STOP, &CMFCTRSuiDlg::OnStopButtonClicked)
 	ON_COMMAND(ID_PROGRAM_DELETESELECTEDITEMS, &CMFCTRSuiDlg::OnProgramDeleteselecteditems)
 	ON_COMMAND(ID_PROGRAM_RUNSEL, &CMFCTRSuiDlg::OnProgramRunsel)
-	ON_COMMAND(TOOLBAR_SETTINGS, &CMFCTRSuiDlg::OnProgramSettings)
+	ON_COMMAND(TOOLBAR_REFRESH, &CMFCTRSuiDlg::OnProgramRefresh)
 
 	ON_WM_SYSCOMMAND(SC_CLOSE, &CMFCTRSuiDlg::OnSysCommand(UINT , LPARAM))
 	ON_COMMAND(ID_Load_Project, &CMFCTRSuiDlg::OnLoadProject)
@@ -101,11 +101,13 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO3, &CMFCTRSuiDlg::OnCbnSelchangeCombo3)
 	ON_COMMAND(ID_New_Project, &CMFCTRSuiDlg::OnNewProject)
 	ON_NOTIFY_EX(TTN_NEEDTEXTA, 0, &CMFCTRSuiDlg::OnTtnNeedText)
+	ON_COMMAND(TOOLBAR_SAVE, &CMFCTRSuiDlg::OnSaveProject)
 	ON_NOTIFY_EX(TTN_NEEDTEXTW, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
 	ON_NOTIFY(NM_RCLICK, IDC_TREE1, &CMFCTRSuiDlg::OnNMRClickTree1)
 	ON_COMMAND(ID_INFO_INFO, &CMFCTRSuiDlg::OnInfoInfo)
+	ON_COMMAND(ID_EXIT, &CMFCTRSuiDlg::OnExit)
 END_MESSAGE_MAP()
 
 
@@ -312,7 +314,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON7));
 		pList->Replace(3, hIcon_1); // not 5 as a separate is not an image
 
-		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON9));
+		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON8));
 		pList->Replace(4, hIcon_1); // not 5 as a separate is not an image
 	
 		bar.SetImageList(pList);
@@ -493,21 +495,25 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 		}
 		m_Menu->EnableMenuItem(ID_New_Project, MF_BYCOMMAND | MF_ENABLED);
 		m_Menu->EnableMenuItem(ID_Load_Project, MF_BYCOMMAND | MF_ENABLED);
+
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_REFRESH);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
 	}
 
 	if (mask & PROJECT_UPLOADED)
 	{// mask = PROJECT_UPLOADED | ...
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE, false);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS, false);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
+	//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE, false);
+	//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS, false);
+	////	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
 
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY);
+	////	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
+	//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY);
+	//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY);
 
 
-		m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_ENABLED);
-		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_ENABLED);
+	//	m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_ENABLED);
+	//	m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_ENABLED);
 
 		if (RootList.GetItemCount())
 		{
@@ -517,17 +523,17 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 	}
 	else if (mask & PROJECT_NOTLOADED)
 	{
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS);
+		//m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE);
+		//m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS);
 
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY, false);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY, false);
+		//m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY, false);
+		//m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY, false);
 
-		m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
-		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		//m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		//m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
 		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
-		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
+//		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
 
 		dRoots.clear();
 		RootList.DeleteAllItems();
@@ -583,6 +589,46 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 
 			m_Tree.DeleteAllItems();
 		}
+		int index = -1;
+		for (int i = 0; i < RootList.GetItemCount(); ++i)
+		{
+			if (RootList.GetItemState(i, LVIS_SELECTED))
+			{
+				index = i;
+				break;
+			}
+		}
+
+		if (index < 0)
+			m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_REFRESH);
+		else
+			m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_REFRESH, false);
+	}
+	if (RootList.GetItemCount())
+	{
+
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS, false);
+		//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
+
+		//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDGREY);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY);
+
+
+		m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_ENABLED);
+		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_ENABLED);
+	}
+	else
+	{
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS);
+
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE_GREY, false);
+		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS_GREY, false);
+
+		m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
+		m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 	}
 }
 
@@ -820,10 +866,12 @@ DWORD WINAPI ToRun(LPVOID arg)
 		TREECTRL->DeleteAllItems();
 		MainDialog->Info(var.get_path());
 
+
 	}
 	
 	
 	
+
 
 	param->manager->End();
 	delete param->manager;
@@ -1187,7 +1235,17 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 	if (dRoots.size())
 	{
 		m_Progress.SetPos(0);
-		
+
+
+		if (!(pro_.getName() && pro_.getPath()))
+		{
+			MessageBox(TEXT("You must create a new project!"), TEXT(""), MB_ICONINFORMATION | MB_OK);
+			OnNewProject();
+			if (!(pro_.getName() && pro_.getPath()))
+				return;
+		}
+
+
 		short cIndex;
 		cIndex = DropDown.GetCurSel();
 		CString fontName;
@@ -1251,6 +1309,7 @@ bool checkDiff(int begin, char* source)
 	}
 	return count == 1;
 }
+
 // $$$ Do you really need a reference to a count parameter???
 void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CTreeCtrl* m_Tree, int& count, HTREEITEM* hHead, std::list<Suite*>* checkList, std::vector<HTREEITEM*>* TreeControlsList)
 {
@@ -2120,6 +2179,8 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	if (nID == SC_CLOSE)
 	{
 		int res=0;
+
+
 		if (RootList.GetItemCount() > 0)
 		{
 			char* path = pro_.getProjPath();
@@ -2442,7 +2503,7 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 				
 				// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				// $$$ set Suite's path here
-				HTREEITEM hHead = m_Tree.InsertItem(L"Suites", 0, 0, TVI_ROOT);// $$$ moved declaration there
+				HTREEITEM hHead = m_Tree.InsertItem(str.GetString(), 0, 0, TVI_ROOT);// $$$ moved declaration there
 				// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 				// $$$ moved it lower : int count = 0;
@@ -2580,6 +2641,18 @@ void CMFCTRSuiDlg::OnStopButtonClicked()
 	Manager.Stop();
 }
 
+void CMFCTRSuiDlg::OnSaveProject()
+{
+	if (!(pro_.getName() && pro_.getPath()))
+		OnSaveAs();
+	else
+		pro_.SaveProject(List);
+
+	MessageBox( _T("Project was saved"), _T(""), MB_ICONINFORMATION | MB_OK);
+	// TODO: Add your command handler code here
+}
+
+
 void CMFCTRSuiDlg::OnCbnSelchangeCombo3()
 {
 	// $$$ the same suggestions as in OnCbnSelchangeCombo1 method
@@ -2616,38 +2689,15 @@ void CMFCTRSuiDlg::OnNewProject()
 			}
 		}
 		delete[] path;
+		UpdateToolbar(PROJECT_NOTLOADED);
 	}
-
-	UpdateToolbar(PROJECT_NOTLOADED);
 
 	if (res != IDCANCEL)
 	{
-		BROWSEINFO bi = { 0 };
-		bi.lpszTitle = _T("Select Folder");
-		LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-		if (pidl != 0)
-		{
-			// get the name of the folder
-			TCHAR path[MAX_PATH];
-			SHGetPathFromIDList(pidl, path);
-			char* pathA = convertToChar(path);
-			pro_.setPath(pathA);
 			ProjNameEdit NameDlg;
 			int res = NameDlg.DoModal();
-			if (res == IDOK)
-			{
-				//			List->ResetContent();
-				IMalloc * imalloc = 0;
-				if (SUCCEEDED(SHGetMalloc(&imalloc)))
-				{
-					imalloc->Free(pidl);
-					imalloc->Release();
-				}
-			}
-			else
-			{
+			if (res != IDOK)
 				return;
-			}
 
 			int size = strlen("Test manager : ");
 			char* WindowLine = new char[size + strlen(pro_.getName()) + 1];
@@ -2658,13 +2708,11 @@ void CMFCTRSuiDlg::OnNewProject()
 			SetWindowText(WinBuf);
 			delete[] WindowLine;
 			delete[] WinBuf;
+
 			UpdateToolbar(PROJECT_UPLOADED);
 			DropDown.EnableWindow(true);
 			ThreadsComboBox.EnableWindow(true);
 			m_NameBox.EnableWindow(true);
-			RootList.SetItemState(0, LVIS_SELECTED, LVIS_SELECTED);
-			RootList.SetSelectionMark(0);
-		}
 	}
 	// TODO: Add your command handler code here
 }
@@ -2743,7 +2791,7 @@ BOOL CMFCTRSuiDlg::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 		}
 		case TOOLBAR_SETTINGS:
 		{
-								sw = "Settings";
+								sw = "Refresh";
 								lstrcpynW(ttext->szText, sw, sizeof(ttext->szText) / sizeof(wchar_t));
 								break;
 		}
@@ -2818,7 +2866,7 @@ BOOL CMFCTRSuiDlg::OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 		}
 		case TOOLBAR_SETTINGS:
 		{
-								 sa = "Settings";
+								 sa = "Refresh";
 								 lstrcpynA(ttext->szText, sa, sizeof(ttext->szText));
 								 break;
 		}
@@ -2978,12 +3026,57 @@ void CMFCTRSuiDlg::OnInfoInfo()
 	// TODO: Add your command handler code here
 }
 
-void CMFCTRSuiDlg::OnProgramSettings()
+void CMFCTRSuiDlg::OnProgramRefresh()
 {
-	//RootList.SetSelectionMark(0);
-	//RootList.SetItemState(0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-	//SetListItemImage(0, PASSED);
-	//SetListItemImage(1, FAILED);
+	if (RootList.GetItemCount())
+	{
+		int index = -1;
+		for (int i = 0; i < RootList.GetItemCount(); ++i)
+		{
+			if (RootList.GetItemState(i, LVIS_SELECTED))
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index < 0)
+			return;
+
+		m_Tree.DeleteAllItems();
+
+		CString str = RootList.GetItemText(index, 0);
+		auto iterator = mapOfColls.find(str);
+		if (iterator != mapOfColls.end())
+		{
+			for (int i = 0; i < iterator->second.size(); ++i)
+			{
+				delete[] iterator->second[i];
+			}
+			mapOfColls.erase(iterator);
+		}
+		for (auto iterator = suiteColl->begin(); iterator != suiteColl->end(); ++iterator)
+		{
+			delete (*iterator);
+		}
+		delete suiteColl;
+		char* PA = fromCStringToChar(str);
+		TCHAR* buf = new TCHAR[strlen(PA) + 1];
+		convertToTCHAR(buf, PA);
+		Info(buf);
+		delete[] buf;
+		delete[] PA;
+
+		char path[MAX_PATH];
+		WideCharToMultiByte(CP_ACP, 0, (TCHAR*)str.GetString(), -1, path, MAX_PATH, NULL, NULL);
+
+
+		//HTREEITEM hHead = m_Tree.InsertItem(str.GetString(), 0, 0, TVI_ROOT);
+
+
+		// ===============================================================================
+
+	}
+		
 }
 
 void CMFCTRSuiDlg::SetListItemImage(DWORD index, DWORD image)
@@ -2994,4 +3087,10 @@ void CMFCTRSuiDlg::SetListItemImage(DWORD index, DWORD image)
 
 	pitem.iImage = image;
 	RootList.SetItem(&pitem);
+}
+
+void CMFCTRSuiDlg::OnExit()
+{
+	OnSysCommand(SC_CLOSE, NULL);
+//	EndDialog(IDCANCEL);
 }

@@ -169,6 +169,10 @@
     <Image Include="res\Icons\1470675125_stop.ico" />
     <Image Include="res\Icons\1470675263_add.ico" />
     <Image Include="res\Icons\1470675274_cross.ico" />
+
+    <Image Include="res\Icons\1471017338_view-refresh.ico" />
+    <Image Include="res\icons\icon8.ico" />
+
     <Image Include="res\Icons\Oxygen-Icons.org-Oxygen-Actions-document-save-as.ico" />
     <Image Include="res\MFCTRSui.ico" />
     <Image Include="res\toolbar1.bmp" />

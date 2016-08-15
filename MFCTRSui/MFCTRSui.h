@@ -33,7 +33,7 @@ public:
 	afx_msg void OnEnChangeEdit1();
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnNewProject();
-	afx_msg void OnSaveProject();
+	//afx_msg void OnSaveProject();
 	afx_msg void OnInfoInfo();
 };
 extern CTreeCtrl m_Tree;

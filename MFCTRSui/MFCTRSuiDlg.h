@@ -135,7 +135,7 @@ public:
 	CProgressCtrl subm_Progress;
 	CEdit Time_running_edit;
 
-	afx_msg void OnProgramSettings();
+	afx_msg void OnProgramRefresh();
 	afx_msg void OnProgramAddfolder();
 	afx_msg void OnProgramDeleteselecteditems();
 	afx_msg void OnProgramRunsel();
@@ -143,6 +143,7 @@ public:
 	afx_msg void OnPauseButtonClicked();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnLoadProject();
+	afx_msg void OnSaveProject();
 	afx_msg void OnProjectLastprojects();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnViewConsole();
@@ -181,6 +182,7 @@ public:
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnInfoInfo();
+	afx_msg void OnExit();
 };
 
 //extern CListBox* List;
