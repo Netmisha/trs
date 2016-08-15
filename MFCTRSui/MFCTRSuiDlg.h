@@ -110,12 +110,15 @@ protected:
 	std::vector<int> m_SelectedRoots;
 	CImageList m_ImageList;
 	CImageList m_PathImageList;
-	void Info(TCHAR* path);
-	std::vector<HTREEITEM*> TreeControlsList;
+	
+	std::map<CString, std::vector<TRSInfo>> PasMap;
+	std::map<CString, std::vector<TRSInfo>> FailMap;
 	CToolBar m_ToolBar;
 	CToolBar m_secondToolBar;
+	int lastSelected;
 	CMenu* m_Menu;
 	ProjectProperties properties;
+	std::map<CString, std::vector<HTREEITEM*>> mapOfColls;
 ///	afx_msg void OnLbnSelchangeListroot();
 	int resizible_raw = 2;
 	int resizible_column = 2;
@@ -128,7 +131,7 @@ public:
 	afx_msg void OnEnChangeEdit3();
 	CProgressCtrl m_Progress;
 	afx_msg void OnNMCustomdrawProgress1(NMHDR *pNMHDR, LRESULT *pResult);
-
+	std::vector<HTREEITEM*> Info(TCHAR* path);
 	CProgressCtrl subm_Progress;
 	CEdit Time_running_edit;
 

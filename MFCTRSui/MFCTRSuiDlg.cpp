@@ -31,6 +31,7 @@ static bool ifFirstTimeRunned = true;
 bool ifCancelPressed;
 bool RunEndCheck;
 bool SaveAsPressed = true;
+int ListSelection;
 CToolBar* ToolBar;
 CToolBar* Bar;
 CComboBox* Tag;
@@ -40,6 +41,10 @@ CComboBox* Name;
 std::vector<TRSInfo> PassedC;
 std::vector<TRSInfo> FailedC;
 std::vector<HTREEITEM*>* TREE;
+std::map<CString,std::vector<HTREEITEM*>>* COLL;
+std::map<CString, std::vector<TRSInfo>>* FAIL;
+std::map<CString, std::vector<TRSInfo>>* PASS;
+CMFCTRSuiDlg* MainDialog;
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
@@ -171,7 +176,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	//SetIcon(m_hIcon, FALSE);		// Set small icon
 	// TODO: Add extra initialization here
 	//RootList.ResetContent();
-
+	MainDialog = this;
 	// menu hiding
 	m_Menu = GetMenu();
 	if (!m_Menu)
@@ -393,6 +398,9 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	ToolBar = &m_ToolBar;
 	Name = &m_NameBox;
 	Bar = ToolBar;
+	COLL = &mapOfColls;
+	FAIL = &FailMap;
+	PASS = &PasMap;
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -607,6 +615,12 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 					RootList.SetSelectionMark(0);
 					RootList.SetItemState(0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 				}
+				char* Way = fromCStringToChar(RootList.GetItemText(index, index));
+				TCHAR* buf = new TCHAR[strlen(Way)+1];
+				convertToTCHAR(buf, Way);
+				//collOfColls.push_back(Info(buf));
+				delete[] buf;
+				delete[] Way;
 			}
 			else
 			{
@@ -676,6 +690,16 @@ void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
 				RootList.SetSelectionMark(0);
 				RootList.SetItemState(0, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 			}
+			char* PA = fromCStringToChar(RootList.GetItemText(ListSelection, 0));
+			TCHAR* buf = new TCHAR[strlen(PA) + 1];
+			convertToTCHAR(buf, PA);
+			Info(buf);
+			delete[] buf;
+			delete[] PA;
+		}
+		else
+		{
+			m_Tree.DeleteAllItems();
 		}
 		UpdateToolbar();
 		dRoots.clear();
@@ -726,12 +750,19 @@ DWORD WINAPI ToRun(LPVOID arg)
 //	param->subProgress->ShowWindow(true);
 	param->progress->SetRange(0, param->coll.size());
 	param->progress->SetStep(1);
-
+	
 
 	int prev = 0;
-
+	int last = 0;
+	
 	for each(auto var in param->coll)
 	{
+		PassedC.clear();
+		FailedC.clear();
+		
+		std::map<CString, std::vector<HTREEITEM*>>::iterator iter = (*COLL).find(var.get_path());
+		TREE = &iter->second;
+
 		char* path = convertToChar(var.get_path());
 		int Thread_amount = 1;
 		if (threads)
@@ -765,34 +796,34 @@ DWORD WINAPI ToRun(LPVOID arg)
 		Manager.Run(path, testName, tag, Thread_amount, param->manager);
 		param->progress->StepIt();
 		param->subProgress->SetPos(0);
-
-
-		param->dialog->SetListItemState(!(FailedC.size() - prev), var);
+		
+		param->dialog->SetListItemState(!(FailedC.size()), var);
 		prev = FailedC.size();
+		
+		
+		FAIL->insert(std::pair<CString,std::vector<TRSInfo>>(List->GetItemText(ListSelection,0),FailedC));
+		PASS->insert(std::pair<CString, std::vector<TRSInfo>>(List->GetItemText(ListSelection, 0), PassedC));
 
-	}
-
-	for (int i = 0; i < TREE->size(); ++i)
-	{
-		for (int j = 0; j < PassedC.size(); ++j)
+		
+		
+		for (int i = ListSelection; i < List->GetItemCount(); ++i)
 		{
-			TRSTest* curTest = (TRSTest*)TREECTRL->GetItemData(*((*TREE)[i]));
-			if (*curTest == PassedC[j])
+			if (List->GetCheck(i))
 			{
-				TREECTRL->SetItemImage(*((*TREE)[i]), 6, 6);
+				if (i != ListSelection)
+				{
+					ListSelection = i;
+					
+				}
 			}
 		}
-		for (int j = 0; j < FailedC.size(); ++j)
-		{
-			TRSTest* curTest = (TRSTest*)TREECTRL->GetItemData(*((*TREE)[i]));
-			if (*curTest == FailedC[j])
-			{
-				TREECTRL->SetItemImage(*((*TREE)[i]), 9, 9);
-			}
-		}
-	}
+		TREECTRL->DeleteAllItems();
+		MainDialog->Info(var.get_path());
 
-	if (FailedC.size())
+	}
+	
+	
+	
 
 	param->manager->End();
 	delete param->manager;
@@ -804,6 +835,8 @@ DWORD WINAPI ToRun(LPVOID arg)
 //	PassedC.clear();
 	return 0;
 }
+
+
 
 bool CMFCTRSuiDlg::SetListItemState(bool state, SuiteRoot text)
 {
@@ -1154,7 +1187,7 @@ void CMFCTRSuiDlg::OnProgramRunsel()
 	if (dRoots.size())
 	{
 		m_Progress.SetPos(0);
-
+		
 		short cIndex;
 		cIndex = DropDown.GetCurSel();
 		CString fontName;
@@ -1546,7 +1579,7 @@ void ExpandTree(CTreeCtrl& m_Tree, HTREEITEM& hHead)
 	}
 }
 
-void CMFCTRSuiDlg::Info(TCHAR* path)
+std::vector<HTREEITEM*> CMFCTRSuiDlg::Info(TCHAR* path)
 {
 	TagColl.clear();
 	NameColl.clear();
@@ -1556,6 +1589,7 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	m_NameBox.ResetContent();
 	m_NameBox.AddString(L"All");
 	m_NameBox.SetCurSel(0);
+	
 	char* pathA = nullptr;
 	int size = WideCharToMultiByte(CP_ACP, 0, path, -1, pathA, 0, NULL, NULL);
 	pathA = new char[size];
@@ -1563,113 +1597,154 @@ void CMFCTRSuiDlg::Info(TCHAR* path)
 	HIMAGELIST imList=0;
 	int Flag = ILC_COLOR24;
 	imList = ImageList_Create(5, 5, Flag, 2, 0);
+	CString mes(path);
 	
-	suiteColl = Manager.List(pathA, nullptr, nullptr);
-	HTREEITEM hHead;
-	hHead = m_Tree.InsertItem(path, 0, 0, TVI_ROOT);
-	
-	int count = 0;
-	std::list<Suite*>::iterator it = suiteColl->begin();
-	count = strlen((*it)->get_path());
-	for (it; it != suiteColl->end(); ++it)
-	{
-		if (strlen((*it)->get_path()) < count)
+	std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(mes);
+		std::vector<HTREEITEM*> TreeControlsList;
+		suiteColl = Manager.List(pathA, nullptr, nullptr);
+		HTREEITEM hHead;
+		hHead = m_Tree.InsertItem(path, 0, 0, TVI_ROOT);
+		int count = 0;
+		std::list<Suite*>::iterator it = suiteColl->begin();
+		count = strlen((*it)->get_path());
+		for (it; it != suiteColl->end(); ++it)
 		{
-			count = strlen((*it)->get_path());
+			if (strlen((*it)->get_path()) < count)
+			{
+				count = strlen((*it)->get_path());
+			}
 		}
-	}
-	--it;
-	int lic = 0;
-	std::list<Suite*> checkList;
-	for(it; it != suiteColl->begin(); --it)
-	{
+		--it;
+		int lic = 0;
+		std::list<Suite*> checkList;
+		for (it; it != suiteColl->begin(); --it)
+		{
+			if (strlen((*it)->get_path()) == count)
+			{
+				TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList, &TreeControlsList);
+			}
+		}
 		if (strlen((*it)->get_path()) == count)
 		{
 			TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList, &TreeControlsList);
 		}
-	}
-	if (strlen((*it)->get_path()) == count)
-	{
-		TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList, &TreeControlsList);
-	}
-	for (it; it != suiteColl->end(); ++it)
-	{
-		std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
-		
-		for (iter; iter != (*it)->getList().end(); ++iter)
+		for (it; it != suiteColl->end(); ++it)
 		{
-			std::vector<char*>::iterator iterator = TagColl.begin();
-			if (TagColl.size() == 0)
-			{
-				if ((*iter)->getTag())
-				{
-					TagColl.push_back((*iter)->getTag());
-				}
-			}
-			else
-			{
-				bool check = false;
-				for (iterator; iterator != TagColl.end(); ++iterator)
-				{
-					if (!strncmp(*iterator, (*iter)->getTag(), strlen((*iter)->getTag())))
-					{
-						check = true;
-						break;
-					}
-				
-				}
-				if (!check)
-				{
-					TagColl.push_back((*iter)->getTag());
-				}
-			}
-			std::vector<char*>::iterator Nameit = NameColl.begin();
-			if (NameColl.size() == 0)
-			{
-				if ((*iter)->getName())
-				{
-					NameColl.push_back((*iter)->getName());
-				}
-			}
-			else
-			{
-				bool checkSecond = false;
-				for (Nameit; Nameit != NameColl.end(); ++Nameit)
-				{
-					if (!strncmp(*Nameit, (*iter)->getName(), strlen((*iter)->getName())))
-					{
-						checkSecond = true;
-						break;
-					}
+			std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
 
-				}
-				if (!checkSecond)
+			for (iter; iter != (*it)->getList().end(); ++iter)
+			{
+				std::vector<char*>::iterator iterator = TagColl.begin();
+				if (TagColl.size() == 0)
 				{
-					NameColl.push_back((*iter)->getName());
+					if ((*iter)->getTag())
+					{
+						TagColl.push_back((*iter)->getTag());
+					}
+				}
+				else
+				{
+					bool check = false;
+					for (iterator; iterator != TagColl.end(); ++iterator)
+					{
+						if (!strncmp(*iterator, (*iter)->getTag(), strlen((*iter)->getTag())))
+						{
+							check = true;
+							break;
+						}
+
+					}
+					if (!check)
+					{
+						TagColl.push_back((*iter)->getTag());
+					}
+				}
+				std::vector<char*>::iterator Nameit = NameColl.begin();
+				if (NameColl.size() == 0)
+				{
+					if ((*iter)->getName())
+					{
+						NameColl.push_back((*iter)->getName());
+					}
+				}
+				else
+				{
+					bool checkSecond = false;
+					for (Nameit; Nameit != NameColl.end(); ++Nameit)
+					{
+						if (!strncmp(*Nameit, (*iter)->getName(), strlen((*iter)->getName())))
+						{
+							checkSecond = true;
+							break;
+						}
+
+					}
+					if (!checkSecond)
+					{
+						NameColl.push_back((*iter)->getName());
+					}
+				}
+			}
+
+		}
+		for (int i = 0; i < TagColl.size(); ++i)
+		{
+			TCHAR*buf = new TCHAR[strlen(TagColl[i]) + 1];
+			convertToTCHAR(buf, TagColl[i]);
+			DropDown.AddString(buf);
+			delete[] buf;
+		}
+		for (int i = 0; i < NameColl.size(); ++i)
+		{
+			TCHAR*buf = new TCHAR[strlen(NameColl[i]) + 1];
+			convertToTCHAR(buf, NameColl[i]);
+			m_NameBox.AddString(buf);
+			delete[] buf;
+		}
+		delete[] pathA;
+		m_Tree.Expand(hHead, TVE_EXPAND);
+		ExpandTree(m_Tree, hHead);
+		if (iter != mapOfColls.end())
+		{
+			CString mes(path);
+			std::map<CString, std::vector<TRSInfo>>::iterator Fiter = FailMap.find(mes);
+			std::map<CString, std::vector<TRSInfo>>::iterator Piter = PasMap.find(mes);
+			if (Fiter != FailMap.end() && Piter != PasMap.end())
+			{
+				for (int i = 0; i < TreeControlsList.size(); ++i)
+				{
+					for (int j = 0; j < Fiter->second.size(); ++j)
+					{
+						TRSInfo* cur = (TRSInfo*)m_Tree.GetItemData(*TreeControlsList[i]);
+						if (cur)
+						{
+							if (*cur == Fiter->second[j])
+							{
+								m_Tree.SetItemImage(*TreeControlsList[i], 9, 9);
+							}
+						}
+					}
+					for (int j = 0; j < Piter->second.size(); ++j)
+					{
+						TRSInfo* cur = (TRSInfo*)m_Tree.GetItemData(*TreeControlsList[i]);
+						if (cur)
+						{
+							if (*cur == Piter->second[j])
+							{
+								m_Tree.SetItemImage(*TreeControlsList[i], 6, 6);
+							}
+						}
+					}
 				}
 			}
 		}
-		
-	}
-	for (int i = 0; i < TagColl.size(); ++i)
-	{
-		TCHAR*buf = new TCHAR[strlen(TagColl[i]) + 1];
-		convertToTCHAR(buf, TagColl[i]);
-		DropDown.AddString(buf);
-		delete[] buf;
-	}
-	for (int i = 0; i < NameColl.size(); ++i)
-	{
-		TCHAR*buf = new TCHAR[strlen(NameColl[i]) + 1];
-		convertToTCHAR(buf, NameColl[i]);
-		m_NameBox.AddString(buf);
-		delete[] buf;
-	}
-	delete[] pathA;
+		mapOfColls.insert(std::pair<CString,std::vector<HTREEITEM*>>(mes, TreeControlsList));
+		return TreeControlsList;
 
+		
+	
 	// ! expanding tree
-	m_Tree.Expand(hHead, TVE_EXPAND);
-	ExpandTree(m_Tree, hHead);
+	
 }
 
 
@@ -1869,10 +1944,10 @@ void CMFCTRSuiDlg::OnLoadProject()
 
 						//??????????????????????????????????????????????????????????????????????????????????????????
 						List->SetCheck(atoi(node->Value()));
-//						dRoots.push_back(atoi(node->Value()));
+					//	dRoots.push_back(atoi(node->Value()));
 						//??????????????????????????????????????????????????????????????????????????????????????????
 					}
-				//	CMFCTRSuiDlg::OnLbnSelchangeListroot();
+					//CMFCTRSuiDlg::OnLbnSelchangeListroot();
 
 				}
 				int count = 0;
@@ -2354,11 +2429,11 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 				//{
 				//	delete *iteratorr;
 				//}
-				for (auto iterator = TreeControlsList.begin(); iterator != TreeControlsList.end(); ++iterator)
-				{
-					delete *iterator;
-				}
-				TreeControlsList.clear();
+				//for (auto iterator = collOfColls[lastSelected].begin(); iterator != collOfColls[lastSelected].end(); ++iterator)
+				//{
+				//	delete *iterator;
+				//}
+				//collOfColls[lastSelected].clear();
 
 				char* pathA = nullptr;// $$$ moved declaration there 
 				int size = WideCharToMultiByte(CP_ACP, 0, (TCHAR*)str.GetString(), -1, pathA, 0, NULL, NULL);
@@ -2376,19 +2451,23 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 				//char* search = fromCStringToChar(TAG);
 
 				// $$$
-				//std::list<Suite*>::iterator Delit = suiteColl->begin();
-				//for (Delit; Delit != suiteColl->end(); ++Delit)
-				//{
-				//	delete (*Delit);
-				//}
+				if (suiteColl)
+				{
+					std::list<Suite*>::iterator Delit = suiteColl->begin();
+					for (Delit; Delit != suiteColl->end(); ++Delit)
+					{
+						delete (*Delit);
+					}
+				}
+				delete suiteColl;
 				// ===============================================================================
 				// $$$ you are constantly using code to delete pointed by container objects and then the container by itself
 				// It will be greate to move all this repeated code into separete function 
-				for (auto iterator = suiteColl->begin(); iterator != suiteColl->end(); ++iterator)
-				{
-					delete (*iterator);
-				}
-				delete suiteColl;
+				//for (auto iterator = suiteColl->begin(); iterator != suiteColl->end(); ++iterator)
+				//{
+				//	delete (*iterator);
+				//}
+				//delete suiteColl;
 				// ===============================================================================
 
 				CString TAG;
@@ -2416,34 +2495,38 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 				// $$$ this algorithm is really unreadable and unsufficient. You wrote it with O(2n) time complexity
 				// but with a price of one additional iterator
 
-				//std::list<Suite*>::iterator it = suiteColl->begin();
+				std::list<Suite*>::iterator it = suiteColl->begin();
 				//// $$$ I commented your declarition code of count variable but, as for me, you can freely use it
 				//// there because variable with the same name exust in the higher scope, which you are not using anymore
  
-				//count = strlen((*it)->get_path()); 
-				//for (it; it != suiteColl->end(); ++it)
-				//{
-				//	if (strlen((*it)->get_path()) < count)
-				//	{
-				//		count = strlen((*it)->get_path());
-				//	}
-				//}
-				//--it;
+				count = strlen((*it)->get_path()); 
+				for (it; it != suiteColl->end(); ++it)
+				{
+					if (strlen((*it)->get_path()) < count)
+					{
+						count = strlen((*it)->get_path());
+					}
+				}
+				--it;
 
-				//std::list<Suite*> checkList;
-				//int chtoeto = 0; // I really love you, man)) Perfect variable)
-				//for (it; it != suiteColl->begin(); --it)
-				//{
-				//	if (strlen((*it)->get_path()) == count)
-				//	{
-				//		TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &TreeControlsList);
-				//	}
-				//}
+				std::list<Suite*> checkList;
+				int chtoeto = 0; // I really love you, man)) Perfect variable)
+				for (it; it != suiteColl->begin(); --it)
+				{
+					if (strlen((*it)->get_path()) == count)
+					{
+						std::vector<HTREEITEM*> coll;
+						TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &coll);
+						mapOfColls.insert(std::pair<CString,std::vector<HTREEITEM*>>(RootList.GetItemText(check, 0), coll));
+					}
+				}
 
-				//if (strlen((*it)->get_path()) == count)
-				//{
-				//	TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &TreeControlsList);
-				//}
+				if (strlen((*it)->get_path()) == count)
+				{
+					std::vector<HTREEITEM*> coll;
+					TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &coll);
+					mapOfColls.insert(std::pair<CString, std::vector<HTREEITEM*>>(RootList.GetItemText(check, 0), coll));
+				}
 
 				auto root_suite = suiteColl->begin();
 				unsigned min_lenght = INT_MAX;
@@ -2458,9 +2541,9 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 				}
 				// $$$ if you create both this variable only to force TreeParse run, it will be better to 
 				// reconsider roles of TreeParse parameters and made some of them unnecessary
-				std::list<Suite*> checkList;
-				int chtoeto = 0;
-				TreeParse(root_suite, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &TreeControlsList);
+				//std::list<Suite*> checkList;
+				//int chtoeto = 0;
+				//TreeParse(root_suite, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &collOfColls[lastSelected]);
 				
 				delete[] tag_;
 			}
@@ -2782,9 +2865,17 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 			m_NameBox.AddString(L"All");
 			
 			m_NameBox.SetCurSel(0);
-				
+			
 			ThreadsComboBox.SetCurSel(9);
-				
+			lastSelected = pNMLV->iItem;
+
+			CString str = RootList.GetItemText(pNMLV->iItem, 0);
+			std::vector<HTREEITEM*> vec = Info((TCHAR*)str.GetString());
+
+
+			mapOfColls.insert(std::pair<CString, std::vector<HTREEITEM*>>(RootList.GetItemText(pNMLV->iItem, 0), vec));
+			std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(RootList.GetItemText(pNMLV->iItem, 0));
+
 			CMFCTRSuiDlg::OnCbnSelchangeCombo1();
 			CMFCTRSuiDlg::OnCbnSelchangeCombo2();
 			CMFCTRSuiDlg::OnCbnSelchangeCombo3();
@@ -2813,13 +2904,33 @@ void CMFCTRSuiDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 					CMFCTRSuiDlg::OnCbnSelchangeCombo3();
 				}
 				ifFirstTimeRunned = true;
+				for (int i = 0; i < RootList.GetItemCount(); ++i)
+				{
+					if (RootList.GetCheck(i))
+					{
+						lastSelected = i;
+						std::map<CString,std::vector<HTREEITEM*>>::iterator iter=mapOfColls.find(RootList.GetItemText(i,0));
+						TREE = &iter->second;
+						break;
+					}
+				}
+				ListSelection = pNMLV->iItem;
 			}
 			break;
 		}
 		default:
 			m_Tree.DeleteAllItems();
-			CString str = RootList.GetItemText(pNMLV->iItem, 0);
-			Info((TCHAR*)str.GetString());
+			CString str;
+			int res=pNMLV->iSubItem;
+			str = RootList.GetItemText(pNMLV->iItem, 0);
+			std::vector<HTREEITEM*> vec = Info((TCHAR*)str.GetString());
+			
+			
+			mapOfColls.insert(std::pair<CString,std::vector<HTREEITEM*>>(RootList.GetItemText(pNMLV->iItem, 0), vec));
+			std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(RootList.GetItemText(pNMLV->iItem, 0));
+
+			TREE = &iter->second;
+			
 			break;
 		}
 	}
@@ -2837,11 +2948,12 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 	ASSERT(nextMenu);
 	NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
 	HTREEITEM hTest = m_Tree.GetSelectedItem();
-	for (int i = 0; i < TreeControlsList.size(); ++i)
+	std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(RootList.GetItemText(lastSelected, 0));
+	for (int i = 0; i < iter->second.size(); ++i)
 	{
-		if (*TreeControlsList[i] == hTest)
+		if (*iter->second[i] == hTest)
 		{
-			TestForInfo = (TRSTest*)m_Tree.GetItemData(*TreeControlsList[i]);
+			TestForInfo = (TRSTest*)m_Tree.GetItemData(*iter->second[i]);
 		}
 	}
 	POINT mousePos;
