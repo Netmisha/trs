@@ -19,6 +19,7 @@ ReportManager::~ReportManager()
 	{
 		TRSReport* ptr = *it;
 //		delete ptr;
+		
 	}
 	delete reportList;
 }

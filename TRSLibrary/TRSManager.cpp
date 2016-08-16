@@ -403,7 +403,8 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 
 	if (!VerifyParameters(path, name, tag))
 		return false;
-
+	bool ifXml = false;
+	static bool ifDeleted = false;
 	DWORD fFile = GetFileAttributesA(path);
 	if (fFile& FILE_ATTRIBUTE_DIRECTORY)
 	{
@@ -450,12 +451,19 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 						else
 						{
 							delete[] way;
-							std::list<Suite*>::iterator it = suiteCollection->begin();
-							for (it; it != suiteCollection->end(); ++it)
+							if (suiteCollection)
 							{
-								delete (*it);
+								if (!ifDeleted)
+								{
+									std::list<Suite*>::iterator it = suiteCollection->begin();
+									for (it; it != suiteCollection->end(); ++it)
+									{
+										delete (*it);
+									}
+									delete suiteCollection;
+									ifDeleted = true;
+								}
 							}
-							delete suiteCollection;
 							return EXE_OR_XML_ABSENT;
 						}
 					}
@@ -466,7 +474,7 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 					std::wstring name_(ffd.cFileName);//used for validating file name(checks if there is .xml in the end
 					if (Validate(name_))//validating function
 					{
-						
+						ifXml = true;
 						TCHAR fileDir[MAX_PATH];//buffer which contains a path to an xml file
 						StringCchCopy(fileDir, MAX_PATH, hzDir);//some moves to save path
 						StringCchCat(fileDir, MAX_PATH, TEXT("\\"));
@@ -503,6 +511,10 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 				}
 			} while (FindNextFile(hFind, &ffd) != 0);//repeat
 			
+		}
+		if (!ifXml)
+		{
+			return EXE_OR_XML_ABSENT;
 		}
 		return true;
 	}

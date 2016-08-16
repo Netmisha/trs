@@ -52,7 +52,7 @@ CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 {
 	
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	Manager.Init();
+	Manager.Init("D:\\");
 	
 }
 
@@ -2228,6 +2228,45 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if (nID == SC_CLOSE)
 	{
+		NOTIFYICONDATA nid = {};
+		nid.cbSize = sizeof(nid);
+		nid.hWnd = m_hWnd;
+		nid.uFlags = NIF_ICON | NIF_TIP | NIF_GUID;
+
+		// Note: This is an example GUID only and should not be used.
+		// Normally, you should use a GUID-generating tool to provide the value to
+		// assign to guidItem.
+		
+		// {F0E2FBBC-6EA3-4687-BD39-3A03BDA0B368}
+		// {FE7D844E-421D-4208-90D6-0CB48E908F50}
+		static GUID myGuid;
+		CoCreateGuid(&myGuid);
+		nid.guidItem = myGuid;
+		// This text will be shown as the icon's tooltip.
+		StringCchCopy(nid.szTip, ARRAYSIZE(nid.szTip), L"Test managment");
+
+		// Load the icon for high DPI.
+		LoadIconMetric(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON2), LIM_SMALL, &(nid.hIcon));
+
+		// Show the notification.
+		BOOL check=Shell_NotifyIcon(NIM_ADD, &nid) ? S_OK : E_FAIL;
+		if (check)
+		{
+			int b = 7;
+		}
+		/*SetWindowLong(m_hWnd, GWL_EXSTYLE,
+			GetWindowLong(m_hWnd, GWL_EXSTYLE) | WS_EX_APPWINDOW);
+		long style = GetWindowLong(m_hWnd, GWL_STYLE);
+		style &= ~(WS_VISIBLE);    // this works - window become invisible 
+
+		style |= WS_EX_TOOLWINDOW;   // flags don't work - windows remains in taskbar
+		style &= ~(WS_EX_APPWINDOW);
+
+		ShowWindow(SW_HIDE); // hide the window
+		SetWindowLong(m_hWnd, GWL_STYLE, style); // set the style
+		ShowWindow(SW_SHOW); // show the window for the new style to come into effect
+		ShowWindow(SW_HIDE); // hide the window so we can't see it
+		
 		int res=0;
 
 
@@ -2311,14 +2350,15 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		else
 		{
 			CDialogEx::OnOK();
-		}
+		}*/
 	}
-	if (nID == SC_ZOOM)
+	else
 	{
-
+		CWnd::OnSysCommand(nID, lParam);
 	}
-
-	CWnd::OnSysCommand(nID, lParam);
+	
+	
+	
 }
 
 void CMFCTRSuiDlg::OnViewConsole()
