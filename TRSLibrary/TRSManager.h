@@ -34,7 +34,7 @@ public:
 	TRSManager();
 	~TRSManager();
 
-	bool Init();
+	bool Init(char* lPath);
 	int Verify(char* path, char* name, char* tag);
 	bool Run(char* path, char* name, char* tag, unsigned threads_amount = 10, ReportManager* pReport=nullptr);
 	bool Pause(char* path, char* name, char* tag);
@@ -47,12 +47,13 @@ public:
 private:
 	bool VerifyParameters(char* path, char* name, char* tag);
 	bool running_ = true;
+	
 };
 
 class TRSManager_API Logger
 {
 public:
-	bool Init();
+	bool Init(char*path);
 	void Destroy();
 
 	void operator<<(char* message);

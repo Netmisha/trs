@@ -19,7 +19,7 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-	DECLARE_MESSAGE_MAP()
+	
 private:
 	char* clock_name;
 	std::vector<SuiteRoot> list_items;
@@ -27,4 +27,9 @@ private:
 	CString name;
 	CString threads;
 
+
+public:
+DECLARE_MESSAGE_MAP()
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 };

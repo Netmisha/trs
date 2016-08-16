@@ -53,7 +53,7 @@ CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 {
 	
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	Manager.Init();
+	Manager.Init("D:\\");
 	
 }
 
@@ -418,6 +418,35 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
+VOID CALLBACK TimerAPCProc(
+	LPVOID lpArg,               // Data value
+	DWORD dwTimerLowValue,      // Timer low value
+	DWORD dwTimerHighValue)    // Timer high value
+
+{
+	// Formal parameters not used in this example.
+	UNREFERENCED_PARAMETER(dwTimerLowValue);
+	UNREFERENCED_PARAMETER(dwTimerHighValue);
+	CMFCTRSuiDlg* pointer = (CMFCTRSuiDlg*)lpArg;
+	pointer->OnProgramRunsel();
+	
+	MessageBeep(0);
+
+}
+
+DWORD WINAPI TimeRunning(LPVOID arg)
+{
+	CMFCTRSuiDlg* dlg = (CMFCTRSuiDlg*)arg;
+	HANDLE hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
+	LARGE_INTEGER large = { 15000 };
+	
+	SetWaitableTimer(hTimer, &large, 15000, TimerAPCProc, dlg, 0);
+	for (int i = 0; i < 1000;++i)
+	SleepEx(
+		INFINITE,     // Wait forever
+		TRUE);
+	return 0;
+}
 #pragma region stuff
 // If you add a minimize button to your dialog, you will need the code below
 //  to draw the icon.  For MFC applications using the document/view model,
@@ -683,6 +712,7 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 				TCHAR* buf = new TCHAR[strlen(Way)+1];
 				convertToTCHAR(buf, Way);
 				//collOfColls.push_back(Info(buf));
+				CreateThread(NULL, 0, TimeRunning, this, 0, 0);
 				delete[] buf;
 				delete[] Way;
 			}
@@ -1227,7 +1257,7 @@ DWORD WINAPI Timer(LPVOID arg)
 void CMFCTRSuiDlg::OnProgramRunsel()
 {
 	TestsTimerDialog dlg;
-	dlg.DoModal();
+	//dlg.DoModal();
 	if (dRoots.size())
 	{
 		m_Progress.SetPos(0);
