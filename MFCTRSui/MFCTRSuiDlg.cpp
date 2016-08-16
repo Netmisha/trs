@@ -17,6 +17,7 @@
 #include <ctime>
 #include <algorithm>
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -776,30 +777,6 @@ void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
 	// TODO: Add your control notification handler code here
 	*pResult = 0;
 }
-
-//DWORD WINAPI RunSuits(LPVOID arg)
-//{
-//	//RunParameters param;
-//	//param = *(RunParameters*)arg;
-//	//std::list<Suite*> coll = *Manager.List(param.path, param.name, param.tag);
-//	//int count = 0;
-//	//for each(auto it in coll)
-//	//{
-//	//	count += it->getList().size();
-//	//	for each(auto iter in it->getList())
-//	//	{
-//	//		if (iter->getRepeat())
-//	//		{
-//	//			count += atoi(iter->getRepeat());
-//	//			--count;
-//	//		}
-//	//	}
-//	//}
-//	//param.progress->SetRange(0, count);
-//	//param.progress->SetStep(1);
-//	//Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
-//	return 0;
-//}
 
 DWORD WINAPI ToRun(LPVOID arg)
 {

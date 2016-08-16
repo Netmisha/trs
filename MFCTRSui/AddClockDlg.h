@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Resource.h"
+#include "SuiteRoot.h"
+#include <vector>
 // AddClockDlg dialog
 
 class AddClockDlg : public CDialogEx
@@ -18,4 +20,11 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+private:
+	char* clock_name;
+	std::vector<SuiteRoot> list_items;
+	CString tag;
+	CString name;
+	CString threads;
+
 };

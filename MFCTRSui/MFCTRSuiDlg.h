@@ -11,6 +11,7 @@
 #include "ProjNameEdit.h"
 #include "TestsTimerDialog.h"
 #include "afxdialogex.h"
+#include "SuiteRoot.h"
 #include "TRSLibrary\TRSManager.h"
 
 #define PROJECT_UPLOADED 1
@@ -26,43 +27,6 @@
 #define FAILED_IMAGE 1
 #define PASSED_IMAGE 2
 
-class SuiteRoot
-{
-public:
-	SuiteRoot()
-	{
-		dRoot = nullptr;
-	}
-	SuiteRoot(TCHAR* path)
-	{
-		int size = wcslen(path);
-		dRoot = new TCHAR[size + 1];
-		wcscpy_s(dRoot, size + 1, path);
-	}
-	SuiteRoot(CString path)
-	{
-		int size = _tcslen(path);
-		dRoot = new TCHAR[size + 1];
-		_tcscpy_s(dRoot, size + 1, path);
-	}
-	SuiteRoot(const SuiteRoot& var)
-	{
-		int size = wcslen(var.dRoot);
-		dRoot = new TCHAR[size + 1];
-		wcscpy_s(dRoot, size + 1, var.dRoot);
-	}
-	inline TCHAR* get_path()
-	{
-		return dRoot;
-	}
-
-	~SuiteRoot()
-	{
-		delete[] dRoot;
-	}
-private:
-	TCHAR* dRoot;
-};
 
 
 // CMFCTRSuiDlg dialog
