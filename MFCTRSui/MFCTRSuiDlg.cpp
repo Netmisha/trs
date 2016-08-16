@@ -17,6 +17,7 @@
 #include <ctime>
 #include <algorithm>
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -103,6 +104,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_New_Project, &CMFCTRSuiDlg::OnNewProject)
 	ON_NOTIFY_EX(TTN_NEEDTEXTA, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	ON_COMMAND(TOOLBAR_SAVE, &CMFCTRSuiDlg::OnSaveProject)
+	ON_COMMAND(TOOLBAR_CLOCK_GREY, &CMFCTRSuiDlg::OnTest)
 	ON_NOTIFY_EX(TTN_NEEDTEXTW, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
@@ -806,30 +808,6 @@ void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
 	// TODO: Add your control notification handler code here
 	*pResult = 0;
 }
-
-//DWORD WINAPI RunSuits(LPVOID arg)
-//{
-//	//RunParameters param;
-//	//param = *(RunParameters*)arg;
-//	//std::list<Suite*> coll = *Manager.List(param.path, param.name, param.tag);
-//	//int count = 0;
-//	//for each(auto it in coll)
-//	//{
-//	//	count += it->getList().size();
-//	//	for each(auto iter in it->getList())
-//	//	{
-//	//		if (iter->getRepeat())
-//	//		{
-//	//			count += atoi(iter->getRepeat());
-//	//			--count;
-//	//		}
-//	//	}
-//	//}
-//	//param.progress->SetRange(0, count);
-//	//param.progress->SetStep(1);
-//	//Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
-//	return 0;
-//}
 
 DWORD WINAPI ToRun(LPVOID arg)
 {
@@ -2250,7 +2228,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 		// Show the notification.
 		Shell_NotifyIcon(NIM_ADD, &nid) ? S_OK : E_FAIL;
-		CWnd::OnSysCommand(nID, lParam);
+		//CWnd::OnSysCommand(nID, lParam);
 		/*SetWindowLong(m_hWnd, GWL_EXSTYLE,
 			GetWindowLong(m_hWnd, GWL_EXSTYLE) | WS_EX_APPWINDOW);
 		long style = GetWindowLong(m_hWnd, GWL_STYLE);
@@ -3184,4 +3162,11 @@ void CMFCTRSuiDlg::OnExit()
 {
 	OnSysCommand(SC_CLOSE, NULL);
 //	EndDialog(IDCANCEL);
+}
+#include "AddClockDlg.h"
+
+void CMFCTRSuiDlg::OnTest()
+{
+	AddClockDlg dlg;
+	dlg.DoModal();
 }
