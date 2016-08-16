@@ -27,18 +27,37 @@ void Logger::operator<<(char* message)
 	console_log_->info(message);
 }
 
-bool Logger::Init()
+bool Logger::Init(char* path)
 {
-	DWORD dwAttrib = GetFileAttributesA(".\\Logs");
-
+	char* pPath;
+	DWORD dwAttrib;
+	if (path)
+	{
+		pPath = new char[strlen(path) + 7];
+		strncpy_s(pPath, strlen(path) + 1, path, strlen(path));
+		strncpy_s(pPath + strlen(path), 7, "\\Logs", 6);
+		dwAttrib = GetFileAttributesA(pPath);
+	}
+	else
+	{
+		pPath = new char[8];
+		strncpy_s(pPath, 8, ".\\Logs", 7);
+		dwAttrib = GetFileAttributesA(pPath);
+	}
 	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
 	{
-		TCHAR directory[] = _T(".\\Logs");
+		
+		TCHAR* directory = new TCHAR[strlen(pPath) + 1];
+		convertToTCHAR(directory, pPath);
 		if (!CreateDirectory(directory, NULL))
 		{
 			std::cerr << "Creating new directory failed: " << std::endl;
+			delete[] directory;
+			delete[] pPath;
 			return false;
 		}
+		delete[] directory;
+		
 	}
 
 
@@ -60,12 +79,17 @@ bool Logger::Init()
 			}
 		}
 		char buf[MAX_PATH];
-		sprintf_s(buf, MAX_PATH, ".\\Logs\\Logger %s.log", time);
+		char* logOut = new char[strlen(pPath) + 16];
+		strncpy_s(logOut, strlen(pPath) + 1, pPath, strlen(pPath));
+		strncpy_s(logOut + strlen(pPath), 16,"\\Logger %s.log",15);
+		sprintf_s(buf, MAX_PATH, logOut, time);
+		delete[] logOut;
 		auto sink = std::make_shared<spd::sinks::simple_file_sink_mt>(buf);
 		text_log_ = std::make_shared<spdlog::logger>("file_logger", sink);
 
 		console_log_ = spd::stderr_logger_mt("console_logger");
 		console_log_->set_pattern("\t\t\t%v");
+		delete[] pPath;
 	}
 	catch (const spd::spdlog_ex& ex)
 	{
@@ -90,12 +114,13 @@ TRSManager::TRSManager()
 
 TRSManager::~TRSManager()
 {
-
+	
 }
 
-bool TRSManager::Init()
+bool TRSManager::Init(char* lPath)
 {
-	logger.Init();
+	logger.Init(lPath);
+	
 	return false;
 }
 

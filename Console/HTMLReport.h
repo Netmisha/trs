@@ -8,7 +8,7 @@
 class HTMLReport:public TRSReport
 {
 public:
-	HTMLReport();
+	HTMLReport(char* path);
 	~HTMLReport();
 
 	virtual void BeforeExecution(TRSInfo pInfo );
