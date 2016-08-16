@@ -104,6 +104,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_New_Project, &CMFCTRSuiDlg::OnNewProject)
 	ON_NOTIFY_EX(TTN_NEEDTEXTA, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	ON_COMMAND(TOOLBAR_SAVE, &CMFCTRSuiDlg::OnSaveProject)
+	ON_COMMAND(TOOLBAR_CLOCK_GREY, &CMFCTRSuiDlg::OnTest)
 	ON_NOTIFY_EX(TTN_NEEDTEXTW, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
@@ -3124,4 +3125,11 @@ void CMFCTRSuiDlg::OnExit()
 {
 	OnSysCommand(SC_CLOSE, NULL);
 //	EndDialog(IDCANCEL);
+}
+#include "AddClockDlg.h"
+
+void CMFCTRSuiDlg::OnTest()
+{
+	AddClockDlg dlg;
+	dlg.DoModal();
 }

@@ -113,7 +113,7 @@ public:
 	afx_msg void OnViewConsole();
 
 	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
-	
+	afx_msg void OnTest();
 protected:
 	void ConsoleHide();
 	void ConsoleShow();
