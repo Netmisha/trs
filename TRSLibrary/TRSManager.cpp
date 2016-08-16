@@ -29,6 +29,19 @@ void Logger::operator<<(char* message)
 
 bool Logger::Init()
 {
+	DWORD dwAttrib = GetFileAttributesA(".\\Logs");
+
+	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
+	{
+		TCHAR directory[] = _T(".\\Logs");
+		if (!CreateDirectory(directory, NULL))
+		{
+			std::cerr << "Creating new directory failed: " << std::endl;
+			return false;
+		}
+	}
+
+
 	try
 	{
 		system_clock::time_point today = system_clock::now();
@@ -46,9 +59,8 @@ bool Logger::Init()
 					time[i] = ' ';
 			}
 		}
-
-		char buf[MAX_FILE_NAME_LENGHT];
-		sprintf_s(buf, MAX_FILE_NAME_LENGHT, "Logger %s.log", time);
+		char buf[MAX_PATH];
+		sprintf_s(buf, MAX_PATH, ".\\Logs\\Logger %s.log", time);
 		auto sink = std::make_shared<spd::sinks::simple_file_sink_mt>(buf);
 		text_log_ = std::make_shared<spdlog::logger>("file_logger", sink);
 
@@ -65,6 +77,7 @@ bool Logger::Init()
 
 void Logger::Destroy()
 {
+
 	spd::drop_all();
 }
 

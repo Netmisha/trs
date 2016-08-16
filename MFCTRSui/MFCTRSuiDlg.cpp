@@ -315,8 +315,17 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON7));
 		pList->Replace(3, hIcon_1); // not 5 as a separate is not an image
 
-		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON8));
+		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON10));
 		pList->Replace(4, hIcon_1); // not 5 as a separate is not an image
+
+		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON17));
+		pList->Replace(5, hIcon_1); // not 5 as a separate is not an image
+
+		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON16));
+		pList->Replace(6, hIcon_1); // not 5 as a separate is not an image
+
+		hIcon_1 = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON8));
+		pList->Replace(7, hIcon_1); // not 5 as a separate is not an image
 	
 		bar.SetImageList(pList);
 
@@ -545,7 +554,8 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 
 	//	m_Menu->EnableMenuItem(TOOLBAR_SAVE, MF_BYCOMMAND | MF_ENABLED);
 	//	m_Menu->EnableMenuItem(TOOLBAR_SAVEAS, MF_BYCOMMAND | MF_ENABLED);
-
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_CLOCK_GREY);
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_CLOCK, false);
 		if (RootList.GetItemCount())
 		{
 			RootList.SetSelectionMark(0);
@@ -565,6 +575,10 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 
 		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_STOP);
 //		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD);
+
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_CLOCK_GREY, false);
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_CLOCK);
+
 
 		dRoots.clear();
 		RootList.DeleteAllItems();
@@ -637,7 +651,7 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 	}
 	if (RootList.GetItemCount())
 	{
-
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDCLOCK, false);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE, false);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS, false);
 		//	m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADD, false);
@@ -652,6 +666,7 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 	}
 	else
 	{
+		m_secondToolBar.GetToolBarCtrl().HideButton(TOOLBAR_ADDCLOCK);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVE);
 		m_ToolBar.GetToolBarCtrl().HideButton(TOOLBAR_SAVEAS);
 
@@ -2478,6 +2493,7 @@ void CMFCTRSuiDlg::OnSaveAs()
 		delete[] name;
 
 		properties.SaveProject(&RootList);
+		UpdateToolbar(PROJECT_UPLOADED);
 	}
 	SaveAsPressed = false;
 	// TODO: Add your command handler code here
@@ -2679,12 +2695,15 @@ void CMFCTRSuiDlg::OnStopButtonClicked()
 void CMFCTRSuiDlg::OnSaveProject()
 {
 	if (!(pro_.getName() && pro_.getPath()))
+	{
 		OnSaveAs();
+	}
 	else
+	{
 		pro_.SaveProject(List);
-
-	MessageBox( _T("Project was saved"), _T(""), MB_ICONINFORMATION | MB_OK);
-	// TODO: Add your command handler code here
+		UpdateToolbar(PROJECT_UPLOADED);
+		MessageBox(_T("Project was saved"), _T(""), MB_ICONINFORMATION | MB_OK);
+	}
 }
 
 
