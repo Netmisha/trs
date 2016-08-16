@@ -50,6 +50,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AddClockDlg.cpp" />
+    <ClCompile Include="Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Clock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ClockCollection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleReporter.h">
@@ -101,6 +110,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AddClockDlg.h" />
+    <ClInclude Include="SuiteRoot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClockCollection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Clock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Icons\1470669393_editor-floopy-dish-save-outline-stroke.ico">
@@ -181,11 +202,14 @@
     <Image Include="res\Icons\1471017338_view-refresh.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Icons\1471292386_clock__plus.ico" />
-    <Image Include="res\Icons\1471292581_calendar-clock.ico" />
     <Image Include="res\icons\icon15.ico" />
-    <Image Include="res\Icons\1471293182_Increase_time.ico" />
     <Image Include="res\Icons\favicon.ico" />
+    <Image Include="res\Icons\1471292581_calendar-clock.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Icons\1471293182_Increase_time.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">

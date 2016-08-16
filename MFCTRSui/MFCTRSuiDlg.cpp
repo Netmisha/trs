@@ -2249,11 +2249,8 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		LoadIconMetric(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON2), LIM_SMALL, &(nid.hIcon));
 
 		// Show the notification.
-		BOOL check=Shell_NotifyIcon(NIM_ADD, &nid) ? S_OK : E_FAIL;
-		if (check)
-		{
-			int b = 7;
-		}
+		Shell_NotifyIcon(NIM_ADD, &nid) ? S_OK : E_FAIL;
+		CWnd::OnSysCommand(nID, lParam);
 		/*SetWindowLong(m_hWnd, GWL_EXSTYLE,
 			GetWindowLong(m_hWnd, GWL_EXSTYLE) | WS_EX_APPWINDOW);
 		long style = GetWindowLong(m_hWnd, GWL_STYLE);
