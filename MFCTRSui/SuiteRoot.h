@@ -2,6 +2,7 @@
 #define SUITE_ROOT_H
 #include "afxwin.h"
 #include "afxcmn.h"
+#include <string.h>
 
 class SuiteRoot
 {
@@ -31,6 +32,10 @@ public:
 	inline TCHAR* get_path()
 	{
 		return dRoot;
+	}
+	bool operator==(const SuiteRoot& var)
+	{
+		return !_tccmp(dRoot, var.dRoot);
 	}
 
 	~SuiteRoot()

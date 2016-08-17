@@ -11,8 +11,15 @@
 IMPLEMENT_DYNAMIC(AddClockDlg, CDialogEx)
 
 AddClockDlg::AddClockDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(AddClockDlg::IDD, pParent)
+: CDialogEx(AddClockDlg::IDD, pParent)
 {
+	days[0] = &m_ButtonMonday;
+	days[1] = &m_ButtonTuesday;
+	days[2] = &m_ButtonWednesday;
+	days[3] = &m_ButtonThursday;
+	days[4] = &m_ButtonFriday;
+	days[5] = &m_ButtonSaturday;
+	days[6] = &m_ButtonSunday;
 }
 
 AddClockDlg::~AddClockDlg()
@@ -22,8 +29,59 @@ AddClockDlg::~AddClockDlg()
 BOOL AddClockDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	if (::IsWindow(m_ButtonMonday.m_hWnd))
-		m_ButtonMonday.SetButtonStyle(m_ButtonMonday.GetButtonStyle() | BS_DEFPUSHBUTTON);
+	if (!initialized)
+		return FALSE;
+
+	m_ListCtrl.SetExtendedStyle(m_ListCtrl.GetExtendedStyle() | LVS_EX_CHECKBOXES | LVS_EX_TRANSPARENTSHADOWTEXT);
+
+	for (int i = 0; i < coll.size(); ++i)
+	{
+		m_ListCtrl.InsertItem(m_ListCtrl.GetItemCount(), coll[i].get_path());
+		m_ListCtrl.SetCheck(i, is_check[i]);
+	}
+
+	for each (auto val in coll_name)
+	{
+		m_EditName.AddString(val.GetString());
+	}
+	m_EditName.SetCurSel(name_sel);
+
+	for each (auto val in coll_tag)
+	{
+		m_EditTag.AddString(val.GetString());
+	}
+	m_EditTag.SetCurSel(tag_sel);
+
+	CString mes;
+	CString helpMes;
+	for (int i = 0; i < 9; ++i)
+	{
+		mes.Format(L"%S", "0");
+		helpMes.Format(L"%d", i + 1);
+		mes += helpMes;
+		m_EditThreads.AddString(mes);
+	}
+
+	for (int i = 9; i < 100; ++i)
+	{
+		mes.Format(L"%d", int(i + 1));
+		m_EditThreads.AddString(mes);
+	}
+
+	//for (int i = 1; i <= 24; ++i)
+	//{
+
+	//}
+
+	m_EditThreads.SetCurSel(thread_sel);
+
+	m_PathImageList.Create(32, 32, ILC_COLORDDB, 2, 2);
+
+	CBitmap m_Bitmap5;
+	m_Bitmap5.LoadBitmap(IDB_BITMAP5);
+	m_PathImageList.Add(&m_Bitmap5, RGB(0, 0, 0));
+
+	m_ListCtrl.SetImageList(&m_PathImageList, LVSIL_SMALL);
 
 	return TRUE;
 }
@@ -62,25 +120,93 @@ END_MESSAGE_MAP()
 
 void AddClockDlg::OnBnClickedOk()
 {
-	// TODO: Add your control notification handler code here
+	m_EditClockName.GetWindowTextW(clock_name);
+	if (clock_name.IsEmpty())
+	{
+		MessageBox(_T("You did not name the clock"), _T("Error"), MB_ICONERROR | MB_OK);
+		return;
+	}
+
+	if (!selected_suites.size())
+	{
+		MessageBox(_T("You did not choose any suite. There will be nothing to Run."), _T("Error"), MB_ICONERROR | MB_OK);
+		return;
+	}
+	
+	CString hour_str;
+	m_EditHour.GetWindowTextW(hour_str);
+	hour = _ttoi(hour_str);
+
+	CString minute_str;
+	m_EditHour.GetWindowTextW(minute_str);
+	minute = _ttoi(minute_str);
+
+	bool weekly = m_CheckRepeat.GetCheck() == BST_CHECKED;
+
+	DWORD day_flag;
+	for (int i = 0; i < 7; ++i)
+	{
+		if ((*days[i]).GetState() & BST_PUSHED)
+			day_flag |= 1 << i;
+	}
+
+	for each(auto index in selected_suites)
+	{
+		SuiteRoot root(m_ListCtrl.GetItemText(index, 0));
+		schedule.AddClock(root.get_path(), day_flag, hour, minute, weekly);
+	}
+
 	CDialogEx::OnOK();
 }
 
 
 void AddClockDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: Add your control notification handler code here
+	LPNMLISTVIEW  pNMLV = reinterpret_cast<LPNMLISTVIEW >(pNMHDR);
+
+	UINT state = pNMLV->uOldState ^ pNMLV->uNewState;
+	if (pNMLV->uChanged & LVIF_STATE) // item state has been changed
+	{
+		switch (pNMLV->uNewState & LVIS_STATEIMAGEMASK)
+		{
+		case INDEXTOSTATEIMAGEMASK(BST_CHECKED + 1): // new state: checked
+		{
+	//		selected_suites.push_back(SuiteRoot(m_ListCtrl.GetItemText(pNMLV->iItem, 0)));
+			selected_suites.push_back(pNMLV->iItem);
+			break;
+		}
+		case INDEXTOSTATEIMAGEMASK(BST_UNCHECKED + 1): // new state: unchecked
+		{
+			/*auto iter = std::find(selected_suites.begin(), selected_suites.end(), m_ListCtrl.GetItemText(pNMLV->iItem, 0));*/
+			auto iter = std::find(selected_suites.begin(), selected_suites.end(), pNMLV->iItem);
+		    if (iter != selected_suites.end())
+				selected_suites.erase(iter);
+			break;
+		}
+		default:
+			break;
+		}
+	}
 	*pResult = 0;
 }
 
 
 
-BOOL AddClockDlg::SetList(std::vector<SuiteRoot> coll)
+BOOL AddClockDlg::Init(std::vector<SuiteRoot> coll_, vector<bool> check, vector<CString> name_, int name_sel_, vector<CString> tag_, int tag_sel_, int thread_sel_)
 {
-	//for each (auto val in coll)
-	//{
-	//	m_ListCtrl.InsertItem(val.get_path(),)
-	//}
+	initialized = false;
+	coll = coll_;
+	is_check = check;
+	if (!coll.size() || coll.size() != is_check.size())
+		return FALSE;
+
+	coll_name = name_;
+	coll_tag = tag_;
+	if ((name_sel = name_sel_) >= coll_name.size() ||
+		(tag_sel = tag_sel_) >= coll_tag.size() ||
+		(thread_sel = thread_sel_) > 100)
+	return FALSE;
+
+	initialized = true;
 	return TRUE;
 }
