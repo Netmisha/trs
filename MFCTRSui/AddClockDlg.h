@@ -5,7 +5,9 @@
 #include <vector>
 #include "afxcmn.h"
 #include "afxwin.h"
+#include "ClockCollection.h"
 // AddClockDlg dialog
+using std::vector;
 
 class AddClockDlg : public CDialogEx
 {
@@ -16,7 +18,14 @@ public:
 	virtual ~AddClockDlg();
 
 	BOOL OnInitDialog();
-	BOOL SetList(std::vector<SuiteRoot>);
+	BOOL Init(std::vector<SuiteRoot>, vector<CString> name, int name_sel, vector<CString> tag, int tag_sel, int threads_sel);
+
+	inline CString get_clock_name() const;
+	inline CString get_name() const;
+	inline CString get_tag() const;
+	inline CString get_threads() const;
+	inline ClockCollection get_clock_collection() const;
+	
 	// Dialog Data
 	enum { IDD = IDD_DIALOG5 };
 
@@ -25,12 +34,12 @@ protected:
 
 
 private:
-	char* clock_name;
+	CString clock_name;
 	std::vector<SuiteRoot> list_items;
 	CString tag;
 	CString name;
 	CString threads;
-
+	ClockCollection schedule;
 
 public:
 	DECLARE_MESSAGE_MAP()
@@ -53,4 +62,37 @@ protected:
 	CButton m_ButtonFriday;
 	CButton m_ButtonSaturday;
 	CButton m_ButtonSunday;
+
+	vector<SuiteRoot> coll;
+	vector<CString> coll_name;
+	vector<CString> coll_tag;
+
+	int name_sel;
+	int tag_sel;
+	int thread_sel;
+	bool initialized = false;
 };
+
+
+// =========================================================================
+
+inline CString AddClockDlg::get_clock_name() const
+{
+	return clock_name;
+}
+inline CString AddClockDlg::get_name() const
+{
+	return name;
+}
+inline CString AddClockDlg::get_tag() const
+{
+	return tag;
+}
+inline CString AddClockDlg::get_threads() const
+{
+	return threads;
+}
+inline ClockCollection AddClockDlg::get_clock_collection() const
+{
+	return schedule;
+}

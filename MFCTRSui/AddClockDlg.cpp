@@ -11,7 +11,7 @@
 IMPLEMENT_DYNAMIC(AddClockDlg, CDialogEx)
 
 AddClockDlg::AddClockDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(AddClockDlg::IDD, pParent)
+: CDialogEx(AddClockDlg::IDD, pParent)
 {
 }
 
@@ -22,8 +22,42 @@ AddClockDlg::~AddClockDlg()
 BOOL AddClockDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	if (::IsWindow(m_ButtonMonday.m_hWnd))
-		m_ButtonMonday.SetButtonStyle(m_ButtonMonday.GetButtonStyle() | BS_DEFPUSHBUTTON);
+	if (!initialized)
+		return FALSE;
+
+	for each (auto val in coll)
+	{
+		m_ListCtrl.InsertItem(m_ListCtrl.GetItemCount(), val.get_path());
+	}
+
+	for each (auto val in coll_name)
+	{
+		m_EditName.AddString(val.GetString());
+	}
+	m_EditName.SetCurSel(name_sel);
+
+	for each (auto val in coll_tag)
+	{
+		m_EditTag.AddString(val.GetString());
+	}
+	m_EditTag.SetCurSel(tag_sel);
+
+	CString mes;
+	CString helpMes;
+	for (int i = 0; i < 9; ++i)
+	{
+		mes.Format(L"%S", "0");
+		helpMes.Format(L"%d", i + 1);
+		mes += helpMes;
+		m_EditThreads.AddString(mes);
+	}
+
+	for (int i = 9; i < 100; ++i)
+	{
+		mes.Format(L"%d", int(i + 1));
+		m_EditThreads.AddString(mes);
+	}
+	m_EditThreads.SetCurSel(thread_sel);
 
 	return TRUE;
 }
@@ -62,7 +96,7 @@ END_MESSAGE_MAP()
 
 void AddClockDlg::OnBnClickedOk()
 {
-	// TODO: Add your control notification handler code here
+
 	CDialogEx::OnOK();
 }
 
@@ -76,11 +110,20 @@ void AddClockDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 
 
 
-BOOL AddClockDlg::SetList(std::vector<SuiteRoot> coll)
+BOOL AddClockDlg::Init(std::vector<SuiteRoot> coll_, vector<CString> name_, int name_sel_, vector<CString> tag_, int tag_sel_, int thread_sel_)
 {
-	//for each (auto val in coll)
-	//{
-	//	m_ListCtrl.InsertItem(val.get_path(),)
-	//}
+	initialized = false;
+	coll = coll_;
+	if (!coll.size())
+		return FALSE;
+
+	coll_name = name_;
+	coll_tag = tag_;
+	if ((name_sel = name_sel_) >= coll_name.size() ||
+		(tag_sel = tag_sel_) >= coll_tag.size() ||
+		(thread_sel = thread_sel_) > 100)
+	return FALSE;
+
+	initialized = true;
 	return TRUE;
 }

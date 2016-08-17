@@ -105,6 +105,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_NOTIFY_EX(TTN_NEEDTEXTA, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	ON_COMMAND(TOOLBAR_SAVE, &CMFCTRSuiDlg::OnSaveProject)
 	ON_COMMAND(TOOLBAR_CLOCK_GREY, &CMFCTRSuiDlg::OnTest)
+	ON_COMMAND(TOOLBAR_CLOCK, &CMFCTRSuiDlg::OnTest)
 	ON_NOTIFY_EX(TTN_NEEDTEXTW, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
@@ -428,8 +429,8 @@ VOID CALLBACK TimerAPCProc(
 	// Formal parameters not used in this example.
 	UNREFERENCED_PARAMETER(dwTimerLowValue);
 	UNREFERENCED_PARAMETER(dwTimerHighValue);
-	CMFCTRSuiDlg* pointer = (CMFCTRSuiDlg*)lpArg;
-	pointer->OnProgramRunsel();
+//	CMFCTRSuiDlg* pointer = (CMFCTRSuiDlg*)lpArg;
+//	pointer->OnProgramRunsel();
 	
 	MessageBeep(0);
 
@@ -2228,8 +2229,8 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 		// Show the notification.
 		Shell_NotifyIcon(NIM_ADD, &nid) ? S_OK : E_FAIL;
-		//CWnd::OnSysCommand(nID, lParam);
-		/*SetWindowLong(m_hWnd, GWL_EXSTYLE,
+		CWnd::OnSysCommand(nID, lParam);
+		SetWindowLong(m_hWnd, GWL_EXSTYLE,
 			GetWindowLong(m_hWnd, GWL_EXSTYLE) | WS_EX_APPWINDOW);
 		long style = GetWindowLong(m_hWnd, GWL_STYLE);
 		style &= ~(WS_VISIBLE);    // this works - window become invisible 
@@ -2325,7 +2326,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		else
 		{
 			CDialogEx::OnOK();
-		}*/
+		}
 	}
 	else
 	{
@@ -3168,5 +3169,22 @@ void CMFCTRSuiDlg::OnExit()
 void CMFCTRSuiDlg::OnTest()
 {
 	AddClockDlg dlg;
+	std::vector<SuiteRoot> coll;
+	for (int i = 0; i < RootList.GetItemCount(); ++i)
+		coll.push_back(SuiteRoot(RootList.GetItemText(i, 0)));
+
+
+	std::vector<CString> name;
+	name.resize(m_NameBox.GetCount());
+	for (int i = 0; i < m_NameBox.GetCount(); ++i)
+		m_NameBox.GetLBText(i, name[i]);
+
+	std::vector<CString> tag;
+	tag.resize(DropDown.GetCount());
+	for (int i = 0; i < DropDown.GetCount(); ++i)
+		DropDown.GetLBText(i, tag[i]);
+
+	
+	dlg.Init(coll, name, m_NameBox.GetCurSel(), tag, DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
 	dlg.DoModal();
 }
