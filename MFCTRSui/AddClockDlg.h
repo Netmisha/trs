@@ -41,6 +41,10 @@ private:
 	CString threads;
 	ClockCollection schedule;
 
+	int hour;
+	int minute;
+	bool weekly;
+
 public:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnBnClickedOk();
@@ -62,6 +66,7 @@ protected:
 	CButton m_ButtonFriday;
 	CButton m_ButtonSaturday;
 	CButton m_ButtonSunday;
+	CButton* days[DAYS_IN_WEEK];
 
 //	vector<SuiteRoot> selected_suites;
 	vector<int> selected_suites;

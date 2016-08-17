@@ -13,6 +13,13 @@ IMPLEMENT_DYNAMIC(AddClockDlg, CDialogEx)
 AddClockDlg::AddClockDlg(CWnd* pParent /*=NULL*/)
 : CDialogEx(AddClockDlg::IDD, pParent)
 {
+	days[0] = &m_ButtonMonday;
+	days[1] = &m_ButtonTuesday;
+	days[2] = &m_ButtonWednesday;
+	days[3] = &m_ButtonThursday;
+	days[4] = &m_ButtonFriday;
+	days[5] = &m_ButtonSaturday;
+	days[6] = &m_ButtonSunday;
 }
 
 AddClockDlg::~AddClockDlg()
@@ -60,6 +67,12 @@ BOOL AddClockDlg::OnInitDialog()
 		mes.Format(L"%d", int(i + 1));
 		m_EditThreads.AddString(mes);
 	}
+
+	//for (int i = 1; i <= 24; ++i)
+	//{
+
+	//}
+
 	m_EditThreads.SetCurSel(thread_sel);
 
 	m_PathImageList.Create(32, 32, ILC_COLORDDB, 2, 2);
@@ -107,6 +120,41 @@ END_MESSAGE_MAP()
 
 void AddClockDlg::OnBnClickedOk()
 {
+	m_EditClockName.GetWindowTextW(clock_name);
+	if (clock_name.IsEmpty())
+	{
+		MessageBox(_T("You did not name the clock"), _T("Error"), MB_ICONERROR | MB_OK);
+		return;
+	}
+
+	if (!selected_suites.size())
+	{
+		MessageBox(_T("You did not choose any suite. There will be nothing to Run."), _T("Error"), MB_ICONERROR | MB_OK);
+		return;
+	}
+	
+	CString hour_str;
+	m_EditHour.GetWindowTextW(hour_str);
+	hour = _ttoi(hour_str);
+
+	CString minute_str;
+	m_EditHour.GetWindowTextW(minute_str);
+	minute = _ttoi(minute_str);
+
+	bool weekly = m_CheckRepeat.GetCheck() == BST_CHECKED;
+
+	DWORD day_flag;
+	for (int i = 0; i < 7; ++i)
+	{
+		if ((*days[i]).GetState() & BST_PUSHED)
+			day_flag |= 1 << i;
+	}
+
+	for each(auto index in selected_suites)
+	{
+		SuiteRoot root(m_ListCtrl.GetItemText(index, 0));
+		schedule.AddClock(root.get_path(), day_flag, hour, minute, weekly);
+	}
 
 	CDialogEx::OnOK();
 }
