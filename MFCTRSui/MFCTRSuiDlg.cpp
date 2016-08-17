@@ -3170,9 +3170,13 @@ void CMFCTRSuiDlg::OnTest()
 {
 	AddClockDlg dlg;
 	std::vector<SuiteRoot> coll;
+	vector<bool> is_check;
+	is_check.resize(RootList.GetItemCount());
 	for (int i = 0; i < RootList.GetItemCount(); ++i)
+	{
 		coll.push_back(SuiteRoot(RootList.GetItemText(i, 0)));
-
+		is_check[i] = RootList.GetCheck(i);
+	}
 
 	std::vector<CString> name;
 	name.resize(m_NameBox.GetCount());
@@ -3185,6 +3189,6 @@ void CMFCTRSuiDlg::OnTest()
 		DropDown.GetLBText(i, tag[i]);
 
 	
-	dlg.Init(coll, name, m_NameBox.GetCurSel(), tag, DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
+	dlg.Init(coll, is_check, name, m_NameBox.GetCurSel(), tag, DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
 	dlg.DoModal();
 }

@@ -25,9 +25,12 @@ BOOL AddClockDlg::OnInitDialog()
 	if (!initialized)
 		return FALSE;
 
-	for each (auto val in coll)
+	m_ListCtrl.SetExtendedStyle(m_ListCtrl.GetExtendedStyle() | LVS_EX_CHECKBOXES | LVS_EX_TRANSPARENTSHADOWTEXT);
+
+	for (int i = 0; i < coll.size(); ++i)
 	{
-		m_ListCtrl.InsertItem(m_ListCtrl.GetItemCount(), val.get_path());
+		m_ListCtrl.InsertItem(m_ListCtrl.GetItemCount(), coll[i].get_path());
+		m_ListCtrl.SetCheck(i, is_check[i]);
 	}
 
 	for each (auto val in coll_name)
@@ -58,6 +61,14 @@ BOOL AddClockDlg::OnInitDialog()
 		m_EditThreads.AddString(mes);
 	}
 	m_EditThreads.SetCurSel(thread_sel);
+
+	m_PathImageList.Create(32, 32, ILC_COLORDDB, 2, 2);
+
+	CBitmap m_Bitmap5;
+	m_Bitmap5.LoadBitmap(IDB_BITMAP5);
+	m_PathImageList.Add(&m_Bitmap5, RGB(0, 0, 0));
+
+	m_ListCtrl.SetImageList(&m_PathImageList, LVSIL_SMALL);
 
 	return TRUE;
 }
@@ -103,18 +114,42 @@ void AddClockDlg::OnBnClickedOk()
 
 void AddClockDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: Add your control notification handler code here
+	LPNMLISTVIEW  pNMLV = reinterpret_cast<LPNMLISTVIEW >(pNMHDR);
+
+	UINT state = pNMLV->uOldState ^ pNMLV->uNewState;
+	if (pNMLV->uChanged & LVIF_STATE) // item state has been changed
+	{
+		switch (pNMLV->uNewState & LVIS_STATEIMAGEMASK)
+		{
+		case INDEXTOSTATEIMAGEMASK(BST_CHECKED + 1): // new state: checked
+		{
+	//		selected_suites.push_back(SuiteRoot(m_ListCtrl.GetItemText(pNMLV->iItem, 0)));
+			selected_suites.push_back(pNMLV->iItem);
+			break;
+		}
+		case INDEXTOSTATEIMAGEMASK(BST_UNCHECKED + 1): // new state: unchecked
+		{
+			/*auto iter = std::find(selected_suites.begin(), selected_suites.end(), m_ListCtrl.GetItemText(pNMLV->iItem, 0));*/
+			auto iter = std::find(selected_suites.begin(), selected_suites.end(), pNMLV->iItem);
+		    if (iter != selected_suites.end())
+				selected_suites.erase(iter);
+			break;
+		}
+		default:
+			break;
+		}
+	}
 	*pResult = 0;
 }
 
 
 
-BOOL AddClockDlg::Init(std::vector<SuiteRoot> coll_, vector<CString> name_, int name_sel_, vector<CString> tag_, int tag_sel_, int thread_sel_)
+BOOL AddClockDlg::Init(std::vector<SuiteRoot> coll_, vector<bool> check, vector<CString> name_, int name_sel_, vector<CString> tag_, int tag_sel_, int thread_sel_)
 {
 	initialized = false;
 	coll = coll_;
-	if (!coll.size())
+	is_check = check;
+	if (!coll.size() || coll.size() != is_check.size())
 		return FALSE;
 
 	coll_name = name_;

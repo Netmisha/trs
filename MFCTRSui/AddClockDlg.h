@@ -18,7 +18,7 @@ public:
 	virtual ~AddClockDlg();
 
 	BOOL OnInitDialog();
-	BOOL Init(std::vector<SuiteRoot>, vector<CString> name, int name_sel, vector<CString> tag, int tag_sel, int threads_sel);
+	BOOL Init(std::vector<SuiteRoot>, vector<bool> is_check, vector<CString> name, int name_sel, vector<CString> tag, int tag_sel, int threads_sel);
 
 	inline CString get_clock_name() const;
 	inline CString get_name() const;
@@ -63,9 +63,14 @@ protected:
 	CButton m_ButtonSaturday;
 	CButton m_ButtonSunday;
 
+//	vector<SuiteRoot> selected_suites;
+	vector<int> selected_suites;
 	vector<SuiteRoot> coll;
 	vector<CString> coll_name;
 	vector<CString> coll_tag;
+	vector<bool> is_check;
+
+	CImageList m_PathImageList;
 
 	int name_sel;
 	int tag_sel;
