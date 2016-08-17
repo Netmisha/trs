@@ -7,7 +7,7 @@
 #include "MFCTRSuiDlg.h"
 #include "afxdialogex.h"
 #include <list>
-
+#define MYWM_NOTIFYICON (WM_APP+100)
 #include "ConsoleReporter.h"
 #include "TRSLibrary\TRSManager.h"
 #include "ToRunParameters.h"
@@ -16,7 +16,7 @@
 #include "Functionality.h"
 #include <ctime>
 #include <algorithm>
-
+#include <shellapi.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,6 +37,7 @@ CToolBar* ToolBar;
 //CListCtrl* List;
 CToolBar* Bar;
 CComboBox* Tag;
+NOTIFYICONDATA nid;
 CComboBox* Threads;
 CTreeCtrl* TREECTRL;
 CComboBox* Name;
@@ -92,7 +93,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_PROGRAM_DELETESELECTEDITEMS, &CMFCTRSuiDlg::OnProgramDeleteselecteditems)
 	ON_COMMAND(ID_PROGRAM_RUNSEL, &CMFCTRSuiDlg::OnProgramRunsel)
 	ON_COMMAND(TOOLBAR_REFRESH, &CMFCTRSuiDlg::OnProgramRefresh)
-
+	//ON_REGISTERED_MESSAGE(MYWM_NOTIFYICON, &CMFCTRSuiDlg::OnNotifyIcon)
 	ON_WM_SYSCOMMAND(SC_CLOSE, &CMFCTRSuiDlg::OnSysCommand(UINT , LPARAM))
 	ON_COMMAND(ID_Load_Project, &CMFCTRSuiDlg::OnLoadProject)
 	ON_COMMAND(ID_PROJECT_LASTPROJECTS, &CMFCTRSuiDlg::OnProjectLastprojects)
@@ -111,6 +112,10 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_NOTIFY(NM_RCLICK, IDC_TREE1, &CMFCTRSuiDlg::OnNMRClickTree1)
 	ON_COMMAND(ID_INFO_INFO, &CMFCTRSuiDlg::OnInfoInfo)
 	ON_COMMAND(ID_EXIT, &CMFCTRSuiDlg::OnExit)
+	ON_WM_MOUSEMOVE()
+	ON_WM_MOUSEHOVER()
+	ON_COMMAND(ID_Menu, &CMFCTRSuiDlg::OnMenu)
+	ON_COMMAND(ID_INFO_CLOSE, &CMFCTRSuiDlg::OnInfoClose)
 END_MESSAGE_MAP()
 
 
@@ -434,6 +439,7 @@ VOID CALLBACK TimerAPCProc(
 	MessageBeep(0);
 
 }
+
 
 DWORD WINAPI TimeRunning(LPVOID arg)
 {
@@ -2206,126 +2212,97 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if (nID == SC_CLOSE)
 	{
-		NOTIFYICONDATA nid = {};
-		nid.cbSize = sizeof(nid);
-		nid.hWnd = m_hWnd;
-		nid.uFlags = NIF_ICON | NIF_TIP | NIF_GUID;
+
 
 		// Note: This is an example GUID only and should not be used.
 		// Normally, you should use a GUID-generating tool to provide the value to
 		// assign to guidItem.
-		
-		// {F0E2FBBC-6EA3-4687-BD39-3A03BDA0B368}
-		// {FE7D844E-421D-4208-90D6-0CB48E908F50}
+		Shell_NotifyIcon(NIM_DELETE, &nid);
+		nid = {};
+		nid.cbSize = sizeof(nid);
+
+		nid.hWnd = m_hWnd;
+		nid.uFlags = NIF_ICON | NIF_TIP | NIF_GUID | NIF_INFO | NIF_MESSAGE | NIF_SHOWTIP;
+		nid.uCallbackMessage = MYWM_NOTIFYICON;
+		nid.uVersion = NOTIFYICON_VERSION_4;
+
 		static GUID myGuid;
 		CoCreateGuid(&myGuid);
 		nid.guidItem = myGuid;
 		// This text will be shown as the icon's tooltip.
 		StringCchCopy(nid.szTip, ARRAYSIZE(nid.szTip), L"Test managment");
-
+		StringCchCopy(nid.szInfo, ARRAYSIZE(nid.szInfo), L"I am here");
 		// Load the icon for high DPI.
 		LoadIconMetric(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON2), LIM_SMALL, &(nid.hIcon));
 
 		// Show the notification.
-		Shell_NotifyIcon(NIM_ADD, &nid) ? S_OK : E_FAIL;
-		//CWnd::OnSysCommand(nID, lParam);
-		/*SetWindowLong(m_hWnd, GWL_EXSTYLE,
-			GetWindowLong(m_hWnd, GWL_EXSTYLE) | WS_EX_APPWINDOW);
-		long style = GetWindowLong(m_hWnd, GWL_STYLE);
-		style &= ~(WS_VISIBLE);    // this works - window become invisible 
 
-		style |= WS_EX_TOOLWINDOW;   // flags don't work - windows remains in taskbar
-		style &= ~(WS_EX_APPWINDOW);
-
+		Shell_NotifyIcon(NIM_ADD, &nid);
+		Shell_NotifyIcon(NIM_SETVERSION, &nid);
 		ShowWindow(SW_HIDE); // hide the window
+		long style = GetWindowLong(m_hWnd, GWL_STYLE);
 		SetWindowLong(m_hWnd, GWL_STYLE, style); // set the style
 		ShowWindow(SW_SHOW); // show the window for the new style to come into effect
 		ShowWindow(SW_HIDE); // hide the window so we can't see it
-		
-		int res=0;
 
 
-		if (RootList.GetItemCount() > 0)
+		/*BOOL bRet;
+
+		WNDCLASSEX wnd = { 0 };
+
+		wnd.hInstance = GetModuleHandle(NULL);
+		wnd.lpszClassName = L"CMFCTRSuiDlg";
+		wnd.lpfnWndProc = WindowProcedure;
+		wnd.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+		wnd.cbSize = sizeof (WNDCLASSEX);
+
+		wnd.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+		wnd.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+		wnd.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wnd.hbrBackground = (HBRUSH)COLOR_APPWORKSPACE;
+
+		if (!RegisterClassEx(&wnd))
 		{
-			char* path = pro_.getProjPath();
-			if (path)
-			{
-				WIN32_FIND_DATA FindFileData;
-				TCHAR* buf = new TCHAR[strlen(path) + 1];
-				convertToTCHAR(buf, path);
-				HANDLE handle = FindFirstFile(buf, &FindFileData);
-				int found = handle != INVALID_HANDLE_VALUE;
-				if (!found)
-				{
-					res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
-					if (res == IDYES)
-					{
-						pro_.SaveProject(&RootList);
-						delete[] path;
-						delete[] buf;
-						CDialogEx::OnOK();
-					}
-					if (res==IDNO)
-					{
-						delete[] path;
-						delete[] buf;
-						CDialogEx::OnOK();
-					}
-					if (res == IDCANCEL)
-					{
-						delete[] path;
-						delete[] buf;
-						return;
-					}
-				}
-				else
-				{
+		FatalAppExit(0, TEXT("Couldn't register window class!"));
+		}
 
-					if (!CheckForModification(path, pro_.getName(), &RootList, &DropDown, &ThreadsComboBox, &m_NameBox, console_output.IsWindowVisible()))
-					{
-						if (SaveAsPressed)
-						{
-							int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
-							if (res == IDYES)
-							{
-								pro_.SaveProject(&RootList);
-								delete[] path;
-								delete[] buf;
-								CDialogEx::OnOK();
-							}
-							if (res==IDNO)
-							{
-								delete[] path;
-								delete[] buf;
-								CDialogEx::OnOK();
-							}
-							if (res == IDCANCEL)
-							{
-								delete[] path;
-								delete[] buf;
-								return;
-							}
-						}
-						else
-						{
-							delete[] path;
-							delete[] buf;
-							CDialogEx::OnOK();
-						}
-					}
-					else
-					{
-						delete[] buf;
-						delete[] path;
-						CDialogEx::OnOK();
-					}
-				}
-			}
+
+		*/
+		
+		/*while ((bRet = GetMessage(&msg, m_hWnd, 0, 0)) != 0)
+		{
+		if (bRet == -1)
+		{
+		// handle the error and possibly exit
 		}
 		else
 		{
-			CDialogEx::OnOK();
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+		switch (msg.message)
+		{
+		case MYWM_NOTIFYICON:
+		MessageBox(_T("TTTTT"), _T("idsbv"), MB_OK);
+		break;
+		}
+		}
 		}*/
+		//CWnd::OnSysCommand(nID, lParam);
+		/*SetWindowLong(m_hWnd, GWL_EXSTYLE,
+			GetWindowLong(m_hWnd, GWL_EXSTYLE) | WS_EX_APPWINDOW);
+			long style = GetWindowLong(m_hWnd, GWL_STYLE);
+			style &= ~(WS_VISIBLE);    // this works - window become invisible
+
+			style |= WS_EX_TOOLWINDOW;   // flags don't work - windows remains in taskbar
+			style &= ~(WS_EX_APPWINDOW);
+
+			ShowWindow(SW_HIDE); // hide the window
+			SetWindowLong(m_hWnd, GWL_STYLE, style); // set the style
+			ShowWindow(SW_SHOW); // show the window for the new style to come into effect
+			ShowWindow(SW_HIDE); // hide the window so we can't see it
+
+
+			}*/
 	}
 	else
 	{
@@ -3169,4 +3146,141 @@ void CMFCTRSuiDlg::OnTest()
 {
 	AddClockDlg dlg;
 	dlg.DoModal();
+}
+
+void CMFCTRSuiDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CDialogEx::OnMouseMove(nFlags, point);
+}
+
+
+void CMFCTRSuiDlg::OnMouseHover(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CDialogEx::OnMouseHover(nFlags, point);
+}
+
+
+LRESULT CMFCTRSuiDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	switch (message)
+	{
+	case MYWM_NOTIFYICON:
+		switch (lParam)
+		{
+		case WM_RBUTTONUP:
+			CMenu *mnuPopupSubmit = new CMenu;
+			mnuPopupSubmit->LoadMenu(IDR_MENU5);
+			CMenu* nextMenu = mnuPopupSubmit->GetSubMenu(0);
+			ASSERT(nextMenu); 
+			POINT mousePos;
+			GetCursorPos(&mousePos);
+			nextMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, mousePos.x, mousePos.y, this); 
+			break;
+		}
+	}
+	return CDialogEx::WindowProc(message, wParam, lParam);
+}
+
+
+void CMFCTRSuiDlg::OnMenu()
+{
+	// TODO: Add your command handler code here
+	
+	ShowWindow(SW_HIDE); // hide the window
+	long style = GetWindowLong(m_hWnd, GWL_STYLE);
+	SetWindowLong(m_hWnd, GWL_STYLE, style); // set the style
+	ShowWindow(SW_SHOW); // show the window for the new style to come into effect
+	//ShowWindow(SW_HIDE); // hide the window so we can't see it
+}
+
+
+void CMFCTRSuiDlg::OnInfoClose()
+{
+	// TODO: Add your command handler code here
+	if (RootList.GetItemCount() > 0)
+	{
+		char* path = pro_.getProjPath();
+		if (path)
+		{
+			WIN32_FIND_DATA FindFileData;
+			TCHAR* buf = new TCHAR[strlen(path) + 1];
+			convertToTCHAR(buf, path);
+			HANDLE handle = FindFirstFile(buf, &FindFileData);
+			int found = handle != INVALID_HANDLE_VALUE;
+			if (!found)
+			{
+				int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
+				if (res == IDYES)
+				{
+					pro_.SaveProject(&RootList);
+					delete[] path;
+					delete[] buf;
+					CDialogEx::OnOK();
+				}
+				if (res == IDNO)
+				{
+					delete[] path;
+					delete[] buf;
+					CDialogEx::OnOK();
+				}
+				if (res == IDCANCEL)
+				{
+					delete[] path;
+					delete[] buf;
+					return;
+				}
+			}
+			else
+			{
+
+				if (!CheckForModification(path, pro_.getName(), &RootList, &DropDown, &ThreadsComboBox, &m_NameBox, console_output.IsWindowVisible()))
+				{
+					if (SaveAsPressed)
+					{
+						int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
+						if (res == IDYES)
+						{
+							pro_.SaveProject(&RootList);
+							delete[] path;
+							delete[] buf;
+							CDialogEx::OnOK();
+						}
+						if (res == IDNO)
+						{
+							delete[] path;
+							delete[] buf;
+							CDialogEx::OnOK();
+						}
+						if (res == IDCANCEL)
+						{
+							delete[] path;
+							delete[] buf;
+							return;
+						}
+					}
+					else
+					{
+						delete[] path;
+						delete[] buf;
+						CDialogEx::OnOK();
+					}
+				}
+				else
+				{
+					delete[] buf;
+					delete[] path;
+					CDialogEx::OnOK();
+				}
+			}
+		}
+	}
+	else
+	{
+		CDialogEx::OnOK();
+	}
 }

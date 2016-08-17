@@ -36,7 +36,7 @@ namespace UnitTest
 
 		TEST_CLASS_INITIALIZE(ClassInitialization)
 		{
-			Manager.Init();
+			Manager.Init("D:\\");
 			
 		}
 		
