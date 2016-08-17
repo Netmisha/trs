@@ -25,8 +25,15 @@ class ClockCollection
 {
 public:
 	bool AddClock(TCHAR* suite_root, DWORD day_flag, DWORD hour, DWORD min, bool weekly);
+	inline std::list<Clock> get_schedule() const;
 private:
 	std::list<Clock> clocks;
 };
+
+// ======================================================================================
+inline std::list<Clock> ClockCollection::get_schedule() const
+{
+	return clocks;
+}
 
 #endif

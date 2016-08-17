@@ -68,11 +68,29 @@ BOOL AddClockDlg::OnInitDialog()
 		m_EditThreads.AddString(mes);
 	}
 
-	//for (int i = 1; i <= 24; ++i)
-	//{
+	for (int i = 0; i < 10; ++i)
+	{
+		mes.Format(L"%S", "0");
+		helpMes.Format(L"%d", i);
+		mes += helpMes;
+		m_EditHour.AddString(mes);
+		m_EditMinute.AddString(mes);
+	}
 
-	//}
+	for (int i = 10; i <= 24; ++i)
+	{
+		mes.Format(_T("%d"), i);
+		m_EditHour.AddString(mes);
+		m_EditMinute.AddString(mes);
+	}
 
+	for (int i = 25; i <= 60; ++i)
+	{
+		mes.Format(_T("%d"), i);
+		m_EditMinute.AddString(mes);
+	}
+	m_EditHour.SetCurSel(0);
+	m_EditMinute.SetCurSel(0);
 	m_EditThreads.SetCurSel(thread_sel);
 
 	m_PathImageList.Create(32, 32, ILC_COLORDDB, 2, 2);
@@ -138,15 +156,15 @@ void AddClockDlg::OnBnClickedOk()
 	hour = _ttoi(hour_str);
 
 	CString minute_str;
-	m_EditHour.GetWindowTextW(minute_str);
+	m_EditMinute.GetWindowTextW(minute_str);
 	minute = _ttoi(minute_str);
 
 	bool weekly = m_CheckRepeat.GetCheck() == BST_CHECKED;
 
-	DWORD day_flag;
+	DWORD day_flag = 0;
 	for (int i = 0; i < 7; ++i)
 	{
-		if ((*days[i]).GetState() & BST_PUSHED)
+		if ((*days[i]).GetState() & BST_CHECKED)
 			day_flag |= 1 << i;
 	}
 

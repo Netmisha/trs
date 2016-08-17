@@ -3165,7 +3165,7 @@ void CMFCTRSuiDlg::OnExit()
 //	EndDialog(IDCANCEL);
 }
 #include "AddClockDlg.h"
-
+#include "ClockCollection.h"
 void CMFCTRSuiDlg::OnTest()
 {
 	AddClockDlg dlg;
@@ -3190,5 +3190,9 @@ void CMFCTRSuiDlg::OnTest()
 
 	
 	dlg.Init(coll, is_check, name, m_NameBox.GetCurSel(), tag, DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
-	dlg.DoModal();
+	if (dlg.DoModal() == IDOK)
+	{
+		dlg.get_clock_collection();
+	}
+
 }
