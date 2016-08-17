@@ -144,7 +144,7 @@ BOOL CTRSnewUIApp::InitInstance()
 		return FALSE;
 
 
-	Manager.Init();
+	Manager.Init("D:\\");
 
 
 	// The one and only window has been initialized, so show and update it

@@ -58,7 +58,7 @@ protected:
 public:
 	CTreeCtrl m_Tree;
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
-
+	INT_PTR CALLBACK DialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	afx_msg void OnEnChangeEdit2();
 	CEdit report_edit;
@@ -111,7 +111,7 @@ public:
 	afx_msg void OnProjectLastprojects();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnViewConsole();
-
+	//afx_msg void OnNotifyIcon();
 	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnTest();
 protected:
@@ -124,7 +124,11 @@ protected:
 	CComboBox DropDown;
 	CComboBox ThreadsComboBox;
 	ReportManager* reportManag;
-
+	/*static  LRESULT WindowProc(
+		UINT message,
+		WPARAM wParam,
+		LPARAM lParam
+		);*/
 	std::list<Suite*>* suiteColl; // $$$ I founded the code where you check size and iterate this list, but I did not find where you initialize it. EDIT: now I found it
 	bool is_running = false;
 //	CImageList* m_ImageList;
@@ -135,7 +139,7 @@ public:
 	void SetListItemImage(DWORD index, DWORD image);
 	bool SetListItemState(bool state, SuiteRoot text);
 	bool ExistInList(TCHAR* path);
-
+	
 	CListCtrl m_ListCtrl;
 
 	afx_msg void OnCbnSelchangeCombo3();
@@ -147,6 +151,11 @@ public:
 	afx_msg void OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnInfoInfo();
 	afx_msg void OnExit();
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	afx_msg void OnMenu();
+	afx_msg void OnInfoClose();
 };
 
 //extern CListBox* List;
