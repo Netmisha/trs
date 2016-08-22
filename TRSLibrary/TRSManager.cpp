@@ -168,6 +168,7 @@ int TRSManager::Verify(char* path, char* name, char* tag)
 	if (suiteCollection->size() == 0)
 	{
 		logger << "There are tests that waiting for each other or some xml or exe files are absent\n";
+		delete suiteCollection;
 		return DEAD_LOCK_OR_FILES_ABSENT_WAS_FOUND;
 	}
 	std::list<Suite*>::iterator it = suiteCollection->begin();
