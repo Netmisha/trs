@@ -162,9 +162,11 @@ void AddClockDlg::OnBnClickedOk()
 	
 	m_EditHour.GetWindowTextW(hour_str);
 	hour = _ttoi(hour_str);
+	m_EditHour.GetWindowTextW(hour_str);
 
 	m_EditMinute.GetWindowTextW(minute_str);
 	minute = _ttoi(minute_str);
+	m_EditMinute.GetWindowTextW(minute_str);
 
 	m_EditTag.GetWindowTextW(tag);
 

@@ -37,12 +37,12 @@ BOOL TestsTimerDialog::OnInitDialog()
 
 	CRect rect;
 	m_ListCtrl.GetClientRect(&rect);
-	int nColInterval = rect.Width() / 5;
+	int nColInterval = rect.Width() / 4;
 
-	m_ListCtrl.InsertColumn(0, _T("Name"), LVCFMT_LEFT, nColInterval * 2);
+	m_ListCtrl.InsertColumn(0, _T("Name"), LVCFMT_LEFT, nColInterval);
 	m_ListCtrl.InsertColumn(1, _T("Time"), LVCFMT_LEFT, nColInterval);
 	m_ListCtrl.InsertColumn(2, _T("Days"), LVCFMT_LEFT, nColInterval);
-	m_ListCtrl.InsertColumn(3, _T("Repeat"), LVCFMT_LEFT, rect.Width() - 4 * nColInterval);
+	m_ListCtrl.InsertColumn(3, _T("Repeat"), LVCFMT_LEFT, rect.Width() - 3 * nColInterval);
 
 	return true;
 }
@@ -85,7 +85,7 @@ void TestsTimerDialog::AddToList(CString clock_name, CString hour, CString minut
 	lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
 	m_ListCtrl.InsertItem(&lvi);
 
-	strItem.Format(_T("%d:%d"), hour, minute);
+	strItem.Format(_T("%s:%s"), hour, minute);
 	lvi.iSubItem = 1;
 	lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
 	m_ListCtrl.SetItem(&lvi);

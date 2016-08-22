@@ -110,6 +110,7 @@
     <ClInclude Include="AddClockDlg.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="ClockCollection.h" />
+    <ClInclude Include="ClockInstance.h" />
     <ClInclude Include="ConsoleReporter.h" />
     <ClInclude Include="Functionality.h" />
     <ClInclude Include="MFCTRSui.h" />
