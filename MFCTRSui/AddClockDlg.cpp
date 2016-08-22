@@ -22,6 +22,16 @@ AddClockDlg::AddClockDlg(CWnd* pParent /*=NULL*/)
 	days[6] = &m_ButtonSunday;
 }
 
+AddClockDlg& AddClockDlg::operator = (AddClockDlg& curDlg)
+{
+	clock_name = curDlg.get_clock_name();
+	name = curDlg.get_name();
+	tag = curDlg.get_tag();
+	threads = curDlg.get_threads();
+	schedule = curDlg.get_clock_collection();
+	return *this;
+}
+
 AddClockDlg::~AddClockDlg()
 {
 }
@@ -173,7 +183,8 @@ void AddClockDlg::OnBnClickedOk()
 		SuiteRoot root(m_ListCtrl.GetItemText(index, 0));
 		schedule.AddClock(root.get_path(), day_flag, hour, minute, weekly);
 	}
-
+	curDialog = new AddClockDlg;
+	*curDialog = *this;
 	CDialogEx::OnOK();
 }
 

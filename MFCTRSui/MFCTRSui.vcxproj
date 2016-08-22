@@ -125,6 +125,7 @@
     <ClInclude Include="TestInfo.h" />
     <ClInclude Include="TestsTimerDialog.h" />
     <ClInclude Include="Time.h" />
+    <ClInclude Include="TimerADD.h" />
     <ClInclude Include="ToRunParameters.h" />
   </ItemGroup>
   <ItemGroup>
@@ -150,6 +151,7 @@
     <ClCompile Include="TestInfo.cpp" />
     <ClCompile Include="TestsTimerDialog.cpp" />
     <ClCompile Include="Time.cpp" />
+    <ClCompile Include="TimerADD.cpp" />
     <ClCompile Include="ToRunParameters.cpp" />
   </ItemGroup>
   <ItemGroup>

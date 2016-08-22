@@ -49,7 +49,7 @@ public:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
-
+	AddClockDlg& operator=(AddClockDlg& curDlg);
 protected:
 	CListCtrl m_ListCtrl;
 	CEdit m_EditClockName;
@@ -106,3 +106,5 @@ inline ClockCollection AddClockDlg::get_clock_collection() const
 {
 	return schedule;
 }
+
+extern AddClockDlg* curDialog;
