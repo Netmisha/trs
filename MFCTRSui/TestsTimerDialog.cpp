@@ -40,9 +40,9 @@ BOOL TestsTimerDialog::OnInitDialog()
 	int nColInterval = rect.Width() / 5;
 
 	m_ListCtrl.InsertColumn(0, _T("Name"), LVCFMT_LEFT, nColInterval * 2);
-	m_ListCtrl.InsertColumn(5, _T("Time"), LVCFMT_LEFT, nColInterval);
-	m_ListCtrl.InsertColumn(6, _T("Days"), LVCFMT_LEFT, nColInterval);
-	m_ListCtrl.InsertColumn(7, _T("Repeat"), LVCFMT_LEFT, rect.Width() - 4 * nColInterval);
+	m_ListCtrl.InsertColumn(1, _T("Time"), LVCFMT_LEFT, nColInterval);
+	m_ListCtrl.InsertColumn(2, _T("Days"), LVCFMT_LEFT, nColInterval);
+	m_ListCtrl.InsertColumn(3, _T("Repeat"), LVCFMT_LEFT, rect.Width() - 4 * nColInterval);
 
 	return true;
 }
