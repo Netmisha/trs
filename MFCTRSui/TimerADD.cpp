@@ -109,8 +109,8 @@ TimerADD& TimerADD::operator=(AddClockDlg& curDlg)
 	name = curDlg.get_name();
 	clock_name = curDlg.get_clock_name();
 	threads = curDlg.get_threads();
-	std::list<Clock>::iterator it = curDlg.get_clock_collection().get_schedule().begin();
-	for (it; it != curDlg.get_clock_collection().get_schedule().end(); ++it)
+	std::list<Clock>::iterator it = curDlg.get_clock_collection().begin();
+	for (it; it != curDlg.get_clock_collection().end(); ++it)
 	{
 		Clock curClock(*it);
 		clocks.push_back(curClock);

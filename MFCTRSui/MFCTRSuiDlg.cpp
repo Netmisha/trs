@@ -3147,11 +3147,17 @@ void CMFCTRSuiDlg::OnExit()
 	OnSysCommand(SC_CLOSE, NULL);
 //	EndDialog(IDCANCEL);
 }
+
+// ======================================================================================================================
 #include "AddClockDlg.h"
 #include "ClockCollection.h"
+#include "TestsTimerDialog.h"
+
+// ======================================================================================================================
+
 void CMFCTRSuiDlg::OnTest()
 {
-	AddClockDlg dlg;
+	//AddClockDlg dlg;
 	std::vector<SuiteRoot> coll;
 	std::vector<bool> is_check;
 	is_check.resize(RootList.GetItemCount());
@@ -3172,14 +3178,19 @@ void CMFCTRSuiDlg::OnTest()
 		DropDown.GetLBText(i, tag[i]);
 
 	
+	//dlg.Init(coll, is_check, name, m_NameBox.GetCurSel(), tag, DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
+	//if (dlg.DoModal() == IDOK)
+	//{
+	//	dlg.get_clock_collection();
+	//}
+	TestsTimerDialog dlg;
 	dlg.Init(coll, is_check, name, m_NameBox.GetCurSel(), tag, DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
+
 	if (dlg.DoModal() == IDOK)
 	{
-		dlg.get_clock_collection();
-		TimerADD curADD;
-		curADD = dlg;
-		curADD.End();
+		
 	}
+
 
 
 }
