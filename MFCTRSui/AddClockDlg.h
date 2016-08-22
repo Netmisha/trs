@@ -25,9 +25,10 @@ public:
 	inline CString get_name() const;
 	inline CString get_tag() const;
 	inline CString get_threads() const;
-	inline int get_hour() const;
-	inline int get_minute() const;
+	inline CString get_hour() const;
+	inline CString get_minute() const;
 	inline std::list<Clock> get_clock_collection() const;
+	inline bool is_weekly() const;
 	
 	// Dialog Data
 	enum { IDD = IDD_DIALOG5 };
@@ -47,6 +48,8 @@ private:
 	int hour;
 	int minute;
 	bool weekly;
+	CString hour_str;
+	CString minute_str;
 
 public:
 	DECLARE_MESSAGE_MAP()
@@ -111,11 +114,16 @@ inline std::list<Clock> AddClockDlg::get_clock_collection() const
 	return schedule.get_schedule();
 }
 
-inline int AddClockDlg::get_hour() const
+inline CString AddClockDlg::get_hour() const
 {
-	return hour;
+	return hour_str;
 }
-inline int AddClockDlg::get_minute() const
+inline CString AddClockDlg::get_minute() const
 {
-	return minute;
+	return minute_str;
+}
+
+inline bool AddClockDlg::is_weekly() const
+{
+	return weekly;
 }

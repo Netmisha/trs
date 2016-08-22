@@ -160,11 +160,9 @@ void AddClockDlg::OnBnClickedOk()
 		return;
 	}
 	
-	CString hour_str;
 	m_EditHour.GetWindowTextW(hour_str);
 	hour = _ttoi(hour_str);
 
-	CString minute_str;
 	m_EditMinute.GetWindowTextW(minute_str);
 	minute = _ttoi(minute_str);
 
@@ -189,11 +187,14 @@ void AddClockDlg::OnBnClickedOk()
 		return;
 	}
 
+	std::vector<SuiteRoot> suites/*(selected_suites.size())*/;
 	for each(auto index in selected_suites)
 	{
-		SuiteRoot root(m_ListCtrl.GetItemText(index, 0));
-		schedule.AddClock(root.get_path(), day_flag, hour, minute, weekly);
+//		suites[index] = m_ListCtrl.GetItemText(index, 0);
+		suites.push_back(m_ListCtrl.GetItemText(index, 0));
 	}
+
+	schedule.AddClocks(suites, day_flag, hour, minute, weekly);
 
 	CDialogEx::OnOK();
 }

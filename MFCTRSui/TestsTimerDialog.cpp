@@ -37,16 +37,12 @@ BOOL TestsTimerDialog::OnInitDialog()
 
 	CRect rect;
 	m_ListCtrl.GetClientRect(&rect);
-	int nColInterval = rect.Width() / 10;
+	int nColInterval = rect.Width() / 5;
 
-	m_ListCtrl.InsertColumn(0, _T("Clock"), LVCFMT_LEFT, nColInterval * 2);
-	m_ListCtrl.InsertColumn(1, _T("Suite"), LVCFMT_LEFT, nColInterval * 2);
-	m_ListCtrl.InsertColumn(2, _T("Tag"), LVCFMT_LEFT, nColInterval);
-	m_ListCtrl.InsertColumn(3, _T("Name"), LVCFMT_LEFT, nColInterval);
-	m_ListCtrl.InsertColumn(4, _T("Threads"), LVCFMT_LEFT, nColInterval);
+	m_ListCtrl.InsertColumn(0, _T("Name"), LVCFMT_LEFT, nColInterval * 2);
 	m_ListCtrl.InsertColumn(5, _T("Time"), LVCFMT_LEFT, nColInterval);
 	m_ListCtrl.InsertColumn(6, _T("Days"), LVCFMT_LEFT, nColInterval);
-	m_ListCtrl.InsertColumn(7, _T("Repeat"), LVCFMT_LEFT, rect.Width() - 9 * nColInterval);
+	m_ListCtrl.InsertColumn(7, _T("Repeat"), LVCFMT_LEFT, rect.Width() - 4 * nColInterval);
 
 	return true;
 }
@@ -67,76 +63,44 @@ void TestsTimerDialog::OnAddClicked()
 	if (clock_dlg.DoModal() == IDCANCEL)
 		return;
 	int size = clock_dlg.get_clock_collection().size();
-	std::list<Clock> clocks = clock_dlg.get_clock_collection();
+	
+	AddToList(clock_dlg.get_clock_name(), clock_dlg.get_hour(), clock_dlg.get_minute(), clock_dlg.is_weekly(), clock_dlg.get_clock_collection());
+}
+
+void TestsTimerDialog::AddToList(CString clock_name, CString hour, CString minute, bool repeat, std::list<Clock> clocks)
+{
+	DWORD days = 0;
+	for (auto i = clocks.begin(); i != clocks.end(); ++i)
+	{
+		days |= i->get_time().get_day();
+	}
 
 	LVITEM lvi;
 	CString strItem;
-	auto prev = clocks.begin();
-	for (auto i = clocks.begin(); i != clocks.end(); ++i)
+	
+	lvi.mask =  LVIF_TEXT;
+	strItem.Format(_T("%s"), clock_name);
+	lvi.iItem = m_ListCtrl.GetItemCount();
+	lvi.iSubItem = 0;
+	lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
+	m_ListCtrl.InsertItem(&lvi);
+
+	strItem.Format(_T("%d:%d"), hour, minute);
+	lvi.iSubItem = 1;
+	lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
+	m_ListCtrl.SetItem(&lvi);
+
+	strItem.Format(_T("%s"), GetDayByIndex(days));
+	lvi.iSubItem = 2;
+	lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
+	m_ListCtrl.SetItem(&lvi);
+
+	if (repeat)
 	{
-		//===============================================================
-		// assume that clocks are sorted by path. So we retriving all days of week, in which current suite ,ust be executed 
-
-		DWORD days = 0;
-		while (i != clocks.end() && !_tcscmp(prev->get_path(), i->get_path()))
-		{
-			days |= i->get_time().get_day();
-			prev = i;
-			++i;
-		}
-		prev = i;
-		--i;
-		// =================================================================
-
-		// Insert the first item
-		lvi.mask = /*LVIF_IMAGE |*/ LVIF_TEXT;
-		strItem.Format(_T("%s"), clock_dlg.get_clock_name());
-		lvi.iItem = m_ListCtrl.GetItemCount();
-		lvi.iSubItem = 0;
-		lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
-		//	lvi.iImage = i % 8;		// There are 8 images in the image list
-		m_ListCtrl.InsertItem(&lvi);
-
-		// Set subitem 1
-		strItem.Format(_T("%s"), i->get_path());
-		lvi.iSubItem = 1;
-		lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
-		m_ListCtrl.SetItem(&lvi);
-
-		// Set subitem 2
-		strItem.Format(_T("%s"), clock_dlg.get_tag());
-		lvi.iSubItem = 2;
-		lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
-		m_ListCtrl.SetItem(&lvi);
-
-		strItem.Format(_T("%s"), clock_dlg.get_name());
+		strItem.Format(_T("%s"), "X");
 		lvi.iSubItem = 3;
 		lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
 		m_ListCtrl.SetItem(&lvi);
-
-		strItem.Format(_T("%s"), clock_dlg.get_threads());
-		lvi.iSubItem = 4;
-		lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
-		m_ListCtrl.SetItem(&lvi);
-
-		strItem.Format(_T("%d:%d"), clock_dlg.get_hour(), clock_dlg.get_minute());
-		lvi.iSubItem = 5;
-		lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
-		m_ListCtrl.SetItem(&lvi);
-
-		strItem.Format(_T("%s"), GetDayByIndex(days));
-		lvi.iSubItem = 6;
-		lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
-		m_ListCtrl.SetItem(&lvi);
-
-		if (i->IsWeekly())
-		{
-			strItem.Format(_T("%s"), "X");
-			lvi.iSubItem = 7;
-			lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
-			m_ListCtrl.SetItem(&lvi);
-		}
-		// else - blank space
 	}
 }
 
