@@ -4,11 +4,11 @@
 class TimerADD
 {
 public:
-	TimerADD();
+	TimerADD(CString tag_,CString name_,CString threads_,CString clock_name_,Clock& curClock);
 	~TimerADD();
 private:
 	
-	std::vector<Clock> clocks;
+	Clock clocks;
 	CString tag;
 	CString name;
 	CString threads;
@@ -16,9 +16,9 @@ private:
 	unsigned long unique_value=0;
 
 public:
-	bool Begin();
-	bool End();
-	TimerADD& operator=(AddClockDlg& curDlg);
+	bool Begin(TiXmlNode* root);
+	bool End(TiXmlNode* root);
+	
 
 };
 
