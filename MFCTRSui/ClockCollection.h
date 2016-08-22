@@ -26,14 +26,21 @@ class ClockCollection
 public:
 	bool AddClock(TCHAR* suite_root, DWORD day_flag, DWORD hour, DWORD min, bool weekly);
 	inline std::list<Clock> get_schedule() const;
+	inline DWORD get_days() const;
 private:
 	std::list<Clock> clocks;
+	DWORD days;
 };
 
 // ======================================================================================
 inline std::list<Clock> ClockCollection::get_schedule() const
 {
 	return clocks;
+}
+
+inline DWORD ClockCollection::get_days() const
+{
+	return days;
 }
 
 #endif
