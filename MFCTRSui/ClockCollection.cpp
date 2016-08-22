@@ -6,6 +6,8 @@ bool ClockCollection::AddClock(TCHAR* suite_root, DWORD day_flag, DWORD hour, DW
 	if (!suite_root || day_flag > EVERY_DAY)
 		return false;
 
+	days = day_flag; 
+
 	for (int i = 0; i < DAYS_IN_WEEK; ++i)
 	{
 		DWORD day_of_week = day_flag & (1 << i);

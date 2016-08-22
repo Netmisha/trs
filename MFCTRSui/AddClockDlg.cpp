@@ -32,6 +32,13 @@ BOOL AddClockDlg::OnInitDialog()
 	if (!initialized)
 		return FALSE;
 
+	m_ListCtrl.DeleteAllItems();
+	m_EditName.Clear();
+	m_EditTag.Clear();
+	m_EditThreads.Clear();
+	m_EditHour.Clear();
+	m_EditMinute.Clear();
+
 	m_ListCtrl.SetExtendedStyle(m_ListCtrl.GetExtendedStyle() | LVS_EX_CHECKBOXES | LVS_EX_TRANSPARENTSHADOWTEXT);
 
 	for (int i = 0; i < coll.size(); ++i)
@@ -92,14 +99,16 @@ BOOL AddClockDlg::OnInitDialog()
 	m_EditHour.SetCurSel(0);
 	m_EditMinute.SetCurSel(0);
 	m_EditThreads.SetCurSel(thread_sel);
+	if (first_called)
+	{
+		m_PathImageList.Create(32, 32, ILC_COLORDDB, 2, 2);
+		CBitmap m_Bitmap5;
+		m_Bitmap5.LoadBitmap(IDB_BITMAP5);
+		m_PathImageList.Add(&m_Bitmap5, RGB(0, 0, 0));
 
-	m_PathImageList.Create(32, 32, ILC_COLORDDB, 2, 2);
-
-	CBitmap m_Bitmap5;
-	m_Bitmap5.LoadBitmap(IDB_BITMAP5);
-	m_PathImageList.Add(&m_Bitmap5, RGB(0, 0, 0));
-
-	m_ListCtrl.SetImageList(&m_PathImageList, LVSIL_SMALL);
+		m_ListCtrl.SetImageList(&m_PathImageList, LVSIL_SMALL);
+		first_called = false;
+	}
 
 	return TRUE;
 }
@@ -159,6 +168,12 @@ void AddClockDlg::OnBnClickedOk()
 	m_EditMinute.GetWindowTextW(minute_str);
 	minute = _ttoi(minute_str);
 
+	m_EditTag.GetWindowTextW(tag);
+
+	m_EditName.GetWindowTextW(name);
+
+	m_EditThreads.GetWindowTextW(threads);
+
 	bool weekly = m_CheckRepeat.GetCheck() == BST_CHECKED;
 
 	DWORD day_flag = 0;
@@ -166,6 +181,12 @@ void AddClockDlg::OnBnClickedOk()
 	{
 		if ((*days[i]).GetState() & BST_CHECKED)
 			day_flag |= 1 << i;
+	}
+
+	if (!day_flag)
+	{
+		MessageBox(_T("You did not choose any day. There will be nothing to Run."), _T("Error"), MB_ICONERROR | MB_OK);
+		return;
 	}
 
 	for each(auto index in selected_suites)

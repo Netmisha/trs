@@ -3,6 +3,7 @@
 #include "Resource.h"
 #include "SuiteRoot.h"
 #include <vector>
+#include <list>
 #include "afxcmn.h"
 #include "afxwin.h"
 #include "ClockCollection.h"
@@ -24,7 +25,9 @@ public:
 	inline CString get_name() const;
 	inline CString get_tag() const;
 	inline CString get_threads() const;
-	inline ClockCollection get_clock_collection() const;
+	inline int get_hour() const;
+	inline int get_minute() const;
+	inline std::list<Clock> get_clock_collection() const;
 	
 	// Dialog Data
 	enum { IDD = IDD_DIALOG5 };
@@ -76,6 +79,7 @@ protected:
 	vector<bool> is_check;
 
 	CImageList m_PathImageList;
+	bool first_called = true;
 
 	int name_sel;
 	int tag_sel;
@@ -102,7 +106,16 @@ inline CString AddClockDlg::get_threads() const
 {
 	return threads;
 }
-inline ClockCollection AddClockDlg::get_clock_collection() const
+inline std::list<Clock> AddClockDlg::get_clock_collection() const
 {
-	return schedule;
+	return schedule.get_schedule();
+}
+
+inline int AddClockDlg::get_hour() const
+{
+	return hour;
+}
+inline int AddClockDlg::get_minute() const
+{
+	return minute;
 }
