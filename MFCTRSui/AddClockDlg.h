@@ -55,7 +55,7 @@ public:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
-
+	
 protected:
 	CListCtrl m_ListCtrl;
 	CEdit m_EditClockName;
@@ -114,12 +114,14 @@ inline std::list<Clock> AddClockDlg::get_clock_collection() const
 	return schedule.get_schedule();
 }
 
+
 inline CString AddClockDlg::get_hour() const
 {
 	return hour_str;
 }
 inline CString AddClockDlg::get_minute() const
 {
+
 	return minute_str;
 }
 
@@ -127,3 +129,4 @@ inline bool AddClockDlg::is_weekly() const
 {
 	return weekly;
 }
+

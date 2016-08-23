@@ -28,6 +28,7 @@
 
 // $$$ you are using this variable only inside two CMFCTRSuiDlg methods.
 // It will be better to hide it inside the CMFCTRSuiDlg class
+AddClockDlg* curDialog;
 static bool ifFirstTimeRunned = true; 
 bool ifCancelPressed;
 bool RunEndCheck;
@@ -437,7 +438,7 @@ VOID CALLBACK TimerAPCProc(
 //	CMFCTRSuiDlg* pointer = (CMFCTRSuiDlg*)lpArg;
 //	pointer->OnProgramRunsel();
 	
-	MessageBeep(0);
+	//MessageBeep(0);
 
 }
 
@@ -3184,7 +3185,13 @@ void CMFCTRSuiDlg::OnTest()
 	//}
 	TestsTimerDialog dlg;
 	dlg.Init(coll, is_check, name, m_NameBox.GetCurSel(), tag, DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
-	dlg.DoModal();
+
+	if (dlg.DoModal() == IDOK)
+	{
+		
+	}
+
+
 
 }
 

@@ -59,6 +59,9 @@
     <ClCompile Include="ClockCollection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TimerADD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleReporter.h">
@@ -122,7 +125,11 @@
     <ClInclude Include="Clock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
+    <ClInclude Include="TimerADD.h">
+=======
     <ClInclude Include="ClockInstance.h">
+>>>>>>> 806dfd52ca9d05791ea83d197720f963ebc67031
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

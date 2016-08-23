@@ -22,6 +22,8 @@ AddClockDlg::AddClockDlg(CWnd* pParent /*=NULL*/)
 	days[6] = &m_ButtonSunday;
 }
 
+
+
 AddClockDlg::~AddClockDlg()
 {
 }
@@ -196,7 +198,11 @@ void AddClockDlg::OnBnClickedOk()
 		suites.push_back(m_ListCtrl.GetItemText(index, 0));
 	}
 
+	
+	
+
 	schedule.AddClocks(suites, day_flag, hour, minute, weekly);
+
 
 	CDialogEx::OnOK();
 }

@@ -14,11 +14,12 @@ public:
 	inline bool IsWeekly() const;
 	inline vector<SuiteRoot> get_path() const;
 	inline Time get_time() const;
-
+	inline bool set_time(Time);
 private:
 	Time test_time;
 	bool repeat;
 	std::vector<SuiteRoot> roots; 
+	
 };
 
 // ==========================================================================
@@ -36,6 +37,12 @@ inline std::vector<SuiteRoot> Clock::get_path() const
 inline Time Clock::get_time() const
 {
 	return test_time;
+}
+
+inline bool Clock::set_time(Time cur)
+{
+	test_time = cur;
+	return true;
 }
 
 #endif
