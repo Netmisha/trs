@@ -8,9 +8,7 @@ TimerADD::TimerADD(CString tag_, CString name_, CString threads_, CString clock_
 	name = name_;
 	threads = threads_;
 	clock_name = clock_name_;
-	FILETIME fTime;
-	GetSystemTimeAsFileTime(&fTime);
-	unique_value += fTime.dwHighDateTime + fTime.dwLowDateTime;
+	
 }
 
 
@@ -68,6 +66,34 @@ bool TimerADD::Begin(TiXmlNode* root)
 			TiXmlNode* text = el->FirstChild();
 			CString Cname(text->Value());
 			clock_name = Cname;
+		}
+		if (!strcmp(el->Value(), "isRepeatable"))
+		{
+			TiXmlNode* text = el->FirstChild();
+			if (!strcmp(text->Value(), "false"))
+			{
+				clocks.set_Weekly(false);
+			}
+			if (!strcmp(text->Value(), "true"))
+			{
+				clocks.set_Weekly(true);
+			}
+		}
+		if (!strcmp(el->Value(), "Path"))
+		{
+			for (TiXmlNode* subel = el->FirstChild(); subel != 0; subel = subel->NextSibling())
+			{
+				if (!strcmp(subel->Value(), "currentPath"))
+				{
+					TiXmlNode* text = subel->FirstChild();
+					TCHAR* buf = new TCHAR[strlen(text->Value()) + 1];
+					convertToTCHAR(buf, text->Value());
+					SuiteRoot currentRoot(buf);
+					clocks.add_path(currentRoot);
+					delete[] buf;
+				}
+			}
+			
 		}
 	}
 	Time curTime((DWORD)day, (DWORD)hour, (DWORD)minute);
@@ -137,7 +163,17 @@ bool TimerADD::End(TiXmlNode* root)
 			TiXmlText* textClockName = new TiXmlText(clockNameC);
 			ClockName->LinkEndChild(textClockName);
 			delete[] clockNameC;
-		
+			TiXmlElement* Path = new TiXmlElement("Path");
+			curTimer->LinkEndChild(Path);
+			for (int i = 0; i < clocks.get_suites().size(); ++i)
+			{
+				TiXmlElement* curPath = new TiXmlElement("currentPath");
+				Path->LinkEndChild(curPath);
+				char* way = convertToChar(clocks.get_suites()[i].get_path());
+				TiXmlText* pathText = new TiXmlText(way);
+				delete[] way;
+				curPath->LinkEndChild(pathText);
+			}
 		
 		return true;
 }

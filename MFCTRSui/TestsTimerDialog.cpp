@@ -44,6 +44,8 @@ BOOL TestsTimerDialog::OnInitDialog()
 	m_ListCtrl.InsertColumn(2, _T("Days"), LVCFMT_CENTER, nColInterval);
 	m_ListCtrl.InsertColumn(3, _T("Repeat"), LVCFMT_CENTER, rect.Width() - 3 * nColInterval);
 
+
+
 	return true;
 }
 
@@ -60,6 +62,7 @@ END_MESSAGE_MAP()
 
 void TestsTimerDialog::OnAddClicked()
 {
+
 	if (clock_dlg.DoModal() == IDCANCEL)
 		return;
 
