@@ -65,19 +65,23 @@ void TestsTimerDialog::OnAddClicked()
 
 	if (clock_dlg.DoModal() == IDCANCEL)
 		return;
-	int size = clock_dlg.get_clock_collection().size();
-	
-	AddToList(clock_dlg.get_clock_name(), clock_dlg.get_hour(), clock_dlg.get_minute(), clock_dlg.is_weekly(), clock_dlg.get_clock_collection());
+
+	ClockInstance item{ clock_dlg.get_clock_collection().front().get_suites(), clock_dlg.get_days(), clock_dlg.get_clock_name(),
+		clock_dlg.get_tag(), clock_dlg.get_name(), clock_dlg.get_threads(), clock_dlg.get_hour(), clock_dlg.get_minute(), clock_dlg.is_weekly() };
+
+	list_items.push_back(item);
+
+	AddToList(item);
 }
 
-void TestsTimerDialog::AddToList(CString clock_name, CString hour, CString minute, bool repeat, std::list<Clock> clocks)
+void TestsTimerDialog::AddToList(const ClockInstance& item)
 {
-	DWORD days = 0;
-	for (auto i = clocks.begin(); i != clocks.end(); ++i)
-	{
-		days |= i->get_time().get_day();
-	}
+	AddToList(item.name, item.hour, item.minute, item.repeat, item.days);
+}
 
+
+void TestsTimerDialog::AddToList(CString clock_name, CString hour, CString minute, bool repeat, DWORD days)
+{
 	LVITEM lvi;
 	CString strItem;
 	

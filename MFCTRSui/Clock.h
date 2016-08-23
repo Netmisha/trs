@@ -12,7 +12,7 @@ public:
 	Clock(std::vector<SuiteRoot> suites, bool weekly, const Time&);
 	Clock();
 	inline bool IsWeekly() const;
-	inline vector<SuiteRoot> get_path() const;
+	inline vector<SuiteRoot> get_suites() const;
 	inline Time get_time() const;
 	inline bool set_time(Time);
 	inline bool set_Weekly(bool);
@@ -37,7 +37,7 @@ inline bool Clock::IsWeekly() const
 	return repeat;
 }
 
-inline std::vector<SuiteRoot> Clock::get_path() const
+inline std::vector<SuiteRoot> Clock::get_suites() const
 {
 	return roots;
 }

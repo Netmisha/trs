@@ -178,14 +178,14 @@ void AddClockDlg::OnBnClickedOk()
 
 	bool weekly = m_CheckRepeat.GetCheck() == BST_CHECKED;
 
-	DWORD day_flag = 0;
+	days_flag = 0;
 	for (int i = 0; i < 7; ++i)
 	{
 		if ((*days[i]).GetState() & BST_CHECKED)
-			day_flag |= 1 << i;
+			days_flag |= 1 << i;
 	}
 
-	if (!day_flag)
+	if (!days_flag)
 	{
 		MessageBox(_T("You did not choose any day. There will be nothing to Run."), _T("Error"), MB_ICONERROR | MB_OK);
 		return;
@@ -198,10 +198,7 @@ void AddClockDlg::OnBnClickedOk()
 		suites.push_back(m_ListCtrl.GetItemText(index, 0));
 	}
 
-	
-	
-
-	schedule.AddClocks(suites, day_flag, hour, minute, weekly);
+	schedule.AddClocks(suites, days_flag, hour, minute, weekly);
 
 
 	CDialogEx::OnOK();
