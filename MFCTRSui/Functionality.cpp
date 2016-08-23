@@ -23,6 +23,14 @@ void convertToTCHAR(TCHAR*dest, const char* path)
 	}
 }
 
+DWORD UniqueNumber()
+{
+	FILETIME fTime;
+	GetSystemTimeAsFileTime(&fTime);
+	DWORD unique_value = fTime.dwHighDateTime + fTime.dwLowDateTime;
+	return unique_value;
+}
+
 char* convertToChar(TCHAR*path)//create buffer to set info to tinyXML doc constructor
 {
 	char* buf = new char[MAX_PATH];

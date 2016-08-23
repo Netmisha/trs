@@ -1,250 +1,94 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="ConsoleReporter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Functionality.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MFCTRSui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MFCTRSuiDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjNameEdit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjectProperties.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RunParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RunDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TestInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxml.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\TRSLibrary\TinyXML\tinystr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlerror.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlparser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ToRunParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TestsTimerDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinystr.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxml.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlerror.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlparser.cpp" />
     <ClCompile Include="AddClockDlg.cpp" />
-    <ClCompile Include="Time.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Clock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ClockCollection.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TimerADD.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClCompile Include="Clock.cpp" />
+    <ClCompile Include="ClockCollection.cpp" />
+    <ClCompile Include="ConsoleReporter.cpp" />
+    <ClCompile Include="Functionality.cpp" />
+    <ClCompile Include="MFCTRSui.cpp" />
+    <ClCompile Include="MFCTRSuiDlg.cpp" />
+    <ClCompile Include="ProjectProperties.cpp" />
+    <ClCompile Include="ProjNameEdit.cpp" />
+    <ClCompile Include="RunDialog.cpp" />
+    <ClCompile Include="RunParameters.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="TestInfo.cpp" />
+    <ClCompile Include="TestsTimerDialog.cpp" />
+    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="TimerADD.cpp" />
+    <ClCompile Include="ToRunParameters.cpp" />
+    <ClCompile Include="TimerAddCollection.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ConsoleReporter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Functionality.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MFCTRSui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MFCTRSuiDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectProperties.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjNameEdit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RunDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RunParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\TRSLibrary\TinyXML\tinystr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\TRSLibrary\TinyXML\tinyxml.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ToRunParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestsTimerDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="..\TRSLibrary\TinyXML\tinystr.h" />
+    <ClInclude Include="..\TRSLibrary\TinyXML\tinyxml.h" />
     <ClInclude Include="AddClockDlg.h" />
-    <ClInclude Include="SuiteRoot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ClockCollection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Time.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Clock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="TimerADD.h">
-=======
-    <ClInclude Include="ClockInstance.h">
->>>>>>> 806dfd52ca9d05791ea83d197720f963ebc67031
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="Clock.h" />
+    <ClInclude Include="ClockCollection.h" />
+    <ClInclude Include="ClockInstance.h" />
+    <ClInclude Include="ConsoleReporter.h" />
+    <ClInclude Include="Functionality.h" />
+    <ClInclude Include="MFCTRSui.h" />
+    <ClInclude Include="MFCTRSuiDlg.h" />
+    <ClInclude Include="ProjectProperties.h" />
+    <ClInclude Include="ProjNameEdit.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="RunDialog.h" />
+    <ClInclude Include="RunParameters.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SuiteRoot.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="TestInfo.h" />
+    <ClInclude Include="TestsTimerDialog.h" />
+    <ClInclude Include="Time.h" />
+    <ClInclude Include="TimerADD.h" />
+    <ClInclude Include="ToRunParameters.h" />
+    <ClInclude Include="TimerAddCollection.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\Icons\1470669393_editor-floopy-dish-save-outline-stroke.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470670281_floppy_disk_save.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470670514_save_as.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470672115_command_line_prompt_shell.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470672433_Add.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470672719_folder-new.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470672725_document-open.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470672980_Cancel.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470674085_our_process_2.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470674385_Play.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470674393_play-triangle-media-shape.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470675125_stop.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470675263_add.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1470675274_cross.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\bitmap1.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\bitmap2.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\bitmap3.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\bitmap4.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\bitmap5.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\bitmap6.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\icon2.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\MFCTRSui.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\Oxygen-Icons.org-Oxygen-Actions-document-save-as.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\toolbar1.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\toolbar3.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1471017338_view-refresh.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\icons\icon15.ico" />
+    <ResourceCompile Include="MFCTRSui.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\bitmap2.bmp" />
+    <Image Include="res\bitmap3.bmp" />
+    <Image Include="res\bitmap4.bmp" />
+    <Image Include="res\bitmap5.bmp" />
+    <Image Include="res\bitmap6.bmp" />
+    <Image Include="res\icon2.ico" />
+    <Image Include="res\Icons\1470669393_editor-floopy-dish-save-outline-stroke.ico" />
+    <Image Include="res\Icons\1470670281_floppy_disk_save.ico" />
+    <Image Include="res\Icons\1470670514_save_as.ico" />
+    <Image Include="res\Icons\1470672115_command_line_prompt_shell.ico" />
+    <Image Include="res\Icons\1470672433_Add.ico" />
+    <Image Include="res\Icons\1470672719_folder-new.ico" />
+    <Image Include="res\Icons\1470672725_document-open.ico" />
+    <Image Include="res\Icons\1470672980_Cancel.ico" />
+    <Image Include="res\Icons\1470674085_our_process_2.ico" />
+    <Image Include="res\Icons\1470674385_Play.ico" />
+    <Image Include="res\Icons\1470674393_play-triangle-media-shape.ico" />
+    <Image Include="res\Icons\1470675125_stop.ico" />
+    <Image Include="res\Icons\1470675263_add.ico" />
+    <Image Include="res\Icons\1470675274_cross.ico" />
+    <Image Include="res\Icons\1471017338_view-refresh.ico" />
+    <Image Include="res\Icons\1471292581_calendar-clock.ico" />
+    <Image Include="res\Icons\1471293182_Increase_time.ico" />
     <Image Include="res\Icons\favicon.ico" />
-    <Image Include="res\Icons\1471292581_calendar-clock.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Icons\1471293182_Increase_time.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
+    <Image Include="res\icons\icon15.ico" />
+    <Image Include="res\Icons\Oxygen-Icons.org-Oxygen-Actions-document-save-as.ico" />
+    <Image Include="res\MFCTRSui.ico" />
+    <Image Include="res\toolbar1.bmp" />
+    <Image Include="res\toolbar3.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{e9be5f77-e6fa-4c96-aabc-f073a70a5b0c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{ac800ac3-8390-4044-b491-1bdc5299bf59}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{8e502479-65d2-46a2-864e-248ba57da029}</UniqueIdentifier>
-    </Filter>
+    <None Include="res\MFCTRSui.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="MFCTRSui.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\MFCTRSui.rc2">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
 </Project>

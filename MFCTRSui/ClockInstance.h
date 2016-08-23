@@ -5,12 +5,9 @@
 
 #include <vector>
 
-class ClockInstance
+struct ClockInstance
 {
-public:
-	
 
-private:
 	std::vector<SuiteRoot> suites;
 	DWORD days;
 	CString clock_name;

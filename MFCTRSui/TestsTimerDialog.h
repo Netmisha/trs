@@ -5,9 +5,10 @@
 #include "TimerADD.h"
 #include "AddClockDlg.h"
 #include "ClockInstance.h"
+
 #include <vector>
-// TestsTimerDialog dialog
 using std::vector;
+
 class TestsTimerDialog : public CDialogEx
 {
 	DECLARE_DYNAMIC(TestsTimerDialog)
@@ -30,7 +31,6 @@ private:
 	CButton m_ButtonEdit;
 	CButton m_ButtonRemove;
 
-	vector<int> selected_suites;
 	AddClockDlg clock_dlg;
 
 	afx_msg void OnAddClicked();
@@ -42,6 +42,8 @@ private:
 	void UpdateControls(POSITION);
 	CString GetDayByIndex(int);
 	void AddToList(CString clock_name, CString hour, CString minute, bool repeat, std::list<Clock> clocks);
+
+	vector<ClockInstance> list_items;
 };
 
 // =====================================================================================================================
@@ -63,7 +65,8 @@ inline BOOL TestsTimerDialog::Init(std::vector<SuiteRoot> roots, vector<bool> is
 			}
 			currentTimer.Begin(element);
 			ClockInstance currentInstance;
-
+			currentInstance.clock_name = currentTimer.getClockName();
+			currentInstance.days = currentTimer.getClock().get_time().get_day();
 		}
 		
 	}

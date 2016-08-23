@@ -8,9 +8,7 @@ TimerADD::TimerADD(CString tag_, CString name_, CString threads_, CString clock_
 	name = name_;
 	threads = threads_;
 	clock_name = clock_name_;
-	FILETIME fTime;
-	GetSystemTimeAsFileTime(&fTime);
-	unique_value += fTime.dwHighDateTime + fTime.dwLowDateTime;
+	
 }
 
 
