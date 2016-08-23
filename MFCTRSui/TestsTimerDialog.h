@@ -54,5 +54,6 @@ private:
 
 inline BOOL TestsTimerDialog::Init(std::vector<SuiteRoot> roots, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel)
 {
+	list_items = timersCollection.getTimers();
 	return clock_dlg.Init(roots, is_check, name_sel, tag_sel, threads_sel);
 }
