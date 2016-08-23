@@ -165,11 +165,11 @@ bool TimerADD::End(TiXmlNode* root)
 			delete[] clockNameC;
 			TiXmlElement* Path = new TiXmlElement("Path");
 			curTimer->LinkEndChild(Path);
-			for (int i = 0; i < clocks.get_path().size(); ++i)
+			for (int i = 0; i < clocks.get_suites().size(); ++i)
 			{
 				TiXmlElement* curPath = new TiXmlElement("currentPath");
 				Path->LinkEndChild(curPath);
-				char* way = convertToChar(clocks.get_path()[i].get_path());
+				char* way = convertToChar(clocks.get_suites()[i].get_path());
 				TiXmlText* pathText = new TiXmlText(way);
 				delete[] way;
 				curPath->LinkEndChild(pathText);
