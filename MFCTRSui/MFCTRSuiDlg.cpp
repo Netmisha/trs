@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <shellapi.h>
 
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -35,6 +36,7 @@ bool RunEndCheck;
 bool SaveAsPressed = true;
 int ListSelection;
 CToolBar* ToolBar;
+TimerAddCollection timersCollection;
 //CListCtrl* List;
 CToolBar* Bar;
 CComboBox* Tag;
@@ -422,7 +424,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	COLL = &mapOfColls;
 	FAIL = &FailMap;
 	PASS = &PasMap;
-	
+	timersCollection.Init();
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 

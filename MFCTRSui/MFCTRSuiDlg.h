@@ -14,6 +14,7 @@
 #include "SuiteRoot.h"
 #include "TRSLibrary\TRSManager.h"
 #include "TimerADD.h"
+#include "TimerAddCollection.h"
 #define PROJECT_UPLOADED 1
 #define PROJECT_NOTLOADED 2
 #define RUN_CLICKED 4

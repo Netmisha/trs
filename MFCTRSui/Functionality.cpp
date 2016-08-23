@@ -23,7 +23,7 @@ void convertToTCHAR(TCHAR*dest, const char* path)
 	}
 }
 
-DWORD UniqueNumber()
+DWORD UniquieNumber()
 {
 	FILETIME fTime;
 	GetSystemTimeAsFileTime(&fTime);
