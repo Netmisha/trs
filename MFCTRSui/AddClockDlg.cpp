@@ -5,7 +5,6 @@
 #include "AddClockDlg.h"
 #include "afxdialogex.h"
 
-
 // AddClockDlg dialog
 
 IMPLEMENT_DYNAMIC(AddClockDlg, CDialogEx)

@@ -5,6 +5,7 @@
 #include "TestsTimerDialog.h"
 #include "afxdialogex.h"
 #include "Clock.h"
+#include "Functionality.h"
 
 #include <list>
 #include <vector>
@@ -34,6 +35,7 @@ void TestsTimerDialog::DoDataExchange(CDataExchange* pDX)
 BOOL TestsTimerDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	m_ListCtrl.SetExtendedStyle(m_ListCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 
 	CRect rect;
 	m_ListCtrl.GetClientRect(&rect);
@@ -43,6 +45,12 @@ BOOL TestsTimerDialog::OnInitDialog()
 	m_ListCtrl.InsertColumn(1, _T("Time"), LVCFMT_CENTER, nColInterval);
 	m_ListCtrl.InsertColumn(2, _T("Days"), LVCFMT_CENTER, nColInterval);
 	m_ListCtrl.InsertColumn(3, _T("Repeat"), LVCFMT_CENTER, rect.Width() - 3 * nColInterval);
+
+	if (!list_items.size())
+	{
+		m_ButtonEdit.EnableWindow(false);
+		m_ButtonRemove.EnableWindow(false);
+	}
 
 	return true;
 }
@@ -64,7 +72,7 @@ void TestsTimerDialog::OnAddClicked()
 		return;
 
 	ClockInstance item{ clock_dlg.get_clock_collection().front().get_suites(), clock_dlg.get_days(), clock_dlg.get_clock_name(), clock_dlg.get_tag(),
-		clock_dlg.get_name(), clock_dlg.get_threads(), clock_dlg.get_hour(), clock_dlg.get_minute(), clock_dlg.is_weekly() };
+		clock_dlg.get_name(), clock_dlg.get_threads(), clock_dlg.get_hour(), clock_dlg.get_minute(), clock_dlg.is_weekly(), UniqueNumber() };
 
 	list_items.push_back(item);
 
@@ -111,7 +119,12 @@ void TestsTimerDialog::AddToList(CString clock_name, CString hour, CString minut
 
 void TestsTimerDialog::OnEditClicked()
 {
-	// TODO: Add your control notification handler code here
+	if (selection >= list_items.size() || selection < 0)
+	{
+		logger << "selection is not within list_items range in TestsTimerDialog::OnEditClicked()";
+		return;
+	}
+	clock_dlg.Init(list_items[selection].suites, vector<bool> (list_items.size(), true), )
 }
 
 
@@ -124,6 +137,7 @@ void TestsTimerDialog::OnRemoveClicked()
 void TestsTimerDialog::OnListItemchanged(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	POSITION pos = m_ListCtrl.GetFirstSelectedItemPosition();
+	UpdateControls(pos);
 	
 	*pResult = 0;
 }
@@ -133,13 +147,13 @@ void TestsTimerDialog::UpdateControls(POSITION pos)
 	if (pos == NULL)
 	{
 		selection = -1;
-		m_ButtonAdd.EnableWindow(false);
+		m_ButtonEdit.EnableWindow(false);
 		m_ButtonRemove.EnableWindow(false);
 	}
 	else
 	{
 		selection = (int)pos;
-		m_ButtonAdd.EnableWindow();
+		m_ButtonEdit.EnableWindow();
 		m_ButtonRemove.EnableWindow();
 	}
 }
