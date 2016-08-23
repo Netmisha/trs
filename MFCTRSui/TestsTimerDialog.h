@@ -21,7 +21,7 @@ public:
 // Dialog Data
 	enum { IDD = IDD_DIALOG4 };
 
-	inline BOOL Init(std::vector<SuiteRoot> roots, vector<bool> is_check, vector<CString> name, int name_sel, vector<CString> tag, int tag_sel, int threads_sel, std::vector<ClockInstance>);
+	inline BOOL Init(std::vector<SuiteRoot> roots, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel);
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual BOOL OnInitDialog();
@@ -50,27 +50,8 @@ private:
 
 // =====================================================================================================================
 
-inline BOOL TestsTimerDialog::Init(std::vector<SuiteRoot> roots, vector<bool> is_check, vector<CString> name, int name_sel, vector<CString> tag, int tag_sel, int threads_sel,std::vector<ClockInstance> insColl)
+inline BOOL TestsTimerDialog::Init(std::vector<SuiteRoot> roots, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel)
 {
-	TiXmlDocument doc("Timers.xml");
-	if (doc.LoadFile())
-	{
-		
-		for (TiXmlNode* element = doc.FirstChild(); element != 0; element = element->NextSibling())
-		{
-			CString tag_, name, threads, clock_name;
-			Clock Clo;
-			TimerADD currentTimer(tag_,name,threads,clock_name,Clo);
-			while (!strcmp(element->Value(), "Suite"))
-			{
-				element = element->FirstChild();
-			}
-			currentTimer.Begin(element);
-			ClockInstance currentInstance;
-			currentInstance.clock_name = currentTimer.getClockName();
-			currentInstance.days = currentTimer.getClock().get_time().get_day();
-		}
-		
-	}
-	return clock_dlg.Init(roots, is_check, name, name_sel, tag, tag_sel, threads_sel);
+	
+	return clock_dlg.Init(roots, is_check, name_sel, tag_sel, threads_sel);
 }

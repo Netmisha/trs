@@ -19,7 +19,7 @@ public:
 	virtual ~AddClockDlg();
 
 	BOOL OnInitDialog();
-	BOOL Init(std::vector<SuiteRoot>, vector<bool> is_check, vector<CString> name, int name_sel, vector<CString> tag, int tag_sel, int threads_sel);
+	BOOL Init(std::vector<SuiteRoot>, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel);
 
 	inline CString get_clock_name() const;
 	inline CString get_name() const;
@@ -78,9 +78,8 @@ protected:
 
 //	vector<SuiteRoot> selected_suites;
 	vector<int> selected_suites;
+
 	vector<SuiteRoot> coll;
-	vector<CString> coll_name;
-	vector<CString> coll_tag;
 	vector<bool> is_check;
 
 	CImageList m_PathImageList;

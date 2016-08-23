@@ -24,13 +24,21 @@ public:
 	inline CString getName();
 	inline CString getThreads();
 	inline CString getClockName();
-
+	
+	inline unsigned long getUnique();
 };
 
 inline Clock TimerADD::getClock()
 {
 	return clocks;
 }
+
+inline unsigned long TimerADD::getUnique()
+{
+	return unique_value;
+}
+
+
 
 inline CString TimerADD::getTag()
 {

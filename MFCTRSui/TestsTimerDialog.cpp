@@ -124,7 +124,7 @@ void TestsTimerDialog::OnEditClicked()
 		logger << "selection is not within list_items range in TestsTimerDialog::OnEditClicked()";
 		return;
 	}
-	clock_dlg.Init(list_items[selection].suites, vector<bool> (list_items.size(), true), )
+//	clock_dlg.Init(list_items[selection].suites, vector<bool>(list_items.size(), true), list_items[selection].clock_name, )
 }
 
 

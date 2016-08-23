@@ -11,4 +11,5 @@ bool ValidateProjXML(char* path);
 bool CheckForModification(char* path, char* name, CListCtrl*List,CComboBox* Tag,CComboBox* threads,CComboBox* name_,bool Console);
 BOOL validate(UINT nType, int cxx, int cyy);
 DWORD UniqueNumber();
+
 #endif

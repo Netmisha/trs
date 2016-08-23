@@ -18,6 +18,11 @@ struct ClockInstance
 	CString minute;
 	bool repeat;
 	DWORD ident;
+
+	bool operator ==(ClockInstance curIn)
+	{
+		return ident == curIn.ident;
+	}
 };
 
 #endif
