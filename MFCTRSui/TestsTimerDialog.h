@@ -45,6 +45,7 @@ private:
 	CString GetDayByIndex(int);
 	void AddToList(CString clock_name, CString hour, CString minute, bool repeat, DWORD days);
 	void AddToList(const ClockInstance&);
+	void ChangeListItem(CString clock_name, CString hour, CString minute, bool repeat, DWORD days, DWORD pos);
 
 	vector<ClockInstance> list_items;
 };
@@ -53,6 +54,5 @@ private:
 
 inline BOOL TestsTimerDialog::Init(std::vector<SuiteRoot> roots, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel)
 {
-	
 	return clock_dlg.Init(roots, is_check, name_sel, tag_sel, threads_sel);
 }

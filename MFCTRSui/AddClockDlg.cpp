@@ -97,11 +97,10 @@ BOOL AddClockDlg::OnInitDialog()
 		CBitmap m_Bitmap5;
 		m_Bitmap5.LoadBitmap(IDB_BITMAP5);
 		m_PathImageList.Add(&m_Bitmap5, RGB(0, 0, 0));
-
-		m_ListCtrl.SetImageList(&m_PathImageList, LVSIL_SMALL);
+		
 		first_called = false;
 	}
-
+	m_ListCtrl.SetImageList(&m_PathImageList, LVSIL_SMALL);
 	return TRUE;
 }
 

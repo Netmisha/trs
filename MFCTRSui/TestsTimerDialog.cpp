@@ -8,6 +8,7 @@
 #include "Functionality.h"
 
 #include <list>
+#include <algorithm>
 #include <vector>
 // TestsTimerDialog dialog
 CListCtrl* List;
@@ -46,12 +47,11 @@ BOOL TestsTimerDialog::OnInitDialog()
 	m_ListCtrl.InsertColumn(2, _T("Days"), LVCFMT_CENTER, nColInterval);
 	m_ListCtrl.InsertColumn(3, _T("Repeat"), LVCFMT_CENTER, rect.Width() - 3 * nColInterval);
 
-	if (!list_items.size())
-	{
-		m_ButtonEdit.EnableWindow(false);
-		m_ButtonRemove.EnableWindow(false);
-	}
+	m_ButtonEdit.EnableWindow(false);
+	m_ButtonRemove.EnableWindow(false);
 
+	for each (auto item in list_items)
+		AddToList(item);
 	return true;
 }
 
@@ -116,6 +116,37 @@ void TestsTimerDialog::AddToList(CString clock_name, CString hour, CString minut
 	}
 }
 
+void TestsTimerDialog::ChangeListItem(CString clock_name, CString hour, CString minute, bool repeat, DWORD days, DWORD pos)
+{
+	LVITEM lvi;
+	CString strItem;
+
+	lvi.mask = LVIF_TEXT;
+	strItem.Format(_T("%s"), clock_name);
+	lvi.iItem = selection;
+	lvi.iSubItem = 0;
+	lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
+	m_ListCtrl.SetItem(&lvi);
+
+	strItem.Format(_T("%s:%s"), hour, minute);
+	lvi.iSubItem = 1;
+	lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
+	m_ListCtrl.SetItem(&lvi);
+
+	strItem.Format(_T("%s"), GetDayByIndex(days));
+	lvi.iSubItem = 2;
+	lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
+	m_ListCtrl.SetItem(&lvi);
+
+	if (repeat)
+	{
+		strItem.Format(_T("%s"), "X");
+		lvi.iSubItem = 3;
+		lvi.pszText = (LPTSTR)(LPCTSTR)(strItem);
+		m_ListCtrl.SetItem(&lvi);
+	}
+}
+
 
 void TestsTimerDialog::OnEditClicked()
 {
@@ -124,13 +155,22 @@ void TestsTimerDialog::OnEditClicked()
 		logger << "selection is not within list_items range in TestsTimerDialog::OnEditClicked()";
 		return;
 	}
-//	clock_dlg.Init(list_items[selection].suites, vector<bool>(list_items.size(), true), list_items[selection].clock_name, )
+	AddClockDlg edit_clock_dlg;
+	edit_clock_dlg.Init(list_items[selection].suites, vector<bool>(list_items[selection].suites.size(), true), 0, 0, 0);
+	if (edit_clock_dlg.DoModal() == IDOK)
+	{
+		ClockInstance item{ edit_clock_dlg.get_clock_collection().front().get_suites(), edit_clock_dlg.get_days(), edit_clock_dlg.get_clock_name(), edit_clock_dlg.get_tag(),
+			edit_clock_dlg.get_name(), edit_clock_dlg.get_threads(), edit_clock_dlg.get_hour(), edit_clock_dlg.get_minute(), edit_clock_dlg.is_weekly(), UniqueNumber() };
+
+		ChangeListItem(item.clock_name, item.hour, item.minute, item.repeat, item.days, selection);
+	}
 }
 
 
 void TestsTimerDialog::OnRemoveClicked()
 {
-	// TODO: Add your control notification handler code here
+	list_items.erase(list_items.begin() + selection);
+	m_ListCtrl.DeleteItem(selection);
 }
 
 
@@ -152,7 +192,7 @@ void TestsTimerDialog::UpdateControls(POSITION pos)
 	}
 	else
 	{
-		selection = (int)pos;
+		selection = (int)pos - 1;
 		m_ButtonEdit.EnableWindow();
 		m_ButtonRemove.EnableWindow();
 	}
