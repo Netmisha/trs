@@ -48,18 +48,8 @@ BOOL AddClockDlg::OnInitDialog()
 		m_ListCtrl.InsertItem(m_ListCtrl.GetItemCount(), coll[i].get_path());
 		m_ListCtrl.SetCheck(i, is_check[i]);
 	}
-
-	/*for each (auto val in coll_name)
-	{
-		m_EditName.AddString(val.GetString());
-	}
 	m_EditName.SetCurSel(name_sel);
-
-	for each (auto val in coll_tag)
-	{
-		m_EditTag.AddString(val.GetString());
-	}
-	m_EditTag.SetCurSel(tag_sel);*/
+	m_EditTag.SetCurSel(tag_sel);
 
 	CString mes;
 	CString helpMes;
@@ -642,21 +632,17 @@ void AddClockDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 
 
 
-BOOL AddClockDlg::Init(std::vector<SuiteRoot> coll_, vector<bool> check, vector<CString> name_, int name_sel_, vector<CString> tag_, int tag_sel_, int thread_sel_)
+BOOL AddClockDlg::Init(std::vector<SuiteRoot> coll_, vector<bool> check, DWORD name_sel_, DWORD tag_sel_, DWORD thread_sel_)
 {
 	initialized = false;
 	coll = coll_;
 	is_check = check;
-	if (!coll.size() || coll.size() != is_check.size())
+	if (!coll.size() || coll.size() != is_check.size() || (thread_sel = thread_sel_) > 100)
 		return FALSE;
 
-	coll_name = name_;
-	coll_tag = tag_;
-	if ((name_sel = name_sel_) >= coll_name.size() ||
-		(tag_sel = tag_sel_) >= coll_tag.size() ||
-		(thread_sel = thread_sel_) > 100)
-	return FALSE;
-
+	name_sel = name_sel_;
+	tag_sel = tag_sel_;
+	
 	initialized = true;
 	return TRUE;
 }

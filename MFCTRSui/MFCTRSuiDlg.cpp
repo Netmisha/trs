@@ -3168,34 +3168,14 @@ void CMFCTRSuiDlg::OnTest()
 		coll.push_back(SuiteRoot(RootList.GetItemText(i, 0)));
 		is_check[i] = RootList.GetCheck(i);
 	}
-
-	std::vector<CString> name;
-	name.resize(m_NameBox.GetCount());
-	for (int i = 0; i < m_NameBox.GetCount(); ++i)
-		m_NameBox.GetLBText(i, name[i]);
-
-	std::vector<CString> tag;
-	tag.resize(DropDown.GetCount());
-	for (int i = 0; i < DropDown.GetCount(); ++i)
-		DropDown.GetLBText(i, tag[i]);
-
-	
-	//dlg.Init(coll, is_check, name, m_NameBox.GetCurSel(), tag, DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
-	//if (dlg.DoModal() == IDOK)
-	//{
-	//	dlg.get_clock_collection();
-	//}
 	TestsTimerDialog dlg;
-	std::vector<ClockInstance> curClo;
-	dlg.Init(coll, is_check, name, m_NameBox.GetCurSel(), tag, DropDown.GetCurSel(), ThreadsComboBox.GetCurSel(),curClo);
+
+	dlg.Init(coll, is_check, m_NameBox.GetCurSel(), DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
 
 	if (dlg.DoModal() == IDOK)
 	{
 		
 	}
-
-
-
 }
 
 void CMFCTRSuiDlg::OnMouseMove(UINT nFlags, CPoint point)

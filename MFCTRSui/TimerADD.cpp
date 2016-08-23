@@ -98,7 +98,7 @@ bool TimerADD::Begin(TiXmlNode* root)
 	}
 	Time curTime((DWORD)day, (DWORD)hour, (DWORD)minute);
 	clocks.set_time(curTime);
-	unique_value = (unsigned long)UniquieNumber();
+	unique_value = (unsigned long)UniqueNumber();
 	return true;
 }
 

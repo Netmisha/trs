@@ -23,12 +23,11 @@ void convertToTCHAR(TCHAR*dest, const char* path)
 	}
 }
 
-DWORD UniquieNumber()
+DWORD UniqueNumber()
 {
 	FILETIME fTime;
 	GetSystemTimeAsFileTime(&fTime);
-	DWORD unique_value = fTime.dwHighDateTime + fTime.dwLowDateTime;
-	return unique_value;
+	return fTime.dwHighDateTime + fTime.dwLowDateTime;
 }
 
 char* convertToChar(TCHAR*path)//create buffer to set info to tinyXML doc constructor
