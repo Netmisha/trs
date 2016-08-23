@@ -20,13 +20,31 @@ bool TimerAddCollection::Init()
 		{
 			CString tag_, name, threads, clock_name;
 			Clock Clo;
+			
 			TimerADD currentTimer(tag_, name, threads, clock_name, Clo);
 			while (!strcmp(element->Value(), "Suite"))
 			{
 				element = element->FirstChild();
 			}
 			currentTimer.Begin(element);
+			ClockInstance instance;
+			instance.clock_name = currentTimer.getClockName();
+			instance.days = currentTimer.getClock().get_time().get_day();
+			char* hour = new char[sizeof(currentTimer.getClock().get_time().get_hour()) + 1];
+			sprintf_s(hour, sizeof(currentTimer.getClock().get_time().get_hour()), "%S", currentTimer.getClock().get_time().get_hour());
+			instance.hour = hour;
+			char* minute = new char[sizeof(currentTimer.getClock().get_time().get_minute()) + 1];
+			sprintf_s(minute, sizeof(currentTimer.getClock().get_time().get_minute()), "%S", currentTimer.getClock().get_time().get_minute());
+			instance.days = currentTimer.getClock().get_time().get_day();
+			instance.minute = minute;
+			instance.ident = currentTimer.getUnique();
+			instance.name = currentTimer.getName();
+			instance.repeat = currentTimer.getClock().IsWeekly();
+			instance.tag = currentTimer.getTag();
+			instance.threads = currentTimer.getThreads();
+			instance.suites = currentTimer.getClock().get_suites();
 			timersColl.push_back(currentTimer);
+			instanceColl.push_back(instance);
 		}
 		return true;
 	}
@@ -43,6 +61,7 @@ bool TimerAddCollection::Add(ClockInstance curIn)
 	Clock* curClock=new Clock(curIn.suites, curIn.repeat, *curTime);
 	TimerADD cutTimer(curIn.tag, curIn.name, curIn.threads, curIn.clock_name, *curClock);
 	timersColl.push_back(cutTimer);
+	instanceColl.push_back(curIn);
 	TiXmlDocument doc("Timers.xml");
 	if (doc.LoadFile())
 	{
@@ -67,9 +86,9 @@ bool TimerAddCollection::Add(ClockInstance curIn)
 	return true;
 }
 
-std::vector<TimerADD> TimerAddCollection::getTimers()
+std::vector<ClockInstance> TimerAddCollection::getTimers()
 {
-	return timersColl;
+	return instanceColl;
 }
 
 bool TimerAddCollection::Remove(ClockInstance curIn)
@@ -80,6 +99,15 @@ bool TimerAddCollection::Remove(ClockInstance curIn)
 		if (it->getUnique() == curIn.ident)
 		{
 			timersColl.erase(it);
+			break;
+		}
+	}
+	std::vector<ClockInstance>::iterator iter = instanceColl.begin();
+	for (iter; iter != instanceColl.end(); ++iter)
+	{
+		if (iter->ident == curIn.ident)
+		{
+			instanceColl.erase(iter);
 			break;
 		}
 	}
