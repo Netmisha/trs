@@ -10,6 +10,7 @@ public:
 	bool Init();
 	bool Add(ClockInstance ins);
 	bool Remove(ClockInstance ins);
+	std::vector<TimerADD> getTimers();
 private:
 	std::vector<TimerADD> timersColl;
 };

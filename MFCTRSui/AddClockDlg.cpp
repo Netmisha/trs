@@ -507,6 +507,130 @@ void AddClockDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 			{
 				m_EditTag.SetCurSel(-1);
 			}
+			for (int i = 0; i < m_ListCtrl.GetItemCount(); ++i)
+			{
+				if (m_ListCtrl.GetCheck(i))
+				{
+					CString path = m_ListCtrl.GetItemText(i, 0);
+					char* pPa = fromCStringToChar(path);
+					std::list<Suite*>*suiteColl = Manager.List(pPa, nullptr, nullptr);
+					delete[] pPa;
+					m_EditName.Clear();
+					m_EditTag.Clear();
+					m_EditTag.ResetContent();
+					m_EditTag.AddString(L"All");
+					m_EditTag.SetCurSel(0);
+					m_EditName.ResetContent();
+					m_EditName.AddString(L"All");
+
+					m_EditName.SetCurSel(0);
+
+					m_EditThreads.SetCurSel(9);
+					int count = 0;
+					std::list<Suite*>::iterator it = suiteColl->begin();
+					count = strlen((*it)->get_path());
+					for (it; it != suiteColl->end(); ++it)
+					{
+						if (strlen((*it)->get_path()) < count)
+						{
+							count = strlen((*it)->get_path());
+						}
+					}
+					--it;
+					int lic = 0;
+					std::list<Suite*> checkList;
+					std::vector<char*> TagColl;
+					std::vector<char*> NameColl;
+					for (it; it != suiteColl->begin(); --it)
+					{
+						if (strlen((*it)->get_path()) == count)
+						{
+							TreeParse(it, suiteColl, lic, &checkList);
+						}
+					}
+					if (strlen((*it)->get_path()) == count)
+					{
+						TreeParse(it, suiteColl, lic, &checkList);
+					}
+					for (it; it != suiteColl->end(); ++it)
+					{
+						std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
+
+						for (iter; iter != (*it)->getList().end(); ++iter)
+						{
+							std::vector<char*>::iterator iterator = TagColl.begin();
+							if (TagColl.size() == 0)
+							{
+								if ((*iter)->getTag())
+								{
+									std::vector<char*>::iterator first = std::find(TagColl.begin(), TagColl.end(), (*iter)->getTag());
+									if (first == TagColl.end())
+										TagColl.push_back((*iter)->getTag());
+								}
+							}
+							else
+							{
+								bool check = false;
+								for (iterator; iterator != TagColl.end(); ++iterator)
+								{
+									if (!strncmp(*iterator, (*iter)->getTag(), strlen((*iter)->getTag())))
+									{
+										check = true;
+										break;
+									}
+
+								}
+								if (!check)
+								{
+									TagColl.push_back((*iter)->getTag());
+								}
+							}
+							std::vector<char*>::iterator Nameit = NameColl.begin();
+							if (NameColl.size() == 0)
+							{
+								if ((*iter)->getName())
+								{
+									NameColl.push_back((*iter)->getName());
+								}
+							}
+							else
+							{
+								bool checkSecond = false;
+								for (Nameit; Nameit != NameColl.end(); ++Nameit)
+								{
+									if (!strncmp(*Nameit, (*iter)->getName(), strlen((*iter)->getName())))
+									{
+										checkSecond = true;
+										break;
+									}
+
+								}
+								if (!checkSecond)
+								{
+									NameColl.push_back((*iter)->getName());
+								}
+							}
+						}
+
+					}
+					for (int i = 0; i < TagColl.size(); ++i)
+					{
+						TCHAR*buf = new TCHAR[strlen(TagColl[i]) + 1];
+						convertToTCHAR(buf, TagColl[i]);
+						m_EditTag.AddString(buf);
+						delete[] buf;
+					}
+					for (int i = 0; i < NameColl.size(); ++i)
+					{
+						TCHAR*buf = new TCHAR[strlen(NameColl[i]) + 1];
+						convertToTCHAR(buf, NameColl[i]);
+						m_EditName.AddString(buf);
+						delete[] buf;
+					}
+				}
+			}
+
+
 			break;
 		}
 		default:
