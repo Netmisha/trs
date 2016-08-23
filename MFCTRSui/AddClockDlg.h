@@ -29,6 +29,7 @@ public:
 	inline CString get_minute() const;
 	inline std::list<Clock> get_clock_collection() const;
 	inline bool is_weekly() const;
+	inline DWORD get_days() const;
 	
 	// Dialog Data
 	enum { IDD = IDD_DIALOG5 };
@@ -50,6 +51,7 @@ private:
 	bool weekly;
 	CString hour_str;
 	CString minute_str;
+	DWORD days_flag;
 
 public:
 	DECLARE_MESSAGE_MAP()
@@ -128,5 +130,10 @@ inline CString AddClockDlg::get_minute() const
 inline bool AddClockDlg::is_weekly() const
 {
 	return weekly;
+}
+
+inline DWORD AddClockDlg::get_days() const
+{
+	return days_flag;
 }
 

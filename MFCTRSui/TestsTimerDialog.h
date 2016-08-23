@@ -40,7 +40,8 @@ private:
 
 	void UpdateControls(POSITION);
 	CString GetDayByIndex(int);
-	void AddToList(CString clock_name, CString hour, CString minute, bool repeat, std::list<Clock> clocks);
+	void AddToList(CString clock_name, CString hour, CString minute, bool repeat, DWORD days);
+	void AddToList(const ClockInstance&);
 
 	vector<ClockInstance> list_items;
 };
