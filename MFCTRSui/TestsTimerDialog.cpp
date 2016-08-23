@@ -39,10 +39,10 @@ BOOL TestsTimerDialog::OnInitDialog()
 	m_ListCtrl.GetClientRect(&rect);
 	int nColInterval = rect.Width() / 4;
 
-	m_ListCtrl.InsertColumn(0, _T("Name"), LVCFMT_LEFT, nColInterval);
-	m_ListCtrl.InsertColumn(1, _T("Time"), LVCFMT_LEFT, nColInterval);
-	m_ListCtrl.InsertColumn(2, _T("Days"), LVCFMT_LEFT, nColInterval);
-	m_ListCtrl.InsertColumn(3, _T("Repeat"), LVCFMT_LEFT, rect.Width() - 3 * nColInterval);
+	m_ListCtrl.InsertColumn(0, _T("Name"), LVCFMT_CENTER, nColInterval);
+	m_ListCtrl.InsertColumn(1, _T("Time"), LVCFMT_CENTER, nColInterval);
+	m_ListCtrl.InsertColumn(2, _T("Days"), LVCFMT_CENTER, nColInterval);
+	m_ListCtrl.InsertColumn(3, _T("Repeat"), LVCFMT_CENTER, rect.Width() - 3 * nColInterval);
 
 	return true;
 }
@@ -73,7 +73,7 @@ void TestsTimerDialog::OnAddClicked()
 
 void TestsTimerDialog::AddToList(const ClockInstance& item)
 {
-	AddToList(item.name, item.hour, item.minute, item.repeat, item.days);
+	AddToList(item.clock_name, item.hour, item.minute, item.repeat, item.days);
 }
 
 
@@ -82,7 +82,7 @@ void TestsTimerDialog::AddToList(CString clock_name, CString hour, CString minut
 	LVITEM lvi;
 	CString strItem;
 	
-	lvi.mask =  LVIF_TEXT;
+	lvi.mask = LVIF_TEXT;
 	strItem.Format(_T("%s"), clock_name);
 	lvi.iItem = m_ListCtrl.GetItemCount();
 	lvi.iSubItem = 0;
@@ -151,37 +151,37 @@ CString TestsTimerDialog::GetDayByIndex(int day)
 
 	if (day & 1)
 	{
-		day_to_str.Format(_T("%s "), _T("Mn"));
+		day_to_str.Format(_T("%s "), _T("Mon "));
 		ret_str += day_to_str;
 	}
 	if (day & 2)
 	{
-		day_to_str.Format(_T("%s "), _T("Ts"));
+		day_to_str.Format(_T("%s "), _T("Tue "));
 		ret_str += day_to_str;
 	}
 	if (day & 4)
 	{
-		day_to_str.Format(_T("%s "), _T("Wd"));
+		day_to_str.Format(_T("%s "), _T("Wed "));
 		ret_str += day_to_str;
 	}
 	if (day & 8)
 	{
-		day_to_str.Format(_T("%s "), _T("Th"));
+		day_to_str.Format(_T("%s "), _T("Thu "));
 		ret_str += day_to_str;
 	}
 	if (day & 16)
 	{
-		day_to_str.Format(_T("%s "), _T("Fr"));
+		day_to_str.Format(_T("%s "), _T("Fri "));
 		ret_str += day_to_str;
 	}
 	if (day & 32)
 	{
-		day_to_str.Format(_T("%s "), _T("St"));
+		day_to_str.Format(_T("%s "), _T("Sat "));
 		ret_str += day_to_str;
 	}
 	if (day & 64)
 	{
-		day_to_str.Format(_T("%s "), _T("Sn"));
+		day_to_str.Format(_T("%s "), _T("Sun "));
 		ret_str += day_to_str;
 	}
 

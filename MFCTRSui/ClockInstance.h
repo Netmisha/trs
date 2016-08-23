@@ -16,6 +16,7 @@ struct ClockInstance
 	CString hour;
 	CString minute;
 	bool repeat;
+	DWORD ident;
 };
 
 #endif

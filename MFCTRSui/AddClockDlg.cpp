@@ -176,7 +176,7 @@ void AddClockDlg::OnBnClickedOk()
 
 	m_EditThreads.GetWindowTextW(threads);
 
-	bool weekly = m_CheckRepeat.GetCheck() == BST_CHECKED;
+	weekly = m_CheckRepeat.GetCheck() == BST_CHECKED;
 
 	days_flag = 0;
 	for (int i = 0; i < 7; ++i)
