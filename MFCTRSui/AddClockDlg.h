@@ -30,6 +30,7 @@ public:
 	inline std::list<Clock> get_clock_collection() const;
 	inline bool is_weekly() const;
 	inline DWORD get_days() const;
+	inline vector<SuiteRoot> get_selected_suites() const;
 	
 	// Dialog Data
 	enum { IDD = IDD_DIALOG5 };
@@ -78,6 +79,7 @@ protected:
 
 //	vector<SuiteRoot> selected_suites;
 	vector<int> selected_suites;
+	vector<SuiteRoot> selected_paths;
 
 	vector<SuiteRoot> coll;
 	vector<bool> is_check;
@@ -115,6 +117,11 @@ inline std::list<Clock> AddClockDlg::get_clock_collection() const
 	return schedule.get_schedule();
 }
 
+
+inline vector<SuiteRoot> AddClockDlg::get_selected_suites() const
+{
+	return selected_paths;
+}
 
 inline CString AddClockDlg::get_hour() const
 {

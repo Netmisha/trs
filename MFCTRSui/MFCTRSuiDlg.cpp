@@ -779,7 +779,6 @@ void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
 		std::sort(dRoots.begin(), dRoots.end(), std::greater<int>());
 		for (auto iter = dRoots.begin(); iter != dRoots.end(); ++iter)
 		{
-
 			RootList.DeleteItem(*iter);
 		}
 		if (RootList.GetItemCount())

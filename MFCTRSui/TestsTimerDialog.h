@@ -39,7 +39,7 @@ private:
 	afx_msg void OnEditClicked();
 	afx_msg void OnRemoveClicked();
 	afx_msg void OnListItemchanged(NMHDR *pNMHDR, LRESULT *pResult);
-	int selection = -1;
+	int selection = -2;
 
 	void UpdateControls(POSITION);
 	CString GetDayByIndex(int);
@@ -54,6 +54,6 @@ private:
 
 inline BOOL TestsTimerDialog::Init(std::vector<SuiteRoot> roots, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel)
 {
-	list_items = timersCollection.getTimers();
+//	list_items = timersCollection.getTimers();
 	return clock_dlg.Init(roots, is_check, name_sel, tag_sel, threads_sel);
 }

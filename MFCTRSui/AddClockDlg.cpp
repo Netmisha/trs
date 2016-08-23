@@ -179,16 +179,13 @@ void AddClockDlg::OnBnClickedOk()
 		MessageBox(_T("You did not choose any day. There will be nothing to Run."), _T("Error"), MB_ICONERROR | MB_OK);
 		return;
 	}
-
-	std::vector<SuiteRoot> suites/*(selected_suites.size())*/;
+	selected_paths.clear();
 	for each(auto index in selected_suites)
 	{
-//		suites[index] = m_ListCtrl.GetItemText(index, 0);
-		suites.push_back(m_ListCtrl.GetItemText(index, 0));
+		selected_paths.push_back(m_ListCtrl.GetItemText(index, 0));
 	}
 
-	schedule.AddClocks(suites, days_flag, hour, minute, weekly);
-
+	schedule.AddClocks(selected_paths, days_flag, hour, minute, weekly);
 
 	CDialogEx::OnOK();
 }
