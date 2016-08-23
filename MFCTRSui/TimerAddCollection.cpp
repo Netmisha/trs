@@ -42,6 +42,7 @@ bool TimerAddCollection::Add(ClockInstance curIn)
 	delete[] minute;
 	Clock* curClock=new Clock(curIn.suites, curIn.repeat, *curTime);
 	TimerADD cutTimer(curIn.tag, curIn.name, curIn.threads, curIn.clock_name, *curClock);
+	timersColl.push_back(cutTimer);
 	TiXmlDocument doc("Timers.xml");
 	if (doc.LoadFile())
 	{
@@ -66,6 +67,11 @@ bool TimerAddCollection::Add(ClockInstance curIn)
 	return true;
 }
 
+std::vector<TimerADD> TimerAddCollection::getTimers()
+{
+	return timersColl;
+}
+
 bool TimerAddCollection::Remove(ClockInstance curIn)
 {
 	std::vector<TimerADD>::iterator it = timersColl.begin();
@@ -74,7 +80,29 @@ bool TimerAddCollection::Remove(ClockInstance curIn)
 		if (it->getUnique() == curIn.ident)
 		{
 			timersColl.erase(it);
-			return true;
+			break;
 		}
 	}
+	TiXmlDocument doc("Timers.xml");
+	if (doc.LoadFile())
+	{
+		TiXmlDeclaration* dec = new TiXmlDeclaration("1.0", "", "");
+		doc.LinkEndChild(dec);
+		for (int i = 0; i < timersColl.size(); ++i)
+		{
+			timersColl[i].End(dec);
+		}
+	}
+	else
+	{
+		TiXmlDocument newDoc;
+		TiXmlDeclaration* dec = new TiXmlDeclaration("1.0", "", "");
+		newDoc.LinkEndChild(dec);
+		for (int i = 0; i < timersColl.size(); ++i)
+		{
+			timersColl[i].End(dec);
+		}
+		newDoc.SaveFile("Timers.xml");
+	}
+	return true;
 }

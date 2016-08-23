@@ -6,6 +6,7 @@
 #include "AddClockDlg.h"
 #include "ClockInstance.h"
 #include "TRSLibrary\TRSManager.h"
+#include "TimerAddCollection.h"
 
 #include <vector>
 using std::vector;
