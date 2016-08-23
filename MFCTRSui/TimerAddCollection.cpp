@@ -22,19 +22,19 @@ bool TimerAddCollection::Init()
 			Clock Clo;
 			
 			TimerADD currentTimer(tag_, name, threads, clock_name, Clo);
-			while (!strcmp(element->Value(), "Suite"))
+			while (element->Type()!=TiXmlNode::TINYXML_ELEMENT)
 			{
-				element = element->FirstChild();
+				element = element->NextSibling();
 			}
 			currentTimer.Begin(element);
 			ClockInstance instance;
 			instance.clock_name = currentTimer.getClockName();
 			instance.days = currentTimer.getClock().get_time().get_day();
-			char* hour = new char[sizeof(currentTimer.getClock().get_time().get_hour()) + 1];
-			sprintf_s(hour, sizeof(currentTimer.getClock().get_time().get_hour()), "%S", currentTimer.getClock().get_time().get_hour());
+			char* hour = new char[30];
+			sprintf_s(hour, 30, "%s", currentTimer.getClock().get_time().get_hour());
 			instance.hour = hour;
-			char* minute = new char[sizeof(currentTimer.getClock().get_time().get_minute()) + 1];
-			sprintf_s(minute, sizeof(currentTimer.getClock().get_time().get_minute()), "%S", currentTimer.getClock().get_time().get_minute());
+			char* minute = new char[30];
+			sprintf_s(minute, 30, "%s", currentTimer.getClock().get_time().get_minute());
 			instance.days = currentTimer.getClock().get_time().get_day();
 			instance.minute = minute;
 			instance.ident = currentTimer.getUnique();
@@ -55,7 +55,9 @@ bool TimerAddCollection::Add(ClockInstance curIn)
 {
 	char* hour = fromCStringToChar(curIn.hour);
 	char* minute = fromCStringToChar(curIn.minute);
-	Time* curTime=new Time(curIn.days, (DWORD)hour, (DWORD)minute);
+	int hHou = _ttoi(curIn.hour);
+	int mMin = _ttoi(curIn.minute);
+	Time* curTime=new Time(curIn.days, hHou, mMin);
 	delete[] hour;
 	delete[] minute;
 	Clock* curClock=new Clock(curIn.suites, curIn.repeat, *curTime);
@@ -65,12 +67,14 @@ bool TimerAddCollection::Add(ClockInstance curIn)
 	TiXmlDocument doc("Timers.xml");
 	if (doc.LoadFile())
 	{
+		doc.Clear();
 		TiXmlDeclaration* dec = new TiXmlDeclaration("1.0", "", "");
 		doc.LinkEndChild(dec);
 		for (int i = 0; i < timersColl.size(); ++i)
 		{
-			timersColl[i].End(dec);
+			timersColl[i].End(&doc);
 		}
+		doc.SaveFile();
 	}
 	else
 	{
@@ -79,7 +83,7 @@ bool TimerAddCollection::Add(ClockInstance curIn)
 		newDoc.LinkEndChild(dec);
 		for (int i = 0; i < timersColl.size(); ++i)
 		{
-			timersColl[i].End(dec);
+			timersColl[i].End(&newDoc);
 		}
 		newDoc.SaveFile("Timers.xml");
 	}

@@ -96,7 +96,7 @@ bool TimerADD::Begin(TiXmlNode* root)
 			
 		}
 	}
-	Time curTime((DWORD)day, (DWORD)hour, (DWORD)minute);
+	Time curTime(atoi(day), atoi(hour), atoi(minute));
 	clocks.set_time(curTime);
 	unique_value = (unsigned long)UniqueNumber();
 	return true;
@@ -107,8 +107,9 @@ bool TimerADD::End(TiXmlNode* root)
 
 			TiXmlElement* curTimer = new TiXmlElement("Suite");
 			root->LinkEndChild(curTimer);
-			char* DayC = new char[sizeof(clocks.get_time().get_day())];
-			sprintf_s(DayC, sizeof(clocks.get_time().get_day()), "%S", clocks.get_time().get_day());
+			int lic = sizeof(clocks.get_time().get_day());
+			char* DayC = new char[30];
+			sprintf_s(DayC, 30, "%d", clocks.get_time().get_day());
 			TiXmlElement* day = new TiXmlElement("day");
 			curTimer->LinkEndChild(day);
 			TiXmlText* dayText = new TiXmlText(DayC);
@@ -116,15 +117,31 @@ bool TimerADD::End(TiXmlNode* root)
 			delete[] DayC;
 			TiXmlElement* hour = new TiXmlElement("hour");
 			curTimer->LinkEndChild(hour);
-			char* HourC = new char[sizeof(clocks.get_time().get_hour())];
-			sprintf_s(HourC, sizeof(clocks.get_time().get_hour()), "%S", clocks.get_time().get_hour());
+			char* HourC = new char[30];
+			lic = sizeof(clocks.get_time().get_hour());
+			if ((int)clocks.get_time().get_hour() != 0)
+			{
+				sprintf_s(HourC, 30, "%d", clocks.get_time().get_hour());
+			}
+			else
+			{
+				sprintf_s(HourC, 30, "%s", "00");
+			}
 			TiXmlText* textHour = new TiXmlText(HourC);
 			hour->LinkEndChild(textHour);
 			delete[] HourC;
 			TiXmlElement* minute = new TiXmlElement("minute");
 			curTimer->LinkEndChild(minute);
-			char* MinuteC = new char[sizeof(clocks.get_time().get_minute())];
-			sprintf_s(MinuteC, sizeof(clocks.get_time().get_minute()), "%S", clocks.get_time().get_minute());
+			char* MinuteC = new char[30];
+			lic = sizeof(clocks.get_time().get_minute());
+			if ((int)clocks.get_time().get_minute() != 0)
+			{
+				sprintf_s(MinuteC, 30, "%d", clocks.get_time().get_minute());
+			}
+			else
+			{
+				sprintf_s(MinuteC, 30, "%s", "00");
+			}
 			TiXmlText* textMinute = new TiXmlText(MinuteC);
 			minute->LinkEndChild(textMinute);
 			delete[] MinuteC;
