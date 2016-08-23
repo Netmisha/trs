@@ -44,8 +44,6 @@ BOOL TestsTimerDialog::OnInitDialog()
 	m_ListCtrl.InsertColumn(2, _T("Days"), LVCFMT_CENTER, nColInterval);
 	m_ListCtrl.InsertColumn(3, _T("Repeat"), LVCFMT_CENTER, rect.Width() - 3 * nColInterval);
 
-
-
 	return true;
 }
 
@@ -62,12 +60,11 @@ END_MESSAGE_MAP()
 
 void TestsTimerDialog::OnAddClicked()
 {
-
 	if (clock_dlg.DoModal() == IDCANCEL)
 		return;
 
-	ClockInstance item{ clock_dlg.get_clock_collection().front().get_suites(), clock_dlg.get_days(), clock_dlg.get_clock_name(),
-		clock_dlg.get_tag(), clock_dlg.get_name(), clock_dlg.get_threads(), clock_dlg.get_hour(), clock_dlg.get_minute(), clock_dlg.is_weekly() };
+	ClockInstance item{ clock_dlg.get_clock_collection().front().get_suites(), clock_dlg.get_days(), clock_dlg.get_clock_name(), clock_dlg.get_tag(),
+		clock_dlg.get_name(), clock_dlg.get_threads(), clock_dlg.get_hour(), clock_dlg.get_minute(), clock_dlg.is_weekly() };
 
 	list_items.push_back(item);
 
