@@ -8,10 +8,10 @@
 class ClockInstance
 {
 public:
-
+	
 
 private:
-	vector<SuiteRoot> suites;
+	std::vector<SuiteRoot> suites;
 	DWORD days;
 	CString clock_name;
 	CString tag;

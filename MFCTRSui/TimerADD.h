@@ -6,6 +6,7 @@ class TimerADD
 public:
 	TimerADD(CString tag_,CString name_,CString threads_,CString clock_name_,Clock& curClock);
 	~TimerADD();
+
 private:
 	
 	Clock clocks;

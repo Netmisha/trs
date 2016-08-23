@@ -8,6 +8,11 @@ test_time(d, h, m), repeat(weekly), roots(suites)
 {
 }
 
+Clock::Clock()
+{
+
+}
+
 Clock::Clock(vector<SuiteRoot> suites, bool weekly, const Time& time) :
 test_time(time), repeat(weekly), roots(suites)
 {

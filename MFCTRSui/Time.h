@@ -9,6 +9,7 @@ class Time
 {
 public:
 	Time(DWORD day, DWORD hour, DWORD min);
+	Time();
 	bool operator<(const Time&);
 	bool operator>(const Time&);
 

@@ -3184,7 +3184,8 @@ void CMFCTRSuiDlg::OnTest()
 	//	dlg.get_clock_collection();
 	//}
 	TestsTimerDialog dlg;
-	dlg.Init(coll, is_check, name, m_NameBox.GetCurSel(), tag, DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
+	std::vector<ClockInstance> curClo;
+	dlg.Init(coll, is_check, name, m_NameBox.GetCurSel(), tag, DropDown.GetCurSel(), ThreadsComboBox.GetCurSel(),curClo);
 
 	if (dlg.DoModal() == IDOK)
 	{

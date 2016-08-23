@@ -5,7 +5,10 @@ Time::Time(DWORD day, DWORD h, DWORD min) :
 	day_of_week(day), hour(h), minute(min) 
 {
 }
+Time::Time()
+{
 
+}
 bool Time::operator<(const Time& val)
 {
 	if (day_of_week != val.day_of_week)
