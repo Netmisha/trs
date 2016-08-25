@@ -29,12 +29,23 @@ public:
 		dRoot = new TCHAR[size + 1];
 		wcscpy_s(dRoot, size + 1, var.dRoot);
 	}
-	SuiteRoot(const SuiteRoot&& var)
+	//SuiteRoot(const SuiteRoot&& var)
+	//{
+	//	int size = wcslen(var.dRoot);
+	//	dRoot = new TCHAR[size + 1];
+	//	wcscpy_s(dRoot, size + 1, var.dRoot);
+	//}
+	SuiteRoot operator=(const SuiteRoot& var)
 	{
-		int size = wcslen(var.dRoot);
-		dRoot = new TCHAR[size + 1];
-		wcscpy_s(dRoot, size + 1, var.dRoot);
+		if (this != &var)
+		{
+			int size = wcslen(var.dRoot);
+			dRoot = new TCHAR[size + 1];
+			wcscpy_s(dRoot, size + 1, var.dRoot);
+		}
+		return *this;
 	}
+
 	inline TCHAR* get_path()
 	{
 		return dRoot;

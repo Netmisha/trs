@@ -181,8 +181,8 @@ void TestsTimerDialog::OnRemoveClicked()
 		return;
 	}
 
-	int asd = selection;
-	list_items.erase(list_items.begin() + asd);
+	list_items.erase(list_items.begin() + selection);
+
 	// after DeleteItem system calls TestsTimerDialog::UpdateControls and assigns selection to -1
 	m_ListCtrl.DeleteItem(selection);
 }
