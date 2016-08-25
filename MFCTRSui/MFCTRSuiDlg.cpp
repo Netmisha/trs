@@ -10,6 +10,7 @@
 #define MYWM_NOTIFYICON (WM_APP+100)
 #include "ConsoleReporter.h"
 #include "TRSLibrary\TRSManager.h"
+#include "TestsTimerDialog.h"
 #include "ToRunParameters.h"
 #include "TestInfo.h"
 #include "RunParameters.h"
@@ -110,8 +111,8 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_New_Project, &CMFCTRSuiDlg::OnNewProject)
 	ON_NOTIFY_EX(TTN_NEEDTEXTA, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	ON_COMMAND(TOOLBAR_SAVE, &CMFCTRSuiDlg::OnSaveProject)
-	ON_COMMAND(TOOLBAR_CLOCK_GREY, &CMFCTRSuiDlg::OnTest)
-	ON_COMMAND(TOOLBAR_CLOCK, &CMFCTRSuiDlg::OnTest)
+	ON_COMMAND(TOOLBAR_CLOCK, &CMFCTRSuiDlg::OnClock)
+	ON_COMMAND(TOOLBAR_ADDCLOCK, &CMFCTRSuiDlg::OnAddClock)
 	ON_NOTIFY_EX(TTN_NEEDTEXTW, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
@@ -964,7 +965,6 @@ void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
 		std::sort(dRoots.begin(), dRoots.end(), std::greater<int>());
 		for (auto iter = dRoots.begin(); iter != dRoots.end(); ++iter)
 		{
-
 			RootList.DeleteItem(*iter);
 		}
 		if (RootList.GetItemCount())
@@ -2149,14 +2149,6 @@ void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 	old_rect = new_rect;
 }
 
-
-void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
-{
-	mx->ptMinTrackSize.x = 770;
-	mx->ptMinTrackSize.y = 500;
-	CDialogEx::OnGetMinMaxInfo(mx);
-}
-
 void CMFCTRSuiDlg::OnLoadProject()
 {
 	UpdateToolbar(PROJECT_NOTLOADED);
@@ -3336,13 +3328,11 @@ void CMFCTRSuiDlg::OnExit()
 }
 
 // ======================================================================================================================
-#include "AddClockDlg.h"
-#include "ClockCollection.h"
-#include "TestsTimerDialog.h"
+
 
 // ======================================================================================================================
-
-void CMFCTRSuiDlg::OnTest()
+// Merge these two methods with some kind of checking which buttonw was signaled
+void CMFCTRSuiDlg::OnClock()
 {
 	//AddClockDlg dlg;
 	std::vector<SuiteRoot> coll;
@@ -3355,13 +3345,45 @@ void CMFCTRSuiDlg::OnTest()
 	}
 	TestsTimerDialog dlg;
 
-	dlg.Init(coll, is_check, m_NameBox.GetCurSel(), DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
+	CString name_sel;
+	m_NameBox.GetLBText(m_NameBox.GetCurSel(), name_sel);
 
-	if (dlg.DoModal() == IDOK)
-	{
-		
-	}
+	CString tag_sel;
+	DropDown.GetLBText(DropDown.GetCurSel(), tag_sel);
+
+	CString thread_sel;
+	ThreadsComboBox.GetLBText(ThreadsComboBox.GetCurSel(), thread_sel);
+
+	dlg.Init(coll, is_check, name_sel, tag_sel, thread_sel);
+	dlg.DoModal();
 }
+
+void CMFCTRSuiDlg::OnAddClock()
+{
+	std::vector<SuiteRoot> coll;
+	std::vector<bool> is_check;
+	is_check.resize(RootList.GetItemCount());
+	for (int i = 0; i < RootList.GetItemCount(); ++i)
+	{
+		coll.push_back(SuiteRoot(RootList.GetItemText(i, 0)));
+		is_check[i] = RootList.GetCheck(i);
+	}
+	TestsTimerDialog dlg;
+
+	CString name_sel;
+	m_NameBox.GetLBText(m_NameBox.GetCurSel(), name_sel);
+
+	CString tag_sel;
+	DropDown.GetLBText(DropDown.GetCurSel(), tag_sel);
+
+	CString thread_sel;
+	ThreadsComboBox.GetLBText(ThreadsComboBox.GetCurSel(), thread_sel);
+
+	dlg.Init(coll, is_check, name_sel, tag_sel, thread_sel, true);
+	dlg.DoModal();
+}
+
+// ======================================================================================================================
 
 void CMFCTRSuiDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
@@ -3498,4 +3520,11 @@ void CMFCTRSuiDlg::OnInfoClose()
 	{
 		CDialogEx::OnOK();
 	}
+}
+
+void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
+{
+	mx->ptMinTrackSize.x = 830;
+	mx->ptMinTrackSize.y = 500;
+	CDialogEx::OnGetMinMaxInfo(mx);
 }

@@ -48,8 +48,29 @@ BOOL AddClockDlg::OnInitDialog()
 		m_ListCtrl.InsertItem(m_ListCtrl.GetItemCount(), coll[i].get_path());
 		m_ListCtrl.SetCheck(i, is_check[i]);
 	}
-	m_EditName.SetCurSel(name_sel);
-	m_EditTag.SetCurSel(tag_sel);
+	CString buffer;
+
+	m_EditName.SetCurSel(0);
+	for (int i = 0; i < m_EditName.GetCount(); ++i)
+	{
+		m_EditName.GetLBText(i, buffer);
+		if (!_tcscmp(buffer, name_sel))
+		{
+			m_EditName.SetCurSel(i);
+			break;
+		}
+	}
+
+	m_EditTag.SetCurSel(0);
+	for (int i = 0; i < m_EditTag.GetCount(); ++i)
+	{
+		m_EditTag.GetLBText(i, buffer);
+		if (!_tcscmp(buffer, tag_sel))
+		{
+			m_EditTag.SetCurSel(i);
+			break;
+		}
+	}
 
 	CString mes;
 	CString helpMes;
@@ -88,9 +109,36 @@ BOOL AddClockDlg::OnInitDialog()
 		mes.Format(_T("%d"), i);
 		m_EditMinute.AddString(mes);
 	}
-	m_EditHour.SetCurSel(0);
-	m_EditMinute.SetCurSel(0);
-	m_EditThreads.SetCurSel(thread_sel);
+
+	DWORD hour_selection = _ttoi(hour_str);
+	if (hour_selection < 0 && hour_selection > 24)
+		hour_selection = 0;
+
+	m_EditHour.SetCurSel(hour_selection);
+
+	DWORD min_selection = _ttoi(minute_str);
+	if (min_selection < 0 && min_selection > 60)
+		min_selection = 0;
+
+	m_EditMinute.SetCurSel(min_selection);
+
+	DWORD thread_selection = _ttoi(thread_sel) - 1;
+	if (thread_selection < 0 && thread_selection > 100)
+		thread_selection = 0;
+
+	m_EditThreads.SetCurSel(thread_selection);
+
+	m_EditClockName.SetWindowTextW(clock_name.GetString());
+
+	if (weekly)
+		m_CheckRepeat.SetCheck(1);
+
+	for (int i = 0; i <= DAYS_IN_WEEK; ++i)
+	{
+		if (days_flag & (1 << i))
+			days[i]->SetCheck(true);
+	}
+
 	if (first_called)
 	{
 		m_PathImageList.Create(32, 32, ILC_COLORDDB, 2, 2);
@@ -179,16 +227,13 @@ void AddClockDlg::OnBnClickedOk()
 		MessageBox(_T("You did not choose any day. There will be nothing to Run."), _T("Error"), MB_ICONERROR | MB_OK);
 		return;
 	}
-
-	std::vector<SuiteRoot> suites/*(selected_suites.size())*/;
+	selected_paths.clear();
 	for each(auto index in selected_suites)
 	{
-//		suites[index] = m_ListCtrl.GetItemText(index, 0);
-		suites.push_back(m_ListCtrl.GetItemText(index, 0));
+		selected_paths.push_back(m_ListCtrl.GetItemText(index, 0));
 	}
 
-	schedule.AddClocks(suites, days_flag, hour, minute, weekly);
-
+	schedule.AddClocks(selected_paths, days_flag, hour, minute, weekly);
 
 	CDialogEx::OnOK();
 }
@@ -631,17 +676,24 @@ void AddClockDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 
 
 
-BOOL AddClockDlg::Init(std::vector<SuiteRoot> coll_, vector<bool> check, DWORD name_sel_, DWORD tag_sel_, DWORD thread_sel_)
+BOOL AddClockDlg::Init(std::vector<SuiteRoot> coll_, vector<bool> check, CString name_sel_, CString tag_sel_, CString thread_sel_,
+		CString hour, CString min, CString clock_name_, bool repeat, DWORD day_flag)
 {
 	initialized = false;
 	coll = coll_;
 	is_check = check;
-	if (!coll.size() || coll.size() != is_check.size() || (thread_sel = thread_sel_) > 100)
+
+	if (!coll.size() || coll.size() != is_check.size() || _ttoi(thread_sel = thread_sel_) > 100)
 		return FALSE;
 
 	name_sel = name_sel_;
 	tag_sel = tag_sel_;
-	
+	hour_str = hour;
+	minute_str = min;
+	clock_name = clock_name_;
+	weekly = repeat;
+	days_flag = day_flag;
+
 	initialized = true;
 	return TRUE;
 }

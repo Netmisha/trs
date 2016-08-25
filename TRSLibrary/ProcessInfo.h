@@ -45,6 +45,7 @@ public:
 	int GetPriority() const;
 	char* ProcessTest(bool ignore_wait = false);
 
+	ProcessInfo& operator=(const ProcessInfo&);
 	operator TRSResult() const;
 	bool operator<(const ProcessInfo&);
 

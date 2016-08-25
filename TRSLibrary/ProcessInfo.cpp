@@ -75,6 +75,35 @@ result_(instance.result_), process_information_(instance.process_information_), 
 	wcscpy_s(command_line_, cmd_len + 1, instance.command_line_);
 }
 
+ProcessInfo& ProcessInfo::operator=(const ProcessInfo& instance)
+{
+	if (this != &instance)
+	{
+		semaphores_[OWNED_SEMAPHORE] = instance.semaphores_[OWNED_SEMAPHORE];
+		semaphores_[MANAGING_SEMAPHORE] = instance.semaphores_[MANAGING_SEMAPHORE];
+
+		int path_len = strlen(instance.path_);
+		path_ = new char[path_len + 1];
+		strcpy_s(path_, path_len + 1, instance.path_);
+
+		int cmd_len = wcslen(instance.command_line_);
+		command_line_ = new wchar_t[cmd_len + 1];
+		wcscpy_s(command_line_, cmd_len + 1, instance.command_line_);
+
+		test_ = instance.test_;
+		status_ = instance.status_;
+		pReporter_ = instance.pReporter_;
+		result_description_ = instance.result_description_;
+		running_ = instance.running_;
+		result_ = instance.result_;
+		process_information_ = instance.process_information_;
+		duration_ = instance.duration_;
+		max_time_ = instance.max_time_; 
+		threads_ = instance.threads_;
+	}
+	return *this;
+}
+
 ProcessInfo::~ProcessInfo()
 {
 	DeleteCriticalSection(&crt_);

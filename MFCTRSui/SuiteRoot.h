@@ -29,6 +29,23 @@ public:
 		dRoot = new TCHAR[size + 1];
 		wcscpy_s(dRoot, size + 1, var.dRoot);
 	}
+	//SuiteRoot(const SuiteRoot&& var)
+	//{
+	//	int size = wcslen(var.dRoot);
+	//	dRoot = new TCHAR[size + 1];
+	//	wcscpy_s(dRoot, size + 1, var.dRoot);
+	//}
+	SuiteRoot operator=(const SuiteRoot& var)
+	{
+		if (this != &var)
+		{
+			int size = wcslen(var.dRoot);
+			dRoot = new TCHAR[size + 1];
+			wcscpy_s(dRoot, size + 1, var.dRoot);
+		}
+		return *this;
+	}
+
 	inline TCHAR* get_path()
 	{
 		return dRoot;
@@ -36,7 +53,7 @@ public:
 	bool operator==(const SuiteRoot& var)
 	{
 		return !_tccmp(dRoot, var.dRoot);
-	}
+	}// _tcscmp!!!
 
 	~SuiteRoot()
 	{

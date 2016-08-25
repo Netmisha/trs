@@ -19,7 +19,8 @@ public:
 	virtual ~AddClockDlg();
 
 	BOOL OnInitDialog();
-	BOOL Init(std::vector<SuiteRoot>, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel);
+	BOOL Init(std::vector<SuiteRoot>, vector<bool> is_check, CString name_sel, CString tag_sel, CString threads_sel,
+		CString hour = _T("0"), CString minute = _T("0"), CString clock_name = _T(""), bool repeat = false, DWORD day_flag = 0);
 
 	inline CString get_clock_name() const;
 	inline CString get_name() const;
@@ -30,6 +31,7 @@ public:
 	inline std::list<Clock> get_clock_collection() const;
 	inline bool is_weekly() const;
 	inline DWORD get_days() const;
+	inline vector<SuiteRoot> get_selected_suites() const;
 	
 	// Dialog Data
 	enum { IDD = IDD_DIALOG5 };
@@ -78,6 +80,7 @@ protected:
 
 //	vector<SuiteRoot> selected_suites;
 	vector<int> selected_suites;
+	vector<SuiteRoot> selected_paths;
 
 	vector<SuiteRoot> coll;
 	vector<bool> is_check;
@@ -85,9 +88,9 @@ protected:
 	CImageList m_PathImageList;
 	bool first_called = true;
 
-	int name_sel;
-	int tag_sel;
-	int thread_sel;
+	CString name_sel;
+	CString tag_sel;
+	CString thread_sel;
 	bool initialized = false;
 };
 
@@ -115,6 +118,11 @@ inline std::list<Clock> AddClockDlg::get_clock_collection() const
 	return schedule.get_schedule();
 }
 
+
+inline vector<SuiteRoot> AddClockDlg::get_selected_suites() const
+{
+	return selected_paths;
+}
 
 inline CString AddClockDlg::get_hour() const
 {

@@ -44,21 +44,21 @@ ProcessCollection::ProcessCollection(const Suite& suite, HANDLE semaphore, Threa
 	//sorting collection by priority
 
 	//	require move constructor and assigment operators which now works incorrectly
-	//	sort(tests_.begin(), tests_.end());
+	sort(tests_.begin(), tests_.end());
 
-	int j;
-	for (int i = 0; i < tests_.size(); ++i)
-	{
-		j = i;
+	//int j;
+	//for (int i = 0; i < tests_.size(); ++i)
+	//{
+	//	j = i;
 
-		while (j > 0 && tests_[j] < tests_[j - 1])
-		{
-			auto temp = tests_[j];
-			tests_[j] = tests_[j - 1];
-			tests_[j - 1] = temp;
-			j--;
-		}
-	}
+	//	while (j > 0 && tests_[j] < tests_[j - 1])
+	//	{
+	//		auto temp = tests_[j];
+	//		tests_[j] = tests_[j - 1];
+	//		tests_[j - 1] = temp;
+	//		j--;
+	//	}
+	//}
 
 }
 

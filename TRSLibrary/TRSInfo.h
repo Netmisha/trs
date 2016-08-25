@@ -37,6 +37,8 @@ public:
 	TRSInfo(char*Name, char*Description);
 	TRSInfo(const TRSInfo& val);
 	bool operator==(TRSInfo&cur);
+	TRSInfo& operator=(const TRSInfo&);
+
 	TRSInfo();
 	virtual ~TRSInfo();
 	bool setDisable(char* disable_);
