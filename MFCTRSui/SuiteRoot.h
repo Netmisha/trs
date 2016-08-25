@@ -53,7 +53,7 @@ public:
 	bool operator==(const SuiteRoot& var)
 	{
 		return !_tccmp(dRoot, var.dRoot);
-	}
+	}// _tcscmp!!!
 
 	~SuiteRoot()
 	{

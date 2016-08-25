@@ -3154,7 +3154,7 @@ void CMFCTRSuiDlg::OnExit()
 
 
 // ======================================================================================================================
-
+// Merge these two methods with some kind of checking which buttonw was signaled
 void CMFCTRSuiDlg::OnClock()
 {
 	//AddClockDlg dlg;
@@ -3168,7 +3168,16 @@ void CMFCTRSuiDlg::OnClock()
 	}
 	TestsTimerDialog dlg;
 
-	dlg.Init(coll, is_check, m_NameBox.GetCurSel(), DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
+	CString name_sel;
+	m_NameBox.GetLBText(m_NameBox.GetCurSel(), name_sel);
+
+	CString tag_sel;
+	DropDown.GetLBText(DropDown.GetCurSel(), tag_sel);
+
+	CString thread_sel;
+	ThreadsComboBox.GetLBText(ThreadsComboBox.GetCurSel(), thread_sel);
+
+	dlg.Init(coll, is_check, name_sel, tag_sel, thread_sel);
 	dlg.DoModal();
 }
 
@@ -3184,9 +3193,20 @@ void CMFCTRSuiDlg::OnAddClock()
 	}
 	TestsTimerDialog dlg;
 
-	dlg.Init(coll, is_check, m_NameBox.GetCurSel(), DropDown.GetCurSel(), ThreadsComboBox.GetCurSel(), true);
+	CString name_sel;
+	m_NameBox.GetLBText(m_NameBox.GetCurSel(), name_sel);
+
+	CString tag_sel;
+	DropDown.GetLBText(DropDown.GetCurSel(), tag_sel);
+
+	CString thread_sel;
+	ThreadsComboBox.GetLBText(ThreadsComboBox.GetCurSel(), thread_sel);
+
+	dlg.Init(coll, is_check, name_sel, tag_sel, thread_sel, true);
 	dlg.DoModal();
 }
+
+// ======================================================================================================================
 
 void CMFCTRSuiDlg::OnMouseMove(UINT nFlags, CPoint point)
 {

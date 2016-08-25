@@ -22,7 +22,7 @@ public:
 // Dialog Data
 	enum { IDD = IDD_DIALOG4 };
 
-	inline BOOL Init(std::vector<SuiteRoot> roots, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel, bool call_add_dlg = false);
+	inline BOOL Init(std::vector<SuiteRoot> roots, vector<bool> is_check, CString name_sel, CString tag_sel, CString threads_sel, bool call_add_dlg = false);
 	afx_msg void OnAddClicked();
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -53,9 +53,9 @@ private:
 
 // =====================================================================================================================
 
-inline BOOL TestsTimerDialog::Init(std::vector<SuiteRoot> roots, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel, bool call_dlg)
+inline BOOL TestsTimerDialog::Init(std::vector<SuiteRoot> roots, vector<bool> is_check, CString name_sel, CString tag_sel, CString threads_sel, bool call_dlg)
 {
 //	list_items = timersCollection.getTimers();
 	call_add_dlg = call_dlg;
-	return clock_dlg.Init(roots, is_check, name_sel, tag_sel, threads_sel);
+	return clock_dlg.Init(roots, is_check, name_sel, tag_sel, threads_sel, CString("00"), CString("00"));
 }

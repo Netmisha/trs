@@ -19,7 +19,7 @@ public:
 	virtual ~AddClockDlg();
 
 	BOOL OnInitDialog();
-	BOOL Init(std::vector<SuiteRoot>, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel);
+	BOOL Init(std::vector<SuiteRoot>, vector<bool> is_check, CString name_sel, CString tag_sel, CString threads_sel, CString hour = _T("0"), CString minute = _T("0"), CString clock_name = _T(""), bool repeat = false);
 
 	inline CString get_clock_name() const;
 	inline CString get_name() const;
@@ -87,9 +87,9 @@ protected:
 	CImageList m_PathImageList;
 	bool first_called = true;
 
-	int name_sel;
-	int tag_sel;
-	int thread_sel;
+	CString name_sel;
+	CString tag_sel;
+	CString thread_sel;
 	bool initialized = false;
 };
 
