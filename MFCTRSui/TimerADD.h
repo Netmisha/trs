@@ -4,7 +4,7 @@
 class TimerADD
 {
 public:
-	TimerADD(CString tag_,CString name_,CString threads_,CString clock_name_,Clock& curClock);
+	TimerADD(CString tag_,CString name_,CString threads_,CString clock_name_,Clock& curClock,int uniq);
 	TimerADD(const TimerADD&);
 	~TimerADD();
 
@@ -26,6 +26,7 @@ public:
 	inline CString getThreads();
 	inline CString getClockName();
 	TimerADD& operator=(const TimerADD&);
+	void setUnique(int val);
 	inline unsigned long getUnique();
 };
 

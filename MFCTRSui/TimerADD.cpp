@@ -2,13 +2,13 @@
 #include "TimerADD.h"
 #include "Functionality.h"
 
-TimerADD::TimerADD(CString tag_, CString name_, CString threads_, CString clock_name_, Clock& curClock) :clocks(curClock)
+TimerADD::TimerADD(CString tag_, CString name_, CString threads_, CString clock_name_, Clock& curClock,int uniq) :clocks(curClock)
 {
 	tag = tag_;
 	name = name_;
 	threads = threads_;
 	clock_name = clock_name_;
-	
+	unique_value = uniq;
 }
 
 
@@ -28,7 +28,10 @@ TimerADD& TimerADD::operator=(const TimerADD& val)
 	clocks = val.clocks;
 	return *this;
 }
-
+void TimerADD::setUnique(int val)
+{
+	unique_value = val;
+}
 TimerADD::TimerADD(const TimerADD& val)
 {
 	tag = val.tag;
@@ -101,6 +104,11 @@ bool TimerADD::Begin(TiXmlNode* root)
 				clocks.set_Weekly(true);
 			}
 		}
+		if (!strcmp(el->Value(), "unique"))
+		{
+			TiXmlNode* text = el->FirstChild();
+			unique_value = atoi(text->Value());
+		}
 		if (!strcmp(el->Value(), "Path"))
 		{
 			for (TiXmlNode* subel = el->FirstChild(); subel != 0; subel = subel->NextSibling())
@@ -120,7 +128,7 @@ bool TimerADD::Begin(TiXmlNode* root)
 	}
 	Time curTime(atoi(day), atoi(hour), atoi(minute));
 	clocks.set_time(curTime);
-	unique_value = (unsigned long)UniqueNumber();
+	
 	return true;
 }
 
@@ -203,6 +211,12 @@ bool TimerADD::End(TiXmlNode* root)
 			TiXmlText* textClockName = new TiXmlText(clockNameC);
 			ClockName->LinkEndChild(textClockName);
 			delete[] clockNameC;
+			TiXmlElement* Un = new TiXmlElement("unique");
+			curTimer->LinkEndChild(Un);
+			char buf[MAX_PATH];
+			sprintf_s(buf, MAX_PATH, "%d", unique_value);
+			TiXmlText* UnText = new TiXmlText(buf);
+			Un->LinkEndChild(UnText);
 			TiXmlElement* Path = new TiXmlElement("Path");
 			curTimer->LinkEndChild(Path);
 			for (int i = 0; i < clocks.get_suites().size(); ++i)

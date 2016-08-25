@@ -21,7 +21,7 @@ bool TimerAddCollection::Init()
 			CString tag_, name, threads, clock_name;
 			Clock Clo;
 			
-			TimerADD currentTimer(tag_, name, threads, clock_name, Clo);
+			TimerADD currentTimer(tag_, name, threads, clock_name, Clo,0);
 			while (element!=0)
 			{
 				element = element->NextSibling();
@@ -48,7 +48,7 @@ bool TimerAddCollection::Init()
 				sprintf_s(minute, 30, "%d", currentTimer.getClock().get_time().get_minute());
 				instance.days = currentTimer.getClock().get_time().get_day();
 				instance.minute = minute;
-				instance.ident = currentTimer.getUnique();
+				currentTimer.setUnique(instance.ident);
 				instance.name = currentTimer.getName();
 				instance.repeat = currentTimer.getClock().IsWeekly();
 				instance.tag = currentTimer.getTag();
@@ -77,7 +77,7 @@ bool TimerAddCollection::Add(ClockInstance curIn)
 	delete[] hour;
 	delete[] minute;
 	Clock* curClock=new Clock(curIn.suites, curIn.repeat, *curTime);
-	TimerADD cutTimer(curIn.tag, curIn.name, curIn.threads, curIn.clock_name, *curClock);
+	TimerADD cutTimer(curIn.tag, curIn.name, curIn.threads, curIn.clock_name, *curClock,curIn.ident);
 	timersColl.push_back(cutTimer);
 	instanceColl.push_back(curIn);
 	TiXmlDocument doc("Timers.xml");

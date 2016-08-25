@@ -613,34 +613,41 @@ DWORD WINAPI TimeRunning(LPVOID arg)
 				GetLocalTime(&sit);
 
 				LARGE_INTEGER large = resColl[0].getClock().get_time() - sit;
-				large.QuadPart *= 10000000;
-				large.QuadPart = -large.QuadPart;
-				for (int i = 0; i < resColl.size(); ++i)
+				if (large.QuadPart < 15)
 				{
-					timerPath = convertToChar(resColl[i].getClock().get_suites()[0].get_path());
-					timerName = fromCStringToChar(resColl[i].getName());
-					timerTag = fromCStringToChar(resColl[i].getTag());
-					timerThreads = fromCStringToChar(resColl[i].getThreads());
-
-					SetWaitableTimer(hTimer, &large, 0, TimerAPCProc, dlg, 0);
-					//WaitForSingleObject(hTimer, INFINITE);
-					SleepEx(INFINITE, TRUE);
-
-					if (!resColl[i].getClock().IsWeekly())
+				large.QuadPart *= 10000000;
+				
+					large.QuadPart = -large.QuadPart;
+					for (int i = 0; i < resColl.size(); ++i)
 					{
-						for (int j = 0; j < timersCollection.getTimers().size(); ++j)
+						timerPath = convertToChar(resColl[i].getClock().get_suites()[0].get_path());
+						timerName = fromCStringToChar(resColl[i].getName());
+						timerTag = fromCStringToChar(resColl[i].getTag());
+						timerThreads = fromCStringToChar(resColl[i].getThreads());
+
+						SetWaitableTimer(hTimer, &large, 0, TimerAPCProc, dlg, 0);
+						//WaitForSingleObject(hTimer, INFINITE);
+						SleepEx(INFINITE, TRUE);
+
+						if (!resColl[i].getClock().IsWeekly())
 						{
-							if (timersCollection.getTimers()[i].ident == resColl[i].getUnique())
+							for (int j = 0; j < timersCollection.getTimers().size(); ++j)
 							{
-								timersCollection.Remove(timersCollection.getTimers()[i]);
+								if (timersCollection.getTimers()[i].ident == resColl[i].getUnique())
+								{
+									timersCollection.Remove(timersCollection.getTimers()[i]);
+								}
 							}
 						}
+
+						delete[] timerPath;
+						delete[] timerName;
+						delete[] timerTag;
+						delete[] timerThreads;
 					}
-					delete[] timerPath;
-					delete[] timerName;
-					delete[] timerTag;
-					delete[] timerThreads;
+					Sleep(60000);
 				}
+				//Sleep(180000);
 			}
 		}
 		Sleep(5000);
