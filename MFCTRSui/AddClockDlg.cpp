@@ -122,7 +122,7 @@ BOOL AddClockDlg::OnInitDialog()
 
 	m_EditMinute.SetCurSel(min_selection);
 
-	DWORD thread_selection = _ttoi(thread_sel);
+	DWORD thread_selection = _ttoi(thread_sel) - 1;
 	if (thread_selection < 0 && thread_selection > 100)
 		thread_selection = 0;
 
@@ -132,6 +132,12 @@ BOOL AddClockDlg::OnInitDialog()
 
 	if (weekly)
 		m_CheckRepeat.SetCheck(1);
+
+	for (int i = 0; i <= DAYS_IN_WEEK; ++i)
+	{
+		if (days_flag & (1 << i))
+			days[i]->SetCheck(true);
+	}
 
 	if (first_called)
 	{
@@ -670,7 +676,8 @@ void AddClockDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 
 
 
-BOOL AddClockDlg::Init(std::vector<SuiteRoot> coll_, vector<bool> check, CString name_sel_, CString tag_sel_, CString thread_sel_, CString hour, CString min, CString clock_name_, bool repeat)
+BOOL AddClockDlg::Init(std::vector<SuiteRoot> coll_, vector<bool> check, CString name_sel_, CString tag_sel_, CString thread_sel_,
+		CString hour, CString min, CString clock_name_, bool repeat, DWORD day_flag)
 {
 	initialized = false;
 	coll = coll_;
@@ -685,6 +692,7 @@ BOOL AddClockDlg::Init(std::vector<SuiteRoot> coll_, vector<bool> check, CString
 	minute_str = min;
 	clock_name = clock_name_;
 	weekly = repeat;
+	days_flag = day_flag;
 
 	initialized = true;
 	return TRUE;

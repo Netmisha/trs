@@ -161,8 +161,8 @@ void TestsTimerDialog::OnEditClicked()
 		return;
 	}
 	AddClockDlg edit_clock_dlg;
-	edit_clock_dlg.Init(list_items[selection].suites, vector<bool>(list_items[selection].suites.size(), true), list_items[selection].name,
-		list_items[selection].tag, list_items[selection].threads, list_items[selection].hour, list_items[selection].minute, list_items[selection].clock_name, list_items[selection].repeat);
+	edit_clock_dlg.Init(list_items[selection].suites, vector<bool>(list_items[selection].suites.size(), true), list_items[selection].name, list_items[selection].tag,
+		list_items[selection].threads, list_items[selection].hour, list_items[selection].minute, list_items[selection].clock_name, list_items[selection].repeat, list_items[selection].days);
 
 	if (edit_clock_dlg.DoModal() == IDOK)
 	{

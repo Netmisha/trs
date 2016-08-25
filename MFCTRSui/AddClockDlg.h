@@ -19,7 +19,8 @@ public:
 	virtual ~AddClockDlg();
 
 	BOOL OnInitDialog();
-	BOOL Init(std::vector<SuiteRoot>, vector<bool> is_check, CString name_sel, CString tag_sel, CString threads_sel, CString hour = _T("0"), CString minute = _T("0"), CString clock_name = _T(""), bool repeat = false);
+	BOOL Init(std::vector<SuiteRoot>, vector<bool> is_check, CString name_sel, CString tag_sel, CString threads_sel,
+		CString hour = _T("0"), CString minute = _T("0"), CString clock_name = _T(""), bool repeat = false, DWORD day_flag = 0);
 
 	inline CString get_clock_name() const;
 	inline CString get_name() const;
