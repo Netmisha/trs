@@ -1964,14 +1964,6 @@ void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 	old_rect = new_rect;
 }
 
-
-void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
-{
-	mx->ptMinTrackSize.x = 770;
-	mx->ptMinTrackSize.y = 500;
-	CDialogEx::OnGetMinMaxInfo(mx);
-}
-
 void CMFCTRSuiDlg::OnLoadProject()
 {
 	UpdateToolbar(PROJECT_NOTLOADED);
@@ -3343,4 +3335,11 @@ void CMFCTRSuiDlg::OnInfoClose()
 	{
 		CDialogEx::OnOK();
 	}
+}
+
+void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
+{
+	mx->ptMinTrackSize.x = 830;
+	mx->ptMinTrackSize.y = 500;
+	CDialogEx::OnGetMinMaxInfo(mx);
 }
