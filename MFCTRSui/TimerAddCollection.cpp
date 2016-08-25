@@ -31,10 +31,10 @@ bool TimerAddCollection::Init()
 			instance.clock_name = currentTimer.getClockName();
 			instance.days = currentTimer.getClock().get_time().get_day();
 			char* hour = new char[30];
-			sprintf_s(hour, 30, "%s", currentTimer.getClock().get_time().get_hour());
+			sprintf_s(hour, 30, "%d", currentTimer.getClock().get_time().get_hour());
 			instance.hour = hour;
 			char* minute = new char[30];
-			sprintf_s(minute, 30, "%s", currentTimer.getClock().get_time().get_minute());
+			sprintf_s(minute, 30, "%d", currentTimer.getClock().get_time().get_minute());
 			instance.days = currentTimer.getClock().get_time().get_day();
 			instance.minute = minute;
 			instance.ident = currentTimer.getUnique();
@@ -93,6 +93,11 @@ bool TimerAddCollection::Add(ClockInstance curIn)
 std::vector<ClockInstance> TimerAddCollection::getTimers()
 {
 	return instanceColl;
+}
+
+std::vector < TimerADD > TimerAddCollection::getClocks()
+{
+	return timersColl;
 }
 
 bool TimerAddCollection::Remove(ClockInstance curIn)

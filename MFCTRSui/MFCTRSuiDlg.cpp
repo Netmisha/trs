@@ -51,6 +51,8 @@ std::map<CString,std::vector<HTREEITEM*>>* COLL;
 std::map<CString, std::vector<TRSInfo>>* FAIL;
 std::map<CString, std::vector<TRSInfo>>* PASS;
 CMFCTRSuiDlg* MainDialog;
+char* timerPath, *timerName, *timerTag, *timerThreads;
+DWORD WINAPI TimeRunning(LPVOID arg);
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
@@ -425,6 +427,10 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	FAIL = &FailMap;
 	PASS = &PasMap;
 	timersCollection.Init();
+	if (timersCollection.getTimers().size())
+	{
+		CreateThread(NULL, 0, TimeRunning, this, 0, 0);
+	}
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -437,25 +443,204 @@ VOID CALLBACK TimerAPCProc(
 	// Formal parameters not used in this example.
 	UNREFERENCED_PARAMETER(dwTimerLowValue);
 	UNREFERENCED_PARAMETER(dwTimerHighValue);
-//	CMFCTRSuiDlg* pointer = (CMFCTRSuiDlg*)lpArg;
-//	pointer->OnProgramRunsel();
+	CMFCTRSuiDlg* pointer = (CMFCTRSuiDlg*)lpArg;
 	
-	//MessageBeep(0);
+	pointer->JustRunTimerTests(timerPath, timerTag, timerName, atoi(timerThreads));
+	
+	MessageBeep(0);
 
 }
 
+void CMFCTRSuiDlg::JustRunTimerTests(char* path, char* tag, char* name, int threads)
+{
+	STARTUPINFO startup_info;
+	ZeroMemory(&startup_info, sizeof(startup_info));
+	startup_info.cb = sizeof(startup_info);
+	PROCESS_INFORMATION pi;
+	ZeroMemory(&pi, sizeof(pi));
+	PROCESS_INFORMATION pa;
+	ZeroMemory(&pi, sizeof(pa));
+	char buf[] = R"(../Debug/trs.exe)";
+	WCHAR** lppPart = { NULL };
 
-DWORD WINAPI TimeRunning(LPVOID arg)
+
+	char logP[] = R"(../Logs)";
+	WCHAR Lp[MAX_PATH] = _T("");
+	WCHAR* Lcf = new WCHAR[strlen(logP) + 1];
+	convertToTCHAR(Lcf, logP);
+	GetFullPathName(Lcf, MAX_PATH, Lp, lppPart);
+	DWORD dwAttrib;
+	char* chP = convertToChar(Lp);
+	dwAttrib = GetFileAttributesA(chP);
+	
+	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
+	{
+
+		TCHAR* directory = new TCHAR[strlen(chP) + 1];
+		convertToTCHAR(directory, chP);
+		if (!CreateDirectory(directory, NULL))
+		{
+			std::cerr << "Creating new directory failed: " << std::endl;
+			delete[] directory;
+			delete[] chP;
+		}
+		delete[] directory;
+
+	}
+	system_clock::time_point today = system_clock::now();
+	time_t tt = system_clock::to_time_t(today);
+	char time[70];
+
+	if (!ctime_s(time, 70, &tt))
+	{
+		int len = strlen(time);
+		time[len - 1] = 0;
+
+		for (int i = 0; time[i] != 0; ++i)
+		{
+			if ((time[i] == ':') || (time[i] == ' '))
+				time[i] = '_';
+			
+				
+		}
+	}
+	TCHAR* newDir = new TCHAR[strlen(time) + 1];
+	convertToTCHAR(newDir, time);
+	StringCchCat(Lp, MAX_PATH, TEXT("\\"));
+	StringCchCat(Lp, MAX_PATH, newDir);
+	CreateDirectory(newDir, NULL);
+
+	WCHAR res[MAX_PATH] = _T("");
+	WCHAR comm[MAX_PATH] = TEXT("Run ");
+	WCHAR arg[MAX_PATH] = TEXT(" -p \"");
+	WCHAR secArg[MAX_PATH] = TEXT(" -log ");
+	WCHAR  buf1[MAX_PATH] = TEXT("");
+	WCHAR secB[MAX_PATH] = TEXT("");
+	WCHAR bufff1[MAX_PATH] = TEXT("");
+	WCHAR thrdArg[MAX_PATH] = TEXT(" -hlog ");
+
+
+	WCHAR* buffer = new WCHAR[strlen(buf) + 1];
+	convertToTCHAR(buffer, buf);
+	WCHAR* buffer1 = new WCHAR[strlen(path) + 1];
+	convertToTCHAR(buffer1, path);
+	char* finLog = convertToChar(newDir);
+	WCHAR* bufferL = new WCHAR[strlen(finLog) + 1];
+	convertToTCHAR(bufferL, finLog);
+	delete[] newDir;
+	GetFullPathName(buffer1, MAX_PATH, bufff1, lppPart);
+	GetFullPathName(buffer, MAX_PATH, buf1, lppPart);
+	GetFullPathName(bufferL, MAX_PATH, secB, lppPart);
+	
+	StringCchCat(res, MAX_PATH, buf1);
+	StringCchCat(res, MAX_PATH, TEXT(" "));
+	StringCchCat(res, MAX_PATH, comm);
+	StringCchCat(res, MAX_PATH, arg);
+	StringCchCat(res, MAX_PATH, bufff1);
+	StringCchCat(res, MAX_PATH, TEXT("\""));
+	if (name)
+	{
+		if (strlen(name)&&strcmp(name,"All"))
+		{
+			WCHAR nName[MAX_PATH] = _T(" -n \"");
+			WCHAR* NBuf = new WCHAR[strlen(name) + 1];
+			convertToTCHAR(NBuf, name);
+			StringCchCat(res, MAX_PATH, nName);
+			StringCchCat(res, MAX_PATH, NBuf);
+			StringCchCat(res, MAX_PATH, TEXT("\""));
+		}
+	}
+	if (tag)
+	{
+		if (strlen(tag) && strcmp(tag, "All"))
+		{
+			WCHAR nTag[MAX_PATH] = _T(" -t \"");
+			WCHAR* TBuf = new WCHAR[strlen(tag) + 1];
+			convertToTCHAR(TBuf, tag);
+			StringCchCat(res, MAX_PATH, nTag);
+			StringCchCat(res, MAX_PATH, TBuf);
+			StringCchCat(res, MAX_PATH, TEXT("\""));
+		}
+	}
+	WCHAR nThr[MAX_PATH] = _T(" -j ");
+	WCHAR THR[MAX_PATH] = _T("");
+	swprintf_s(THR, L"%d", threads);
+	StringCchCat(res, MAX_PATH, nThr);
+	StringCchCat(res, MAX_PATH, THR);
+	StringCchCat(res, MAX_PATH, secArg);
+	StringCchCat(res, MAX_PATH, secB);
+	StringCchCat(res, MAX_PATH, thrdArg);
+	StringCchCat(res, MAX_PATH, secB);
+	
+	delete[] buffer;
+	BOOL hProc=CreateProcess(0, res, 0, 0, 0, 0, 0, 0, &startup_info, &pi);
+	WaitForSingleObject(pi.hProcess, INFINITE);
+	CloseHandle(pi.hThread);
+	CloseHandle(pi.hProcess);
+	DWORD err = GetLastError();
+}
+void findMinimalTime(std::vector<TimerADD>& coll,std::vector<TimerADD>& resColl)
+{
+	TimerADD* min = new TimerADD(coll[0]);
+	for (int i = 1; i < coll.size(); ++i)
+	{
+		if (coll[i].getClock().get_time() < min->getClock().get_time())
+		{
+			*min = coll[i];
+		}
+	}
+	for (int i = 0; i < coll.size(); ++i)
+	{
+		if (coll[i].getClock().get_time() == min->getClock().get_time())
+		{
+			resColl.push_back(coll[i]);
+		}
+	}
+	//delete[] min;
+}
+
+extern DWORD WINAPI TimeRunning(LPVOID arg)
 {
 	CMFCTRSuiDlg* dlg = (CMFCTRSuiDlg*)arg;
 	HANDLE hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
-	LARGE_INTEGER large = { 15000 };
-	
-	SetWaitableTimer(hTimer, &large, 15000, TimerAPCProc, dlg, 0);
-	for (int i = 0; i < 1000;++i)
-	SleepEx(
-		INFINITE,     // Wait forever
-		TRUE);
+	while (true)
+	{
+		std::vector<TimerADD> resColl;
+		findMinimalTime(timersCollection.getClocks(), resColl);
+			SYSTEMTIME sit;
+			GetLocalTime(&sit);
+
+			LARGE_INTEGER large = resColl[0].getClock().get_time() - sit;
+			large.QuadPart *= 10000000;
+			large.QuadPart = -large.QuadPart;
+			for (int i = 0; i < resColl.size(); ++i)
+			{
+				timerPath = convertToChar(resColl[i].getClock().get_suites()[0].get_path());
+				timerName = fromCStringToChar(resColl[i].getName());
+				timerTag = fromCStringToChar(resColl[i].getTag());
+				timerThreads = fromCStringToChar(resColl[i].getThreads());
+				
+				SetWaitableTimer(hTimer, &large, 0, TimerAPCProc, dlg, 0);
+				//WaitForSingleObject(hTimer, INFINITE);
+				SleepEx(INFINITE, TRUE);
+				
+				if (!resColl[i].getClock().IsWeekly())
+				{
+					for (int j = 0; j < timersCollection.getTimers().size(); ++j)
+					{
+						if (timersCollection.getTimers()[i].ident == resColl[i].getUnique())
+						{
+							timersCollection.Remove(timersCollection.getTimers()[i]);
+						}
+					}
+				}
+				delete[] timerPath;
+				delete[] timerName;
+				delete[] timerTag;
+				delete[] timerThreads;
+			}
+		
+	}
 	return 0;
 }
 #pragma region stuff
@@ -723,7 +908,7 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 				TCHAR* buf = new TCHAR[strlen(Way)+1];
 				convertToTCHAR(buf, Way);
 				//collOfColls.push_back(Info(buf));
-				CreateThread(NULL, 0, TimeRunning, this, 0, 0);
+				
 				delete[] buf;
 				delete[] Way;
 			}

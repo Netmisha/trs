@@ -17,6 +17,28 @@ TimerADD::~TimerADD()
 
 }
 
+
+TimerADD& TimerADD::operator=(const TimerADD& val)
+{
+	tag = val.tag;
+	name = val.name;
+	threads = val.threads;
+	clock_name = val.clock_name;
+	unique_value = val.unique_value;
+	clocks = val.clocks;
+	return *this;
+}
+
+TimerADD::TimerADD(const TimerADD& val)
+{
+	tag = val.tag;
+	name = val.name;
+	threads = val.threads;
+	clock_name = val.clock_name;
+	unique_value = val.unique_value;
+	clocks = val.clocks;
+}
+
 bool TimerADD::Begin(TiXmlNode* root)
 {
 	char* day=nullptr;

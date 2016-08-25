@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 
-#define MAX_PARAMETERS 9
+#define MAX_PARAMETERS 14
 #define MIN_PARAMERES 2
 
 
@@ -236,6 +236,7 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 
 int main(int argc, char* argv[])
 {
+	
 	char *name, *path, *tag,*logOut,*hlogOut;
 	logOut = nullptr;
 	int threads;

@@ -12,7 +12,8 @@ public:
 	Time();
 	bool operator<(const Time&);
 	bool operator>(const Time&);
-
+	bool operator ==(const Time&);
+	LARGE_INTEGER operator - (SYSTEMTIME&);
 	inline DWORD get_day() const;
 	inline DWORD get_hour() const;
 	inline DWORD get_minute() const;

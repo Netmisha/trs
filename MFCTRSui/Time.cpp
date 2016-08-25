@@ -32,3 +32,30 @@ bool Time::operator>(const Time& val)
 {
 	return !(operator<(val));
 }
+
+bool Time::operator == (const Time& val)
+{
+	if (day_of_week == val.day_of_week)
+	{
+		if (hour == val.hour)
+		{
+			if (minute == val.minute)
+			{
+				return true;
+			}
+			return false;
+		}
+		return false;
+	}
+	return false;
+}
+
+LARGE_INTEGER Time::operator-(SYSTEMTIME& sis)
+{
+	
+	LARGE_INTEGER result;
+	result.QuadPart = this->day_of_week - sis.wDayOfWeek;
+	result.QuadPart += this->hour - sis.wHour;
+	result.QuadPart += this->minute - sis.wMinute;
+	return result;
+}

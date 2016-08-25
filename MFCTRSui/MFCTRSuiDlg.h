@@ -99,7 +99,7 @@ public:
 	std::vector<HTREEITEM*> Info(TCHAR* path);
 	CProgressCtrl subm_Progress;
 	CEdit Time_running_edit;
-
+	afx_msg void JustRunTimerTests(char* path, char* tag, char* name, int threads);
 	afx_msg void OnProgramRefresh();
 	afx_msg void OnProgramAddfolder();
 	afx_msg void OnProgramDeleteselecteditems();

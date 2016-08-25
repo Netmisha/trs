@@ -4,7 +4,7 @@
     <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>Run -p D:\Mihan\trs\trs\TestData -log D:\Mihan\trs\trs\TestData -hlog D:\Mihan\trs\trs\TestData</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>Run  -p "D:\Mihan\Suite root" -n "Test 13" -t "Release" -j 16 -log D:\Mihan\trs\trs\MFCTRSui\Thu_Aug_25_17_42_52_2016 -hlog D:\Mihan\trs\trs\MFCTRSui\Thu_Aug_25_17_42_52_2016</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
