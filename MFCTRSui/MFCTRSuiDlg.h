@@ -114,7 +114,8 @@ public:
 	afx_msg void OnViewConsole();
 	//afx_msg void OnNotifyIcon();
 	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnTest();
+	afx_msg void OnClock();
+	afx_msg void OnAddClock();
 protected:
 	void ConsoleHide();
 	void ConsoleShow();

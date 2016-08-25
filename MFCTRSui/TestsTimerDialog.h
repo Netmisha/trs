@@ -22,7 +22,8 @@ public:
 // Dialog Data
 	enum { IDD = IDD_DIALOG4 };
 
-	inline BOOL Init(std::vector<SuiteRoot> roots, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel);
+	inline BOOL Init(std::vector<SuiteRoot> roots, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel, bool call_add_dlg = false);
+	afx_msg void OnAddClicked();
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	virtual BOOL OnInitDialog();
@@ -35,11 +36,10 @@ private:
 
 	AddClockDlg clock_dlg;
 
-	afx_msg void OnAddClicked();
 	afx_msg void OnEditClicked();
 	afx_msg void OnRemoveClicked();
 	afx_msg void OnListItemchanged(NMHDR *pNMHDR, LRESULT *pResult);
-	int selection = -2;
+	int selection = -1;
 
 	void UpdateControls(POSITION);
 	CString GetDayByIndex(int);
@@ -48,12 +48,14 @@ private:
 	void ChangeListItem(CString clock_name, CString hour, CString minute, bool repeat, DWORD days, DWORD pos);
 
 	vector<ClockInstance> list_items;
+	bool call_add_dlg = false;
 };
 
 // =====================================================================================================================
 
-inline BOOL TestsTimerDialog::Init(std::vector<SuiteRoot> roots, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel)
+inline BOOL TestsTimerDialog::Init(std::vector<SuiteRoot> roots, vector<bool> is_check, DWORD name_sel, DWORD tag_sel, DWORD threads_sel, bool call_dlg)
 {
 //	list_items = timersCollection.getTimers();
+	call_add_dlg = call_dlg;
 	return clock_dlg.Init(roots, is_check, name_sel, tag_sel, threads_sel);
 }

@@ -52,6 +52,9 @@ BOOL TestsTimerDialog::OnInitDialog()
 
 	for each (auto item in list_items)
 		AddToList(item);
+
+	if (call_add_dlg)
+		OnAddClicked();
 	return true;
 }
 

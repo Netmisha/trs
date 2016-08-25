@@ -10,6 +10,7 @@
 #define MYWM_NOTIFYICON (WM_APP+100)
 #include "ConsoleReporter.h"
 #include "TRSLibrary\TRSManager.h"
+#include "TestsTimerDialog.h"
 #include "ToRunParameters.h"
 #include "TestInfo.h"
 #include "RunParameters.h"
@@ -108,8 +109,8 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_New_Project, &CMFCTRSuiDlg::OnNewProject)
 	ON_NOTIFY_EX(TTN_NEEDTEXTA, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	ON_COMMAND(TOOLBAR_SAVE, &CMFCTRSuiDlg::OnSaveProject)
-	ON_COMMAND(TOOLBAR_CLOCK_GREY, &CMFCTRSuiDlg::OnTest)
-	ON_COMMAND(TOOLBAR_CLOCK, &CMFCTRSuiDlg::OnTest)
+	ON_COMMAND(TOOLBAR_CLOCK, &CMFCTRSuiDlg::OnClock)
+	ON_COMMAND(TOOLBAR_ADDCLOCK, &CMFCTRSuiDlg::OnAddClock)
 	ON_NOTIFY_EX(TTN_NEEDTEXTW, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
@@ -3150,13 +3151,11 @@ void CMFCTRSuiDlg::OnExit()
 }
 
 // ======================================================================================================================
-#include "AddClockDlg.h"
-#include "ClockCollection.h"
-#include "TestsTimerDialog.h"
+
 
 // ======================================================================================================================
 
-void CMFCTRSuiDlg::OnTest()
+void CMFCTRSuiDlg::OnClock()
 {
 	//AddClockDlg dlg;
 	std::vector<SuiteRoot> coll;
@@ -3170,11 +3169,23 @@ void CMFCTRSuiDlg::OnTest()
 	TestsTimerDialog dlg;
 
 	dlg.Init(coll, is_check, m_NameBox.GetCurSel(), DropDown.GetCurSel(), ThreadsComboBox.GetCurSel());
+	dlg.DoModal();
+}
 
-	if (dlg.DoModal() == IDOK)
+void CMFCTRSuiDlg::OnAddClock()
+{
+	std::vector<SuiteRoot> coll;
+	std::vector<bool> is_check;
+	is_check.resize(RootList.GetItemCount());
+	for (int i = 0; i < RootList.GetItemCount(); ++i)
 	{
-		
+		coll.push_back(SuiteRoot(RootList.GetItemText(i, 0)));
+		is_check[i] = RootList.GetCheck(i);
 	}
+	TestsTimerDialog dlg;
+
+	dlg.Init(coll, is_check, m_NameBox.GetCurSel(), DropDown.GetCurSel(), ThreadsComboBox.GetCurSel(), true);
+	dlg.DoModal();
 }
 
 void CMFCTRSuiDlg::OnMouseMove(UINT nFlags, CPoint point)
