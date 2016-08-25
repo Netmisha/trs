@@ -607,7 +607,9 @@ extern DWORD WINAPI TimeRunning(LPVOID arg)
 	while (true)
 	{
 		std::vector<TimerADD> resColl;
-		findMinimalTime(timersCollection.getClocks(), resColl);
+		if (timersCollection.getClocks().size())
+		{
+			findMinimalTime(timersCollection.getClocks(), resColl);
 			SYSTEMTIME sit;
 			GetLocalTime(&sit);
 
@@ -620,11 +622,11 @@ extern DWORD WINAPI TimeRunning(LPVOID arg)
 				timerName = fromCStringToChar(resColl[i].getName());
 				timerTag = fromCStringToChar(resColl[i].getTag());
 				timerThreads = fromCStringToChar(resColl[i].getThreads());
-				
+
 				SetWaitableTimer(hTimer, &large, 0, TimerAPCProc, dlg, 0);
 				//WaitForSingleObject(hTimer, INFINITE);
 				SleepEx(INFINITE, TRUE);
-				
+
 				if (!resColl[i].getClock().IsWeekly())
 				{
 					for (int j = 0; j < timersCollection.getTimers().size(); ++j)
@@ -640,7 +642,7 @@ extern DWORD WINAPI TimeRunning(LPVOID arg)
 				delete[] timerTag;
 				delete[] timerThreads;
 			}
-		
+		}
 	}
 	return 0;
 }
