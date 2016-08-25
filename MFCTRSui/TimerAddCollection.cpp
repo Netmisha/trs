@@ -22,29 +22,45 @@ bool TimerAddCollection::Init()
 			Clock Clo;
 			
 			TimerADD currentTimer(tag_, name, threads, clock_name, Clo);
-			while (element->Type()!=TiXmlNode::TINYXML_ELEMENT)
+			while (element!=0)
 			{
 				element = element->NextSibling();
+				if (element != 0)
+				{
+					if (element->Type() == TiXmlNode::TINYXML_ELEMENT)
+						break;
+				}
+				else
+				{
+					break;
+				}
 			}
-			currentTimer.Begin(element);
-			ClockInstance instance;
-			instance.clock_name = currentTimer.getClockName();
-			instance.days = currentTimer.getClock().get_time().get_day();
-			char* hour = new char[30];
-			sprintf_s(hour, 30, "%d", currentTimer.getClock().get_time().get_hour());
-			instance.hour = hour;
-			char* minute = new char[30];
-			sprintf_s(minute, 30, "%d", currentTimer.getClock().get_time().get_minute());
-			instance.days = currentTimer.getClock().get_time().get_day();
-			instance.minute = minute;
-			instance.ident = currentTimer.getUnique();
-			instance.name = currentTimer.getName();
-			instance.repeat = currentTimer.getClock().IsWeekly();
-			instance.tag = currentTimer.getTag();
-			instance.threads = currentTimer.getThreads();
-			instance.suites = currentTimer.getClock().get_suites();
-			timersColl.push_back(currentTimer);
-			instanceColl.push_back(instance);
+			if (element != 0)
+			{
+				currentTimer.Begin(element);
+				ClockInstance instance;
+				instance.clock_name = currentTimer.getClockName();
+				instance.days = currentTimer.getClock().get_time().get_day();
+				char* hour = new char[30];
+				sprintf_s(hour, 30, "%d", currentTimer.getClock().get_time().get_hour());
+				instance.hour = hour;
+				char* minute = new char[30];
+				sprintf_s(minute, 30, "%d", currentTimer.getClock().get_time().get_minute());
+				instance.days = currentTimer.getClock().get_time().get_day();
+				instance.minute = minute;
+				instance.ident = currentTimer.getUnique();
+				instance.name = currentTimer.getName();
+				instance.repeat = currentTimer.getClock().IsWeekly();
+				instance.tag = currentTimer.getTag();
+				instance.threads = currentTimer.getThreads();
+				instance.suites = currentTimer.getClock().get_suites();
+				timersColl.push_back(currentTimer);
+				instanceColl.push_back(instance);
+			}
+			else
+			{
+				return true;
+			}
 		}
 		return true;
 	}
@@ -123,12 +139,14 @@ bool TimerAddCollection::Remove(ClockInstance curIn)
 	TiXmlDocument doc("Timers.xml");
 	if (doc.LoadFile())
 	{
+		doc.Clear();
 		TiXmlDeclaration* dec = new TiXmlDeclaration("1.0", "", "");
 		doc.LinkEndChild(dec);
 		for (int i = 0; i < timersColl.size(); ++i)
 		{
 			timersColl[i].End(dec);
 		}
+		doc.SaveFile();
 	}
 	else
 	{

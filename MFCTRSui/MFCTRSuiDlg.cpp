@@ -428,10 +428,8 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	FAIL = &FailMap;
 	PASS = &PasMap;
 	timersCollection.Init();
-	if (timersCollection.getTimers().size())
-	{
-		CreateThread(NULL, 0, TimeRunning, this, 0, 0);
-	}
+	CreateThread(NULL, 0, TimeRunning, this, 0, 0);
+	
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -599,50 +597,53 @@ void findMinimalTime(std::vector<TimerADD>& coll,std::vector<TimerADD>& resColl)
 	}
 	//delete[] min;
 }
-
-extern DWORD WINAPI TimeRunning(LPVOID arg)
+DWORD WINAPI TimeRunning(LPVOID arg)
 {
-	CMFCTRSuiDlg* dlg = (CMFCTRSuiDlg*)arg;
-	HANDLE hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
 	while (true)
 	{
-		std::vector<TimerADD> resColl;
-		if (timersCollection.getClocks().size())
+		CMFCTRSuiDlg* dlg = (CMFCTRSuiDlg*)arg;
+		HANDLE hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
+		while (true)
 		{
-			findMinimalTime(timersCollection.getClocks(), resColl);
-			SYSTEMTIME sit;
-			GetLocalTime(&sit);
-
-			LARGE_INTEGER large = resColl[0].getClock().get_time() - sit;
-			large.QuadPart *= 10000000;
-			large.QuadPart = -large.QuadPart;
-			for (int i = 0; i < resColl.size(); ++i)
+			std::vector<TimerADD> resColl;
+			if (timersCollection.getClocks().size())
 			{
-				timerPath = convertToChar(resColl[i].getClock().get_suites()[0].get_path());
-				timerName = fromCStringToChar(resColl[i].getName());
-				timerTag = fromCStringToChar(resColl[i].getTag());
-				timerThreads = fromCStringToChar(resColl[i].getThreads());
+				findMinimalTime(timersCollection.getClocks(), resColl);
+				SYSTEMTIME sit;
+				GetLocalTime(&sit);
 
-				SetWaitableTimer(hTimer, &large, 0, TimerAPCProc, dlg, 0);
-				//WaitForSingleObject(hTimer, INFINITE);
-				SleepEx(INFINITE, TRUE);
-
-				if (!resColl[i].getClock().IsWeekly())
+				LARGE_INTEGER large = resColl[0].getClock().get_time() - sit;
+				large.QuadPart *= 10000000;
+				large.QuadPart = -large.QuadPart;
+				for (int i = 0; i < resColl.size(); ++i)
 				{
-					for (int j = 0; j < timersCollection.getTimers().size(); ++j)
+					timerPath = convertToChar(resColl[i].getClock().get_suites()[0].get_path());
+					timerName = fromCStringToChar(resColl[i].getName());
+					timerTag = fromCStringToChar(resColl[i].getTag());
+					timerThreads = fromCStringToChar(resColl[i].getThreads());
+
+					SetWaitableTimer(hTimer, &large, 0, TimerAPCProc, dlg, 0);
+					//WaitForSingleObject(hTimer, INFINITE);
+					SleepEx(INFINITE, TRUE);
+
+					if (!resColl[i].getClock().IsWeekly())
 					{
-						if (timersCollection.getTimers()[i].ident == resColl[i].getUnique())
+						for (int j = 0; j < timersCollection.getTimers().size(); ++j)
 						{
-							timersCollection.Remove(timersCollection.getTimers()[i]);
+							if (timersCollection.getTimers()[i].ident == resColl[i].getUnique())
+							{
+								timersCollection.Remove(timersCollection.getTimers()[i]);
+							}
 						}
 					}
+					delete[] timerPath;
+					delete[] timerName;
+					delete[] timerTag;
+					delete[] timerThreads;
 				}
-				delete[] timerPath;
-				delete[] timerName;
-				delete[] timerTag;
-				delete[] timerThreads;
 			}
 		}
+		Sleep(5000);
 	}
 	return 0;
 }
