@@ -106,12 +106,12 @@ bool TimerAddCollection::Add(ClockInstance curIn)
 	return true;
 }
 
-std::vector<ClockInstance> TimerAddCollection::getTimers()
+std::vector<ClockInstance>& TimerAddCollection::getTimers()
 {
 	return instanceColl;
 }
 
-std::vector < TimerADD > TimerAddCollection::getClocks()
+std::vector < TimerADD >& TimerAddCollection::getClocks()
 {
 	return timersColl;
 }

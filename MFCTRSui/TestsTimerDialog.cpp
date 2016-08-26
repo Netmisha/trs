@@ -79,7 +79,7 @@ void TestsTimerDialog::OnAddClicked()
 		clock_dlg.get_name(), clock_dlg.get_threads(), clock_dlg.get_hour(), clock_dlg.get_minute(), clock_dlg.is_weekly(), UniqueNumber() };
 
 	list_items.push_back(item);
-	timersCollection.Add(item);
+	timersCollection->Add(item);
 
 	AddToList(item);
 }
@@ -166,14 +166,14 @@ void TestsTimerDialog::OnEditClicked()
 
 	if (edit_clock_dlg.DoModal() == IDOK)
 	{
-		timersCollection.Remove(list_items[selection]);
+		timersCollection->Remove(list_items[selection]);
 
 		ClockInstance item{ edit_clock_dlg.get_clock_collection().front().get_suites(), edit_clock_dlg.get_days(), edit_clock_dlg.get_clock_name(), edit_clock_dlg.get_tag(),
 			edit_clock_dlg.get_name(), edit_clock_dlg.get_threads(), edit_clock_dlg.get_hour(), edit_clock_dlg.get_minute(), edit_clock_dlg.is_weekly(), UniqueNumber() };
 
 		list_items[selection] = item;
 		ChangeListItem(item.clock_name, item.hour, item.minute, item.repeat, item.days, selection);
-		timersCollection.Add(item);
+		timersCollection->Add(item);
 	}
 }
 
@@ -185,7 +185,7 @@ void TestsTimerDialog::OnRemoveClicked()
 		logger << "selection is not within list_items range in TestsTimerDialog::OnRemoveClicked()";
 		return;
 	}
-	timersCollection.Remove(list_items[selection]);
+	timersCollection->Remove(list_items[selection]);
 	list_items.erase(list_items.begin() + selection);
 
 	// after DeleteItem system calls TestsTimerDialog::UpdateControls and assigns selection to -1

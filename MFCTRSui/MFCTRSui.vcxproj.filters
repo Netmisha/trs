@@ -49,6 +49,7 @@
     <ClInclude Include="TimerADD.h" />
     <ClInclude Include="ToRunParameters.h" />
     <ClInclude Include="TimerAddCollection.h" />
+    <ClInclude Include="TimerStruct.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MFCTRSui.rc" />

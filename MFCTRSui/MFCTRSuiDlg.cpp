@@ -18,7 +18,7 @@
 #include <ctime>
 #include <algorithm>
 #include <shellapi.h>
-
+#include "TimerStruct.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,7 +37,7 @@ bool RunEndCheck;
 bool SaveAsPressed = true;
 int ListSelection;
 CToolBar* ToolBar;
-TimerAddCollection timersCollection;
+TimerAddCollection* timersCollection;
 //CListCtrl* List;
 CToolBar* Bar;
 CComboBox* Tag;
@@ -54,6 +54,9 @@ std::map<CString, std::vector<TRSInfo>>* PASS;
 CMFCTRSuiDlg* MainDialog;
 char* timerPath, *timerName, *timerTag, *timerThreads;
 DWORD WINAPI TimeRunning(LPVOID arg);
+DWORD WINAPI TimerInitialization(LPVOID arg);
+HANDLE hTimerThread;
+TimerData* data;
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
@@ -67,6 +70,8 @@ CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 CMFCTRSuiDlg::~CMFCTRSuiDlg()
 {
 	Manager.Destroy();
+	delete timersCollection;
+	delete data;
 }
 
 
@@ -427,9 +432,11 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	COLL = &mapOfColls;
 	FAIL = &FailMap;
 	PASS = &PasMap;
-	timersCollection.Init();
-	CreateThread(NULL, 0, TimeRunning, this, 0, 0);
-	
+	timersCollection = new TimerAddCollection;
+	data=new TimerData;
+	data->coll = timersCollection;
+	data->dlg = this;
+	CreateThread(NULL, 0, TimerInitialization, data, 0, 0);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -597,18 +604,30 @@ void findMinimalTime(std::vector<TimerADD>& coll,std::vector<TimerADD>& resColl)
 	}
 	//delete[] min;
 }
+DWORD WINAPI TimerInitialization(LPVOID arg)
+{
+	TimerData* data = (TimerData*)arg;
+	while (true)
+	{
+		CloseHandle(hTimerThread);
+		data->coll->Init();
+		hTimerThread = CreateThread(NULL, 0, TimeRunning, data, 0, 0);
+		WaitForSingleObject(hTimerThread, INFINITE);
+		Sleep(5000);
+	}
+}
 DWORD WINAPI TimeRunning(LPVOID arg)
 {
 	while (true)
 	{
-		CMFCTRSuiDlg* dlg = (CMFCTRSuiDlg*)arg;
+		TimerData* dlg = (TimerData*)arg;
 		HANDLE hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
 		while (true)
 		{
 			std::vector<TimerADD> resColl;
-			if (timersCollection.getClocks().size())
+			if (dlg->coll->getClocks().size())
 			{
-				findMinimalTime(timersCollection.getClocks(), resColl);
+				findMinimalTime(dlg->coll->getClocks(), resColl);
 				SYSTEMTIME sit;
 				GetLocalTime(&sit);
 
@@ -633,11 +652,11 @@ DWORD WINAPI TimeRunning(LPVOID arg)
 						}
 						if (!resColl[i].getClock().IsWeekly())
 						{
-							for (int j = 0; j < timersCollection.getTimers().size(); ++j)
+							for (int j = 0; j < dlg->coll->getTimers().size(); ++j)
 							{
-								if (timersCollection.getTimers()[i].ident == resColl[i].getUnique())
+								if (dlg->coll->getTimers()[i].ident == resColl[i].getUnique())
 								{
-									timersCollection.Remove(timersCollection.getTimers()[i]);
+									dlg->coll->Remove(dlg->coll->getTimers()[i]);
 								}
 							}
 						}
