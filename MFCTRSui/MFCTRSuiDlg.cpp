@@ -613,10 +613,8 @@ DWORD WINAPI TimeRunning(LPVOID arg)
 				GetLocalTime(&sit);
 
 				LARGE_INTEGER large = resColl[0].getClock().get_time() - sit;
-				if (large.QuadPart < 15)
+				if (large.QuadPart!=0)
 				{
-				large.QuadPart *= 10000000;
-				
 					large.QuadPart = -large.QuadPart;
 					for (int i = 0; i < resColl.size(); ++i)
 					{
@@ -3354,13 +3352,13 @@ void CMFCTRSuiDlg::OnExit()
 					pro_.SaveProject(&RootList);
 					delete[] path;
 					delete[] buf;
-					OnSysCommand(SC_CLOSE, NULL);
+					CDialogEx::OnOK();
 				}
 				if (res == IDNO)
 				{
 					delete[] path;
 					delete[] buf;
-					OnSysCommand(SC_CLOSE, NULL);
+					CDialogEx::OnOK();
 				}
 				if (res == IDCANCEL)
 				{
@@ -3382,13 +3380,13 @@ void CMFCTRSuiDlg::OnExit()
 							pro_.SaveProject(&RootList);
 							delete[] path;
 							delete[] buf;
-							OnSysCommand(SC_CLOSE, NULL);
+							CDialogEx::OnOK();
 						}
 						if (res == IDNO)
 						{
 							delete[] path;
 							delete[] buf;
-							OnSysCommand(SC_CLOSE, NULL);
+							CDialogEx::OnOK();
 						}
 						if (res == IDCANCEL)
 						{
@@ -3401,21 +3399,21 @@ void CMFCTRSuiDlg::OnExit()
 					{
 						delete[] path;
 						delete[] buf;
-						OnSysCommand(SC_CLOSE, NULL);
+						CDialogEx::OnOK();
 					}
 				}
 				else
 				{
 					delete[] buf;
 					delete[] path;
-					OnSysCommand(SC_CLOSE, NULL);
+					CDialogEx::OnOK();
 				}
 			}
 		}
 	}
 	else
 	{
-		OnSysCommand(SC_CLOSE, NULL);
+		CDialogEx::OnOK();
 	}
 	
 //	EndDialog(IDCANCEL);
