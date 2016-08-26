@@ -14,6 +14,10 @@
 CListCtrl* List;
 IMPLEMENT_DYNAMIC(TestsTimerDialog, CDialogEx)
 
+HANDLE hTimerThread;
+DWORD WINAPI TimeRunning(LPVOID arg);
+CDialogEx* DIAL;
+
 TestsTimerDialog::TestsTimerDialog(CWnd* pParent /*=NULL*/)
 	: CDialogEx(TestsTimerDialog::IDD, pParent)
 {
@@ -163,9 +167,13 @@ void TestsTimerDialog::OnEditClicked()
 	AddClockDlg edit_clock_dlg;
 	edit_clock_dlg.Init(list_items[selection].suites, vector<bool>(list_items[selection].suites.size(), true), list_items[selection].name, list_items[selection].tag,
 		list_items[selection].threads, list_items[selection].hour, list_items[selection].minute, list_items[selection].clock_name, list_items[selection].repeat, list_items[selection].days);
-
+	//int res = CloseHandle(hTimerThread);
+	ResumeThread(hTimerThread);
+	SuspendThread(hTimerThread);
 	if (edit_clock_dlg.DoModal() == IDOK)
 	{
+		
+		//timersCollection->Init();
 		timersCollection->Remove(list_items[selection]);
 
 		ClockInstance item{ edit_clock_dlg.get_clock_collection().front().get_suites(), edit_clock_dlg.get_days(), edit_clock_dlg.get_clock_name(), edit_clock_dlg.get_tag(),
@@ -174,7 +182,10 @@ void TestsTimerDialog::OnEditClicked()
 		list_items[selection] = item;
 		ChangeListItem(item.clock_name, item.hour, item.minute, item.repeat, item.days, selection);
 		timersCollection->Add(item);
+		
+	//	hTimerThread = CreateThread(NULL, 0, TimeRunning, DIAL, 0, 0);
 	}
+	ResumeThread(hTimerThread);
 }
 
 

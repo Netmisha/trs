@@ -7,7 +7,6 @@
 
 struct ClockInstance
 {
-
 	std::vector<SuiteRoot> suites;
 	DWORD days;
 	CString clock_name;

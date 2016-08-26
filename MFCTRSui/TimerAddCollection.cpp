@@ -111,7 +111,7 @@ std::vector<ClockInstance>& TimerAddCollection::getTimers()
 	return instanceColl;
 }
 
-std::vector < TimerADD >& TimerAddCollection::getClocks()
+std::vector < TimerADD > TimerAddCollection::getClocks()
 {
 	return timersColl;
 }

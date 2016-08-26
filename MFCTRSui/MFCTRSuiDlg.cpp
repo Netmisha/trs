@@ -55,8 +55,8 @@ CMFCTRSuiDlg* MainDialog;
 char* timerPath, *timerName, *timerTag, *timerThreads;
 DWORD WINAPI TimeRunning(LPVOID arg);
 DWORD WINAPI TimerInitialization(LPVOID arg);
-HANDLE hTimerThread;
-TimerData* data;
+extern HANDLE hTimerThread;
+extern CDialogEx* DIAL;
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
@@ -71,7 +71,7 @@ CMFCTRSuiDlg::~CMFCTRSuiDlg()
 {
 	Manager.Destroy();
 	delete timersCollection;
-	delete data;
+	
 }
 
 
@@ -166,7 +166,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 			rectDlg.Width(), rectDlg.Height(), SWP_NOCOPYBITS);
 
 	}
-	
+	DIAL = this;
 	CFont *myFont = new CFont();
 	myFont->CreateFont(15, 0, 0, 0, FW_NORMAL, FALSE, false,
 		0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
@@ -433,10 +433,8 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	FAIL = &FailMap;
 	PASS = &PasMap;
 	timersCollection = new TimerAddCollection;
-	data=new TimerData;
-	data->coll = timersCollection;
-	data->dlg = this;
-	CreateThread(NULL, 0, TimerInitialization, data, 0, 0);
+	timersCollection->Init();
+	hTimerThread = CreateThread(NULL, 0, TimeRunning, this, 0, 0);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -613,25 +611,62 @@ DWORD WINAPI TimerInitialization(LPVOID arg)
 		data->coll->Init();
 		hTimerThread = CreateThread(NULL, 0, TimeRunning, data, 0, 0);
 		WaitForSingleObject(hTimerThread, INFINITE);
-		Sleep(5000);
+		//Sleep(5000);
 	}
 }
-DWORD WINAPI TimeRunning(LPVOID arg)
+extern DWORD WINAPI TimeRunning(LPVOID arg)
 {
-	while (true)
-	{
-		TimerData* dlg = (TimerData*)arg;
+	
+		CMFCTRSuiDlg* dlg = (CMFCTRSuiDlg*)arg;
 		HANDLE hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
 		while (true)
 		{
 			std::vector<TimerADD> resColl;
-			if (dlg->coll->getClocks().size())
+			if (timersCollection->getClocks().size())
 			{
-				findMinimalTime(dlg->coll->getClocks(), resColl);
+				findMinimalTime(timersCollection->getClocks(), resColl);
+				LARGE_INTEGER large;
 				SYSTEMTIME sit;
 				GetLocalTime(&sit);
-
-				LARGE_INTEGER large = resColl[0].getClock().get_time() - sit;
+				bool ifEnd = false;
+				large.QuadPart = { 0 };
+				for (int i = 0; i < timersCollection->getTimers().size(); ++i)
+				{
+					for (int j = 0; j < resColl.size(); ++j)
+					{
+						if (timersCollection->getTimers()[i].ident == resColl[j].getUnique())
+						{
+							if (i <= timersCollection->getTimers().size())
+							{
+								int resDay = log2(timersCollection->getTimers()[i].days) + 1;
+								int resHour = _ttoi(timersCollection->getTimers()[i].hour);
+								int resMinute = _ttoi(timersCollection->getTimers()[i].minute);
+								if ((resDay - sit.wDayOfWeek) >= 0)
+								{
+									large.QuadPart = (resDay - sit.wDayOfWeek) * 24 * 60 * 60 * 10000000;
+									if ((resHour - sit.wHour) >= 0)
+									{
+										large.QuadPart += (_ttoi(timersCollection->getTimers()[i].hour)) * 60 * 60 * 10000000;
+										if ((resMinute - sit.wMinute) > 0)
+										{
+											large.QuadPart += (_ttoi(timersCollection->getTimers()[i].minute)) * 60 * 10000000;
+											ifEnd = true;
+											break;
+										}
+									}
+								}
+								large.QuadPart = { 0 };
+							}
+						}
+					}
+					if (ifEnd)
+					{
+						break;
+					}
+					
+				}
+				
+				
 				if (large.QuadPart!=0)
 				{
 					large.QuadPart = -large.QuadPart;
@@ -643,8 +678,14 @@ DWORD WINAPI TimeRunning(LPVOID arg)
 							timerName = fromCStringToChar(resColl[i].getName());
 							timerTag = fromCStringToChar(resColl[i].getTag());
 							timerThreads = fromCStringToChar(resColl[i].getThreads());
-
-							SetWaitableTimer(hTimer, &large, 0, TimerAPCProc, dlg, 0);
+							if (!j)
+							{
+								SetWaitableTimer(hTimer, &large, 0, TimerAPCProc, dlg, 0);
+							}
+							else
+							{
+								SetWaitableTimer(hTimer, 0, 0, TimerAPCProc, dlg, 0);
+							}
 							//WaitForSingleObject(hTimer, INFINITE);
 							SleepEx(INFINITE, TRUE);
 
@@ -652,11 +693,11 @@ DWORD WINAPI TimeRunning(LPVOID arg)
 						}
 						if (!resColl[i].getClock().IsWeekly())
 						{
-							for (int j = 0; j < dlg->coll->getTimers().size(); ++j)
+							for (int j = 0; j < timersCollection->getTimers().size(); ++j)
 							{
-								if (dlg->coll->getTimers()[i].ident == resColl[i].getUnique())
+								if (timersCollection->getTimers()[i].ident == resColl[i].getUnique())
 								{
-									dlg->coll->Remove(dlg->coll->getTimers()[i]);
+									timersCollection->Remove(timersCollection->getTimers()[i]);
 								}
 							}
 						}
@@ -670,8 +711,8 @@ DWORD WINAPI TimeRunning(LPVOID arg)
 				//Sleep(180000);
 			}
 		}
-		Sleep(5000);
-	}
+		
+	
 	return 0;
 }
 #pragma region stuff
