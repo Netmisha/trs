@@ -47,6 +47,7 @@ private:
 	void AddToList(const ClockInstance&);
 	void ChangeListItem(CString clock_name, CString hour, CString minute, bool repeat, DWORD days, DWORD pos);
 
+
 	vector<ClockInstance> list_items;
 	bool call_add_dlg = false;
 };
