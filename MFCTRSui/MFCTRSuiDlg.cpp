@@ -620,15 +620,19 @@ DWORD WINAPI TimeRunning(LPVOID arg)
 					large.QuadPart = -large.QuadPart;
 					for (int i = 0; i < resColl.size(); ++i)
 					{
-						timerPath = convertToChar(resColl[i].getClock().get_suites()[0].get_path());
-						timerName = fromCStringToChar(resColl[i].getName());
-						timerTag = fromCStringToChar(resColl[i].getTag());
-						timerThreads = fromCStringToChar(resColl[i].getThreads());
+						for (int j = 0; j < resColl[i].getClock().get_suites().size(); ++j)
+						{
+							timerPath = convertToChar(resColl[i].getClock().get_suites()[j].get_path());
+							timerName = fromCStringToChar(resColl[i].getName());
+							timerTag = fromCStringToChar(resColl[i].getTag());
+							timerThreads = fromCStringToChar(resColl[i].getThreads());
 
-						SetWaitableTimer(hTimer, &large, 0, TimerAPCProc, dlg, 0);
-						//WaitForSingleObject(hTimer, INFINITE);
-						SleepEx(INFINITE, TRUE);
+							SetWaitableTimer(hTimer, &large, 0, TimerAPCProc, dlg, 0);
+							//WaitForSingleObject(hTimer, INFINITE);
+							SleepEx(INFINITE, TRUE);
 
+							
+						}
 						if (!resColl[i].getClock().IsWeekly())
 						{
 							for (int j = 0; j < timersCollection.getTimers().size(); ++j)
@@ -639,7 +643,6 @@ DWORD WINAPI TimeRunning(LPVOID arg)
 								}
 							}
 						}
-
 						delete[] timerPath;
 						delete[] timerName;
 						delete[] timerTag;
@@ -3333,7 +3336,88 @@ void CMFCTRSuiDlg::SetListItemImage(DWORD index, DWORD image)
 
 void CMFCTRSuiDlg::OnExit()
 {
-	OnSysCommand(SC_CLOSE, NULL);
+	if (RootList.GetItemCount() > 0)
+	{
+		char* path = pro_.getProjPath();
+		if (path)
+		{
+			WIN32_FIND_DATA FindFileData;
+			TCHAR* buf = new TCHAR[strlen(path) + 1];
+			convertToTCHAR(buf, path);
+			HANDLE handle = FindFirstFile(buf, &FindFileData);
+			int found = handle != INVALID_HANDLE_VALUE;
+			if (!found)
+			{
+				int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
+				if (res == IDYES)
+				{
+					pro_.SaveProject(&RootList);
+					delete[] path;
+					delete[] buf;
+					OnSysCommand(SC_CLOSE, NULL);
+				}
+				if (res == IDNO)
+				{
+					delete[] path;
+					delete[] buf;
+					OnSysCommand(SC_CLOSE, NULL);
+				}
+				if (res == IDCANCEL)
+				{
+					delete[] path;
+					delete[] buf;
+					return;
+				}
+			}
+			else
+			{
+
+				if (!CheckForModification(path, pro_.getName(), &RootList, &DropDown, &ThreadsComboBox, &m_NameBox, console_output.IsWindowVisible()))
+				{
+					if (SaveAsPressed)
+					{
+						int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
+						if (res == IDYES)
+						{
+							pro_.SaveProject(&RootList);
+							delete[] path;
+							delete[] buf;
+							OnSysCommand(SC_CLOSE, NULL);
+						}
+						if (res == IDNO)
+						{
+							delete[] path;
+							delete[] buf;
+							OnSysCommand(SC_CLOSE, NULL);
+						}
+						if (res == IDCANCEL)
+						{
+							delete[] path;
+							delete[] buf;
+							return;
+						}
+					}
+					else
+					{
+						delete[] path;
+						delete[] buf;
+						OnSysCommand(SC_CLOSE, NULL);
+					}
+				}
+				else
+				{
+					delete[] buf;
+					delete[] path;
+					OnSysCommand(SC_CLOSE, NULL);
+				}
+			}
+		}
+	}
+	else
+	{
+		OnSysCommand(SC_CLOSE, NULL);
+	}
+	
 //	EndDialog(IDCANCEL);
 }
 
@@ -3419,16 +3503,28 @@ LRESULT CMFCTRSuiDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case MYWM_NOTIFYICON:
 		switch (lParam)
 		{
+			
 		case WM_RBUTTONUP:
-			CMenu *mnuPopupSubmit = new CMenu;
-			mnuPopupSubmit->LoadMenu(IDR_MENU5);
-			CMenu* nextMenu = mnuPopupSubmit->GetSubMenu(0);
-			ASSERT(nextMenu); 
-			POINT mousePos;
-			GetCursorPos(&mousePos);
-			nextMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, mousePos.x, mousePos.y, this); 
-			break;
+		{
+							 CMenu *mnuPopupSubmit = new CMenu;
+							 mnuPopupSubmit->LoadMenu(IDR_MENU5);
+							 CMenu* nextMenu = mnuPopupSubmit->GetSubMenu(0);
+							 ASSERT(nextMenu);
+							 POINT mousePos;
+							 GetCursorPos(&mousePos);
+							 nextMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, mousePos.x, mousePos.y, this);
+							 break;
 		}
+		case WM_LBUTTONUP:
+		{
+							 ShowWindow(SW_HIDE); // hide the window
+							 long style = GetWindowLong(m_hWnd, GWL_STYLE);
+							 SetWindowLong(m_hWnd, GWL_STYLE, style); // set the style
+							 ShowWindow(SW_SHOW);
+							 break;
+		}
+		}
+		break;
 	}
 	return CDialogEx::WindowProc(message, wParam, lParam);
 }
