@@ -172,12 +172,14 @@ void AddClockDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK6, m_ButtonFriday);
 	DDX_Control(pDX, IDC_CHECK7, m_ButtonSaturday);
 	DDX_Control(pDX, IDC_CHECK8, m_ButtonSunday);
+	DDX_Control(pDX, BUTTON_ADD, m_ButtonAdd);
 }
 
 
 BEGIN_MESSAGE_MAP(AddClockDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &AddClockDlg::OnBnClickedOk)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &AddClockDlg::OnLvnItemchangedList1)
+	ON_BN_CLICKED(BUTTON_ADD, &AddClockDlg::OnBnClickedAdd)
 END_MESSAGE_MAP()
 
 
@@ -696,4 +698,61 @@ BOOL AddClockDlg::Init(std::vector<SuiteRoot> coll_, vector<bool> check, CString
 
 	initialized = true;
 	return TRUE;
+}
+
+
+void AddClockDlg::OnBnClickedAdd()
+{
+	BROWSEINFO bi = { 0 };
+	bi.lpszTitle = _T("Select Folder");
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	if (pidl != 0)
+	{
+		// get the name of the folder
+		TCHAR path[MAX_PATH];
+		SHGetPathFromIDList(pidl, path);
+		char* pathA = convertToChar(path);
+		if (ExistInList(path))
+		{
+			MessageBox(_T("This item is already in the list!"), _T("Error"), MB_ICONERROR | MB_OK);
+			delete[] pathA;
+			return;
+		}
+		if (!Manager.Verify(pathA, nullptr, nullptr))
+		{
+			int index = m_ListCtrl.InsertItem(m_ListCtrl.GetItemCount(), path);
+			if (index >= 0)
+			{
+				m_ListCtrl.SetCheck(index);
+			}
+			else
+			{
+				MessageBox(_T("Can not insert the item!"), _T("Error"), MB_ICONERROR | MB_OK);
+			}
+		}
+		else
+		{
+			MessageBox(_T("Current path is invalid!"), _T("Error"), MB_ICONERROR | MB_OK);
+		}
+
+		delete[] pathA;
+
+		// free memory used
+		IMalloc * imalloc = 0;
+		if (SUCCEEDED(SHGetMalloc(&imalloc)))
+		{
+			imalloc->Free(pidl);
+			imalloc->Release();
+		}
+	}
+}
+
+bool AddClockDlg::ExistInList(TCHAR* path)
+{
+	for (int i = 0; i < m_ListCtrl.GetItemCount(); ++i)
+	{
+		if (!_tcsicmp(path, m_ListCtrl.GetItemText(i, 0)))
+			return true;
+	}
+	return false;
 }

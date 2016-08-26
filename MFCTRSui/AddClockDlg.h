@@ -40,6 +40,7 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 
+
 private:
 	CString clock_name;
 	std::vector<SuiteRoot> list_items;
@@ -55,6 +56,7 @@ private:
 	CString minute_str;
 	DWORD days_flag;
 
+	bool ExistInList(TCHAR* path);
 public:
 	DECLARE_MESSAGE_MAP()
 	afx_msg void OnBnClickedOk();
@@ -92,6 +94,9 @@ protected:
 	CString tag_sel;
 	CString thread_sel;
 	bool initialized = false;
+public:
+	CButton m_ButtonAdd;
+	afx_msg void OnBnClickedAdd();
 };
 
 

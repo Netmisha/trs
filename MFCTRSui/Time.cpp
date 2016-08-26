@@ -52,10 +52,23 @@ bool Time::operator == (const Time& val)
 
 LARGE_INTEGER Time::operator-(SYSTEMTIME& sis)
 {
-	
 	LARGE_INTEGER result;
-	result.QuadPart = this->day_of_week - sis.wDayOfWeek;
-	result.QuadPart += this->hour - sis.wHour;
-	result.QuadPart += this->minute - sis.wMinute;
+	int resDay = log2(this->day_of_week)+1;
+	int resHour = this->hour;
+	int resMinute = this->minute;
+	if ((resDay - sis.wDayOfWeek) >= 0)
+	{
+		result.QuadPart = (resDay - sis.wDayOfWeek) * 24 * 60 * 60 * 10000000;
+		if ((resHour - sis.wHour) >= 0)
+		{
+			result.QuadPart += (this->hour - sis.wHour) * 60 * 60 * 10000000;
+			if ((resMinute - sis.wMinute) > 0)
+			{
+				result.QuadPart += (this->minute - sis.wMinute) * 60 * 10000000;
+				return result;
+			}
+		}
+	}
+	result.QuadPart = { 0 };
 	return result;
 }
