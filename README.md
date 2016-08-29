@@ -1,6 +1,6 @@
 # TRS Manager
-It is an automatic test running application. It lets you to load folders which contains of .exe and .xml files to run your test's application(s).
-You can edit test's suite(s) to change the way of tests running. Application has ability to parse folders and find test that you want to run.
+It is an automatic test running application. It lets you to run a set of your test's applications.
+You can easy configure it with .xml project file. OS Windows.
 # Reporting
 All information about your test(s) after running is saved in .txt and .html formatt and you can check if some tests failed and why.
 If you run your test(s) immediately, you can see that information on screen in console mode.
