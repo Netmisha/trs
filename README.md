@@ -5,7 +5,6 @@ You can edit test's suite(s) to change the way of tests running. Application has
 All information about your test(s) after running is saved in .txt and .html formatt and you can check if some tests failed and why.
 If you run your test(s) immediately, you can see that information on screen in console mode.
 # How to use
-First of all you need to create folder which will have your application's .exe files like this
 1. Create directory “TestSuite”.
 2. Copy trs.exe and TRSLibrary.dll into “TestSuite”.
 3. Create Suite.xml file there as in the example
