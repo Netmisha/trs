@@ -19,6 +19,7 @@ Execute “trs.exe run -p .”
 3. Validate - write information about current folder (if everithing is Ok with .xml and .exe files).
 4. Pause - pause tests running.
 5. Stop - stop tests running.
+
 # Console additional parameters
 1. -p D:\TestStructure - set path to your test's folder
 2. -n Test1 - set name of test(s) which you want to run
