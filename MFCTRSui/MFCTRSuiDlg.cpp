@@ -625,7 +625,8 @@ extern DWORD WINAPI TimeRunning(LPVOID arg)
 			if (timersCollection->getClocks().size())
 			{
 				findMinimalTime(timersCollection->getClocks(), resColl);
-				LARGE_INTEGER large;
+				volatile LARGE_INTEGER large;
+				LARGE_INTEGER lParam;
 				SYSTEMTIME sit;
 				GetLocalTime(&sit);
 				bool ifEnd = false;
@@ -665,8 +666,7 @@ extern DWORD WINAPI TimeRunning(LPVOID arg)
 					}
 					
 				}
-				
-				
+
 				if (large.QuadPart!=0)
 				{
 					large.QuadPart = -large.QuadPart;
@@ -678,9 +678,13 @@ extern DWORD WINAPI TimeRunning(LPVOID arg)
 							timerName = fromCStringToChar(resColl[i].getName());
 							timerTag = fromCStringToChar(resColl[i].getTag());
 							timerThreads = fromCStringToChar(resColl[i].getThreads());
+							if (large.QuadPart>0)
+							{
+								lParam.QuadPart = -large.QuadPart;
+							}
 							if (!j)
 							{
-								SetWaitableTimer(hTimer, &large, 0, TimerAPCProc, dlg, 0);
+								SetWaitableTimer(hTimer, &lParam, 0, TimerAPCProc, dlg, 0);
 							}
 							else
 							{
@@ -695,9 +699,9 @@ extern DWORD WINAPI TimeRunning(LPVOID arg)
 						{
 							for (int j = 0; j < timersCollection->getTimers().size(); ++j)
 							{
-								if (timersCollection->getTimers()[i].ident == resColl[i].getUnique())
+								if (timersCollection->getTimers()[j].ident == resColl[i].getUnique())
 								{
-									timersCollection->Remove(timersCollection->getTimers()[i]);
+									timersCollection->Remove(timersCollection->getTimers()[j]);
 								}
 							}
 						}
@@ -706,6 +710,7 @@ extern DWORD WINAPI TimeRunning(LPVOID arg)
 						delete[] timerTag;
 						delete[] timerThreads;
 					}
+					large.QuadPart = { 0 };
 					Sleep(60000);
 				}
 				//Sleep(180000);

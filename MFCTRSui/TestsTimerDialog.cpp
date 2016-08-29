@@ -196,11 +196,14 @@ void TestsTimerDialog::OnRemoveClicked()
 		logger << "selection is not within list_items range in TestsTimerDialog::OnRemoveClicked()";
 		return;
 	}
+	ResumeThread(hTimerThread);
+	SuspendThread(hTimerThread);
 	timersCollection->Remove(list_items[selection]);
 	list_items.erase(list_items.begin() + selection);
 
 	// after DeleteItem system calls TestsTimerDialog::UpdateControls and assigns selection to -1
 	m_ListCtrl.DeleteItem(selection);
+	ResumeThread(hTimerThread);
 }
 
 

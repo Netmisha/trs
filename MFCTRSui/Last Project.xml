@@ -1,18 +1,8 @@
 <?xml version="1.0" ?>
-<<<<<<< HEAD
-<TRSProject name="MIHA" ProjectPath="D:\Mihan\">
-    <path>D:\Mihan\Suite root</path>
-    <path>D:\Mihan\trs\trs\TestData</path>
-=======
-<TRSProject name="MihanProj" ProjectPath="D:\Repository\">
-    <path>D:\Repository\Suite root</path>
-    <path>D:\Repository\trs\TestData</path>
-    <path>D:\Suite root</path>
-    <path>D:\Repository\trs\TestData\TestStrcuture\Suite2\Suite1</path>
->>>>>>> b570fe21222a06a8f11ae4c51673f469a9d1a9ed
+<TRSProject name="fedgvfd" ProjectPath="D:\Mihan">
+    <path>D:\Mihan\trs\TestData\TestStrcuture\Suite2</path>
     <ListSelection>
-        <selection>1</selection>
-        <selection>3</selection>
+        <selection>0</selection>
     </ListSelection>
     <tag>0</tag>
     <threads>9</threads>
