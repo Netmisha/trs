@@ -1,5 +1,5 @@
 # TRS Manager
-It is an automatic test running application. It lets you to run a set of your test's applications.
+It is an automatic test running application. It lets you to run a set of test's applications.
 You can easy configure running process with .xml project file. Working on OS Windows.
 # Reporting
 All information about your test(s) after running is saved in .txt and .html formatt and you can check if some tests failed and why.
