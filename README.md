@@ -6,8 +6,8 @@ All information about your test(s) after running is saved in .txt and .html form
 If you run your test(s) immediately, you can see that information on screen in console mode.
 # How to use
 First of all you need to create folder which will have your application's .exe files like this:
-1. Create directory “TestSuite”
-2. Copy trs.exe and TRSLibrary.dll into “TestSuite”
+1. Create directory “TestSuite”.
+2. Copy trs.exe and TRSLibrary.dll into “TestSuite”.
 3. Create Suite.xml file there as in the example:
 			<?xml version="1.0"?>
 			<suite name="Test 1" description="Test description">
@@ -32,11 +32,11 @@ Set return value of your test into Suite.xml file in result tag.
 Open command line in  “TestSuite” directory  
 Execute “trs.exe run -p .”
 # Console commands
-1. Run - run tests
-2. List - write list of tests in current folder
-3. Validate - write information about current folder (if everithing is Ok with .xml and .exe files)
-4. Pause - pause tests running
-5. Stop - stop tests running
+1. Run - run tests.
+2. List - write list of tests in current folder.
+3. Validate - write information about current folder (if everithing is Ok with .xml and .exe files).
+4. Pause - pause tests running.
+5. Stop - stop tests running.
 # Console additional parameters
 1. -p D:\TestStructure - set path to your test's folder
 2. -n Test1 - set name of test(s) which you want to run
