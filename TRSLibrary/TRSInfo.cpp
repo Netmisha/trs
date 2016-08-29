@@ -20,10 +20,7 @@ TRSInfo::TRSInfo(char*TestName, char*Description)
 	}
 	
 }
-int TRSInfo::getUniqueNumber()
-{
-	return uniqueNumber;
-}
+
 TRSInfo::TRSInfo(const TRSInfo& val)
 {
 	if (val.metadata != nullptr)
@@ -114,7 +111,7 @@ TRSInfo::TRSInfo(const TRSInfo& val)
 		parameters = new char[size + 1];
 		strcpy_s(parameters, size + 1, val.parameters);
 	}
-	uniqueNumber = val.uniqueNumber;
+
 }
 
 TRSInfo& TRSInfo::operator = (const TRSInfo& val)
@@ -209,7 +206,7 @@ TRSInfo& TRSInfo::operator = (const TRSInfo& val)
 			parameters = new char[size + 1];
 			strcpy_s(parameters, size + 1, val.parameters);
 		}
-		uniqueNumber = val.uniqueNumber;
+
 	}
 	return *this;
 }
@@ -576,12 +573,7 @@ bool TRSInfo::setRepeat(char*Repeat)
 
 bool TRSInfo::setName(char*Name_)
 {
-	if (uniqueNumber == 0)
-	{
-		SYSTEMTIME st;
-		GetSystemTime(&st);
-		uniqueNumber = (int)st.wMilliseconds;
-	}
+
 	if (Name)
 	{
 		delete[] Name;

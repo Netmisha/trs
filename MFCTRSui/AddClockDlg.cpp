@@ -111,19 +111,19 @@ BOOL AddClockDlg::OnInitDialog()
 	}
 
 	DWORD hour_selection = _ttoi(hour_str);
-	if (hour_selection < 0 && hour_selection > 24)
+	if (hour_selection < 0 || hour_selection > 24)
 		hour_selection = 0;
 
 	m_EditHour.SetCurSel(hour_selection);
 
 	DWORD min_selection = _ttoi(minute_str);
-	if (min_selection < 0 && min_selection > 60)
+	if (min_selection < 0 || min_selection > 60)
 		min_selection = 0;
 
 	m_EditMinute.SetCurSel(min_selection);
 
 	DWORD thread_selection = _ttoi(thread_sel) - 1;
-	if (thread_selection < 0 && thread_selection > 100)
+	if (thread_selection < 0 || thread_selection > 100)
 		thread_selection = 0;
 
 	m_EditThreads.SetCurSel(thread_selection);

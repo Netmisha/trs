@@ -172,6 +172,7 @@ bool CheckForModification(char* path, char* name, CListCtrl* List,CComboBox* tag
 						char* p = fromCStringToChar(buffer);
 						if (strncmp(text->Value(), p, strlen(p)))
 						{
+							delete[] p;
 							return false;
 						}
 						delete[] p;

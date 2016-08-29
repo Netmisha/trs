@@ -31,7 +31,6 @@ class TRSInfo_API TRSInfo
 	char* path = nullptr;
 	
 	Metadata* metadata;
-	int uniqueNumber;
 public:
 	
 	TRSInfo(char*Name, char*Description);
@@ -78,7 +77,6 @@ public:
 	char* getPriority() const;
 	char* getDisable() const;
 	Metadata* getMetadata() const;
-	int getUniqueNumber();
 	bool Parse(TiXmlNode* pParent);
 };
 #endif
