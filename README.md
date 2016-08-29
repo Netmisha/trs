@@ -7,7 +7,7 @@ If you run your test(s) immediately, you can see that information on screen in c
 # How to use
 1. Create directory “TestSuite”.
 2. Copy trs.exe and TRSLibrary.dll into “TestSuite”.
-3. Create Suite.xml file there as in the example
+3. Create Suite.xml file there as in the example.xml
 			
 Add test execution file in  “TestSuite” directory and set execution tag with name of your execution file into Suite.xml file
 Set return value of your test into Suite.xml file in result tag.
@@ -27,6 +27,7 @@ Execute “trs.exe run -p .”
 4. -j 17 - set amount of threads for test(s) running
 5. -log D:\TestStructure - set path for .txt reporter
 6. -hlog D:\TestStructure - set path for .html reporter
+
 # Additional information
 There is more comfortable way to use it if you don't like to work with console! Just run TRSui.exe file and you will be able to manipulate
 functionality in the other way. You will see application window where you will be able to add you folder(s), to set all parameters, to
