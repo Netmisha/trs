@@ -67,8 +67,7 @@ bool Suite::Parse(TiXmlNode*pParent,char*name_,char*tag_,std::vector<TRSTest*>& 
 {
 	if (TRSInfo::Parse(pParent))
 	{
-		ParseSuit(pParent,name_,tag_,0,tests);
-		return true;
+		return ParseSuit(pParent,name_,tag_,0,tests);
 	}
 	else
 	{
@@ -140,11 +139,18 @@ bool Suite::ParseSuit(TiXmlNode* pParent,char* name_,char* tag_,int count,std::v
 	switch (t)
 	{
 	case TiXmlNode::TINYXML_ELEMENT:
-		if ((strncmp(pParent->Value(), "suite", strlen("suite")) == 0)&&getName())
+		if ((strncmp(pParent->Value(), "suite", strlen("suite")) == 0))
 		{
-			++count;
-			checkSuite = true;
-			ifDone = true;
+			if (getName())
+			{
+				++count;
+				checkSuite = true;
+				ifDone = true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		if ((strncmp(pParent->Value(), "test", strlen("test")) == 0))
 		{

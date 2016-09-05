@@ -22,14 +22,14 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 
-#define MAX_PARAMETERS 9
+#define MAX_PARAMETERS 14
 #define MIN_PARAMERES 2
 
 
 namespace spd = spdlog;
 using std::cout;
 
-int ProcessFunction(char* name, char* tag, char* path, int threads)
+int ProcessFunction(char* name, char* tag, char* path, int threads,char* hlogPath)
 {
 	if (__argc < 2)
 		return 1;
@@ -44,7 +44,7 @@ int ProcessFunction(char* name, char* tag, char* path, int threads)
 
 		ReportManager reportManager;
 		ConsoleReport cReport;
-		HTMLReport htmlReport;
+		HTMLReport htmlReport(hlogPath);
 
 		reportManager.addReporter(&cReport);
 		reportManager.addReporter(&htmlReport);
@@ -109,9 +109,9 @@ int ProcessFunction(char* name, char* tag, char* path, int threads)
 }
 
 // taking references to pointer and assign them to appropriate console parameter
-bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &path, _Outptr_ int & threads)
+bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &path, _Outptr_ int & threads, _Outptr_ char* &logPath, _Outptr_ char* &hlogPath)
 {
-	name = tag = path = nullptr;
+	name = tag = path = logPath=hlogPath=nullptr;
 	threads = -1;
 	// checking whether amount of parameters is correct
 	if (__argc < MIN_PARAMERES || __argc > MAX_PARAMETERS || __argc % 2 != 0)
@@ -170,6 +170,26 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 			path = __argv[i + 1];
 			continue;
 		}
+		else if (_stricmp(__argv[i], "-log") == 0)
+		{
+			if (logPath)
+			{
+				logger << "Ambiguous indication of log path parameter";
+				return false;
+			}
+			logPath = __argv[i + 1];
+			continue;
+		}
+		else if (_stricmp(__argv[i], "-hlog") == 0)
+		{
+			if (hlogPath)
+			{
+				logger << "Ambiguous indication of log path parameter";
+				return false;
+			}
+			hlogPath = __argv[i + 1];
+			continue;
+		}
 		else
 		{
 			// this mean that there was not a identifier at the place
@@ -216,18 +236,18 @@ bool ParseArguments(_Outptr_ char* &name, _Outptr_ char* &tag, _Outptr_ char* &p
 
 int main(int argc, char* argv[])
 {
-
-	Manager.Init();
-
-	char *name, *path, *tag;
+	
+	char *name, *path, *tag,*logOut,*hlogOut;
+	logOut = nullptr;
 	int threads;
-
-	if (!ParseArguments(name, tag, path, threads))
+	Manager.Init(logOut);
+	if (!ParseArguments(name, tag, path, threads,logOut,hlogOut))
 	{
-		Manager.Destroy();
 		return 1;
 	}
-	int ret_val = ProcessFunction(name, tag, path, threads);
+	Manager.Destroy();
+	Manager.Init(logOut);
+	int ret_val = ProcessFunction(name, tag, path, threads,hlogOut);
 
 	Manager.Destroy();
 	delete[] path;

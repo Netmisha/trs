@@ -11,8 +11,10 @@
 #include "ProjNameEdit.h"
 #include "TestsTimerDialog.h"
 #include "afxdialogex.h"
+#include "SuiteRoot.h"
 #include "TRSLibrary\TRSManager.h"
-
+#include "TimerADD.h"
+#include "TimerAddCollection.h"
 #define PROJECT_UPLOADED 1
 #define PROJECT_NOTLOADED 2
 #define RUN_CLICKED 4
@@ -26,43 +28,6 @@
 #define FAILED_IMAGE 1
 #define PASSED_IMAGE 2
 
-class SuiteRoot
-{
-public:
-	SuiteRoot()
-	{
-		dRoot = nullptr;
-	}
-	SuiteRoot(TCHAR* path)
-	{
-		int size = wcslen(path);
-		dRoot = new TCHAR[size + 1];
-		wcscpy_s(dRoot, size + 1, path);
-	}
-	SuiteRoot(CString path)
-	{
-		int size = _tcslen(path);
-		dRoot = new TCHAR[size + 1];
-		_tcscpy_s(dRoot, size + 1, path);
-	}
-	SuiteRoot(const SuiteRoot& var)
-	{
-		int size = wcslen(var.dRoot);
-		dRoot = new TCHAR[size + 1];
-		wcscpy_s(dRoot, size + 1, var.dRoot);
-	}
-	inline TCHAR* get_path()
-	{
-		return dRoot;
-	}
-
-	~SuiteRoot()
-	{
-		delete[] dRoot;
-	}
-private:
-	TCHAR* dRoot;
-};
 
 
 // CMFCTRSuiDlg dialog
@@ -94,7 +59,7 @@ protected:
 public:
 	CTreeCtrl m_Tree;
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
-
+	INT_PTR CALLBACK DialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	afx_msg void OnEnChangeEdit2();
 	CEdit report_edit;
@@ -134,7 +99,7 @@ public:
 	std::vector<HTREEITEM*> Info(TCHAR* path);
 	CProgressCtrl subm_Progress;
 	CEdit Time_running_edit;
-
+	afx_msg void JustRunTimerTests(char* path, char* tag, char* name, int threads);
 	afx_msg void OnProgramRefresh();
 	afx_msg void OnProgramAddfolder();
 	afx_msg void OnProgramDeleteselecteditems();
@@ -147,9 +112,10 @@ public:
 	afx_msg void OnProjectLastprojects();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnViewConsole();
-
+	//afx_msg void OnNotifyIcon();
 	afx_msg BOOL OnTtnNeedText(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
-	
+	afx_msg void OnClock();
+	afx_msg void OnAddClock();
 protected:
 	void ConsoleHide();
 	void ConsoleShow();
@@ -160,7 +126,11 @@ protected:
 	CComboBox DropDown;
 	CComboBox ThreadsComboBox;
 	ReportManager* reportManag;
-
+	/*static  LRESULT WindowProc(
+		UINT message,
+		WPARAM wParam,
+		LPARAM lParam
+		);*/
 	std::list<Suite*>* suiteColl; // $$$ I founded the code where you check size and iterate this list, but I did not find where you initialize it. EDIT: now I found it
 	bool is_running = false;
 //	CImageList* m_ImageList;
@@ -171,7 +141,7 @@ public:
 	void SetListItemImage(DWORD index, DWORD image);
 	bool SetListItemState(bool state, SuiteRoot text);
 	bool ExistInList(TCHAR* path);
-
+	
 	CListCtrl m_ListCtrl;
 
 	afx_msg void OnCbnSelchangeCombo3();
@@ -183,6 +153,11 @@ public:
 	afx_msg void OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnInfoInfo();
 	afx_msg void OnExit();
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	afx_msg void OnMenu();
+	afx_msg void OnInfoClose();
 };
 
 //extern CListBox* List;

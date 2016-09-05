@@ -31,12 +31,13 @@ class TRSInfo_API TRSInfo
 	char* path = nullptr;
 	
 	Metadata* metadata;
-	int uniqueNumber;
 public:
 	
 	TRSInfo(char*Name, char*Description);
 	TRSInfo(const TRSInfo& val);
 	bool operator==(TRSInfo&cur);
+	TRSInfo& operator=(const TRSInfo&);
+
 	TRSInfo();
 	virtual ~TRSInfo();
 	bool setDisable(char* disable_);
@@ -76,7 +77,6 @@ public:
 	char* getPriority() const;
 	char* getDisable() const;
 	Metadata* getMetadata() const;
-	int getUniqueNumber();
 	bool Parse(TiXmlNode* pParent);
 };
 #endif

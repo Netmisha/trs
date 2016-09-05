@@ -1,9 +1,24 @@
 #include "stdafx.h"
 #include "HTMLReport.h"
 
-HTMLReport::HTMLReport()
+HTMLReport::HTMLReport(char* path)
 {
-	output.open("Report.html");
+	char* pPath;
+	if (path)
+	{
+		pPath = new char[strlen(path) + 14];
+		strncpy_s(pPath, strlen(path) + 1, path, strlen(path));
+		strncpy_s(pPath + strlen(path), 14, "\\Report.html", 13);
+		output.open(pPath);
+		delete[] pPath;
+	}
+	else
+	{
+		pPath = new char[14];
+		strncpy_s(pPath, 14, "Report.html", 13);
+		output.open(pPath);
+		delete[] pPath;
+	}
 	output << R"(<!DOCTYPE html>
 <html>
 <head>

@@ -20,10 +20,7 @@ TRSInfo::TRSInfo(char*TestName, char*Description)
 	}
 	
 }
-int TRSInfo::getUniqueNumber()
-{
-	return uniqueNumber;
-}
+
 TRSInfo::TRSInfo(const TRSInfo& val)
 {
 	if (val.metadata != nullptr)
@@ -114,7 +111,104 @@ TRSInfo::TRSInfo(const TRSInfo& val)
 		parameters = new char[size + 1];
 		strcpy_s(parameters, size + 1, val.parameters);
 	}
-	uniqueNumber = val.uniqueNumber;
+
+}
+
+TRSInfo& TRSInfo::operator = (const TRSInfo& val)
+{
+	if (this != &val)
+	{
+		if (val.metadata != nullptr)
+		{
+			metadata = new Metadata(*val.metadata);
+		}
+		if (val.path != nullptr)
+		{
+			int size = strlen(val.path);
+			path = new char[size + 1];
+			strncpy_s(path, size + 1, val.path, size);
+		}
+		if (val.executablePath != nullptr)
+		{
+			int size = strlen(val.executablePath);
+			executablePath = new char[size + 1];
+			strncpy_s(executablePath, size + 1, val.executablePath, size);
+		}
+		if (val.disable != nullptr)
+		{
+			int size = strlen(val.disable);
+			disable = new char[size + 1];
+			strcpy_s(disable, size + 1, val.disable);
+		}
+		if (val.priority != nullptr)
+		{
+			int size = strlen(val.priority);
+			priority = new char[size + 1];
+			strcpy_s(priority, size + 1, val.priority);
+		}
+		if (val.executableName != nullptr)
+		{
+			int size = strlen(val.executableName);
+			executableName = new char[size + 1];
+			strcpy_s(executableName, size + 1, val.executableName);
+		}
+		if (val.description != nullptr)
+		{
+			int size = strlen(val.description);
+			description = new char[size + 1];
+			strcpy_s(description, size + 1, val.description);
+		}
+		if (val.expectedResult != nullptr)
+		{
+			int size = strlen(val.expectedResult);
+			expectedResult = new char[size + 1];
+			strcpy_s(expectedResult, size + 1, val.expectedResult);
+		}
+		if (val.maxThreads != nullptr)
+		{
+			int size = strlen(val.maxThreads);
+			maxThreads = new char[size + 1];
+			strcpy_s(maxThreads, size + 1, val.maxThreads);
+		}
+		if (val.maxTime != nullptr)
+		{
+			int size = strlen(val.maxTime);
+			maxTime = new char[size + 1];
+			strcpy_s(maxTime, size + 1, val.maxTime);
+		}
+		if (val.Name != nullptr)
+		{
+			int size = strlen(val.Name);
+			Name = new char[size + 1];
+			strcpy_s(Name, size + 1, val.Name);
+		}
+		if (val.repeat != nullptr)
+		{
+			int size = strlen(val.repeat);
+			repeat = new char[size + 1];
+			strcpy_s(repeat, size + 1, val.repeat);
+		}
+		if (val.tag != nullptr)
+		{
+			int size = strlen(val.tag);
+			tag = new char[size + 1];
+			strcpy_s(tag, size + 1, val.tag);
+		}
+		if (val.waitfor != nullptr)
+		{
+			int size = strlen(val.waitfor);
+			waitfor = new char[size + 1];
+			strcpy_s(waitfor, size + 1, val.waitfor);
+		}
+		if (val.parameters != nullptr)
+		{
+			int size = strlen(val.parameters);
+			parameters = new char[size + 1];
+			strcpy_s(parameters, size + 1, val.parameters);
+		}
+
+	}
+	return *this;
 }
 
 TRSInfo::TRSInfo()
@@ -479,12 +573,7 @@ bool TRSInfo::setRepeat(char*Repeat)
 
 bool TRSInfo::setName(char*Name_)
 {
-	if (uniqueNumber == 0)
-	{
-		SYSTEMTIME st;
-		GetSystemTime(&st);
-		uniqueNumber = (int)st.wMilliseconds;
-	}
+
 	if (Name)
 	{
 		delete[] Name;

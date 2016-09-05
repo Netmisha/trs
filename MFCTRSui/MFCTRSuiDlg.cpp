@@ -7,15 +7,18 @@
 #include "MFCTRSuiDlg.h"
 #include "afxdialogex.h"
 #include <list>
-
+#define MYWM_NOTIFYICON (WM_APP+100)
 #include "ConsoleReporter.h"
 #include "TRSLibrary\TRSManager.h"
+#include "TestsTimerDialog.h"
 #include "ToRunParameters.h"
 #include "TestInfo.h"
 #include "RunParameters.h"
 #include "Functionality.h"
 #include <ctime>
 #include <algorithm>
+#include <shellapi.h>
+#include "TimerStruct.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -27,15 +30,18 @@
 
 // $$$ you are using this variable only inside two CMFCTRSuiDlg methods.
 // It will be better to hide it inside the CMFCTRSuiDlg class
+AddClockDlg* curDialog;
 static bool ifFirstTimeRunned = true; 
 bool ifCancelPressed;
 bool RunEndCheck;
 bool SaveAsPressed = true;
 int ListSelection;
 CToolBar* ToolBar;
+TimerAddCollection* timersCollection;
 //CListCtrl* List;
 CToolBar* Bar;
 CComboBox* Tag;
+NOTIFYICONDATA nid;
 CComboBox* Threads;
 CTreeCtrl* TREECTRL;
 CComboBox* Name;
@@ -46,19 +52,26 @@ std::map<CString,std::vector<HTREEITEM*>>* COLL;
 std::map<CString, std::vector<TRSInfo>>* FAIL;
 std::map<CString, std::vector<TRSInfo>>* PASS;
 CMFCTRSuiDlg* MainDialog;
+char* timerPath, *timerName, *timerTag, *timerThreads;
+DWORD WINAPI TimeRunning(LPVOID arg);
+DWORD WINAPI TimerInitialization(LPVOID arg);
+extern HANDLE hTimerThread;
+extern CDialogEx* DIAL;
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
 {
 	
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	Manager.Init();
+	Manager.Init("D:\\");
 	
 }
 
 CMFCTRSuiDlg::~CMFCTRSuiDlg()
 {
 	Manager.Destroy();
+	delete timersCollection;
+	
 }
 
 
@@ -91,7 +104,7 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_PROGRAM_DELETESELECTEDITEMS, &CMFCTRSuiDlg::OnProgramDeleteselecteditems)
 	ON_COMMAND(ID_PROGRAM_RUNSEL, &CMFCTRSuiDlg::OnProgramRunsel)
 	ON_COMMAND(TOOLBAR_REFRESH, &CMFCTRSuiDlg::OnProgramRefresh)
-
+	//ON_REGISTERED_MESSAGE(MYWM_NOTIFYICON, &CMFCTRSuiDlg::OnNotifyIcon)
 	ON_WM_SYSCOMMAND(SC_CLOSE, &CMFCTRSuiDlg::OnSysCommand(UINT , LPARAM))
 	ON_COMMAND(ID_Load_Project, &CMFCTRSuiDlg::OnLoadProject)
 	ON_COMMAND(ID_PROJECT_LASTPROJECTS, &CMFCTRSuiDlg::OnProjectLastprojects)
@@ -103,12 +116,18 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	ON_COMMAND(ID_New_Project, &CMFCTRSuiDlg::OnNewProject)
 	ON_NOTIFY_EX(TTN_NEEDTEXTA, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	ON_COMMAND(TOOLBAR_SAVE, &CMFCTRSuiDlg::OnSaveProject)
+	ON_COMMAND(TOOLBAR_CLOCK, &CMFCTRSuiDlg::OnClock)
+	ON_COMMAND(TOOLBAR_ADDCLOCK, &CMFCTRSuiDlg::OnAddClock)
 	ON_NOTIFY_EX(TTN_NEEDTEXTW, 0, &CMFCTRSuiDlg::OnTtnNeedText)
 	
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
 	ON_NOTIFY(NM_RCLICK, IDC_TREE1, &CMFCTRSuiDlg::OnNMRClickTree1)
 	ON_COMMAND(ID_INFO_INFO, &CMFCTRSuiDlg::OnInfoInfo)
 	ON_COMMAND(ID_EXIT, &CMFCTRSuiDlg::OnExit)
+	ON_WM_MOUSEMOVE()
+	ON_WM_MOUSEHOVER()
+	ON_COMMAND(ID_Menu, &CMFCTRSuiDlg::OnMenu)
+	ON_COMMAND(ID_INFO_CLOSE, &CMFCTRSuiDlg::OnInfoClose)
 END_MESSAGE_MAP()
 
 
@@ -147,7 +166,7 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 			rectDlg.Width(), rectDlg.Height(), SWP_NOCOPYBITS);
 
 	}
-	
+	DIAL = this;
 	CFont *myFont = new CFont();
 	myFont->CreateFont(15, 0, 0, 0, FW_NORMAL, FALSE, false,
 		0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
@@ -413,10 +432,294 @@ BOOL CMFCTRSuiDlg::OnInitDialog()
 	COLL = &mapOfColls;
 	FAIL = &FailMap;
 	PASS = &PasMap;
-	
+	timersCollection = new TimerAddCollection;
+	timersCollection->Init();
+	hTimerThread = CreateThread(NULL, 0, TimeRunning, this, 0, 0);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
+VOID CALLBACK TimerAPCProc(
+	LPVOID lpArg,               // Data value
+	DWORD dwTimerLowValue,      // Timer low value
+	DWORD dwTimerHighValue)    // Timer high value
+
+{
+	// Formal parameters not used in this example.
+	UNREFERENCED_PARAMETER(dwTimerLowValue);
+	UNREFERENCED_PARAMETER(dwTimerHighValue);
+	CMFCTRSuiDlg* pointer = (CMFCTRSuiDlg*)lpArg;
+	
+	pointer->JustRunTimerTests(timerPath, timerTag, timerName, atoi(timerThreads));
+	
+	MessageBeep(0);
+
+}
+
+void CMFCTRSuiDlg::JustRunTimerTests(char* path, char* tag, char* name, int threads)
+{
+	STARTUPINFO startup_info;
+	ZeroMemory(&startup_info, sizeof(startup_info));
+	startup_info.cb = sizeof(startup_info);
+	PROCESS_INFORMATION pi;
+	ZeroMemory(&pi, sizeof(pi));
+	PROCESS_INFORMATION pa;
+	ZeroMemory(&pi, sizeof(pa));
+	char buf[] = R"(../Debug/trs.exe)";
+	WCHAR** lppPart = { NULL };
+
+
+	char logP[] = R"(../Logs)";
+	WCHAR Lp[MAX_PATH] = _T("");
+	WCHAR* Lcf = new WCHAR[strlen(logP) + 1];
+	convertToTCHAR(Lcf, logP);
+	GetFullPathName(Lcf, MAX_PATH, Lp, lppPart);
+	DWORD dwAttrib;
+	char* chP = convertToChar(Lp);
+	dwAttrib = GetFileAttributesA(chP);
+	
+	if (dwAttrib == INVALID_FILE_ATTRIBUTES || !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY))
+	{
+
+		TCHAR* directory = new TCHAR[strlen(chP) + 1];
+		convertToTCHAR(directory, chP);
+		if (!CreateDirectory(directory, NULL))
+		{
+			std::cerr << "Creating new directory failed: " << std::endl;
+			delete[] directory;
+			delete[] chP;
+		}
+		delete[] directory;
+
+	}
+	system_clock::time_point today = system_clock::now();
+	time_t tt = system_clock::to_time_t(today);
+	char time[70];
+
+	if (!ctime_s(time, 70, &tt))
+	{
+		int len = strlen(time);
+		time[len - 1] = 0;
+
+		for (int i = 0; time[i] != 0; ++i)
+		{
+			if ((time[i] == ':') || (time[i] == ' '))
+				time[i] = '_';
+			
+				
+		}
+	}
+	TCHAR* newDir = new TCHAR[strlen(time) + 1];
+	convertToTCHAR(newDir, time);
+	StringCchCat(Lp, MAX_PATH, TEXT("\\"));
+	StringCchCat(Lp, MAX_PATH, newDir);
+	CreateDirectory(newDir, NULL);
+
+	WCHAR res[MAX_PATH] = _T("");
+	WCHAR comm[MAX_PATH] = TEXT("Run ");
+	WCHAR arg[MAX_PATH] = TEXT(" -p \"");
+	WCHAR secArg[MAX_PATH] = TEXT(" -log ");
+	WCHAR  buf1[MAX_PATH] = TEXT("");
+	WCHAR secB[MAX_PATH] = TEXT("");
+	WCHAR bufff1[MAX_PATH] = TEXT("");
+	WCHAR thrdArg[MAX_PATH] = TEXT(" -hlog ");
+
+
+	WCHAR* buffer = new WCHAR[strlen(buf) + 1];
+	convertToTCHAR(buffer, buf);
+	WCHAR* buffer1 = new WCHAR[strlen(path) + 1];
+	convertToTCHAR(buffer1, path);
+	char* finLog = convertToChar(newDir);
+	WCHAR* bufferL = new WCHAR[strlen(finLog) + 1];
+	convertToTCHAR(bufferL, finLog);
+	delete[] newDir;
+	GetFullPathName(buffer1, MAX_PATH, bufff1, lppPart);
+	GetFullPathName(buffer, MAX_PATH, buf1, lppPart);
+	GetFullPathName(bufferL, MAX_PATH, secB, lppPart);
+	
+	StringCchCat(res, MAX_PATH, buf1);
+	StringCchCat(res, MAX_PATH, TEXT(" "));
+	StringCchCat(res, MAX_PATH, comm);
+	StringCchCat(res, MAX_PATH, arg);
+	StringCchCat(res, MAX_PATH, bufff1);
+	StringCchCat(res, MAX_PATH, TEXT("\""));
+	if (name)
+	{
+		if (strlen(name)&&strcmp(name,"All"))
+		{
+			WCHAR nName[MAX_PATH] = _T(" -n \"");
+			WCHAR* NBuf = new WCHAR[strlen(name) + 1];
+			convertToTCHAR(NBuf, name);
+			StringCchCat(res, MAX_PATH, nName);
+			StringCchCat(res, MAX_PATH, NBuf);
+			StringCchCat(res, MAX_PATH, TEXT("\""));
+		}
+	}
+	if (tag)
+	{
+		if (strlen(tag) && strcmp(tag, "All"))
+		{
+			WCHAR nTag[MAX_PATH] = _T(" -t \"");
+			WCHAR* TBuf = new WCHAR[strlen(tag) + 1];
+			convertToTCHAR(TBuf, tag);
+			StringCchCat(res, MAX_PATH, nTag);
+			StringCchCat(res, MAX_PATH, TBuf);
+			StringCchCat(res, MAX_PATH, TEXT("\""));
+		}
+	}
+	WCHAR nThr[MAX_PATH] = _T(" -j ");
+	WCHAR THR[MAX_PATH] = _T("");
+	swprintf_s(THR, L"%d", threads);
+	StringCchCat(res, MAX_PATH, nThr);
+	StringCchCat(res, MAX_PATH, THR);
+	StringCchCat(res, MAX_PATH, secArg);
+	StringCchCat(res, MAX_PATH, secB);
+	StringCchCat(res, MAX_PATH, thrdArg);
+	StringCchCat(res, MAX_PATH, secB);
+	
+	delete[] buffer;
+	BOOL hProc=CreateProcess(0, res, 0, 0, 0, 0, 0, 0, &startup_info, &pi);
+	WaitForSingleObject(pi.hProcess, INFINITE);
+	CloseHandle(pi.hThread);
+	CloseHandle(pi.hProcess);
+	DWORD err = GetLastError();
+}
+void findMinimalTime(std::vector<TimerADD>& coll,std::vector<TimerADD>& resColl)
+{
+	TimerADD* min = new TimerADD(coll[0]);
+	for (int i = 1; i < coll.size(); ++i)
+	{
+		if (coll[i].getClock().get_time() < min->getClock().get_time())
+		{
+			*min = coll[i];
+		}
+	}
+	for (int i = 0; i < coll.size(); ++i)
+	{
+		if (coll[i].getClock().get_time() == min->getClock().get_time())
+		{
+			resColl.push_back(coll[i]);
+		}
+	}
+	//delete[] min;
+}
+DWORD WINAPI TimerInitialization(LPVOID arg)
+{
+	TimerData* data = (TimerData*)arg;
+	while (true)
+	{
+		CloseHandle(hTimerThread);
+		data->coll->Init();
+		hTimerThread = CreateThread(NULL, 0, TimeRunning, data, 0, 0);
+		WaitForSingleObject(hTimerThread, INFINITE);
+		//Sleep(5000);
+	}
+}
+extern DWORD WINAPI TimeRunning(LPVOID arg)
+{
+	
+		CMFCTRSuiDlg* dlg = (CMFCTRSuiDlg*)arg;
+		HANDLE hTimer = CreateWaitableTimer(NULL, FALSE, NULL);
+		while (true)
+		{
+			std::vector<TimerADD> resColl;
+			if (timersCollection->getClocks().size())
+			{
+				findMinimalTime(timersCollection->getClocks(), resColl);
+				volatile LARGE_INTEGER large;
+				LARGE_INTEGER lParam;
+				SYSTEMTIME sit;
+				GetLocalTime(&sit);
+				bool ifEnd = false;
+				large.QuadPart = { 0 };
+				for (int i = 0; i < timersCollection->getTimers().size(); ++i)
+				{
+					for (int j = 0; j < resColl.size(); ++j)
+					{
+						if (timersCollection->getTimers()[i].ident == resColl[j].getUnique())
+						{
+							if (i <= timersCollection->getTimers().size())
+							{
+								int resDay = log2(timersCollection->getTimers()[i].days) + 1;
+								int resHour = _ttoi(timersCollection->getTimers()[i].hour);
+								int resMinute = _ttoi(timersCollection->getTimers()[i].minute);
+								if ((resDay - sit.wDayOfWeek) >= 0)
+								{
+									large.QuadPart = (resDay - sit.wDayOfWeek) * 24 * 60 * 60 * 10000000;
+									if ((resHour - sit.wHour) >= 0)
+									{
+										large.QuadPart += (_ttoi(timersCollection->getTimers()[i].hour)) * 60 * 60 * 10000000;
+										if ((resMinute - sit.wMinute) > 0)
+										{
+											large.QuadPart += (_ttoi(timersCollection->getTimers()[i].minute)) * 60 * 10000000;
+											ifEnd = true;
+											break;
+										}
+									}
+								}
+								large.QuadPart = { 0 };
+							}
+						}
+					}
+					if (ifEnd)
+					{
+						break;
+					}
+					
+				}
+
+				if (large.QuadPart!=0)
+				{
+					large.QuadPart = -large.QuadPart;
+					for (int i = 0; i < resColl.size(); ++i)
+					{
+						for (int j = 0; j < resColl[i].getClock().get_suites().size(); ++j)
+						{
+							timerPath = convertToChar(resColl[i].getClock().get_suites()[j].get_path());
+							timerName = fromCStringToChar(resColl[i].getName());
+							timerTag = fromCStringToChar(resColl[i].getTag());
+							timerThreads = fromCStringToChar(resColl[i].getThreads());
+							if (large.QuadPart>0)
+							{
+								lParam.QuadPart = -large.QuadPart;
+							}
+							if (!j)
+							{
+								SetWaitableTimer(hTimer, &lParam, 0, TimerAPCProc, dlg, 0);
+							}
+							else
+							{
+								SetWaitableTimer(hTimer, 0, 0, TimerAPCProc, dlg, 0);
+							}
+							//WaitForSingleObject(hTimer, INFINITE);
+							SleepEx(INFINITE, TRUE);
+
+							
+						}
+						if (!resColl[i].getClock().IsWeekly())
+						{
+							for (int j = 0; j < timersCollection->getTimers().size(); ++j)
+							{
+								if (timersCollection->getTimers()[j].ident == resColl[i].getUnique())
+								{
+									timersCollection->Remove(timersCollection->getTimers()[j]);
+								}
+							}
+						}
+						delete[] timerPath;
+						delete[] timerName;
+						delete[] timerTag;
+						delete[] timerThreads;
+					}
+					large.QuadPart = { 0 };
+					Sleep(60000);
+				}
+				//Sleep(180000);
+			}
+		}
+		
+	
+	return 0;
+}
 #pragma region stuff
 // If you add a minimize button to your dialog, you will need the code below
 //  to draw the icon.  For MFC applications using the document/view model,
@@ -682,6 +985,7 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 				TCHAR* buf = new TCHAR[strlen(Way)+1];
 				convertToTCHAR(buf, Way);
 				//collOfColls.push_back(Info(buf));
+				
 				delete[] buf;
 				delete[] Way;
 			}
@@ -737,7 +1041,6 @@ void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
 		std::sort(dRoots.begin(), dRoots.end(), std::greater<int>());
 		for (auto iter = dRoots.begin(); iter != dRoots.end(); ++iter)
 		{
-
 			RootList.DeleteItem(*iter);
 		}
 		if (RootList.GetItemCount())
@@ -776,30 +1079,6 @@ void CMFCTRSuiDlg::OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult)
 	// TODO: Add your control notification handler code here
 	*pResult = 0;
 }
-
-//DWORD WINAPI RunSuits(LPVOID arg)
-//{
-//	//RunParameters param;
-//	//param = *(RunParameters*)arg;
-//	//std::list<Suite*> coll = *Manager.List(param.path, param.name, param.tag);
-//	//int count = 0;
-//	//for each(auto it in coll)
-//	//{
-//	//	count += it->getList().size();
-//	//	for each(auto iter in it->getList())
-//	//	{
-//	//		if (iter->getRepeat())
-//	//		{
-//	//			count += atoi(iter->getRepeat());
-//	//			--count;
-//	//		}
-//	//	}
-//	//}
-//	//param.progress->SetRange(0, count);
-//	//param.progress->SetStep(1);
-//	//Manager.Run(param.path, param.name, param.tag, param.threads, param.reporter);
-//	return 0;
-//}
 
 DWORD WINAPI ToRun(LPVOID arg)
 {
@@ -1250,7 +1529,7 @@ DWORD WINAPI Timer(LPVOID arg)
 void CMFCTRSuiDlg::OnProgramRunsel()
 {
 	TestsTimerDialog dlg;
-	dlg.DoModal();
+	//dlg.DoModal();
 	if (dRoots.size())
 	{
 		m_Progress.SetPos(0);
@@ -1946,14 +2225,6 @@ void CMFCTRSuiDlg::OnSize(UINT nType, int cxx, int cyy)
 	old_rect = new_rect;
 }
 
-
-void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
-{
-	mx->ptMinTrackSize.x = 770;
-	mx->ptMinTrackSize.y = 500;
-	CDialogEx::OnGetMinMaxInfo(mx);
-}
-
 void CMFCTRSuiDlg::OnLoadProject()
 {
 	UpdateToolbar(PROJECT_NOTLOADED);
@@ -2198,97 +2469,110 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if (nID == SC_CLOSE)
 	{
-		int res=0;
 
 
-		if (RootList.GetItemCount() > 0)
+		// Note: This is an example GUID only and should not be used.
+		// Normally, you should use a GUID-generating tool to provide the value to
+		// assign to guidItem.
+		Shell_NotifyIcon(NIM_DELETE, &nid);
+		nid = {};
+		nid.cbSize = sizeof(nid);
+
+		nid.hWnd = m_hWnd;
+		nid.uFlags = NIF_ICON | NIF_TIP | NIF_GUID | NIF_INFO | NIF_MESSAGE | NIF_SHOWTIP;
+		nid.uCallbackMessage = MYWM_NOTIFYICON;
+		nid.uVersion = NOTIFYICON_VERSION_4;
+
+		static GUID myGuid;
+		CoCreateGuid(&myGuid);
+		nid.guidItem = myGuid;
+		// This text will be shown as the icon's tooltip.
+		StringCchCopy(nid.szTip, ARRAYSIZE(nid.szTip), L"Test managment");
+		StringCchCopy(nid.szInfo, ARRAYSIZE(nid.szInfo), L"I am here");
+		// Load the icon for high DPI.
+		LoadIconMetric(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON2), LIM_SMALL, &(nid.hIcon));
+
+		// Show the notification.
+
+
+		Shell_NotifyIcon(NIM_ADD, &nid);
+		Shell_NotifyIcon(NIM_SETVERSION, &nid);
+		ShowWindow(SW_HIDE); // hide the window
+		long style = GetWindowLong(m_hWnd, GWL_STYLE);
+		SetWindowLong(m_hWnd, GWL_STYLE, style); // set the style
+		ShowWindow(SW_SHOW); // show the window for the new style to come into effect
+		ShowWindow(SW_HIDE); // hide the window so we can't see it
+
+
+		/*BOOL bRet;
+
+		WNDCLASSEX wnd = { 0 };
+
+		wnd.hInstance = GetModuleHandle(NULL);
+		wnd.lpszClassName = L"CMFCTRSuiDlg";
+		wnd.lpfnWndProc = WindowProcedure;
+		wnd.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+		wnd.cbSize = sizeof (WNDCLASSEX);
+
+		wnd.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+		wnd.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+		wnd.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wnd.hbrBackground = (HBRUSH)COLOR_APPWORKSPACE;
+
+		if (!RegisterClassEx(&wnd))
 		{
-			char* path = pro_.getProjPath();
-			if (path)
-			{
-				WIN32_FIND_DATA FindFileData;
-				TCHAR* buf = new TCHAR[strlen(path) + 1];
-				convertToTCHAR(buf, path);
-				HANDLE handle = FindFirstFile(buf, &FindFileData);
-				int found = handle != INVALID_HANDLE_VALUE;
-				if (!found)
-				{
-					res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
-					if (res == IDYES)
-					{
-						pro_.SaveProject(&RootList);
-						delete[] path;
-						delete[] buf;
-						CDialogEx::OnOK();
-					}
-					if (res==IDNO)
-					{
-						delete[] path;
-						delete[] buf;
-						CDialogEx::OnOK();
-					}
-					if (res == IDCANCEL)
-					{
-						delete[] path;
-						delete[] buf;
-						return;
-					}
-				}
-				else
-				{
+		FatalAppExit(0, TEXT("Couldn't register window class!"));
+		}
 
-					if (!CheckForModification(path, pro_.getName(), &RootList, &DropDown, &ThreadsComboBox, &m_NameBox, console_output.IsWindowVisible()))
-					{
-						if (SaveAsPressed)
-						{
-							int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
-							if (res == IDYES)
-							{
-								pro_.SaveProject(&RootList);
-								delete[] path;
-								delete[] buf;
-								CDialogEx::OnOK();
-							}
-							if (res==IDNO)
-							{
-								delete[] path;
-								delete[] buf;
-								CDialogEx::OnOK();
-							}
-							if (res == IDCANCEL)
-							{
-								delete[] path;
-								delete[] buf;
-								return;
-							}
-						}
-						else
-						{
-							delete[] path;
-							delete[] buf;
-							CDialogEx::OnOK();
-						}
-					}
-					else
-					{
-						delete[] buf;
-						delete[] path;
-						CDialogEx::OnOK();
-					}
-				}
-			}
+
+		*/
+		
+		/*while ((bRet = GetMessage(&msg, m_hWnd, 0, 0)) != 0)
+		{
+		if (bRet == -1)
+		{
+		// handle the error and possibly exit
 		}
 		else
 		{
-			CDialogEx::OnOK();
+
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+		switch (msg.message)
+		{
+		case MYWM_NOTIFYICON:
+		MessageBox(_T("TTTTT"), _T("idsbv"), MB_OK);
+		break;
 		}
-	}
-	if (nID == SC_ZOOM)
+		}
+		}*/
+		//CWnd::OnSysCommand(nID, lParam);
+		/*SetWindowLong(m_hWnd, GWL_EXSTYLE,
+			GetWindowLong(m_hWnd, GWL_EXSTYLE) | WS_EX_APPWINDOW);
+			long style = GetWindowLong(m_hWnd, GWL_STYLE);
+			style &= ~(WS_VISIBLE);    // this works - window become invisible
+
+			style |= WS_EX_TOOLWINDOW;   // flags don't work - windows remains in taskbar
+			style &= ~(WS_EX_APPWINDOW);
+
+			ShowWindow(SW_HIDE); // hide the window
+			SetWindowLong(m_hWnd, GWL_STYLE, style); // set the style
+			ShowWindow(SW_SHOW); // show the window for the new style to come into effect
+			ShowWindow(SW_HIDE); // hide the window so we can't see it
+
+
+			}*/
+
+		}
+
+	
+	else
 	{
-
+		CWnd::OnSysCommand(nID, lParam);
 	}
-
-	CWnd::OnSysCommand(nID, lParam);
+	
+	
+	
 }
 
 void CMFCTRSuiDlg::OnViewConsole()
@@ -3115,6 +3399,301 @@ void CMFCTRSuiDlg::SetListItemImage(DWORD index, DWORD image)
 
 void CMFCTRSuiDlg::OnExit()
 {
-	OnSysCommand(SC_CLOSE, NULL);
+	if (RootList.GetItemCount() > 0)
+	{
+		char* path = pro_.getProjPath();
+		if (path)
+		{
+			WIN32_FIND_DATA FindFileData;
+			TCHAR* buf = new TCHAR[strlen(path) + 1];
+			convertToTCHAR(buf, path);
+			HANDLE handle = FindFirstFile(buf, &FindFileData);
+			int found = handle != INVALID_HANDLE_VALUE;
+			if (!found)
+			{
+				int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
+				if (res == IDYES)
+				{
+					pro_.SaveProject(&RootList);
+					delete[] path;
+					delete[] buf;
+					CDialogEx::OnOK();
+				}
+				if (res == IDNO)
+				{
+					delete[] path;
+					delete[] buf;
+					CDialogEx::OnOK();
+				}
+				if (res == IDCANCEL)
+				{
+					delete[] path;
+					delete[] buf;
+					return;
+				}
+			}
+			else
+			{
+
+				if (!CheckForModification(path, pro_.getName(), &RootList, &DropDown, &ThreadsComboBox, &m_NameBox, console_output.IsWindowVisible()))
+				{
+					if (SaveAsPressed)
+					{
+						int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
+						if (res == IDYES)
+						{
+							pro_.SaveProject(&RootList);
+							delete[] path;
+							delete[] buf;
+							CDialogEx::OnOK();
+						}
+						if (res == IDNO)
+						{
+							delete[] path;
+							delete[] buf;
+							CDialogEx::OnOK();
+						}
+						if (res == IDCANCEL)
+						{
+							delete[] path;
+							delete[] buf;
+							return;
+						}
+					}
+					else
+					{
+						delete[] path;
+						delete[] buf;
+						CDialogEx::OnOK();
+					}
+				}
+				else
+				{
+					delete[] buf;
+					delete[] path;
+					CDialogEx::OnOK();
+				}
+			}
+		}
+	}
+	else
+	{
+		CDialogEx::OnOK();
+	}
+	
 //	EndDialog(IDCANCEL);
+}
+
+// ======================================================================================================================
+
+
+// ======================================================================================================================
+// Merge these two methods with some kind of checking which buttonw was signaled
+void CMFCTRSuiDlg::OnClock()
+{
+	//AddClockDlg dlg;
+	std::vector<SuiteRoot> coll;
+	std::vector<bool> is_check;
+	is_check.resize(RootList.GetItemCount());
+	for (int i = 0; i < RootList.GetItemCount(); ++i)
+	{
+		coll.push_back(SuiteRoot(RootList.GetItemText(i, 0)));
+		is_check[i] = RootList.GetCheck(i);
+	}
+	TestsTimerDialog dlg;
+
+	CString name_sel;
+	m_NameBox.GetLBText(m_NameBox.GetCurSel(), name_sel);
+
+	CString tag_sel;
+	DropDown.GetLBText(DropDown.GetCurSel(), tag_sel);
+
+	CString thread_sel;
+	ThreadsComboBox.GetLBText(ThreadsComboBox.GetCurSel(), thread_sel);
+
+	dlg.Init(coll, is_check, name_sel, tag_sel, thread_sel);
+	dlg.DoModal();
+}
+
+void CMFCTRSuiDlg::OnAddClock()
+{
+	std::vector<SuiteRoot> coll;
+	std::vector<bool> is_check;
+	is_check.resize(RootList.GetItemCount());
+	for (int i = 0; i < RootList.GetItemCount(); ++i)
+	{
+		coll.push_back(SuiteRoot(RootList.GetItemText(i, 0)));
+		is_check[i] = RootList.GetCheck(i);
+	}
+	TestsTimerDialog dlg;
+
+	CString name_sel;
+	m_NameBox.GetLBText(m_NameBox.GetCurSel(), name_sel);
+
+	CString tag_sel;
+	DropDown.GetLBText(DropDown.GetCurSel(), tag_sel);
+
+	CString thread_sel;
+	ThreadsComboBox.GetLBText(ThreadsComboBox.GetCurSel(), thread_sel);
+
+	dlg.Init(coll, is_check, name_sel, tag_sel, thread_sel, true);
+	dlg.DoModal();
+}
+
+// ======================================================================================================================
+
+void CMFCTRSuiDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CDialogEx::OnMouseMove(nFlags, point);
+}
+
+
+void CMFCTRSuiDlg::OnMouseHover(UINT nFlags, CPoint point)
+{
+	// TODO: Add your message handler code here and/or call default
+
+	CDialogEx::OnMouseHover(nFlags, point);
+}
+
+
+LRESULT CMFCTRSuiDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	switch (message)
+	{
+	case MYWM_NOTIFYICON:
+		switch (lParam)
+		{
+			
+		case WM_RBUTTONUP:
+		{
+							 CMenu *mnuPopupSubmit = new CMenu;
+							 mnuPopupSubmit->LoadMenu(IDR_MENU5);
+							 CMenu* nextMenu = mnuPopupSubmit->GetSubMenu(0);
+							 ASSERT(nextMenu);
+							 POINT mousePos;
+							 GetCursorPos(&mousePos);
+							 nextMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, mousePos.x, mousePos.y, this);
+							 break;
+		}
+		case WM_LBUTTONUP:
+		{
+							 ShowWindow(SW_HIDE); // hide the window
+							 long style = GetWindowLong(m_hWnd, GWL_STYLE);
+							 SetWindowLong(m_hWnd, GWL_STYLE, style); // set the style
+							 ShowWindow(SW_SHOW);
+							 break;
+		}
+		}
+		break;
+	}
+	return CDialogEx::WindowProc(message, wParam, lParam);
+}
+
+
+void CMFCTRSuiDlg::OnMenu()
+{
+	// TODO: Add your command handler code here
+	
+	ShowWindow(SW_HIDE); // hide the window
+	long style = GetWindowLong(m_hWnd, GWL_STYLE);
+	SetWindowLong(m_hWnd, GWL_STYLE, style); // set the style
+	ShowWindow(SW_SHOW); // show the window for the new style to come into effect
+	//ShowWindow(SW_HIDE); // hide the window so we can't see it
+}
+
+
+void CMFCTRSuiDlg::OnInfoClose()
+{
+	// TODO: Add your command handler code here
+	if (RootList.GetItemCount() > 0)
+	{
+		char* path = pro_.getProjPath();
+		if (path)
+		{
+			WIN32_FIND_DATA FindFileData;
+			TCHAR* buf = new TCHAR[strlen(path) + 1];
+			convertToTCHAR(buf, path);
+			HANDLE handle = FindFirstFile(buf, &FindFileData);
+			int found = handle != INVALID_HANDLE_VALUE;
+			if (!found)
+			{
+				int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
+				if (res == IDYES)
+				{
+					pro_.SaveProject(&RootList);
+					delete[] path;
+					delete[] buf;
+					CDialogEx::OnOK();
+				}
+				if (res == IDNO)
+				{
+					delete[] path;
+					delete[] buf;
+					CDialogEx::OnOK();
+				}
+				if (res == IDCANCEL)
+				{
+					delete[] path;
+					delete[] buf;
+					return;
+				}
+			}
+			else
+			{
+
+				if (!CheckForModification(path, pro_.getName(), &RootList, &DropDown, &ThreadsComboBox, &m_NameBox, console_output.IsWindowVisible()))
+				{
+					if (SaveAsPressed)
+					{
+						int res = MessageBox(_T("Save project ?"), _T("Save"), MB_ICONINFORMATION | MB_YESNOCANCEL);
+						if (res == IDYES)
+						{
+							pro_.SaveProject(&RootList);
+							delete[] path;
+							delete[] buf;
+							CDialogEx::OnOK();
+						}
+						if (res == IDNO)
+						{
+							delete[] path;
+							delete[] buf;
+							CDialogEx::OnOK();
+						}
+						if (res == IDCANCEL)
+						{
+							delete[] path;
+							delete[] buf;
+							return;
+						}
+					}
+					else
+					{
+						delete[] path;
+						delete[] buf;
+						CDialogEx::OnOK();
+					}
+				}
+				else
+				{
+					delete[] buf;
+					delete[] path;
+					CDialogEx::OnOK();
+				}
+			}
+		}
+	}
+	else
+	{
+		CDialogEx::OnOK();
+	}
+}
+
+void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
+{
+	mx->ptMinTrackSize.x = 830;
+	mx->ptMinTrackSize.y = 500;
+	CDialogEx::OnGetMinMaxInfo(mx);
 }

@@ -23,6 +23,13 @@ void convertToTCHAR(TCHAR*dest, const char* path)
 	}
 }
 
+DWORD UniqueNumber()
+{
+	FILETIME fTime;
+	GetSystemTimeAsFileTime(&fTime);
+	return fTime.dwHighDateTime + fTime.dwLowDateTime;
+}
+
 char* convertToChar(TCHAR*path)//create buffer to set info to tinyXML doc constructor
 {
 	char* buf = new char[MAX_PATH];
@@ -165,6 +172,7 @@ bool CheckForModification(char* path, char* name, CListCtrl* List,CComboBox* tag
 						char* p = fromCStringToChar(buffer);
 						if (strncmp(text->Value(), p, strlen(p)))
 						{
+							delete[] p;
 							return false;
 						}
 						delete[] p;

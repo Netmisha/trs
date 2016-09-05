@@ -4,6 +4,7 @@
 #include "TRSLibrary\TinyXML\tinyxml.h"
 #include <vector>
 #include "Functionality.h"
+
 class ProjectProperties
 {
 	char* path;

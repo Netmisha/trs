@@ -3,6 +3,8 @@
 #include <vector>
 #include <MFCTRSui\MFCTRSuiDlg.h>
 #include "TRSLibrary\ReportManager.h"
+#include "SuiteRoot.h"
+
 struct ToRunParameters
 {
 	std::vector<SuiteRoot> coll;

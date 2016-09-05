@@ -12,7 +12,7 @@ TRSLibrary/Release/
 UnitTest/Release/
 MFCTRSui/MFCTRSui.aps
 UnitTest/Debug/
-
+MFCTRSui/Timers.xml
 TRS.v12.suo
 ipch/
 Console/Debug/
@@ -27,3 +27,5 @@ Report.html
 *.aps
 MFCTRSui/MFCTRSui.aps
 MFCTRSui/Last Project.xml
+Console/Logs
+"MFCTRSui/Last Project.xml"
