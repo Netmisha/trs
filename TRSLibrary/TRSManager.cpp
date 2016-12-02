@@ -428,6 +428,7 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 		if (hFind == INVALID_HANDLE_VALUE)
 		{
 			std::cout << "FindFirstFile failed\n";
+			FindClose(hFind);
 			return 0;
 		}
 		else
@@ -465,6 +466,7 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 									ifDeleted = true;
 								}
 							}
+							FindClose(hFind);
 							return EXE_OR_XML_ABSENT;
 						}
 					}
@@ -503,6 +505,7 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 									delete (*it);
 								}
 								delete suiteCollection;
+								FindClose(hFind);
 								return INVALID_XML_FILE;
 							}
 						}
@@ -515,8 +518,10 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 		}
 		if (!ifXml)
 		{
+			FindClose(hFind);
 			return EXE_OR_XML_ABSENT;
 		}
+		FindClose(hFind);
 		return true;
 	}
 	else

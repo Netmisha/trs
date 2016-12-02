@@ -108,6 +108,7 @@
     <ClInclude Include="..\TRSLibrary\TinyXML\tinystr.h" />
     <ClInclude Include="..\TRSLibrary\TinyXML\tinyxml.h" />
     <ClInclude Include="AddClockDlg.h" />
+    <ClInclude Include="AddSuite.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="ClockCollection.h" />
     <ClInclude Include="ClockInstance.h" />
@@ -139,6 +140,7 @@
     <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlerror.cpp" />
     <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlparser.cpp" />
     <ClCompile Include="AddClockDlg.cpp" />
+    <ClCompile Include="AddSuite.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="ClockCollection.cpp" />
     <ClCompile Include="ConsoleReporter.cpp" />
