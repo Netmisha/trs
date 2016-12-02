@@ -141,7 +141,7 @@ public:
 	void SetListItemImage(DWORD index, DWORD image);
 	bool SetListItemState(bool state, SuiteRoot text);
 	bool ExistInList(TCHAR* path);
-	
+	void setDisableTrue(TiXmlNode *Parent);
 	CListCtrl m_ListCtrl;
 
 	afx_msg void OnCbnSelchangeCombo3();
@@ -151,20 +151,23 @@ public:
 
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnInfoInfo();
 	afx_msg void OnExit();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	afx_msg void OnMenu();
 	afx_msg void OnInfoClose();
-	afx_msg void OnMenusuiteAddsuite();
-	afx_msg void OnMenusuiteAddcase();
-	afx_msg void OnMenusuiteEdit();
-	afx_msg void OnMenusuiteDeletesuite();
-	afx_msg void OnMenusuiteDisable();
+	afx_msg void OnInfoDisable();
+	
+	afx_msg void OnInfoDisableall();
+	afx_msg void OnInfoEnable();
+	afx_msg void OnInfoEnablefolder();
 	bool FindPathToObject();
-	CString sCurrentPathToFile;
+	void LeftMouseClick();
 	CString sCurrentFileName;
+	CString sCurrentPathToFile;
+	afx_msg void OnInfoEdit();
 };
 
 //extern CListBox* List;

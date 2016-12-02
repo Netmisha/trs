@@ -968,11 +968,15 @@ bool TRSInfo::Parse(TiXmlNode* pParent)
 		}
 		if ((strncmp(pParent->Value(), "disable", strlen("disable")) == 0) &&getName())
 		{
+			//MANDRUK1331
+			
 			checkSuite = true;
 			TiXmlNode* child = pParent->FirstChild();
+			
+			
 			if (child && child->Type() == TiXmlNode::TINYXML_TEXT)
 			{
-				if (strlen(child->Value()) > 0)
+ 				if (strlen(child->Value()) > 0)
 				{
 					char *dis = new char[strlen(child->Value()) + 1];
 					strncpy_s(dis, strlen(child->Value()) + 1, child->Value(), strlen(child->Value()));
