@@ -4134,7 +4134,11 @@ void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
 
 void CMFCTRSuiDlg::OnInfoAddsuite()
 {
-	// TODO: Add your command handler code here
+	if (!TestForInfo) {
+		AddSuite add_suite;
+		add_suite.setPath(sCurrentPathToFile);
+		add_suite.DoModal();
+	}
 }
 
 
