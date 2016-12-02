@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<TRSProject name="fedgvfd" ProjectPath="D:\Mihan">
+    <path>D:\Mihan\trs\TestData\TestStrcuture\Suite2</path>
+    <ListSelection>
+        <selection>0</selection>
+    </ListSelection>
+    <tag>0</tag>
+    <threads>9</threads>
+    <testName>0</testName>
+    <console>invisible</console>
+</TRSProject>
