@@ -1,31 +1,29 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <suite name="Test" description="Test description">
-	<tag>Release</tag>
-	<repeat pause = "100">120</repeat>
-	<maxTime>2s</maxTime>
-	<maxThreads>3</maxThreads>
-<priority>4</priority>
-<disable>false</disable>
-	<metadata>
-		<author>Mykhailo</author>
-		<date>05.20.2016</date>
-<version>1.0.0</version>
-		<mail>mykhailo.mastykash@globallogic.com</mail>
-<copyright></copyright>
-<license></license>
-
-		<info></info>
-	</metadata>
-
-	<test name="Test 7" description="Test description">
-<priority>4</priority>
-		<tag>Release</tag>
-		<disable>false</disable>
-<execution path="..\Suite2\Suite3">test.exe</execution>
-<parameters repeat = "32" >1000 0</parameters>
-<result>0</result>
-<repeat pause="100">7</repeat>
-            <maxTime>2s</maxTime>
-	<waitFor/>
-	</test>
+    <tag>Release</tag>
+    <repeat pause="100">120</repeat>
+    <maxTime>2s</maxTime>
+    <maxThreads>3</maxThreads>
+    <priority>4</priority>
+    <disable>false</disable>
+    <metadata>
+        <author>Mykhailo</author>
+        <date>05.20.2016</date>
+        <version>1.0.0</version>
+        <mail>mykhailo.mastykash@globallogic.com</mail>
+        <copyright />
+        <license />
+        <info />
+    </metadata>
+    <test name="Test 7" description="Test description">
+        <priority>4</priority>
+        <tag>Release</tag>
+        <disable>false</disable>
+        <execution path="..\Suite2\Suite3">test.exe</execution>
+        <parameters repeat="32">1000 0</parameters>
+        <result>0</result>
+        <repeat pause="100">7</repeat>
+        <maxTime>2s</maxTime>
+        <waitFor />
+    </test>
 </suite>

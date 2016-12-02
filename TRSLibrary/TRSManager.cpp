@@ -444,7 +444,7 @@ int TRSManager::FillList(char*path, char*name, char*tag, std::list<Suite*>*suite
 						TCHAR subDir[MAX_PATH];//create additional buffer for recursive traverse
 						StringCchCopy(subDir, MAX_PATH, hzDir);//fill additional buffer with this folder's path
 						StringCchCat(subDir, MAX_PATH, TEXT("\\"));//additional slash))
-						StringCchCat(subDir, MAX_PATH, ffd.cFileName);//name of last folder to search in
+						StringCchCat(subDir, MAX_PATH, ffd.cFileName);//name of last folder to search in // look here
 						char* way = convertToChar(subDir);
 						if (FillList(way, name, tag, suiteCollection, testList) != EXE_OR_XML_ABSENT)
 						{
