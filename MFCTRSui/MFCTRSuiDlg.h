@@ -151,13 +151,20 @@ public:
 
 	afx_msg void OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnInfoInfo();
 	afx_msg void OnExit();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	afx_msg void OnMenu();
 	afx_msg void OnInfoClose();
+	afx_msg void OnMenusuiteAddsuite();
+	afx_msg void OnMenusuiteAddcase();
+	afx_msg void OnMenusuiteEdit();
+	afx_msg void OnMenusuiteDeletesuite();
+	afx_msg void OnMenusuiteDisable();
+	bool FindPathToObject();
+	CString sCurrentPathToFile;
+	CString sCurrentFileName;
 };
 
 //extern CListBox* List;

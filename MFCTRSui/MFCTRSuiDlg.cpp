@@ -1,4 +1,4 @@
-
+﻿
 // MFCTRSuiDlg.cpp : implementation file
 //
 
@@ -6,6 +6,7 @@
 #include "MFCTRSui.h"
 #include "MFCTRSuiDlg.h"
 #include "afxdialogex.h"
+#include <fstream>
 #include <list>
 #define MYWM_NOTIFYICON (WM_APP+100)
 #include "ConsoleReporter.h"
@@ -60,6 +61,8 @@ extern CDialogEx* DIAL;
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
+	, sCurrentPathToFile(_T(""))
+	, sCurrentFileName(_T(""))
 {
 	
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -122,12 +125,16 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
 	ON_NOTIFY(NM_RCLICK, IDC_TREE1, &CMFCTRSuiDlg::OnNMRClickTree1)
-	ON_COMMAND(ID_INFO_INFO, &CMFCTRSuiDlg::OnInfoInfo)
 	ON_COMMAND(ID_EXIT, &CMFCTRSuiDlg::OnExit)
 	ON_WM_MOUSEMOVE()
 	ON_WM_MOUSEHOVER()
 	ON_COMMAND(ID_Menu, &CMFCTRSuiDlg::OnMenu)
 	ON_COMMAND(ID_INFO_CLOSE, &CMFCTRSuiDlg::OnInfoClose)
+	ON_COMMAND(ID_MENUSUITE_ADDSUITE, &CMFCTRSuiDlg::OnMenusuiteAddsuite)
+	ON_COMMAND(ID_MENUSUITE_ADDCASE, &CMFCTRSuiDlg::OnMenusuiteAddcase)
+	ON_COMMAND(ID_MENUSUITE_EDIT, &CMFCTRSuiDlg::OnMenusuiteEdit)
+	ON_COMMAND(ID_MENUSUITE_DELETESUITE, &CMFCTRSuiDlg::OnMenusuiteDeletesuite)
+	ON_COMMAND(ID_MENUSUITE_DISABLE, &CMFCTRSuiDlg::OnMenusuiteDisable)
 END_MESSAGE_MAP()
 
 
@@ -1009,6 +1016,7 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 			imalloc->Release();
 		}
 	}
+	OnProgramRefresh();
 }
 
 bool CMFCTRSuiDlg::ExistInList(TCHAR* path)
@@ -3299,11 +3307,13 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: Add your control notification handler code here
 	CMenu *mnuPopupSubmit = new CMenu;
-	mnuPopupSubmit->LoadMenu(IDR_MENU4);
-	CMenu* nextMenu = mnuPopupSubmit->GetSubMenu(0);
-	ASSERT(nextMenu);
 	NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
 	HTREEITEM hTest = m_Tree.GetSelectedItem();
+	if (!hTest) {
+		*pResult = 0;
+		return;
+	}
+	TestForInfo = nullptr;
 	std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(RootList.GetItemText(lastSelected, 0));
 	for (int i = 0; i < iter->second.size(); ++i)
 	{
@@ -3312,28 +3322,22 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 			TestForInfo = (TRSTest*)m_Tree.GetItemData(*iter->second[i]);
 		}
 	}
+	FindPathToObject();
+	if (!TestForInfo) {
+		mnuPopupSubmit->LoadMenu(IDR_MENU_SUITE);
+		mnuPopupSubmit->RemoveMenu(ID_MENUSUITE_EDIT, MF_BYCOMMAND);
+	}
+	else {
+		mnuPopupSubmit->LoadMenu(IDR_MENU_SUITE);
+		mnuPopupSubmit->RemoveMenu(ID_MENUSUITE_ADDSUITE, MF_BYCOMMAND);
+	}
+	CMenu* nextMenu = mnuPopupSubmit->GetSubMenu(0);
+	ASSERT(nextMenu);
 	POINT mousePos;
 	GetCursorPos(&mousePos);
 	nextMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, mousePos.x, mousePos.y, this);
 	*pResult = 0;
 }
-
-
-void CMFCTRSuiDlg::OnInfoInfo()
-{
-	if (TestForInfo)
-	{
-		TestInfo dlg;
-		dlg.DoModal();
-		TestForInfo = nullptr;
-	}
-	else
-	{
-		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
-	}
-	// TODO: Add your command handler code here
-}
-
 void CMFCTRSuiDlg::OnProgramRefresh()
 {
 	if (RootList.GetItemCount())
@@ -3696,4 +3700,239 @@ void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
 	mx->ptMinTrackSize.x = 830;
 	mx->ptMinTrackSize.y = 500;
 	CDialogEx::OnGetMinMaxInfo(mx);
+}
+
+
+void CMFCTRSuiDlg::OnMenusuiteAddsuite()
+{
+	if (TestForInfo)
+	{
+		TestInfo dlg;
+		dlg.DoModal();
+		TestForInfo = nullptr;
+	}
+	else
+	{
+		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
+	}
+}
+
+
+void CMFCTRSuiDlg::OnMenusuiteAddcase()
+{
+	if (TestForInfo)
+	{
+		TestInfo dlg;
+		dlg.DoModal();
+		TestForInfo = nullptr;
+	}
+	else
+	{
+		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
+	}
+}
+
+
+void CMFCTRSuiDlg::OnMenusuiteEdit()
+{
+	if (TestForInfo)
+	{
+		TestInfo dlg;
+		dlg.DoModal();
+		TestForInfo = nullptr;
+	}
+	else
+	{
+		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
+	}
+}
+
+
+void CMFCTRSuiDlg::OnMenusuiteDeletesuite()
+{
+	HTREEITEM hSelected = m_Tree.GetSelectedItem();
+	bool erased = false;
+	if (TestForInfo)
+	{
+		int res = MessageBox(_T("Remove test ?"), _T("Remove"), MB_ICONINFORMATION | MB_YESNO);
+		if (res == IDNO) {
+			return;
+		}
+		std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(RootList.GetItemText(lastSelected, 0));
+		for (int i = 0; i < iter->second.size(); ++i)
+		{
+			if (*iter->second[i] == hSelected)
+			{
+				iter->second.erase(iter->second.begin()+i);
+				break;
+			}
+		}
+		for (auto iter = suiteColl->begin(); iter != suiteColl->end(); iter++) {
+			for (auto t_iter = (*iter)->getList().begin(); t_iter != (*iter)->getList().end(); t_iter++) {
+				if (*t_iter == TestForInfo) {
+					(*iter)->getList().erase(t_iter);
+					erased = true;
+					break;
+				}
+			}
+			if (erased) {
+				break;
+			}
+		}
+		CStringA file(sCurrentPathToFile+sCurrentFileName);
+		std::fstream local_file;
+		local_file.open(file.GetBuffer(), std::ios_base::in);
+		CStringA data;
+		while (!local_file.eof()) {
+			char buff[256];
+			memset(buff, 0, 256);
+			local_file.read(buff, sizeof(buff)-1);
+			data += buff;
+		}
+		local_file.close();
+		char * begin = strstr(data.GetBuffer(), "<test");
+		char * ptr = begin;
+		while (ptr) {
+			while (*(ptr++) != '"');
+			if (!strncmp(ptr, TestForInfo->getName(), strlen(TestForInfo->getName()))) {
+				break;
+			}
+			ptr = strstr(ptr, "<test");
+			begin = ptr;
+		}
+		char * end = strstr(begin, "</test>") + strlen("</test>")+1;
+		memcpy(begin, end, strlen(end)+1);
+		local_file.open(file.GetBuffer(), std::ios_base::out);
+		local_file.write(data.GetBuffer(), strlen(data.GetBuffer()));
+		local_file.close();
+		delete TestForInfo;
+		TestForInfo = nullptr;
+	}
+	else
+	{
+		int res = MessageBox(_T("Remove test suite ?"), _T("Remove"), MB_ICONINFORMATION | MB_YESNO);
+		if (res == IDNO) {
+			return;
+		}
+		CStringA path(sCurrentPathToFile);
+		path.GetBuffer()[path.GetLength() - 1] = '\0';
+		CStringA delete_command("rmdir /s/q ");
+		CStringA cd_command("cd ");
+		cd_command += sCurrentPathToFile;
+		delete_command += path;
+		system(cd_command);
+		system("cd ..");
+		system(delete_command);
+	}
+	OnProgramRefresh();
+}
+
+
+void CMFCTRSuiDlg::OnMenusuiteDisable()
+{
+	if (TestForInfo)
+	{
+		TestInfo dlg;
+		dlg.DoModal();
+		TestForInfo = nullptr;
+	}
+	else
+	{
+		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
+	}
+}
+
+
+bool CMFCTRSuiDlg::FindPathToObject()
+{
+	sCurrentFileName = sCurrentPathToFile = CString();
+	if (TestForInfo) {
+		CString path(TestForInfo->getPath());
+		WIN32_FIND_DATA FindFileData;
+		HANDLE hFind;
+		hFind = FindFirstFile(path+L"*.xml", &FindFileData);
+		do {
+			CStringA file(path + CString(FindFileData.cFileName));
+			std::fstream local_file;
+			local_file.open(file.GetBuffer(), std::ios_base::in);
+			std::string tag;
+			while (!local_file.eof()) {
+				local_file >> tag;
+				if (tag == "<test") {
+					while (!local_file.eof()) {
+						char ch;
+						local_file.get(ch);
+						if (ch == '"') {
+							break;
+						}
+					}
+					std::string name;
+					while (!local_file.eof()) {
+						char ch;
+						local_file.get(ch);
+						if (ch == '"') {
+							break;
+						}
+						else {
+							name += ch;
+						}
+					}
+					if (strcmp(name.data(), TestForInfo->getName()) == 0) {
+						FindClose(hFind);
+						sCurrentFileName = CString(FindFileData.cFileName);
+						sCurrentPathToFile = path;
+						local_file.close();
+						return true;
+					}
+				}
+			}
+		} while (FindNextFile(hFind, &FindFileData));
+		FindClose(hFind);
+		return CString();
+	}
+	else {
+		if (m_Tree.GetSelectedItem() == m_Tree.GetRootItem()) {
+			sCurrentPathToFile = m_Tree.GetItemText(m_Tree.GetSelectedItem()) + L"\\";
+			return true;
+		}
+		HTREEITEM hChild = m_Tree.GetSelectedItem();
+		int enter_count = 1;
+		while (hChild) {
+			hChild = m_Tree.GetChildItem(hChild);
+			std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(RootList.GetItemText(lastSelected, 0));
+			for (int i = 0; i < iter->second.size(); ++i)
+			{
+				if (*iter->second[i] == hChild)
+				{
+					TestForInfo = (TRSTest*)m_Tree.GetItemData(*iter->second[i]);
+					break;
+				}
+			}
+			if (TestForInfo) {
+				break;
+			}
+			enter_count++;
+		}
+		CString path(TestForInfo->getPath());
+		for (TCHAR *p = path.GetBuffer() + path.GetLength() - 1; p != path.GetBuffer(); p--) {
+			if (enter_count) {
+				if (*p == '\\') {
+					enter_count--;
+				}
+			}
+			else {
+				*(p+2) = '\0';
+				break;
+			}
+		}
+		sCurrentPathToFile = CString(path.GetBuffer());
+		WIN32_FIND_DATA FindFileData;
+		HANDLE hFind;
+		hFind = FindFirstFile(sCurrentPathToFile + L"*.xml", &FindFileData);
+		sCurrentFileName = CString(FindFileData.cFileName);
+		FindClose(hFind);
+		TestForInfo = nullptr;
+		return true;
+	}
+	return false;
 }

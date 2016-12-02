@@ -3,7 +3,7 @@
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
 	<maxTime>2s</maxTime>
-	<maxThreads>3</maxThreads>
+	<maxThreads>1</maxThreads>
 <priority>4</priority>
 <disable>false</disable>
 	<metadata>
@@ -17,26 +17,25 @@
 		<info></info>
 	</metadata>
 
-	<test name="Test 3" description="Test description">
+
+		<test name="Test 1" description="Test description">
 <priority>4</priority>
 		<tag>Release</tag>
 		<disable>false</disable>
-<execution>test.exe</execution>
+<execution path ="..">test.exe</execution>
 <parameters repeat = "32" >1000</parameters>
-<result>1</result>
-<repeat pause="100">1</repeat>
-            <maxTime>2s</maxTime>
-	<waitFor/>
+<result>0</result>
+<repeat pause="100">2</repeat>
+            <maxTime>200</maxTime>
 	</test>
-		<test name="Test 5" description="Test description">
+		<test name="Test 2" description="Test description">
 <priority>4</priority>
 		<tag>Debug</tag>
 		<disable>false</disable>
-<execution>test.exe</execution>
+<execution path ="..">test.exe</execution>
 <parameters repeat = "32" >1000</parameters>
-<result>1</result>
-<repeat pause="100">1</repeat>
-            <maxTime>2s</maxTime>
-	<waitFor/>
+<result>0</result>
+<repeat pause="100">2</repeat>
+            <maxTime>200</maxTime>
 	</test>
 </suite>
