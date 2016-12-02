@@ -1,4 +1,4 @@
-
+﻿
 // MFCTRSuiDlg.cpp : implementation file
 //
 
@@ -6,6 +6,7 @@
 #include "MFCTRSui.h"
 #include "MFCTRSuiDlg.h"
 #include "afxdialogex.h"
+#include <fstream>
 #include <list>
 #define MYWM_NOTIFYICON (WM_APP+100)
 #include "ConsoleReporter.h"
@@ -13,7 +14,6 @@
 #include "TestsTimerDialog.h"
 #include "ToRunParameters.h"
 #include "TestInfo.h"
-#include "EditWindow.h"
 #include "RunParameters.h"
 #include "Functionality.h"
 #include <ctime>
@@ -61,6 +61,8 @@ extern CDialogEx* DIAL;
 CMFCTRSuiDlg::CMFCTRSuiDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMFCTRSuiDlg::IDD, pParent)
 	
+	, sCurrentPathToFile(_T(""))
+	, sCurrentFileName(_T(""))
 {
 	
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -123,17 +125,16 @@ BEGIN_MESSAGE_MAP(CMFCTRSuiDlg, CDialogEx)
 	
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST1, &CMFCTRSuiDlg::OnLvnItemchangedList1)
 	ON_NOTIFY(NM_RCLICK, IDC_TREE1, &CMFCTRSuiDlg::OnNMRClickTree1)
-	ON_COMMAND(ID_INFO_INFO, &CMFCTRSuiDlg::OnInfoInfo)
 	ON_COMMAND(ID_EXIT, &CMFCTRSuiDlg::OnExit)
 	ON_WM_MOUSEMOVE()
 	ON_WM_MOUSEHOVER()
 	ON_COMMAND(ID_Menu, &CMFCTRSuiDlg::OnMenu)
 	ON_COMMAND(ID_INFO_CLOSE, &CMFCTRSuiDlg::OnInfoClose)
-	ON_COMMAND(ID_INFO_DISABLE, &CMFCTRSuiDlg::OnInfoDisable)
-	ON_COMMAND(ID_INFO_DISABLEALL, &CMFCTRSuiDlg::OnInfoDisableall)
-	ON_COMMAND(ID_INFO_ENABLE, &CMFCTRSuiDlg::OnInfoEnable)
-	ON_COMMAND(ID_INFO_ENABLEFOLDER, &CMFCTRSuiDlg::OnInfoEnablefolder)
-	ON_COMMAND(ID_INFO_EDIT, &CMFCTRSuiDlg::OnInfoEdit)
+	ON_COMMAND(ID_MENUSUITE_ADDSUITE, &CMFCTRSuiDlg::OnMenusuiteAddsuite)
+	ON_COMMAND(ID_MENUSUITE_ADDCASE, &CMFCTRSuiDlg::OnMenusuiteAddcase)
+	ON_COMMAND(ID_MENUSUITE_EDIT, &CMFCTRSuiDlg::OnMenusuiteEdit)
+	ON_COMMAND(ID_MENUSUITE_DELETESUITE, &CMFCTRSuiDlg::OnMenusuiteDeletesuite)
+	ON_COMMAND(ID_MENUSUITE_DISABLE, &CMFCTRSuiDlg::OnMenusuiteDisable)
 END_MESSAGE_MAP()
 
 
@@ -1015,6 +1016,7 @@ void CMFCTRSuiDlg::OnProgramAddfolder()
 			imalloc->Release();
 		}
 	}
+	OnProgramRefresh();
 }
 
 bool CMFCTRSuiDlg::ExistInList(TCHAR* path)
@@ -2494,7 +2496,7 @@ void CMFCTRSuiDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		nid.guidItem = myGuid;
 		// This text will be shown as the icon's tooltip.
 		StringCchCopy(nid.szTip, ARRAYSIZE(nid.szTip), L"Test managment");
-		//StringCchCopy(nid.szInfo, ARRAYSIZE(nid.szInfo), L"I am here");
+		StringCchCopy(nid.szInfo, ARRAYSIZE(nid.szInfo), L"I am here");
 		// Load the icon for high DPI.
 		LoadIconMetric(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON2), LIM_SMALL, &(nid.hIcon));
 
@@ -3305,11 +3307,13 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: Add your control notification handler code here
 	CMenu *mnuPopupSubmit = new CMenu;
-	mnuPopupSubmit->LoadMenu(IDR_MENU4);
-	CMenu* nextMenu = mnuPopupSubmit->GetSubMenu(0);
-	ASSERT(nextMenu);
 	NM_TREEVIEW* pNMTreeView = (NM_TREEVIEW*)pNMHDR;
 	HTREEITEM hTest = m_Tree.GetSelectedItem();
+	if (!hTest) {
+		*pResult = 0;
+		return;
+	}
+	TestForInfo = nullptr;
 	std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(RootList.GetItemText(lastSelected, 0));
 	for (int i = 0; i < iter->second.size(); ++i)
 	{
@@ -3318,432 +3322,22 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 			TestForInfo = (TRSTest*)m_Tree.GetItemData(*iter->second[i]);
 		}
 	}
+	FindPathToObject();
+	if (!TestForInfo) {
+		mnuPopupSubmit->LoadMenu(IDR_MENU_SUITE);
+		mnuPopupSubmit->RemoveMenu(ID_MENUSUITE_EDIT, MF_BYCOMMAND);
+	}
+	else {
+		mnuPopupSubmit->LoadMenu(IDR_MENU_SUITE);
+		mnuPopupSubmit->RemoveMenu(ID_MENUSUITE_ADDSUITE, MF_BYCOMMAND);
+	}
+	CMenu* nextMenu = mnuPopupSubmit->GetSubMenu(0);
+	ASSERT(nextMenu);
 	POINT mousePos;
 	GetCursorPos(&mousePos);
 	nextMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, mousePos.x, mousePos.y, this);
 	*pResult = 0;
 }
-void CMFCTRSuiDlg::OnInfoInfo()    // info submenu
-{
-
-	if (TestForInfo)
-	{
-		TestInfo dlg;
-		dlg.DoModal();
-		TestForInfo = nullptr;
-	}
-	else
-	{
-		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
-	}
-	// TODO: Add your command handler code here
-}
-void CMFCTRSuiDlg::setDisableTrue(TiXmlNode *parentT){
-	if (!parentT){ return; }
-
-	TiXmlNode* pChild;
-	TiXmlText* pText;
-	bool checkSuite = false;
-	bool ifDone = false;
-	int t = parentT->Type();
-
-	switch (t)
-	{
-	case TiXmlNode::TINYXML_ELEMENT:
-		if ((strncmp(parentT->Value(), "disable", strlen("disable")) == 0))
-		{
-			checkSuite = true;
-			TiXmlNode* child = parentT->FirstChild();
-			if (child && child->Type() == TiXmlNode::TINYXML_TEXT)
-			{
-				if (strlen(child->Value()) > 0)
-				{
-					MessageBox(L"TAG FOUND", L"Info", MB_OK);
-
-				}
-			}
-			break;
-		}
-	}
-	for (pChild = parentT->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
-	{
-		setDisableTrue(pChild);
-	}
-}
-
-void CMFCTRSuiDlg::OnInfoEnablefolder()
-{
-	char *Path = nullptr;
-	char *Dis = nullptr;
-	if (TestForInfo){
-		Path = TestForInfo->getPath();
-		Dis = TestForInfo->getDisable();
-		char *name = "Tests.xml"; // Magic name, will be fixed
-		std::string DisS(Dis);
-		std::string FP;
-		FP.assign(Path);
-		FP.append(name);
-		TiXmlNode* pChild;
-		TiXmlText* pText;
-		TRSInfo inf;
-		const char *full = new char[FP.size() + 1];
-		full = FP.c_str();
-		TiXmlDocument doc(full);
-		bool loadok = doc.LoadFile();
-		if (loadok){
-			std::string test_tag = "test";
-			TiXmlNode *proot = doc.FirstChild();
-			TiXmlElement *el = doc.FirstChildElement();
-			for (TiXmlElement *child = el->FirstChildElement(); child != 0; child = child->NextSiblingElement()){
-				const char *ptr = child->Value();
-				if (!test_tag.compare(ptr) && child->Attribute("name")){
-					std::string dis = "disable";
-					for (TiXmlElement *in_el = child->FirstChildElement(); in_el != 0; in_el = in_el->NextSiblingElement()){
-						if (!dis.compare(in_el->Value())){
-							std::string text = in_el->GetText();
-							if (!text.compare("true")){
-								in_el->Clear();
-								in_el->LinkEndChild(new TiXmlText("false"));
-
-								doc.SaveFile();
-								break; // exit nested .xml file loop
-							}
-						}
-
-					}
-				}
-
-			}
-		}
-		else{
-			MessageBox(L"File not loaded", L"Info", MB_OK);
-		}
-	}
-	else{
-		MessageBox(L"Cannot enable folder", L"Info", MB_OK);
-	}
-	TestForInfo = nullptr;
-	OnProgramRefresh();
-}
-bool CMFCTRSuiDlg::FindPathToObject()
-{
-	sCurrentFileName = sCurrentPathToFile = CString();
-	if (TestForInfo) {
-		CString path(TestForInfo->getPath());
-		WIN32_FIND_DATA FindFileData;
-		HANDLE hFind;
-		hFind = FindFirstFile(path + L"*.xml", &FindFileData);
-		do {
-			CStringA file(path + CString(FindFileData.cFileName));
-			std::fstream local_file;
-			local_file.open(file.GetBuffer(), std::ios_base::in);
-			std::string tag;
-			while (!local_file.eof()) {
-				local_file >> tag;
-				if (tag == "<test") {
-					while (!local_file.eof()) {
-						char ch;
-						local_file.get(ch);
-						if (ch == '"') {
-							break;
-						}
-					}
-					std::string name;
-					while (!local_file.eof()) {
-						char ch;
-						local_file.get(ch);
-						if (ch == '"') {
-							break;
-						}
-						else {
-							name += ch;
-						}
-					}
-					if (strcmp(name.data(), TestForInfo->getName()) == 0) {
-						FindClose(hFind);
-						sCurrentFileName = CString(FindFileData.cFileName);
-						sCurrentPathToFile = path;
-						return true;
-					}
-				}
-			}
-		} while (FindNextFile(hFind, &FindFileData));
-		FindClose(hFind);
-		return CString();
-	}
-	else {
-		if (m_Tree.GetSelectedItem() == m_Tree.GetRootItem()) {
-			sCurrentPathToFile = m_Tree.GetItemText(m_Tree.GetSelectedItem()) + L"\\";
-			return true;
-		}
-		HTREEITEM hChild = m_Tree.GetSelectedItem();
-		int enter_count = 0;
-		while (hChild) {
-			hChild = m_Tree.GetChildItem(hChild);
-			std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(RootList.GetItemText(lastSelected, 0));
-			for (int i = 0; i < iter->second.size(); ++i)
-			{
-				if (*iter->second[i] == hChild)
-				{
-					TestForInfo = (TRSTest*)m_Tree.GetItemData(*iter->second[i]);
-					break;
-				}
-			}
-			if (TestForInfo) {
-				break;
-			}
-			enter_count++;
-		}
-		CString path(TestForInfo->getPath());
-		for (TCHAR *p = path.GetBuffer() + path.GetLength() - 1; p != path.GetBuffer(); p--) {
-			if (enter_count) {
-				if (*p == '\\') {
-					enter_count--;
-				}
-			}
-			else {
-				*(p + 1) = '\0';
-				break;
-			}
-		}
-		sCurrentPathToFile = path;
-		TestForInfo = nullptr;
-		return true;
-	}
-	return false;
-}
-
-
-void CMFCTRSuiDlg::OnInfoEdit()
-{
-	//Mandrychenko
-	if (TestForInfo){
-		EditWindow w;
-		w.DoModal();
-	}
-	else{
-		MessageBox(L"Smth wrong with the data", L"Info", MB_OK);
-		return;
-	
-	}
-	
-}
-void CMFCTRSuiDlg::OnInfoDisable()
-{
-	//FINDME
-	//OnprogramRefresh
-	char *Path = nullptr;   
-	char *Dis = nullptr;
-	if (TestForInfo){
-		Path = TestForInfo->getPath();
-		Dis = TestForInfo->getDisable();
-		if (!FindPathToObject()){
-			MessageBox(L"Cannot get file name or file path", L"Info", MB_OK);
-			return;
-		}
-
-		CT2A ascii_file_name(sCurrentFileName);
-		char *name = ascii_file_name;
-		std::string FP(name);
-		if (FP.empty()){
-			MessageBox(L"Cannot disable folder", L"Info", MB_OK);
-			return;
-		}
-		FP.clear();
-		std::string DisS(Dis);
-		FP.assign(Path);
-		FP.append(name);
-		TiXmlNode* pChild;
-		TiXmlText* pText;
-		TRSInfo inf;
-		const char *full = new char[FP.size() + 1];
-		full = FP.c_str();
-		if (!DisS.compare("true") || !DisS.compare("TRUE")){
-			MessageBox(L"This test is already disabled.", L"Info", MB_OK);
-			return;
-		}
-		else if (!DisS.compare("false") || !DisS.compare("FALSE")){
-			if (TestForInfo->setDisable("true")){
-				TiXmlDocument doc(full);
-				bool loadok = doc.LoadFile(full);
-				TiXmlNode *proot = doc.FirstChild();
-				TiXmlElement *el = doc.FirstChildElement();
-				if (loadok){
-					//TiXmlElement *elem = doc.FirstChildElement("suite"); //doc.RootElement();
-					//std::string f = elem->Attribute("priority");
-					//TiXmlElement *work = elem->FirstChildElement("tag");
-					std::string diss = "disable";
-					//TiXmlElement *f = doc.RootElement();
-					//f->SetAttribute("name","He");
-					//doc.SaveFile();
-					//const char *at =  el->FirstChildElement()->Attribute("name");
-					for (TiXmlElement* child = el->FirstChildElement(); child != 0; child = child->NextSiblingElement()){ // iterates threw XML file
-						const char *atr = child->Attribute("name");
-						if (atr == nullptr){ continue; }
-						const char* clickTag = TestForInfo->getName();
-						std::string t1(atr), t2(clickTag);
-						std::string TEST = el->Value();
-						if (!t1.compare(clickTag) && TEST.compare("test")){
-							for (TiXmlElement *ch = child->FirstChildElement(); ch != 0; ch = ch->NextSiblingElement()){   // if tag containt sub tag it will iterate
-								std::string tag = ch->Value();
-								if (!tag.compare("disable")){
-									ch->Clear();
-									ch->LinkEndChild(new TiXmlText("true"));
-									doc.SaveFile();
-									atr = nullptr; clickTag = nullptr;
-									break;
-								}
-							}
-						}
-						else { atr = nullptr; continue; }
-					}
-				}
-				else { MessageBox(L"File not loaded", L"Info", MB_OK); }
-			}
-		}
-		else{
-			MessageBox(L"Not valid disable tag", L"Info", MB_OK);
-		}
-	}
-	else{
-		MessageBox(L"Cannot disable folder. Only test can be disabled", L"Info", MB_OK);
-	}
-	TestForInfo = nullptr;
-	OnProgramRefresh();
-}
-
-void CMFCTRSuiDlg::OnInfoDisableall() // disables tests for current folder
-{
-	char *Path = nullptr;
-	char *Dis = nullptr;
-	if (TestForInfo){
-		Path = TestForInfo->getPath();
-		Dis = TestForInfo->getDisable();
-		if (!FindPathToObject()){
-		MessageBox(L"Cannot get file name or file path", L"Info", MB_OK);
-		return;
-		}
-
-		CT2A ascii_file_name(sCurrentFileName);
-		char *name = ascii_file_name;
-		std::string DisS(Dis);
-		std::string FP;
-		FP.assign(Path);
-		FP.append(name);
-		TiXmlNode* pChild;
-		TiXmlText* pText;
-		TRSInfo inf;
-		const char *full = new char[FP.size() + 1];
-		full = FP.c_str();
-		TiXmlDocument doc(full);
-		bool loadok = doc.LoadFile();
-		if (loadok){
-			std::string test_tag = "test";
-			TiXmlNode *proot = doc.FirstChild();
-			TiXmlElement *el = doc.FirstChildElement();
-			for (TiXmlElement *child = el->FirstChildElement(); child != 0; child = child->NextSiblingElement()){
-				const char *ptr = child->Value();
-				if (!test_tag.compare(ptr) && child->Attribute("name")){
-					std::string dis = "disable";
-					for (TiXmlElement *in_el = child->FirstChildElement(); in_el != 0; in_el = in_el->NextSiblingElement()){
-						if (!dis.compare(in_el->Value())){
-							std::string text = in_el->GetText();
-							if (!text.compare("false")){
-								in_el->Clear();
-								in_el->LinkEndChild(new TiXmlText("true"));
-								
-								doc.SaveFile();
-								break; // exit nested .xml file loop
-							}
-						}
-					
-					}
-				}
-			
-			}
-		}
-		else{
-			 MessageBox(L"File not loaded", L"Info", MB_OK); 
-		}
-	}
-	else{
-		MessageBox(L"Cannot disable folder", L"Info", MB_OK);
-
-	}
-	TestForInfo = nullptr;
-	OnProgramRefresh();
-
-}
-void CMFCTRSuiDlg::OnInfoEnable()
-{
-	char *Path = nullptr;
-	char *Dis = nullptr;
-	if (TestForInfo){
-		Path = TestForInfo->getPath();
-		Dis = TestForInfo->getDisable();
-		if (!FindPathToObject()){
-		MessageBox(L"Cannot get file name or file path", L"Info", MB_OK);
-		return;
-		}
-
-		CT2A ascii_file_name(sCurrentFileName);
-		char *name = ascii_file_name;
-		std::string DisS(Dis);
-		std::string FP;
-		FP.assign(Path);
-		FP.append(name);
-		TiXmlNode* pChild;
-		TiXmlText* pText;
-		TRSInfo inf;
-		const char *full = new char[FP.size() + 1];
-		full = FP.c_str();
-		if (!DisS.compare("false") || !DisS.compare("FALSE")){
-			MessageBox(L"This test is already enabled.", L"Info", MB_OK);
-			return;
-		}
-		else if (!DisS.compare("true") || !DisS.compare("TRUE")){
-			if (TestForInfo->setDisable("false")){
-				TiXmlDocument doc(full);
-				bool loadok = doc.LoadFile(full);
-				TiXmlNode *proot = doc.FirstChild();
-				TiXmlElement *el = doc.FirstChildElement();
-				if (loadok){
-					std::string diss = "disable";
-					for (TiXmlElement* child = el->FirstChildElement(); child != 0; child = child->NextSiblingElement()){ // iterates threw XML file
-						const char *atr = child->Attribute("name");
-						if (atr == nullptr){ continue; }
-						const char* clickTag = TestForInfo->getName();
-						std::string t1(atr), t2(clickTag);
-						std::string TEST = el->Value();
-						if (!t1.compare(clickTag) && TEST.compare("test")){
-							for (TiXmlElement *ch = child->FirstChildElement(); ch != 0; ch = ch->NextSiblingElement()){   // if tag containt sub tag it will iterate
-								std::string tag = ch->Value();
-								if (!tag.compare("disable")){
-									ch->Clear();
-									ch->LinkEndChild(new TiXmlText("false"));
-									doc.SaveFile();
-									atr = nullptr; clickTag = nullptr;
-									break;
-								}
-							}
-						}
-						else { atr = nullptr; continue; }
-					}
-				}
-				else { MessageBox(L"File not loaded", L"Info", MB_OK); }
-			}
-		}
-		else{
-			MessageBox(L"Not valid disable tag", L"Info", MB_OK);
-		}
-	}
-	else{
-		MessageBox(L"Cannot enable folder. Only test can be disabled", L"Info", MB_OK);
-	}
-	TestForInfo = nullptr;
-	OnProgramRefresh();
-}
-
 void CMFCTRSuiDlg::OnProgramRefresh()
 {
 	if (RootList.GetItemCount())
@@ -4109,3 +3703,236 @@ void CMFCTRSuiDlg::OnGetMinMaxInfo(MINMAXINFO *mx)
 }
 
 
+void CMFCTRSuiDlg::OnMenusuiteAddsuite()
+{
+	if (TestForInfo)
+	{
+		TestInfo dlg;
+		dlg.DoModal();
+		TestForInfo = nullptr;
+	}
+	else
+	{
+		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
+	}
+}
+
+
+void CMFCTRSuiDlg::OnMenusuiteAddcase()
+{
+	if (TestForInfo)
+	{
+		TestInfo dlg;
+		dlg.DoModal();
+		TestForInfo = nullptr;
+	}
+	else
+	{
+		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
+	}
+}
+
+
+void CMFCTRSuiDlg::OnMenusuiteEdit()
+{
+	if (TestForInfo)
+	{
+		TestInfo dlg;
+		dlg.DoModal();
+		TestForInfo = nullptr;
+	}
+	else
+	{
+		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
+	}
+}
+
+
+void CMFCTRSuiDlg::OnMenusuiteDeletesuite()
+{
+	HTREEITEM hSelected = m_Tree.GetSelectedItem();
+	bool erased = false;
+	if (TestForInfo)
+	{
+		int res = MessageBox(_T("Remove test ?"), _T("Remove"), MB_ICONINFORMATION | MB_YESNO);
+		if (res == IDNO) {
+			return;
+		}
+		std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(RootList.GetItemText(lastSelected, 0));
+		for (int i = 0; i < iter->second.size(); ++i)
+		{
+			if (*iter->second[i] == hSelected)
+			{
+				iter->second.erase(iter->second.begin()+i);
+				break;
+			}
+		}
+		for (auto iter = suiteColl->begin(); iter != suiteColl->end(); iter++) {
+			for (auto t_iter = (*iter)->getList().begin(); t_iter != (*iter)->getList().end(); t_iter++) {
+				if (*t_iter == TestForInfo) {
+					(*iter)->getList().erase(t_iter);
+					erased = true;
+					break;
+				}
+			}
+			if (erased) {
+				break;
+			}
+		}
+		CStringA file(sCurrentPathToFile+sCurrentFileName);
+		std::fstream local_file;
+		local_file.open(file.GetBuffer(), std::ios_base::in);
+		CStringA data;
+		while (!local_file.eof()) {
+			char buff[256];
+			memset(buff, 0, 256);
+			local_file.read(buff, sizeof(buff)-1);
+			data += buff;
+		}
+		local_file.close();
+		char * begin = strstr(data.GetBuffer(), "<test");
+		char * ptr = begin;
+		while (ptr) {
+			while (*(ptr++) != '"');
+			if (!strncmp(ptr, TestForInfo->getName(), strlen(TestForInfo->getName()))) {
+				break;
+			}
+			ptr = strstr(ptr, "<test");
+			begin = ptr;
+		}
+		char * end = strstr(begin, "</test>") + strlen("</test>")+1;
+		memcpy(begin, end, strlen(end)+1);
+		local_file.open(file.GetBuffer(), std::ios_base::out);
+		local_file.write(data.GetBuffer(), strlen(data.GetBuffer()));
+		local_file.close();
+		delete TestForInfo;
+		TestForInfo = nullptr;
+	}
+	else
+	{
+		int res = MessageBox(_T("Remove test suite ?"), _T("Remove"), MB_ICONINFORMATION | MB_YESNO);
+		if (res == IDNO) {
+			return;
+		}
+		CStringA path(sCurrentPathToFile);
+		path.GetBuffer()[path.GetLength() - 1] = '\0';
+		CStringA delete_command("rmdir /s/q ");
+		CStringA cd_command("cd ");
+		cd_command += sCurrentPathToFile;
+		delete_command += path;
+		system(cd_command);
+		system("cd ..");
+		system(delete_command);
+	}
+	OnProgramRefresh();
+}
+
+
+void CMFCTRSuiDlg::OnMenusuiteDisable()
+{
+	if (TestForInfo)
+	{
+		TestInfo dlg;
+		dlg.DoModal();
+		TestForInfo = nullptr;
+	}
+	else
+	{
+		MessageBox(L"Please, select test, not folder!", L"Info", MB_OK);
+	}
+}
+
+
+bool CMFCTRSuiDlg::FindPathToObject()
+{
+	sCurrentFileName = sCurrentPathToFile = CString();
+	if (TestForInfo) {
+		CString path(TestForInfo->getPath());
+		WIN32_FIND_DATA FindFileData;
+		HANDLE hFind;
+		hFind = FindFirstFile(path+L"*.xml", &FindFileData);
+		do {
+			CStringA file(path + CString(FindFileData.cFileName));
+			std::fstream local_file;
+			local_file.open(file.GetBuffer(), std::ios_base::in);
+			std::string tag;
+			while (!local_file.eof()) {
+				local_file >> tag;
+				if (tag == "<test") {
+					while (!local_file.eof()) {
+						char ch;
+						local_file.get(ch);
+						if (ch == '"') {
+							break;
+						}
+					}
+					std::string name;
+					while (!local_file.eof()) {
+						char ch;
+						local_file.get(ch);
+						if (ch == '"') {
+							break;
+						}
+						else {
+							name += ch;
+						}
+					}
+					if (strcmp(name.data(), TestForInfo->getName()) == 0) {
+						FindClose(hFind);
+						sCurrentFileName = CString(FindFileData.cFileName);
+						sCurrentPathToFile = path;
+						local_file.close();
+						return true;
+					}
+				}
+			}
+		} while (FindNextFile(hFind, &FindFileData));
+		FindClose(hFind);
+		return CString();
+	}
+	else {
+		if (m_Tree.GetSelectedItem() == m_Tree.GetRootItem()) {
+			sCurrentPathToFile = m_Tree.GetItemText(m_Tree.GetSelectedItem()) + L"\\";
+			return true;
+		}
+		HTREEITEM hChild = m_Tree.GetSelectedItem();
+		int enter_count = 1;
+		while (hChild) {
+			hChild = m_Tree.GetChildItem(hChild);
+			std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(RootList.GetItemText(lastSelected, 0));
+			for (int i = 0; i < iter->second.size(); ++i)
+			{
+				if (*iter->second[i] == hChild)
+				{
+					TestForInfo = (TRSTest*)m_Tree.GetItemData(*iter->second[i]);
+					break;
+				}
+			}
+			if (TestForInfo) {
+				break;
+			}
+			enter_count++;
+		}
+		CString path(TestForInfo->getPath());
+		for (TCHAR *p = path.GetBuffer() + path.GetLength() - 1; p != path.GetBuffer(); p--) {
+			if (enter_count) {
+				if (*p == '\\') {
+					enter_count--;
+				}
+			}
+			else {
+				*(p+2) = '\0';
+				break;
+			}
+		}
+		sCurrentPathToFile = CString(path.GetBuffer());
+		WIN32_FIND_DATA FindFileData;
+		HANDLE hFind;
+		hFind = FindFirstFile(sCurrentPathToFile + L"*.xml", &FindFileData);
+		sCurrentFileName = CString(FindFileData.cFileName);
+		FindClose(hFind);
+		TestForInfo = nullptr;
+		return true;
+	}
+	return false;
+}
