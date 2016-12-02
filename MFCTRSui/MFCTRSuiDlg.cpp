@@ -3518,7 +3518,24 @@ void CMFCTRSuiDlg::OnInfoEdit()
 {
 	//Mandrychenko
 	if (TestForInfo){
+		char *Path = nullptr;
+		Path = TestForInfo->getPath();
+		if (!FindPathToObject()){
+			MessageBox(L"Cannot get file name or file path", L"Info", MB_OK);
+			return;
+		}
+		CT2A ascii_file_name(sCurrentFileName);
+		char *name = ascii_file_name;
+		std::string FP(name);
+		if (FP.empty()){
+			MessageBox(L"Cannot disable folder", L"Info", MB_OK);
+			return;
+		}
+		FP.clear();
+		FP.assign(Path);
+		FP.append(name);
 		EditWindow w;
+		w.PathToFile.assign(FP);
 		w.DoModal();
 	}
 	else{

@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<suite name="FOLDER" description="Test description">
+<suite name="FOLDER" description="Test descriptionnnnn">
     <tag>Release</tag>
     <repeat pause="100">120</repeat>
     <maxTime>2s</maxTime>
@@ -15,10 +15,10 @@
         <license />
         <info />
     </metadata>
-    <test name="Test 6" description="Test description">
+    <test name="Test 6" description="Test descriptiontr">
         <priority>4</priority>
         <tag>Release</tag>
-        <disable>true</disable>
+        <disable>false</disable>
         <execution>test.exe</execution>
         <parameters repeat="32">3000 0</parameters>
         <result>0</result>
