@@ -168,6 +168,9 @@ public:
 	CString sCurrentFileName;
 	CString sCurrentPathToFile;
 	afx_msg void OnInfoEdit();
+	afx_msg void OnInfoAddsuite();
+	afx_msg void OnInfoAddcase();
+	afx_msg void OnInfoDelete();
 };
 
 //extern CListBox* List;
