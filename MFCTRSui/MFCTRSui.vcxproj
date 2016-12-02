@@ -1,0 +1,217 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F16C4AD9-7605-4AAC-AC25-9B5529510685}</ProjectGuid>
+    <RootNamespace>MFCTRSui</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+    <ProjectName>TRSUI</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <ValidateAllParameters>true</ValidateAllParameters>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <ValidateAllParameters>true</ValidateAllParameters>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\TRSLibrary\TinyXML\tinystr.h" />
+    <ClInclude Include="..\TRSLibrary\TinyXML\tinyxml.h" />
+    <ClInclude Include="AddClockDlg.h" />
+    <ClInclude Include="Clock.h" />
+    <ClInclude Include="ClockCollection.h" />
+    <ClInclude Include="ClockInstance.h" />
+    <ClInclude Include="ConsoleReporter.h" />
+    <ClInclude Include="EditWindow.h" />
+    <ClInclude Include="Functionality.h" />
+    <ClInclude Include="MFCTRSui.h" />
+    <ClInclude Include="MFCTRSuiDlg.h" />
+    <ClInclude Include="ProjectProperties.h" />
+    <ClInclude Include="ProjNameEdit.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="RunDialog.h" />
+    <ClInclude Include="RunParameters.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SuiteRoot.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="TestInfo.h" />
+    <ClInclude Include="TestsTimerDialog.h" />
+    <ClInclude Include="Time.h" />
+    <ClInclude Include="TimerADD.h" />
+    <ClInclude Include="TimerAddCollection.h" />
+    <ClInclude Include="TimerStruct.h" />
+    <ClInclude Include="ToRunParameters.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinystr.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxml.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlerror.cpp" />
+    <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlparser.cpp" />
+    <ClCompile Include="AddClockDlg.cpp" />
+    <ClCompile Include="Clock.cpp" />
+    <ClCompile Include="ClockCollection.cpp" />
+    <ClCompile Include="ConsoleReporter.cpp" />
+    <ClCompile Include="EditWindow.cpp" />
+    <ClCompile Include="Functionality.cpp" />
+    <ClCompile Include="MFCTRSui.cpp" />
+    <ClCompile Include="MFCTRSuiDlg.cpp" />
+    <ClCompile Include="ProjectProperties.cpp" />
+    <ClCompile Include="ProjNameEdit.cpp" />
+    <ClCompile Include="RunDialog.cpp" />
+    <ClCompile Include="RunParameters.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TestInfo.cpp" />
+    <ClCompile Include="TestsTimerDialog.cpp" />
+    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="TimerADD.cpp" />
+    <ClCompile Include="TimerAddCollection.cpp" />
+    <ClCompile Include="ToRunParameters.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MFCTRSui.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\MFCTRSui.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\bitmap2.bmp" />
+    <Image Include="res\bitmap3.bmp" />
+    <Image Include="res\bitmap4.bmp" />
+    <Image Include="res\bitmap5.bmp" />
+    <Image Include="res\bitmap6.bmp" />
+    <Image Include="res\icon2.ico" />
+    <Image Include="res\Icons\1470669393_editor-floopy-dish-save-outline-stroke.ico" />
+    <Image Include="res\Icons\1470670281_floppy_disk_save.ico" />
+    <Image Include="res\Icons\1470670514_save_as.ico" />
+    <Image Include="res\Icons\1470672115_command_line_prompt_shell.ico" />
+    <Image Include="res\Icons\1470672433_Add.ico" />
+    <Image Include="res\Icons\1470672719_folder-new.ico" />
+    <Image Include="res\Icons\1470672725_document-open.ico" />
+    <Image Include="res\Icons\1470672980_Cancel.ico" />
+    <Image Include="res\Icons\1470674085_our_process_2.ico" />
+    <Image Include="res\Icons\1470674385_Play.ico" />
+    <Image Include="res\Icons\1470674393_play-triangle-media-shape.ico" />
+    <Image Include="res\Icons\1470675125_stop.ico" />
+    <Image Include="res\Icons\1470675263_add.ico" />
+    <Image Include="res\Icons\1470675274_cross.ico" />
+    <Image Include="res\Icons\1471017338_view-refresh.ico" />
+    <Image Include="res\Icons\1471292581_calendar-clock.ico" />
+    <Image Include="res\Icons\1471293182_Increase_time.ico" />
+    <Image Include="res\Icons\favicon.ico" />
+    <Image Include="res\icons\icon15.ico" />
+    <Image Include="res\Icons\Oxygen-Icons.org-Oxygen-Actions-document-save-as.ico" />
+    <Image Include="res\MFCTRSui.ico" />
+    <Image Include="res\toolbar1.bmp" />
+    <Image Include="res\toolbar3.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Console\Console.vcxproj">
+      <Project>{9072c8d4-af7c-4c58-bfbf-0fc494cd5177}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\TRSLibrary\TRSLibrary.vcxproj">
+      <Project>{1bc6f5e1-f69b-4540-9e08-6c2cb29b2cd2}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="MFCTRSui.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
