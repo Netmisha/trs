@@ -112,6 +112,7 @@
     <ClInclude Include="ClockCollection.h" />
     <ClInclude Include="ClockInstance.h" />
     <ClInclude Include="ConsoleReporter.h" />
+    <ClInclude Include="EditWindow.h" />
     <ClInclude Include="Functionality.h" />
     <ClInclude Include="MFCTRSui.h" />
     <ClInclude Include="MFCTRSuiDlg.h" />
@@ -140,6 +141,7 @@
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="ClockCollection.cpp" />
     <ClCompile Include="ConsoleReporter.cpp" />
+    <ClCompile Include="EditWindow.cpp" />
     <ClCompile Include="Functionality.cpp" />
     <ClCompile Include="MFCTRSui.cpp" />
     <ClCompile Include="MFCTRSuiDlg.cpp" />
