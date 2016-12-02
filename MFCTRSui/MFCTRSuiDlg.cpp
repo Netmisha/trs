@@ -3517,15 +3517,22 @@ bool CMFCTRSuiDlg::FindPathToObject()
 void CMFCTRSuiDlg::OnInfoEdit()
 {
 	//Mandrychenko
-	EditWindow w;
-	w.DoModal();
+	if (TestForInfo){
+		EditWindow w;
+		w.DoModal();
+	}
+	else{
+		MessageBox(L"Smth wrong with the data", L"Info", MB_OK);
+		return;
+	
+	}
 	
 }
 void CMFCTRSuiDlg::OnInfoDisable()
 {
 	//FINDME
 	//OnprogramRefresh
-	char *Path = nullptr;   // Folder check unhandled exception
+	char *Path = nullptr;   
 	char *Dis = nullptr;
 	if (TestForInfo){
 		Path = TestForInfo->getPath();
