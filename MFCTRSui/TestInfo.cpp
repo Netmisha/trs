@@ -19,7 +19,9 @@ TestInfo::TestInfo(CWnd* pParent /*=NULL*/)
 TestInfo::~TestInfo()
 {
 }
-
+void TestInfo::ClearEditBox(){
+	EditWindowCall = true;
+}
 void TestInfo::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);

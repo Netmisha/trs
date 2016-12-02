@@ -4,8 +4,8 @@
 #include "stdafx.h"
 #include "EditWindow.h"
 #include "afxdialogex.h"
-
-
+#include "TestInfo.h"
+#include "ShowDescription.h"
 // EditWindow dialog
 
 IMPLEMENT_DYNAMIC(EditWindow, CDialogEx)
@@ -43,6 +43,14 @@ void EditWindow::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_MAXTIMET, MaxTime_T);
 	DDX_Control(pDX, IDC_WAITFORT, WaitFor_T);
 	DDX_Control(pDX, IDC_PAUSEPT, Pause_TR);
+	DDX_Control(pDX, IDC_TAGH, TagV);
+	DDX_Control(pDX, IDC_REPEAT, RepeatV);
+	DDX_Control(pDX, IDC_MAXTHREADS, MaxThreadsV);
+	DDX_Control(pDX, IDC_PAUSE, PauseV);
+	DDX_Control(pDX, IDC_MAXTIME, maxTimeV);
+	DDX_Control(pDX, IDC_PRIORITY, PriorityV);
+	DDX_Control(pDX, IDC_DISABLE, DisableV);
+	DDX_Control(pDX, IDC_SUITENAME, SuiteNameV);
 }
 
 
@@ -53,6 +61,9 @@ BEGIN_MESSAGE_MAP(EditWindow, CDialogEx)
 ON_EN_CHANGE(IDC_AUTHOR, &EditWindow::OnEnChangeAuthor)
 ON_BN_CLICKED(ID_SAVEB, &EditWindow::OnBnClickedSaveb)
 ON_BN_CLICKED(IDC_REFRESH, &EditWindow::OnBnClickedRefresh)
+ON_BN_CLICKED(IDC_BUTTON3, &EditWindow::OnBnClickedButton3)
+ON_EN_CHANGE(IDC_COPYRIGHT, &EditWindow::OnEnChangeCopyright)
+ON_BN_CLICKED(IDC_HEADERDESCSHOW, &EditWindow::OnBnClickedHeaderdescshow)
 END_MESSAGE_MAP()
 
 
@@ -89,12 +100,11 @@ void EditWindow::setTestdataFromXML(){
 	Disable_TS = TestForInfo->getDisable();
 	Execution_TS = TestForInfo->get_executableName();
 	Par_TS = TestForInfo->getParameters();
-	Repeat_TS = L"LATER";
 	Result_tS = TestForInfo->get_expectedResult();
 	Repeat_TMS = TestForInfo->getRepeat();
 	MaxTime_TS = TestForInfo->getMaxTime();
 	WaitFor_TS = TestForInfo->getWaitFor();
-	Pause_TRS = L"LATER";
+
 }
 void EditWindow::setMetadataFromXML(){
 	Author = TestForInfo->getMetadata()->getName();
@@ -112,9 +122,72 @@ void EditWindow::setMetadataFromXML(){
 	if (License.IsEmpty()){ License = L"EMPTY"; }
 	if (Info.IsEmpty()){ Info = L"EMPTY"; }
 }
+void EditWindow::ParseForHeaderData(){
+	doc = new TiXmlDocument(PathToFile.c_str());
+	bool OpenOk = doc->LoadFile(PathToFile.c_str());
+	if (OpenOk){
+		TiXmlElement *head;
+		TiXmlElement *f = doc->RootElement();
+		SuiteName_S = f->Attribute("name"); //      <----- sets Suites name 
+		TiXmlElement *el = doc->FirstChildElement();
+		std::string getN;
+		for (TiXmlElement *Parent = el->FirstChildElement(); Parent != 0; Parent = Parent->NextSiblingElement()){
+			getN.assign(TestForInfo->getName());
+			if (!Tag_S.compare(Parent->Value())){
+				Head_Tag_S = Parent->GetText();
+				continue;
+			}
+			else if (!Repeat_S.compare(Parent->Value())){
+				Head_Repeat_S = Parent->GetText();
+				HeadRepeat_Pause = Parent->Attribute("pause");
+				continue;
+			}
+			else if (!Max_S.compare(Parent->Value())){
+				Head_MaxTime_S = Parent->GetText();
+				continue;
+			}
+			else if (!maxThreads_S.compare(Parent->Value())){
+				Head_MaxThreads_S = Parent->GetText();
+				continue;
+			}
+			else if (!Disable_S.compare(Parent->Value())){
+				Head_Disable_S = Parent->GetText();
+				continue;
+			}
+			else if (!Priority_S.compare(Parent->Value())){
+				Head_Priority_S = Parent->GetText();
+				continue;
+			}
+			else if (!Test_S.compare(Parent->Value()) && !getN.compare(Parent->Attribute("name"))){
+				//-------this block will get the test attributes_such as (repeat) and (pause)-------//
+
+				for (TiXmlElement *child = Parent->FirstChildElement(); child != 0; child = child->NextSiblingElement()){
+					if (child->Attribute("repeat")){ Repeat_TS = child->Attribute("repeat"); }
+					else if (child->Attribute("pause")){ Pause_TRS = child->Attribute("pause"); }
+				}
+				break;
+
+				//--------------------end_of_block---------------------------------//
+			}
+		}	
+	}
+	else{
+		MessageBox(L".xml file cannot be loaded", L"Info", MB_OK);
+		return;	
+	}
+}
 void EditWindow::OnBnClickedSaveb()
 {
-	// TODO: Add your control notification handler code here	
+	// TODO: Add your control notification handler code here
+	doc->SaveFile();
+}
+
+void EditWindow::OnBnClickedHeaderdescshow()
+{
+	
+	ShowDescription dlg;
+	dlg.DoModal();
+	
 }
 
 
@@ -136,13 +209,40 @@ void EditWindow::OnBnClickedRefresh()
 	Disable_T.SetWindowTextW(Disable_TS);
 	Execution_T.SetWindowTextW(Execution_TS);
 	Par_T.SetWindowTextW(Par_TS);
-	Repeat_T.SetWindowTextW(Repeat_TS);
 	Result_t.SetWindowTextW(Result_tS);
 	Repeat_TM.SetWindowTextW(Repeat_TMS);
 	MaxTime_T.SetWindowTextW(MaxTime_TS);
 	WaitFor_T.SetWindowTextW(WaitFor_TS);
+	
+	ParseForHeaderData();
+	TagV.SetWindowTextW(Head_Tag_S);
+	RepeatV.SetWindowTextW(Head_Repeat_S);
+	MaxThreadsV.SetWindowTextW(Head_MaxThreads_S);
+	PauseV.SetWindowTextW(HeadRepeat_Pause);
+	maxTimeV.SetWindowTextW(Head_MaxTime_S);
+	PriorityV.SetWindowTextW(Head_Priority_S);
+	DisableV.SetWindowTextW(Head_Disable_S);
+	SuiteNameV.SetWindowTextW(SuiteName_S);
+	Repeat_T.SetWindowTextW(Repeat_TS);
 	Pause_TR.SetWindowTextW(Pause_TRS);
-
 	// TODO: Add your control notification handler code here
+}
+
+
+
+void EditWindow::OnBnClickedButton3()
+{
+	// TODO: Add your control notification handler code here
+}
+
+
+void EditWindow::OnEnChangeCopyright()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialogEx::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO:  Add your control notification handler code here
 }
 

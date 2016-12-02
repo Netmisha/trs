@@ -18,7 +18,7 @@
     <test name="Test 6" description="Test description">
         <priority>4</priority>
         <tag>Release</tag>
-        <disable>true</disable>
+        <disable>false</disable>
         <execution>test.exe</execution>
         <parameters repeat="32">3000 0</parameters>
         <result>0</result>

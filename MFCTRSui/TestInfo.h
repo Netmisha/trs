@@ -22,6 +22,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CEdit m_TreeEdit;
+	void ClearEditBox();
+	bool EditWindowCall = false;
+	CString Desc_Header;
+	void WriteToScreen();
 };
 
 extern TRSTest* TestForInfo;
