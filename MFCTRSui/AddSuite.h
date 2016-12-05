@@ -1,5 +1,6 @@
 #pragma once
 #include "Resource.h"
+#include "afxwin.h"
 
 // AddSuite dialog
 
@@ -22,4 +23,23 @@ public:
 	CString sSuiteName;
 	CString sPath_;
 	afx_msg void OnBnClickedOk();
+	afx_msg void OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult);
+
+	CString sMDAuthor;
+	CString sMDDate;
+	CString sMDVersion;
+	CString sMDMail;
+	CString sMDCopyright;
+	CString sMDLicense;
+	CString sMDInfo;
+	CString sHTag;
+	CString sHRepeat;
+	CString sHThread;
+	CString sHTime;
+	CString sHPriority;
+	CString sHDisable;
+	CString sHSuiteName;
+	CString sHPause;
+	afx_msg void OnBnClickedCancel();
+	CString sHDescription;
 };
