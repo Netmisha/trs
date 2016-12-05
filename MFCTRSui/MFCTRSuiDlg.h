@@ -16,6 +16,7 @@
 #include "TimerADD.h"
 #include "TimerAddCollection.h"
 #include "AddSuite.h"
+#include "AddTest.h"
 #define PROJECT_UPLOADED 1
 #define PROJECT_NOTLOADED 2
 #define RUN_CLICKED 4

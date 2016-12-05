@@ -4138,6 +4138,9 @@ void CMFCTRSuiDlg::OnInfoAddsuite()
 		AddSuite add_suite;
 		add_suite.setPath(sCurrentPathToFile);
 		add_suite.DoModal();
+		AddTest add_test;
+		add_test.setPath(add_suite.getPathToFile());
+		add_test.DoModal();
 	}
 	OnProgramRefresh();
 }
@@ -4145,7 +4148,12 @@ void CMFCTRSuiDlg::OnInfoAddsuite()
 
 void CMFCTRSuiDlg::OnInfoAddcase()
 {
-	// TODO: Add your command handler code here
+	if (TestForInfo) {
+		AddTest add_test;
+		add_test.setPath(sCurrentPathToFile+sCurrentFileName);
+		add_test.DoModal();
+	}
+	OnProgramRefresh();
 }
 
 

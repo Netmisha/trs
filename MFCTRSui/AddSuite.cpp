@@ -5,7 +5,6 @@
 #include "AddSuite.h"
 #include "afxdialogex.h"
 #include <Windows.h>
-#include <fstream>
 #include <TRSLibrary\TinyXML\tinyxml.h>
 
 // AddSuite dialog
@@ -93,79 +92,100 @@ void AddSuite::OnBnClickedOk()
 	doc.LinkEndChild(suite);
 	
 	TiXmlElement * tag = new TiXmlElement("tag");
-	TiXmlText * tag_text = new TiXmlText(CStringA(sHTag));
-	tag->LinkEndChild(tag_text);
+	if (!sHTag.IsEmpty()) {
+		TiXmlText * tag_text = new TiXmlText(CStringA(sHTag));
+		tag->LinkEndChild(tag_text);
+	}
 	suite->LinkEndChild(tag);
 	
 	TiXmlElement * repeat = new TiXmlElement("repeat");
 	repeat->SetAttribute("pause", CStringA(sHPause));
-	TiXmlText * repeat_text = new TiXmlText(CStringA(sHRepeat));
-	repeat->LinkEndChild(repeat_text);
+	if (!sHRepeat.IsEmpty()) {
+		TiXmlText * repeat_text = new TiXmlText(CStringA(sHRepeat));
+		repeat->LinkEndChild(repeat_text);
+	}
 	suite->LinkEndChild(repeat);
 	
 	TiXmlElement * max_time = new TiXmlElement("maxTime");
-	TiXmlText * max_time_text = new TiXmlText(CStringA(sHTime));
-	max_time->LinkEndChild(max_time_text);
+	if (!sHTime.IsEmpty()) {
+		TiXmlText * max_time_text = new TiXmlText(CStringA(sHTime));
+		max_time->LinkEndChild(max_time_text);
+	}
 	suite->LinkEndChild(max_time);
 	
 	TiXmlElement * max_thread = new TiXmlElement("maxThreads");
-	TiXmlText * max_thread_text = new TiXmlText(CStringA(sHThread));
-	max_thread->LinkEndChild(max_thread_text);
+	if (!sHThread.IsEmpty()) {
+		TiXmlText * max_thread_text = new TiXmlText(CStringA(sHThread));
+		max_thread->LinkEndChild(max_thread_text);
+	}
 	suite->LinkEndChild(max_thread);
 	
 	TiXmlElement * priority = new TiXmlElement("priority");
-	TiXmlText *priority_text = new TiXmlText(CStringA(sHPriority));
-	priority->LinkEndChild(priority_text);
+	if (!sHPriority.IsEmpty()) {
+		TiXmlText *priority_text = new TiXmlText(CStringA(sHPriority));
+		priority->LinkEndChild(priority_text);
+	}
 	suite->LinkEndChild(priority);
 	
 	TiXmlElement * disable = new TiXmlElement("disable");
-	TiXmlText * disable_text = new TiXmlText(CStringA(sHDisable));
-	disable->LinkEndChild(disable_text);
+	if (!sHDisable.IsEmpty()) {
+		TiXmlText * disable_text = new TiXmlText(CStringA(sHDisable));
+		disable->LinkEndChild(disable_text);
+	}
 	suite->LinkEndChild(disable);
 	
 	TiXmlElement * metadata = new TiXmlElement("metadata");
 	suite->LinkEndChild(metadata);
 	
 	TiXmlElement * author = new TiXmlElement("author");
-	TiXmlText * author_text = new TiXmlText(CStringA(sMDAuthor));
-	author->LinkEndChild(author_text);
+	if (!sMDAuthor.IsEmpty()) {
+		TiXmlText * author_text = new TiXmlText(CStringA(sMDAuthor));
+		author->LinkEndChild(author_text);
+	}
 	metadata->LinkEndChild(author);
 	
 	TiXmlElement * date = new TiXmlElement("date");
-	TiXmlText * date_text = new TiXmlText(CStringA(sMDDate));
-	date->LinkEndChild(date_text);
+	if (!sMDDate.IsEmpty()) {
+		TiXmlText * date_text = new TiXmlText(CStringA(sMDDate));
+		date->LinkEndChild(date_text);
+	}
 	metadata->LinkEndChild(date);
 	
 	TiXmlElement * version = new TiXmlElement("version");
-	TiXmlText * version_text = new TiXmlText(CStringA(sMDVersion));
-	version->LinkEndChild(version_text);
+	if (!sMDVersion.IsEmpty()) {
+		TiXmlText * version_text = new TiXmlText(CStringA(sMDVersion));
+		version->LinkEndChild(version_text);
+	}
 	metadata->LinkEndChild(version);
 	
-	TiXmlElement * mail = new TiXmlElement("mail");
-	TiXmlText * mail_text = new TiXmlText(CStringA(sMDMail));
-	mail->LinkEndChild(mail_text);
+	TiXmlElement * mail = new TiXmlElement("mail"); 
+	if (!sMDMail.IsEmpty()) {
+		TiXmlText * mail_text = new TiXmlText(CStringA(sMDMail));
+		mail->LinkEndChild(mail_text);
+	}
 	metadata->LinkEndChild(mail);
 	
 	TiXmlElement * copyright = new TiXmlElement("copyright");
-	TiXmlText * copyright_text = new TiXmlText(CStringA(sMDCopyright));
-	copyright->LinkEndChild(copyright_text);
+	if (!sMDCopyright.IsEmpty()) {
+		TiXmlText * copyright_text = new TiXmlText(CStringA(sMDCopyright));
+		copyright->LinkEndChild(copyright_text);
+	}
 	metadata->LinkEndChild(copyright);
 	
 	TiXmlElement * license = new TiXmlElement("license");
-	TiXmlText * license_text = new TiXmlText(CStringA(sMDLicense));
-	license->LinkEndChild(license_text);
+	if (!sMDLicense.IsEmpty()) {
+		TiXmlText * license_text = new TiXmlText(CStringA(sMDLicense));
+		license->LinkEndChild(license_text);
+	}
 	metadata->LinkEndChild(license);
 	
 	TiXmlElement * info = new TiXmlElement("info");
-	TiXmlText * info_text = new TiXmlText(CStringA(sMDInfo));
-	info->LinkEndChild(info_text);
+	if (!sMDInfo.IsEmpty()) {
+		TiXmlText * info_text = new TiXmlText(CStringA(sMDInfo));
+		info->LinkEndChild(info_text);
+	}
 	metadata->LinkEndChild(info);
 
-
-	TiXmlPrinter printer;
-	doc.Accept(&printer);
-	CStringA s_data;
-	s_data = printer.CStr();
 	doc.SaveFile();
 	CDialogEx::OnOK();
 }

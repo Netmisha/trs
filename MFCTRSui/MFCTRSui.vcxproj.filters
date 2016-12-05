@@ -25,6 +25,7 @@
     <ClCompile Include="TimerAddCollection.cpp" />
     <ClCompile Include="EditWindow.cpp" />
     <ClCompile Include="AddSuite.cpp" />
+    <ClCompile Include="AddTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\TRSLibrary\TinyXML\tinystr.h" />
@@ -54,6 +55,7 @@
     <ClInclude Include="TimerStruct.h" />
     <ClInclude Include="EditWindow.h" />
     <ClInclude Include="AddSuite.h" />
+    <ClInclude Include="AddTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MFCTRSui.rc" />
