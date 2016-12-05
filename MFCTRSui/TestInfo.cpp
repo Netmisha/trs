@@ -19,6 +19,7 @@ TestInfo::TestInfo(CWnd* pParent /*=NULL*/)
 TestInfo::~TestInfo()
 {
 }
+
 void TestInfo::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);

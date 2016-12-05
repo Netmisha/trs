@@ -15,6 +15,7 @@
 #include "TRSLibrary\TRSManager.h"
 #include "TimerADD.h"
 #include "TimerAddCollection.h"
+#include "AddSuite.h"
 #define PROJECT_UPLOADED 1
 #define PROJECT_NOTLOADED 2
 #define RUN_CLICKED 4
@@ -167,7 +168,11 @@ public:
 	void LeftMouseClick();
 	CString sCurrentFileName;
 	CString sCurrentPathToFile;
+	CString sNewSuiteName;
 	afx_msg void OnInfoEdit();
+	afx_msg void OnInfoAddsuite();
+	afx_msg void OnInfoAddcase();
+	afx_msg void OnInfoDelete();
 };
 
 //extern CListBox* List;
