@@ -43,7 +43,8 @@ public:
 	void setMetadataFromXML();
 	void setTestdataFromXML();
 	afx_msg void OnBnClickedRefresh();
-	
+	CString test;
+	CString Test_desc;
 	CString TestName_TS;
 	CString Priority_TS;
 	CString Tag_TS;
@@ -56,7 +57,6 @@ public:
 	CString MaxTime_TS;
 	CString WaitFor_TS;
 	CString Pause_TRS;
-
 	CEdit TestName_T;
 	CEdit Priority_T;
 	CEdit Tag_T;
@@ -69,5 +69,39 @@ public:
 	CEdit MaxTime_T;
 	CEdit WaitFor_T;
 	CEdit Pause_TR;
+	std::string PathToFile;
+	void ParseForHeaderData(); // get attributes from the .xml file + header of the file
+	
+	//--------------XML header data----------------//
+	CString SuiteName_S;
+	CString SuiteDesc_S;
+	CString Head_Repeat_S;
+	CString Head_MaxTime_S;
+	CString Head_MaxThreads_S;
+	CString Head_Priority_S;
+	CString Head_Disable_S;
+	CString Head_Tag_S;
+	CString HeadRepeat_Pause;
+	std::string Tag_S = "tag";
+	std::string Repeat_S = "repeat";
+	std::string Max_S = "maxTime";
+	std::string maxThreads_S = "maxThreads";
+	std::string Priority_S = "priority";
+	std::string Disable_S = "disable";
+	std::string Test_S = "test";
+	//--------------end_of_block----------------//
+	CEdit TagV;
+	CEdit RepeatV;
+	CEdit MaxThreadsV;
+	CEdit PauseV;
+	CEdit maxTimeV;
+	CEdit PriorityV;
+	CEdit DisableV;
+	CEdit SuiteNameV;
+	TiXmlDocument *doc;
+	afx_msg void OnBnClickedButton3();
+	afx_msg void OnEnChangeCopyright();
+	afx_msg void OnBnClickedHeaderdescshow();
+	afx_msg void OnBnClickedTestdescshow();
 };
 extern TRSTest* TestForInfo;

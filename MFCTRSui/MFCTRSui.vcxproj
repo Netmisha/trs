@@ -108,7 +108,6 @@
     <ClInclude Include="..\TRSLibrary\TinyXML\tinystr.h" />
     <ClInclude Include="..\TRSLibrary\TinyXML\tinyxml.h" />
     <ClInclude Include="AddClockDlg.h" />
-    <ClInclude Include="AddSuite.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="ClockCollection.h" />
     <ClInclude Include="ClockInstance.h" />
@@ -122,6 +121,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RunDialog.h" />
     <ClInclude Include="RunParameters.h" />
+    <ClInclude Include="ShowDescription.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SuiteRoot.h" />
     <ClInclude Include="targetver.h" />
@@ -139,7 +139,6 @@
     <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlerror.cpp" />
     <ClCompile Include="..\TRSLibrary\TinyXML\tinyxmlparser.cpp" />
     <ClCompile Include="AddClockDlg.cpp" />
-    <ClCompile Include="AddSuite.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="ClockCollection.cpp" />
     <ClCompile Include="ConsoleReporter.cpp" />
@@ -151,6 +150,7 @@
     <ClCompile Include="ProjNameEdit.cpp" />
     <ClCompile Include="RunDialog.cpp" />
     <ClCompile Include="RunParameters.cpp" />
+    <ClCompile Include="ShowDescription.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

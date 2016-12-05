@@ -22,6 +22,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CEdit m_TreeEdit;
+	void ClearEditBox();
+	
 };
 
 extern TRSTest* TestForInfo;
