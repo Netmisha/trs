@@ -4139,6 +4139,7 @@ void CMFCTRSuiDlg::OnInfoAddsuite()
 		add_suite.setPath(sCurrentPathToFile);
 		add_suite.DoModal();
 	}
+	OnProgramRefresh();
 }
 
 

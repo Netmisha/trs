@@ -1,11 +1,11 @@
 <?xml version="1.0" ?>
-<suite name="TeWWst" description="Test descrdddddsiption">
+<suite name="Test" description="Test description">
     <tag>Release</tag>
-    <maxTime>2s</maxTime>
     <repeat pause="100">120</repeat>
-    <disable>true</disable>
+    <maxTime>2s</maxTime>
     <maxThreads>3</maxThreads>
     <priority>4</priority>
+    <disable>true</disable>
     <metadata>
         <author>Mykhailo</author>
         <date>05.20.2016</date>
@@ -29,9 +29,9 @@
     <test name="Test 4" description="Test description">
         <priority>4</priority>
         <tag>Single</tag>
-        <disable>false</disable>
+        <disable>true</disable>
         <execution>test.exe</execution>
-        <parameters repeat="666">1000</parameters>
+        <parameters repeat="32">1000</parameters>
         <result>0</result>
         <repeat pause="100">1</repeat>
         <maxTime>2s</maxTime>
@@ -40,9 +40,9 @@
     <test name="Test 5" description="Test description">
         <priority>4</priority>
         <tag>Debug</tag>
-        <disable>false</disable>
+        <disable>true</disable>
         <execution>test.exe</execution>
-        <parameters repeat="666">1000</parameters>
+        <parameters repeat="32">1000</parameters>
         <result>1</result>
         <repeat pause="100">1</repeat>
         <maxTime>2s</maxTime>
