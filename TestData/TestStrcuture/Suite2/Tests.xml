@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
-<suite name="Test" description="Test description">
-    <tag>Release</tag>
-    <repeat pause="100">120</repeat>
-    <maxTime>2s</maxTime>
-    <maxThreads>3</maxThreads>
+<suite name="mytestnmae" description="Test description">
+    <tag>Debug</tag>
+    <repeat pause="6666">340</repeat>
+    <maxTime>4s</maxTime>
+    <maxThreads>5</maxThreads>
     <priority>4</priority>
     <disable>false</disable>
     <metadata>

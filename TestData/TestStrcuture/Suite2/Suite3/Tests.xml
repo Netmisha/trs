@@ -7,13 +7,13 @@
     <priority>4</priority>
     <disable>false</disable>
     <metadata>
-        <author>Mykhailo</author>
-        <date>05.20.2016</date>
-        <version>1.0.0</version>
-        <mail>mykhailo.mastykash@globallogic.com</mail>
-        <copyright />
-        <license />
-        <info />
+        <author>Meauthor</author>
+        <date>20.07.1996</date>
+        <version>13.133.1</version>
+        <mail>manduk1331@gmail.com</mail>
+        <copyright>mycopyright</copyright>
+        <license>mylicnse</license>
+        <info>lotsofinfoyo</info>
     </metadata>
     <test name="Test 5" description="Test description">
         <priority>4</priority>
