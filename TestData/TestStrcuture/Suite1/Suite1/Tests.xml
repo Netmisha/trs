@@ -1,2 +1,54 @@
 <?xml version="1.0" ?>
+<<<<<<< HEAD
 <suite name="TeWWst" description="Test descrdddddsiption">SuiteNameisAwesome</suite>
+=======
+<suite name="Test" description="Test description">
+    <tag>Release</tag>
+    <repeat pause="100">120</repeat>
+    <maxTime>2s</maxTime>
+    <maxThreads>3</maxThreads>
+    <priority>4</priority>
+    <disable>true</disable>
+    <metadata>
+        <author>Mykhailo</author>
+        <date>05.20.2016</date>
+        <version>1.0.0</version>
+        <mail>mykhailo.mastykash@globallogic.com</mail>
+        <copyright />
+        <license />
+        <info />
+    </metadata>
+    <test name="Test 3" description="Test description">
+        <priority>4</priority>
+        <tag>Release</tag>
+        <disable>true</disable>
+        <execution>test.exe</execution>
+        <parameters repeat="32">1000</parameters>
+        <result>1</result>
+        <repeat pause="100">1</repeat>
+        <maxTime>2s</maxTime>
+        <waitFor>Test 4</waitFor>
+    </test>
+    <test name="Test 4" description="Test description">
+        <priority>4</priority>
+        <tag>Single</tag>
+        <disable>true</disable>
+        <execution>test.exe</execution>
+        <parameters repeat="32">1000</parameters>
+        <result>0</result>
+        <repeat pause="100">1</repeat>
+        <maxTime>2s</maxTime>
+        <waitFor>Test 5</waitFor>
+    </test>
+    <test name="Test 5" description="Test description">
+        <priority>4</priority>
+        <tag>Debug</tag>
+        <disable>true</disable>
+        <execution>test.exe</execution>
+        <parameters repeat="32">1000</parameters>
+        <result>1</result>
+        <repeat pause="100">1</repeat>
+        <maxTime>2s</maxTime>
+    </test>
+</suite>
+>>>>>>> bc01c6d872035d7609be20ff0c7d339d7e5d0758
