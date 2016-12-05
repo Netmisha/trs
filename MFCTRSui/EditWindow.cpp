@@ -181,10 +181,179 @@ void EditWindow::ParseForHeaderData(){
 void EditWindow::OnBnClickedSaveb()
 {
 	// TODO: Add your control notification handler code here
-
-	doc->SaveFile();
+	compareData_andChange();
+	/*
+	if (compareData()){
+		doc->SaveFile();
+	}
+	else{
+		MessageBox(L"No need to save the file. Data is the same as before", L"Info", MB_OK);
+		return;
+	}
+	*/
 }
+void EditWindow::WriteOnChangeToFile(std::string tag,CString new_data,std::string block){
+	TiXmlElement *el = doc->FirstChildElement();
+	for (TiXmlElement *parent = el->FirstChildElement(); parent != 0; parent = parent->NextSiblingElement()){
+		for (TiXmlElement *child = parent->FirstChildElement(); child != 0; child = child->NextSiblingElement()){
+			if (!tag.compare(child->Value())){
+				child->Clear();
+				CT2A ascii_tempData(new_data);
+				char *name = ascii_tempData;
+				child->LinkEndChild(new TiXmlText(ascii_tempData));
+				TempData.Empty();
+				doc->SaveFile();
+				break;
+			}
+		}
+	}
+}
+bool EditWindow::compareData_andChange(){ // create func for comparition
+	//FINDMEHERE
+	//------metadata tags---------//
+	{
+		std::string a = "author";
+		std::string d = "date";
+		std::string v = "version";
+		std::string m = "mail";
+		std::string c = "copyright";
+		std::string l = "license";
+		std::string i = "info";
+		std::string me = "metadata";
+		//-----end of metadata tags-----//
+		//-------METADATA_COMPARE_AND_CHANGE---------------//  
+		// same code everywhere at the end I will refactor everything
+		Author_name.GetWindowText(TempData);
+		if (TempData.Compare(Author)){
+			WriteOnChangeToFile(a, TempData, me);
+		}
+		Version_V.GetWindowText(TempData);
+		if (TempData.Compare(Version)){
+			WriteOnChangeToFile(v, TempData, me);
+		}
+		date_V.GetWindowText(TempData);
+		if (TempData.Compare(Date)){
+			WriteOnChangeToFile(d, TempData, me);
 
+		}
+		Mail_V.GetWindowText(TempData);
+		if (TempData.Compare(Mail)){
+			WriteOnChangeToFile(m, TempData, me);
+		}
+		Copyrgiht_V.GetWindowText(TempData);
+		if (TempData.Compare(Copyright)){
+			WriteOnChangeToFile(c, TempData, me);
+		}
+		License_V.GetWindowText(TempData);
+		if (TempData.Compare(License)){
+			WriteOnChangeToFile(l, TempData, me);
+		}
+		Info_V.GetWindowText(TempData);
+		if (TempData.Compare(Info)){
+			WriteOnChangeToFile(i, TempData, me);
+		}
+	}
+	//---------------------end of METADATA_COMPARE_AND_CHANGE bloc-----------//
+
+	//-----Header compare and change block------//
+	WriteOnHeaderChange();
+	//----------end of compare and change block-----//
+	return 0; 
+
+}
+void EditWindow::WriteOnHeaderChange(){
+	TiXmlElement *el = doc->RootElement();    
+	SuiteNameV.GetWindowText(TempData);
+	CT2A a(TempData);
+	char *t = a;
+	std::string tn = el->Attribute("name");
+	if (tn.compare(t)){
+		el->SetAttribute("name", t);
+		TempData.Empty();
+		doc->SaveFile();
+	}
+	for (TiXmlElement *parent = el->FirstChildElement(); parent != 0; parent = parent->NextSiblingElement()){
+		if (!Tag_S.compare(parent->Value())){
+			TagV.GetWindowText(TempData);
+			if (Head_Tag_S.Compare(TempData)){
+				parent->Clear();
+				CT2A ascii_tempData(TempData);
+				char *name = ascii_tempData;
+				parent->LinkEndChild(new TiXmlText(ascii_tempData));
+				TempData.Empty();
+				doc->SaveFile();
+			}
+		}
+		if (!Repeat_S.compare(parent->Value())){
+			RepeatV.GetWindowText(TempData); 
+			if (Head_Repeat_S.Compare(TempData)){
+				parent->Clear();
+				CT2A ascii_tempData(TempData);
+				char *name = ascii_tempData;
+				parent->LinkEndChild(new TiXmlText(ascii_tempData));
+				TempData.Empty();
+				doc->SaveFile();
+			}
+			PauseV.GetWindowText(TempData);
+			if (HeadRepeat_Pause.Compare(TempData)){  // change attribute not text 
+				//parent->Clear();
+				CT2A ascii_tempData(TempData);
+				char *name = ascii_tempData;
+				parent->SetAttribute("pause", name);
+				//parent->LinkEndChild(new TiXmlText(ascii_tempData));
+				TempData.Empty();
+				doc->SaveFile();
+
+			}
+		}
+		if (!Max_S.compare(parent->Value())){
+			maxTimeV.GetWindowText(TempData);
+			if (Head_MaxTime_S.Compare(TempData)){
+				parent->Clear();
+				CT2A ascii_tempData(TempData);
+				char *name = ascii_tempData;
+				parent->LinkEndChild(new TiXmlText(ascii_tempData));
+				TempData.Empty();
+				doc->SaveFile();
+			}
+		}
+		if (!maxThreads_S.compare(parent->Value())){
+			MaxThreadsV.GetWindowText(TempData);
+			if (Head_MaxThreads_S.Compare(TempData)){
+				parent->Clear();
+				CT2A ascii_tempData(TempData);
+				char *name = ascii_tempData;
+				parent->LinkEndChild(new TiXmlText(ascii_tempData));
+				TempData.Empty();
+				doc->SaveFile();
+			}
+		}
+		if (!Priority_S.compare(parent->Value())){
+			PriorityV.GetWindowText(TempData);
+			if (Head_Priority_S.Compare(TempData)){
+				parent->Clear();
+				CT2A ascii_tempData(TempData);
+				char *name = ascii_tempData;
+				parent->LinkEndChild(new TiXmlText(ascii_tempData));
+				TempData.Empty();
+				doc->SaveFile();
+			}
+		}
+		if (!Disable_S.compare(parent->Value())){
+			DisableV.GetWindowText(TempData);
+			if (Head_Disable_S.Compare(TempData)){
+				parent->Clear();
+				CT2A ascii_tempData(TempData);
+				char *name = ascii_tempData;
+				parent->LinkEndChild(new TiXmlText(ascii_tempData));
+				TempData.Empty();
+				doc->SaveFile();
+			}
+		}
+		
+	}
+
+}
 void EditWindow::OnBnClickedHeaderdescshow()
 {
 	ShowDescription dlg;
@@ -200,6 +369,7 @@ void EditWindow::OnBnClickedTestdescshow()
 }
 void EditWindow::OnBnClickedRefresh()
 {
+	// make a callback to the Refresh function
 	setMetadataFromXML();
 	Author_name.SetWindowTextW(Author);
 	date_V.SetWindowTextW(Date);

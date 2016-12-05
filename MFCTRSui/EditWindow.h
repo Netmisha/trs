@@ -22,7 +22,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedOk();
-	
+	bool compareData_andChange();
 	CEdit Author_name;
 	CButton Save_button;
 	CEdit date_V;
@@ -70,6 +70,7 @@ public:
 	CEdit WaitFor_T;
 	CEdit Pause_TR;
 	std::string PathToFile;
+	void CString_to_ascii(CString in, char** out);
 	void ParseForHeaderData(); // get attributes from the .xml file + header of the file
 	
 	//--------------XML header data----------------//
@@ -99,9 +100,14 @@ public:
 	CEdit DisableV;
 	CEdit SuiteNameV;
 	TiXmlDocument *doc;
+	CString TempData;
 	afx_msg void OnBnClickedButton3();
 	afx_msg void OnEnChangeCopyright();
 	afx_msg void OnBnClickedHeaderdescshow();
 	afx_msg void OnBnClickedTestdescshow();
+	char *ascii_name;
+	void WriteOnChangeToFile(std::string tag, CString new_data,std::string block);
+	void WriteOnHeaderChange();
+
 };
 extern TRSTest* TestForInfo;

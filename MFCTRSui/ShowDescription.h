@@ -25,4 +25,5 @@ public:
 	CEdit DesDataBox;
 	CString Description;
 	void ShowDataDesc();
+	
 };

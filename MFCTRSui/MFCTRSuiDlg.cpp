@@ -3517,6 +3517,7 @@ bool CMFCTRSuiDlg::FindPathToObject()
 void CMFCTRSuiDlg::OnInfoEdit()
 {
 	//Mandrychenko
+	
 	if (TestForInfo){
 		char *Path = nullptr;
 		Path = TestForInfo->getPath();
