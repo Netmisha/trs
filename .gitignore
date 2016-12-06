@@ -1,0 +1,31 @@
+TRS.sdf
+
+TRS.opensdf
+
+*.vcxproj.user
+TRSLibrary/Debug/
+Console/Release/
+CreateExe/Release/
+FoldersCreator/Release/
+Release/
+TRSLibrary/Release/
+UnitTest/Release/
+MFCTRSui/MFCTRSui.aps
+UnitTest/Debug/
+MFCTRSui/Timers.xml
+TRS.v12.suo
+ipch/
+Console/Debug/
+Debug/
+Console/logs.txt
+.gitattributes
+tatus
+
+Report.html
+*.log
+
+*.aps
+MFCTRSui/MFCTRSui.aps
+MFCTRSui/Last Project.xml
+Console/Logs
+"MFCTRSui/Last Project.xml"
