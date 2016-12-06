@@ -23,7 +23,6 @@ protected:
 public:
 	CEdit m_TreeEdit;
 	void ClearEditBox();
-	
 };
 
 extern TRSTest* TestForInfo;

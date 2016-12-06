@@ -325,6 +325,7 @@ void EditWindow::WriteOnHeaderChange(){
 
 			}
 		}
+<<<<<<< HEAD
 		//------------end of make a macros block----------------//
 	}
 
@@ -341,6 +342,7 @@ void EditWindow::WriteOnHeaderChange(){
 		doc->SaveFile(); continue;}\
 	continue; \
 	}
+
 void EditWindow::changeTestData(){
 			TiXmlElement *head = doc->FirstChildElement();
 			std::string ex = "execution";
@@ -476,7 +478,6 @@ void EditWindow::changeTestData(){
 	}
 
 
-
 	void EditWindow::OnBnClickedButton3()
 	{
 		// TODO: Add your control notification handler code here
@@ -492,7 +493,6 @@ void EditWindow::changeTestData(){
 
 		// TODO:  Add your control notification handler code here
 	}
-
 
 
 
