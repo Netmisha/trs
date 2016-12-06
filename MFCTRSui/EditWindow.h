@@ -2,7 +2,7 @@
 #include "Resource.h"
 #include "TRSLibrary\TRSManager.h"
 #include "afxwin.h"
-
+#include "MFCTRSuiDlg.h"
 // EditWindow dialog
 
 class EditWindow : public CDialogEx
@@ -13,7 +13,7 @@ public:
 	EditWindow(CWnd* pParent = NULL);   // standard constructor
 	virtual ~EditWindow();
 
-// Dialog Data
+	// Dialog Data
 	enum { IDD = IDD_EDITTAG };
 
 protected:
@@ -72,7 +72,7 @@ public:
 	std::string PathToFile;
 	void CString_to_ascii(CString in, char** out);
 	void ParseForHeaderData(); // get attributes from the .xml file + header of the file
-	
+
 	//--------------XML header data----------------//
 	CString SuiteName_S;
 	CString SuiteDesc_S;
@@ -107,10 +107,15 @@ public:
 	afx_msg void OnBnClickedHeaderdescshow();
 	afx_msg void OnBnClickedTestdescshow();
 	char *ascii_name;
-	void WriteOnChangeToFile(std::string tag, CString new_data,std::string block);
+	void WriteOnChangeToFile(std::string tag, CString new_data, std::string block);
 	void WriteOnHeaderChange();
-	void changeHeaderDesc();
+	void CompareAndChangeFuncHeader(TiXmlElement *parent, std::string XmlTag, CEdit EditLine, CString EditStringLine);
+	//----callbackstuf for the onProgramRefresh func----------//
+	CMFCTRSuiDlg *poin;
 	void changeTestData();
-
+	void(CMFCTRSuiDlg::*callback_refresh_func)(void);
+	//------------end of callbackstuff-----------//
 };
 extern TRSTest* TestForInfo;
+//extern void(CMFCTRSuiDlg::*callback_refresh_func)();
+//extern EditWindow *obj = new EditWindow;
