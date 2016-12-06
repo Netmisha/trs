@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <suite name="Test" description="Test description">
     <tag>Release</tag>
-    <repeat pause="100">20000</repeat>
-    <maxTime>3s</maxTime>
+    <repeat pause="100">120</repeat>
+    <maxTime>2s</maxTime>
     <maxThreads>1</maxThreads>
     <priority>4</priority>
     <disable>true</disable>

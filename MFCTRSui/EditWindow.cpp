@@ -11,7 +11,7 @@
 IMPLEMENT_DYNAMIC(EditWindow, CDialogEx)
 
 EditWindow::EditWindow(CWnd* pParent /*=NULL*/)
-	: CDialogEx(EditWindow::IDD, pParent)
+: CDialogEx(EditWindow::IDD, pParent)
 {
 
 }
@@ -56,15 +56,15 @@ void EditWindow::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(EditWindow, CDialogEx)
 	ON_BN_CLICKED(IDOK, &EditWindow::OnBnClickedOk)
-//	ON_EN_CHANGE(IDC_EDIT20, &EditWindow::OnEnChangeEdit20)
-//	ON_EN_CHANGE(IDC_EDIT26, &EditWindow::OnEnChangeEdit26)
-ON_EN_CHANGE(IDC_AUTHOR, &EditWindow::OnEnChangeAuthor)
-ON_BN_CLICKED(ID_SAVEB, &EditWindow::OnBnClickedSaveb)
-ON_BN_CLICKED(IDC_REFRESH, &EditWindow::OnBnClickedRefresh)
-ON_BN_CLICKED(IDC_BUTTON3, &EditWindow::OnBnClickedButton3)
-ON_EN_CHANGE(IDC_COPYRIGHT, &EditWindow::OnEnChangeCopyright)
-ON_BN_CLICKED(IDC_HEADERDESCSHOW, &EditWindow::OnBnClickedHeaderdescshow)
-ON_BN_CLICKED(IDC_TESTDESCSHOW, &EditWindow::OnBnClickedTestdescshow)
+	//	ON_EN_CHANGE(IDC_EDIT20, &EditWindow::OnEnChangeEdit20)
+	//	ON_EN_CHANGE(IDC_EDIT26, &EditWindow::OnEnChangeEdit26)
+	ON_EN_CHANGE(IDC_AUTHOR, &EditWindow::OnEnChangeAuthor)
+	ON_BN_CLICKED(ID_SAVEB, &EditWindow::OnBnClickedSaveb)
+	ON_BN_CLICKED(IDC_REFRESH, &EditWindow::OnBnClickedRefresh)
+	ON_BN_CLICKED(IDC_BUTTON3, &EditWindow::OnBnClickedButton3)
+	ON_EN_CHANGE(IDC_COPYRIGHT, &EditWindow::OnEnChangeCopyright)
+	ON_BN_CLICKED(IDC_HEADERDESCSHOW, &EditWindow::OnBnClickedHeaderdescshow)
+	ON_BN_CLICKED(IDC_TESTDESCSHOW, &EditWindow::OnBnClickedTestdescshow)
 END_MESSAGE_MAP()
 
 
@@ -171,11 +171,11 @@ void EditWindow::ParseForHeaderData(){
 
 				//--------------------end_of_block---------------------------------//
 			}
-		}	
+		}
 	}
 	else{
 		MessageBox(L".xml file cannot be loaded", L"Info", MB_OK);
-		return;	
+		return;
 	}
 }
 void EditWindow::OnBnClickedSaveb()
@@ -184,15 +184,15 @@ void EditWindow::OnBnClickedSaveb()
 	compareData_andChange();
 	/*
 	if (compareData()){
-		doc->SaveFile();
+	doc->SaveFile();
 	}
 	else{
-		MessageBox(L"No need to save the file. Data is the same as before", L"Info", MB_OK);
-		return;
+	MessageBox(L"No need to save the file. Data is the same as before", L"Info", MB_OK);
+	return;
 	}
 	*/
 }
-void EditWindow::WriteOnChangeToFile(std::string tag,CString new_data,std::string block){
+void EditWindow::WriteOnChangeToFile(std::string tag, CString new_data, std::string block){
 	TiXmlElement *el = doc->FirstChildElement();
 	for (TiXmlElement *parent = el->FirstChildElement(); parent != 0; parent = parent->NextSiblingElement()){
 		for (TiXmlElement *child = parent->FirstChildElement(); child != 0; child = child->NextSiblingElement()){
@@ -258,11 +258,11 @@ bool EditWindow::compareData_andChange(){ // create func for comparition
 	//-----Header compare and change block------//
 	WriteOnHeaderChange();
 	//----------end of compare and change block-----//
-	return 0; 
+	return 0;
 
 }
 void EditWindow::WriteOnHeaderChange(){
-	TiXmlElement *el = doc->RootElement();    
+	TiXmlElement *el = doc->RootElement();
 	SuiteNameV.GetWindowText(TempData);
 	CT2A a(TempData);
 	char *t = a;
@@ -285,7 +285,7 @@ void EditWindow::WriteOnHeaderChange(){
 			}
 		}
 		if (!Repeat_S.compare(parent->Value())){
-			RepeatV.GetWindowText(TempData); 
+			RepeatV.GetWindowText(TempData);
 			if (Head_Repeat_S.Compare(TempData)){
 				parent->Clear();
 				CT2A ascii_tempData(TempData);
@@ -350,12 +350,12 @@ void EditWindow::WriteOnHeaderChange(){
 				doc->SaveFile();
 			}
 		}
-		
+
 	}
 
 }
 void EditWindow::changeHeaderDesc(){
-	
+
 }
 void EditWindow::changeTestData(){
 
@@ -396,7 +396,7 @@ void EditWindow::OnBnClickedRefresh()
 	Repeat_TM.SetWindowTextW(Repeat_TMS);
 	MaxTime_T.SetWindowTextW(MaxTime_TS);
 	WaitFor_T.SetWindowTextW(WaitFor_TS);
-	
+
 	ParseForHeaderData();
 	TagV.SetWindowTextW(Head_Tag_S);
 	RepeatV.SetWindowTextW(Head_Repeat_S);
@@ -428,7 +428,6 @@ void EditWindow::OnEnChangeCopyright()
 
 	// TODO:  Add your control notification handler code here
 }
-
 
 
 

@@ -13,7 +13,7 @@ public:
 	EditWindow(CWnd* pParent = NULL);   // standard constructor
 	virtual ~EditWindow();
 
-// Dialog Data
+	// Dialog Data
 	enum { IDD = IDD_EDITTAG };
 
 protected:
@@ -72,7 +72,7 @@ public:
 	std::string PathToFile;
 	void CString_to_ascii(CString in, char** out);
 	void ParseForHeaderData(); // get attributes from the .xml file + header of the file
-	
+
 	//--------------XML header data----------------//
 	CString SuiteName_S;
 	CString SuiteDesc_S;
@@ -107,7 +107,7 @@ public:
 	afx_msg void OnBnClickedHeaderdescshow();
 	afx_msg void OnBnClickedTestdescshow();
 	char *ascii_name;
-	void WriteOnChangeToFile(std::string tag, CString new_data,std::string block);
+	void WriteOnChangeToFile(std::string tag, CString new_data, std::string block);
 	void WriteOnHeaderChange();
 	void changeHeaderDesc();
 	void changeTestData();
