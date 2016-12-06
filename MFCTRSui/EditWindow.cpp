@@ -325,7 +325,7 @@ void EditWindow::WriteOnHeaderChange(){
 
 			}
 		}
-<<<<<<< HEAD
+
 		//------------end of make a macros block----------------//
 	}
 
