@@ -50,6 +50,9 @@ void ShowDescription::OnBnClickedSaveedit()
 			Description.Append(tempdata);
 			MessageBox(L"Description has beed saved", L"INFO", MB_OK);
 		}
+		else{
+			MessageBox(L"Same info.Nothing to save", L"INFO", MB_OK);
+		}
 	// TODO: Add your control notification handler code here
 }
 CString ShowDescription::getDescriptionData(){

@@ -26,7 +26,7 @@
         <maxTime>2s</maxTime>
         <waitFor />
     </test>
-    <test name="Test 2" description="Test description">
+    <test name="Tese name is" description="Test description">
         <priority>4</priority>
         <tag>Debug</tag>
         <disable>false</disable>

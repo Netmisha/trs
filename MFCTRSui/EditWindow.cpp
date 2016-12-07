@@ -12,8 +12,7 @@ IMPLEMENT_DYNAMIC(EditWindow, CDialogEx)
 
 EditWindow::EditWindow(CWnd* pParent /*=NULL*/)
 : CDialogEx(EditWindow::IDD, pParent)
-{
-
+{	
 }
 
 EditWindow::~EditWindow()
@@ -84,7 +83,11 @@ void EditWindow::OnBnClickedOk() // saveButton
 
 
 
-
+BOOL EditWindow::OnInitDialog(){
+	CDialogEx::OnInitDialog();
+	OnBnClickedRefresh();
+	return TRUE;
+}
 void EditWindow::OnEnChangeAuthor()
 {
 	// TODO:  If this is a RICHEDIT control, the control will not
@@ -180,17 +183,7 @@ void EditWindow::ParseForHeaderData(){
 }
 void EditWindow::OnBnClickedSaveb()
 {
-	// TODO: Add your control notification handler code here
 	compareData_andChange();
-	/*
-	if (compareData()){
-	doc->SaveFile();
-	}
-	else{
-	MessageBox(L"No need to save the file. Data is the same as before", L"Info", MB_OK);
-	return;
-	}
-	*/
 }
 void EditWindow::WriteOnChangeToFile(std::string tag, CString new_data, std::string block){
 	TiXmlElement *el = doc->FirstChildElement();
@@ -259,19 +252,7 @@ bool EditWindow::compareData_andChange(){ // create func for comparition
 	return 0;
 
 }
-void EditWindow::CompareAndChangeFuncHeader(TiXmlElement *parent, std::string XmlTag, CEdit EditLine, CString EditStringLine){
-	if (!XmlTag.compare(parent->Value())){
-		EditLine.GetWindowText(TempData);
-		if (EditStringLine.Compare(TempData)){
-			parent->Clear();
-			CT2A ascii_tempData(TempData);
-			char *name = ascii_tempData;
-			parent->LinkEndChild(new TiXmlText(ascii_tempData));
-			TempData.Empty();
-			doc->SaveFile();
-		}
-	}
-}
+
 #define CompareAndChange(StrData,parent,EditLine,DataString) \
 if (!StrData.compare(parent->Value())){\
 	EditLine.GetWindowText(TempData); \

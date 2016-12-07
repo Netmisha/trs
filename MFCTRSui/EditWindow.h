@@ -110,14 +110,17 @@ public:
 	char *ascii_name;
 	void WriteOnChangeToFile(std::string tag, CString new_data, std::string block);
 	void WriteOnHeaderChange();
-	void CompareAndChangeFuncHeader(TiXmlElement *parent, std::string XmlTag, CEdit EditLine, CString EditStringLine);
+	
+	ShowDescription *dlg = NULL;
+	ShowDescription *dlgT = NULL;
+	CString D;
+	BOOL OnInitDialog();
+	
 	//----callbackstuf for the onProgramRefresh func----------//
 	CMFCTRSuiDlg *poin;
 	void changeTestData();
 	//void(CMFCTRSuiDlg::*callback_refresh_func)(void);
-	ShowDescription *dlg = NULL;
-	ShowDescription *dlgT = NULL;
-	CString D;
+	
 	//------------end of callbackstuff-----------//
 };
 extern TRSTest* TestForInfo;
