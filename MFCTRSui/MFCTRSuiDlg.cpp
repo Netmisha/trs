@@ -3327,15 +3327,17 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 	FindPathToObject();
 	mnuPopupSubmit->LoadMenu(IDR_MENU4);
 	if (!TestForInfo) {
+
 		mnuPopupSubmit->RemoveMenu(ID_INFO_DISABLE, MF_BYCOMMAND);
 		mnuPopupSubmit->RemoveMenu(ID_INFO_ENABLE, MF_BYCOMMAND);  
 		mnuPopupSubmit->RemoveMenu(ID_INFO_EDIT, MF_BYCOMMAND);
 
+
 	}
 	else {
 		mnuPopupSubmit->RemoveMenu(ID_INFO_ADDSUITE, MF_BYCOMMAND);
-		mnuPopupSubmit->RemoveMenu(ID_INFO_DISABLEALL, MF_BYCOMMAND);
-		mnuPopupSubmit->RemoveMenu(ID_INFO_ENABLEFOLDER, MF_BYCOMMAND);
+		mnuPopupSubmit->RemoveMenu(ID_INFO_DISABLEALL, MF_BYCOMMAND);	
+	    mnuPopupSubmit->RemoveMenu(ID_INFO_ENABLEFOLDER, MF_BYCOMMAND);
 	}
 	CMenu* nextMenu = mnuPopupSubmit->GetSubMenu(0);
 	ASSERT(nextMenu);
@@ -3541,6 +3543,7 @@ bool CMFCTRSuiDlg::FindPathToObject()
 
 void CMFCTRSuiDlg::OnInfoEdit()
 {
+
 	if (TestForInfo){
 		char *Path = nullptr;
 		Path = TestForInfo->getPath();
@@ -3679,6 +3682,7 @@ void CMFCTRSuiDlg::OnInfoDisableall()
 							if (!text.compare("false")){
 								in_el->Clear();
 								in_el->LinkEndChild(new TiXmlText("true"));
+								
 								doc.SaveFile();
 								break; // exit nested .xml file loop
 							}
@@ -4141,10 +4145,16 @@ void CMFCTRSuiDlg::OnInfoAddsuite()
 	if (!TestForInfo) {
 		AddSuite add_suite;
 		add_suite.setPath(sCurrentPathToFile);
-		add_suite.DoModal();
-		AddTest add_test;
-		add_test.setPath(add_suite.getPathToFile());
-		add_test.DoModal();
+		if (add_suite.DoModal() == IDOK) {
+			AddTest add_test;
+			add_test.setPath(add_suite.getPathToFile());
+			if (add_test.DoModal() == IDCANCEL) {
+				CStringA path(add_suite.getPath());
+				CStringA delete_command("rmdir /s/q ");
+				delete_command += path;
+				system(delete_command);
+			}
+		}
 	}
 	OnProgramRefresh();
 }
@@ -4152,11 +4162,9 @@ void CMFCTRSuiDlg::OnInfoAddsuite()
 
 void CMFCTRSuiDlg::OnInfoAddcase()
 {
-	if (TestForInfo) {
-		AddTest add_test;
-		add_test.setPath(sCurrentPathToFile+L"\\"+sCurrentFileName);
-		add_test.DoModal();
-	}
+	AddTest add_test;
+	add_test.setPath(sCurrentPathToFile + L"\\" + sCurrentFileName);
+	add_test.DoModal();
 	OnProgramRefresh();
 }
 

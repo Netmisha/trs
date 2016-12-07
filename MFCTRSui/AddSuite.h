@@ -15,6 +15,7 @@ public:
 	enum { IDD = IDD_DIALOG_ADDSUITE };
 	void setPath(CString &);
 	CString getPathToFile();
+	CString getPath();
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
