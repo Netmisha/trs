@@ -425,9 +425,10 @@ void EditWindow::changeTestData(){
 
 	void EditWindow::OnBnClickedHeaderdescshow()
 	{
-		ShowDescription dlg;
-		dlg.Description = SuiteDesc_S;
-		dlg.DoModal();
+		dlg = new ShowDescription;
+		dlg->Description = SuiteDesc_S;
+		dlg->DoModal();
+		
 	}
 
 	void EditWindow::OnBnClickedTestdescshow()
@@ -442,6 +443,20 @@ void EditWindow::changeTestData(){
 		// make a callback to the Refresh function
 
 		//((poin)->*(this->callback_refresh_func))();
+		if (!dlg == NULL){
+			if (dlg->r == true){
+				D = dlg->getDescriptionData();
+				TiXmlElement *parent = doc->RootElement();
+				if (parent->Attribute("description")){
+					CT2A ascii_tempData(D);
+					char *name = ascii_tempData;
+					parent->SetAttribute("description",name);
+					doc->SaveFile();
+					D.Empty();
+					delete dlg; dlg = NULL;
+				}
+			}
+		}
 		setMetadataFromXML();
 		Author_name.SetWindowTextW(Author);
 		date_V.SetWindowTextW(Date);

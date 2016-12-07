@@ -25,5 +25,9 @@ public:
 	CEdit DesDataBox;
 	CString Description;
 	void ShowDataDesc();
-	
+	void CheckDiff();
+	bool r = false;
+	CString getDescriptionData();
+	CButton SaveButton;
+	afx_msg void OnBnClickedSaveedit();
 };

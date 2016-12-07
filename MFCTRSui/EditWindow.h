@@ -2,6 +2,7 @@
 #include "Resource.h"
 #include "TRSLibrary\TRSManager.h"
 #include "afxwin.h"
+#include "ShowDescription.h"
 #include "MFCTRSuiDlg.h"
 // EditWindow dialog
 
@@ -113,7 +114,9 @@ public:
 	//----callbackstuf for the onProgramRefresh func----------//
 	CMFCTRSuiDlg *poin;
 	void changeTestData();
-	void(CMFCTRSuiDlg::*callback_refresh_func)(void);
+	//void(CMFCTRSuiDlg::*callback_refresh_func)(void);
+	ShowDescription *dlg = NULL;
+	CString D;
 	//------------end of callbackstuff-----------//
 };
 extern TRSTest* TestForInfo;

@@ -18,7 +18,7 @@
     <test name="Test 2" description="Test description">
         <priority>4</priority>
         <tag>Release</tag>
-        <disable>true</disable>
+        <disable>false</disable>
         <execution>test.exe</execution>
         <parameters repeat="32">1000 0</parameters>
         <result>1</result>
@@ -29,7 +29,7 @@
         <priority>4</priority>
         <tag>Release</tag>
         <disable>true</disable>
-        <execution>test.exe</execution>
+        <execution>hello.exe</execution>
         <parameters repeat="32">1000 0</parameters>
         <result>0</result>
         <repeat pause="100">1</repeat>
@@ -38,7 +38,7 @@
     <test name="Test 4" description="Test description">
         <priority>4</priority>
         <tag>Debug</tag>
-        <disable>true</disable>
+        <disable>false</disable>
         <execution>test.exe</execution>
         <parameters repeat="32">1000 0</parameters>
         <result>1</result>
