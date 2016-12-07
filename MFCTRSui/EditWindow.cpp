@@ -184,7 +184,6 @@ void EditWindow::ParseForHeaderData(){
 void EditWindow::OnBnClickedSaveb()
 {
 	compareData_andChange();
-
 }
 void EditWindow::WriteOnChangeToFile(std::string tag, CString new_data, std::string block){
 	TiXmlElement *el = doc->FirstChildElement();
