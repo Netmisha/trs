@@ -4243,11 +4243,7 @@ void CMFCTRSuiDlg::OnInfoDelete()
 		CStringA path(sCurrentPathToFile);
 		path.GetBuffer()[path.GetLength() - 1] = '\0';
 		CStringA delete_command("rmdir /s/q ");
-		CStringA cd_command("cd ");
-		cd_command += sCurrentPathToFile;
 		delete_command += path;
-		system(cd_command);
-		system("cd ..");
 		system(delete_command);
 	}
 	OnProgramRefresh();
