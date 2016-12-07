@@ -424,6 +424,7 @@ void EditWindow::changeTestData(){
 		// make a callback to the Refresh function
 
 		//((poin)->*(this->callback_refresh_func))();
+
 		if (!dlg == NULL){
 			if (dlg->r == true){
 				D = dlg->getDescriptionData();

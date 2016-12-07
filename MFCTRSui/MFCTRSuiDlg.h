@@ -174,8 +174,11 @@ public:
 	afx_msg void OnInfoAddsuite();
 	afx_msg void OnInfoAddcase();
 	afx_msg void OnInfoDelete();
+
+	//void(CMFCTRSuiDlg::*callback_refresh_func)();
 };
 
 //extern CListBox* List;
 extern CListCtrl* List;
 extern bool checkRunParameters;
+//extern void(CMFCTRSuiDlg::*callback_refresh_func)();

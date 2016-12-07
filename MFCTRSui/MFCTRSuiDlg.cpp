@@ -3328,7 +3328,9 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 	mnuPopupSubmit->LoadMenu(IDR_MENU4);
 	if (!TestForInfo) {
 		mnuPopupSubmit->RemoveMenu(ID_INFO_DISABLE, MF_BYCOMMAND);
-		mnuPopupSubmit->RemoveMenu(ID_INFO_ENABLE, MF_BYCOMMAND);
+		mnuPopupSubmit->RemoveMenu(ID_INFO_ENABLE, MF_BYCOMMAND);  
+		mnuPopupSubmit->RemoveMenu(ID_INFO_EDIT, MF_BYCOMMAND);
+
 	}
 	else {
 		mnuPopupSubmit->RemoveMenu(ID_INFO_ADDSUITE, MF_BYCOMMAND);
@@ -3440,9 +3442,6 @@ void CMFCTRSuiDlg::OnInfoEnablefolder()
 			MessageBox(L"File not loaded", L"Info", MB_OK);
 		}
 	}
-	else{
-		MessageBox(L"Cannot enable folder", L"Info", MB_OK);
-	}
 	TestForInfo = nullptr;
 	OnProgramRefresh();
 }
@@ -3540,7 +3539,6 @@ bool CMFCTRSuiDlg::FindPathToObject()
 	return false;
 }
 
-
 void CMFCTRSuiDlg::OnInfoEdit()
 {
 	if (TestForInfo){
@@ -3573,8 +3571,6 @@ void CMFCTRSuiDlg::OnInfoEdit()
 }
 void CMFCTRSuiDlg::OnInfoDisable()
 {
-	//FINDME
-	//OnprogramRefresh
 	char *Path = nullptr;   
 	char *Dis = nullptr;
 	if (TestForInfo){
@@ -3612,22 +3608,15 @@ void CMFCTRSuiDlg::OnInfoDisable()
 				TiXmlNode *proot = doc.FirstChild();
 				TiXmlElement *el = doc.FirstChildElement();
 				if (loadok){
-					//TiXmlElement *elem = doc.FirstChildElement("suite"); //doc.RootElement();
-					//std::string f = elem->Attribute("priority");
-					//TiXmlElement *work = elem->FirstChildElement("tag");
 					std::string diss = "disable";
-					//TiXmlElement *f = doc.RootElement();
-					//f->SetAttribute("name","He");
-					//doc.SaveFile();
-					//const char *at =  el->FirstChildElement()->Attribute("name");
-					for (TiXmlElement* child = el->FirstChildElement(); child != 0; child = child->NextSiblingElement()){ // iterates threw XML file
+					for (TiXmlElement* child = el->FirstChildElement(); child != 0; child = child->NextSiblingElement()){ 
 						const char *atr = child->Attribute("name");
 						if (atr == nullptr){ continue; }
 						const char* clickTag = TestForInfo->getName();
 						std::string t1(atr), t2(clickTag);
 						std::string TEST = el->Value();
 						if (!t1.compare(clickTag) && TEST.compare("test")){
-							for (TiXmlElement *ch = child->FirstChildElement(); ch != 0; ch = ch->NextSiblingElement()){   // if tag containt sub tag it will iterate
+							for (TiXmlElement *ch = child->FirstChildElement(); ch != 0; ch = ch->NextSiblingElement()){   
 								std::string tag = ch->Value();
 								if (!tag.compare("disable")){
 									ch->Clear();
@@ -3655,9 +3644,8 @@ void CMFCTRSuiDlg::OnInfoDisable()
 	OnProgramRefresh();
 }
 
-void CMFCTRSuiDlg::OnInfoDisableall() // disables tests for current folder
+void CMFCTRSuiDlg::OnInfoDisableall() 
 {
-
 	char *Path = nullptr;
 	if (!TestForInfo){
 		CString Path = sCurrentPathToFile;
@@ -3704,8 +3692,6 @@ void CMFCTRSuiDlg::OnInfoDisableall() // disables tests for current folder
 		else{
 			 MessageBox(L"File not loaded", L"Info", MB_OK); 
 		}
-	}
-	else{
 	}
 	TestForInfo = nullptr;
 	OnProgramRefresh();
@@ -3783,6 +3769,8 @@ void CMFCTRSuiDlg::OnInfoEnable()
 
 void CMFCTRSuiDlg::OnProgramRefresh()
 {
+	//CALLBACKFUNCTION
+	//callback_refresh_func = &CMFCTRSuiDlg::OnProgramRefresh;
 	if (RootList.GetItemCount())
 	{
 		int index = -1;

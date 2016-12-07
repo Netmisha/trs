@@ -117,12 +117,12 @@ public:
 	BOOL OnInitDialog();
 	
 	//----callbackstuf for the onProgramRefresh func----------//
-	CMFCTRSuiDlg *poin;
+	//CMFCTRSuiDlg *poin = new CMFCTRSuiDlg;
 	void changeTestData();
+	// int c;
 	//void(CMFCTRSuiDlg::*callback_refresh_func)(void);
 	
 	//------------end of callbackstuff-----------//
 };
 extern TRSTest* TestForInfo;
 //extern void(CMFCTRSuiDlg::*callback_refresh_func)();
-//extern EditWindow *obj = new EditWindow;
