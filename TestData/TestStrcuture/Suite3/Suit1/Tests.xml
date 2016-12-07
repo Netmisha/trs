@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<suite name="Test" description="New data hello world">
+<suite name="Test" description="Test description ddd hello there">
     <tag>Release</tag>
     <repeat pause="100">120</repeat>
     <maxTime>2s</maxTime>
@@ -15,7 +15,7 @@
         <license />
         <info />
     </metadata>
-    <test name="Test 1" description="Test description">
+    <test name="Test 1" description="Test description hello there descripiton">
         <priority>4</priority>
         <tag>Release</tag>
         <disable>false</disable>

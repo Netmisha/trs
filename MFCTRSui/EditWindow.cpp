@@ -433,9 +433,9 @@ void EditWindow::changeTestData(){
 
 	void EditWindow::OnBnClickedTestdescshow()
 	{
-		ShowDescription dlg;
-		dlg.Description = Test_desc;
-		dlg.DoModal();
+		dlgT = new ShowDescription;
+		dlgT->Description = Test_desc;
+		dlgT->DoModal();
 	}
 	
 	void EditWindow::OnBnClickedRefresh()
@@ -454,6 +454,26 @@ void EditWindow::changeTestData(){
 					doc->SaveFile();
 					D.Empty();
 					delete dlg; dlg = NULL;
+				}
+			}
+		}
+		if (!dlgT == NULL){
+			if (dlgT->r == true){
+				D = dlgT->getDescriptionData();
+				TiXmlElement *parent = doc->RootElement();
+				for (TiXmlElement *el = parent->FirstChildElement(); el != 0; el = el->NextSiblingElement()){
+					if (!Test_S.compare(el->Value())){
+						std::string Tname = el->Attribute("name");
+						char *Tn = TestForInfo->getName();
+						if (!Tname.compare(Tn)){
+							CT2A ascii_tempData(D);
+							char *name = ascii_tempData;
+							el->SetAttribute("description", name);
+							doc->SaveFile();
+							D.Empty();
+							delete dlgT; dlgT = NULL;
+						}
+					}
 				}
 			}
 		}

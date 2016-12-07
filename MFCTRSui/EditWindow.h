@@ -116,6 +116,7 @@ public:
 	void changeTestData();
 	//void(CMFCTRSuiDlg::*callback_refresh_func)(void);
 	ShowDescription *dlg = NULL;
+	ShowDescription *dlgT = NULL;
 	CString D;
 	//------------end of callbackstuff-----------//
 };
