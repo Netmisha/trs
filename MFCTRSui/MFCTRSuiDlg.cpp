@@ -3327,13 +3327,9 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 	FindPathToObject();
 	mnuPopupSubmit->LoadMenu(IDR_MENU4);
 	if (!TestForInfo) {
-		mnuPopupSubmit->RemoveMenu(ID_INFO_DISABLE, MF_BYCOMMAND);
-		mnuPopupSubmit->RemoveMenu(ID_INFO_ENABLE, MF_BYCOMMAND);
 	}
 	else {
 		mnuPopupSubmit->RemoveMenu(ID_INFO_ADDSUITE, MF_BYCOMMAND);
-		mnuPopupSubmit->RemoveMenu(ID_INFO_DISABLEALL, MF_BYCOMMAND);
-		mnuPopupSubmit->RemoveMenu(ID_INFO_ENABLEFOLDER, MF_BYCOMMAND);
 	}
 	CMenu* nextMenu = mnuPopupSubmit->GetSubMenu(0);
 	ASSERT(nextMenu);
@@ -3393,17 +3389,15 @@ void CMFCTRSuiDlg::setDisableTrue(TiXmlNode *parentT){
 void CMFCTRSuiDlg::OnInfoEnablefolder()
 {
 	char *Path = nullptr;
-	if (!TestForInfo){
-		CString Path = sCurrentPathToFile;
-		CString File = sCurrentFileName;
-		CT2A ascii_file_name(File);
-		char *name_char = ascii_file_name;
-		//std::string DisS(Dis);
+	char *Dis = nullptr;
+	if (TestForInfo){
+		Path = TestForInfo->getPath();
+		Dis = TestForInfo->getDisable();
+		char *name = "Tests.xml"; // Magic name, will be fixed
+		std::string DisS(Dis);
 		std::string FP;
-		CT2A ascii_file_path(Path);
-		char *Path_char = ascii_file_path;
-		FP.assign(Path_char);
-		FP.append(name_char);
+		FP.assign(Path);
+		FP.append(name);
 		TiXmlNode* pChild;
 		TiXmlText* pText;
 		TRSInfo inf;
@@ -3543,6 +3537,7 @@ bool CMFCTRSuiDlg::FindPathToObject()
 
 void CMFCTRSuiDlg::OnInfoEdit()
 {
+	//Mandrychenko
 	if (TestForInfo){
 		char *Path = nullptr;
 		Path = TestForInfo->getPath();
@@ -3657,19 +3652,22 @@ void CMFCTRSuiDlg::OnInfoDisable()
 
 void CMFCTRSuiDlg::OnInfoDisableall() // disables tests for current folder
 {
-
 	char *Path = nullptr;
-	if (!TestForInfo){
-		CString Path = sCurrentPathToFile;
-		CString File = sCurrentFileName;
-		CT2A ascii_file_name(File);
-		char *name_char = ascii_file_name;
-		//std::string DisS(Dis);
+	char *Dis = nullptr;
+	if (TestForInfo){
+		Path = TestForInfo->getPath();
+		Dis = TestForInfo->getDisable();
+		if (!FindPathToObject()){
+		MessageBox(L"Cannot get file name or file path", L"Info", MB_OK);
+		return;
+		}
+
+		CT2A ascii_file_name(sCurrentFileName);
+		char *name = ascii_file_name;
+		std::string DisS(Dis);
 		std::string FP;
-		CT2A ascii_file_path(Path);
-		char *Path_char = ascii_file_path;
-		FP.assign(Path_char);
-		FP.append(name_char);
+		FP.assign(Path);
+		FP.append(name);
 		TiXmlNode* pChild;
 		TiXmlText* pText;
 		TRSInfo inf;
@@ -3691,6 +3689,7 @@ void CMFCTRSuiDlg::OnInfoDisableall() // disables tests for current folder
 							if (!text.compare("false")){
 								in_el->Clear();
 								in_el->LinkEndChild(new TiXmlText("true"));
+								
 								doc.SaveFile();
 								break; // exit nested .xml file loop
 							}
@@ -3706,6 +3705,8 @@ void CMFCTRSuiDlg::OnInfoDisableall() // disables tests for current folder
 		}
 	}
 	else{
+		MessageBox(L"Cannot disable folder", L"Info", MB_OK);
+
 	}
 	TestForInfo = nullptr;
 	OnProgramRefresh();
@@ -4153,10 +4154,16 @@ void CMFCTRSuiDlg::OnInfoAddsuite()
 	if (!TestForInfo) {
 		AddSuite add_suite;
 		add_suite.setPath(sCurrentPathToFile);
-		add_suite.DoModal();
-		AddTest add_test;
-		add_test.setPath(add_suite.getPathToFile());
-		add_test.DoModal();
+		if (add_suite.DoModal() == IDOK) {
+			AddTest add_test;
+			add_test.setPath(add_suite.getPathToFile());
+			if (add_test.DoModal() == IDCANCEL) {
+				CStringA path(add_suite.getPath());
+				CStringA delete_command("rmdir /s/q ");
+				delete_command += path;
+				system(delete_command);
+			}
+		}
 	}
 	OnProgramRefresh();
 }
@@ -4164,11 +4171,9 @@ void CMFCTRSuiDlg::OnInfoAddsuite()
 
 void CMFCTRSuiDlg::OnInfoAddcase()
 {
-	if (TestForInfo) {
-		AddTest add_test;
-		add_test.setPath(sCurrentPathToFile+L"\\"+sCurrentFileName);
-		add_test.DoModal();
-	}
+	AddTest add_test;
+	add_test.setPath(sCurrentPathToFile + L"\\" + sCurrentFileName);
+	add_test.DoModal();
 	OnProgramRefresh();
 }
 

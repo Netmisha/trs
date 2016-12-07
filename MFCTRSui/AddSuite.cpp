@@ -75,6 +75,9 @@ void AddSuite::setPath(CString & sPath) {
 CString AddSuite::getPathToFile() {
 	return sPath_ + sSuiteName + "\\" + sSuiteName + ".xml";
 }
+CString AddSuite::getPath() {
+	return sPath_ + sSuiteName;
+}
 void AddSuite::OnBnClickedOk()
 {
 	UpdateData();
