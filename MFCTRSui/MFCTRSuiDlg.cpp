@@ -4237,9 +4237,31 @@ void CMFCTRSuiDlg::OnInfoDelete()
 		}
 		CStringA path(sCurrentPathToFile);
 		path.GetBuffer()[path.GetLength() - 1] = '\0';
-		CStringA delete_command("rmdir /s/q ");
-		delete_command += path;
-		system(delete_command);
+		DeleteDirectory(CString(path));
 	}
 	OnProgramRefresh();
+}
+
+
+bool CMFCTRSuiDlg::DeleteDirectory(CString sPath) {
+	WIN32_FIND_DATA FindFileData;
+	HANDLE hFind;
+	hFind = FindFirstFile(sPath + L"\\*", &FindFileData);
+	if (hFind != INVALID_HANDLE_VALUE) {
+		do {
+			if (CString(FindFileData.cFileName) == L"." || CString(FindFileData.cFileName) == L"..") {
+				continue;
+			}
+			if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+				if (!RemoveDirectory(sPath + L"\\" + CString(FindFileData.cFileName))) {
+					DeleteDirectory(sPath + L"\\" + CString(FindFileData.cFileName));
+				}
+			}
+			else {
+				DeleteFile(sPath + L"\\" + CString(FindFileData.cFileName));
+			}
+		} while (FindNextFile(hFind, &FindFileData));
+	}
+	FindClose(hFind);
+	return RemoveDirectory(sPath);
 }
