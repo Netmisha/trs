@@ -194,7 +194,7 @@ void EditWindow::WriteOnChangeToFile(std::string tag, CString new_data, std::str
 				CT2A ascii_tempData(new_data);
 				char *name = ascii_tempData;
 				child->LinkEndChild(new TiXmlText(ascii_tempData));
-				TempData.Empty();
+				//TempData.Empty();
 				doc->SaveFile();
 				break;
 			}
@@ -215,10 +215,10 @@ bool EditWindow::compareData_andChange(){ // create func for comparition
 		std::string me = "metadata";
 		//-----end of metadata tags-----//
 		//-------METADATA_COMPARE_AND_CHANGE---------------//  
-		// same code everywhere at the end I will refactor everything
 		Author_name.GetWindowText(TempData);
 		if (TempData.Compare(Author)){
 			WriteOnChangeToFile(a, TempData, me);
+		
 		}
 		Version_V.GetWindowText(TempData);
 		if (TempData.Compare(Version)){

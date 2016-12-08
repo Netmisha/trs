@@ -3543,7 +3543,6 @@ bool CMFCTRSuiDlg::FindPathToObject()
 
 void CMFCTRSuiDlg::OnInfoEdit()
 {
-
 	if (TestForInfo){
 		char *Path = nullptr;
 		Path = TestForInfo->getPath();
@@ -3570,6 +3569,7 @@ void CMFCTRSuiDlg::OnInfoEdit()
 		return;
 	
 	}
+	OnProgramRefresh();
 	
 }
 void CMFCTRSuiDlg::OnInfoDisable()
