@@ -176,6 +176,7 @@ public:
 	afx_msg void OnInfoDelete();
 
 	//void(CMFCTRSuiDlg::*callback_refresh_func)();
+	bool DeleteDirectory(CString sPath);
 };
 
 //extern CListBox* List;
