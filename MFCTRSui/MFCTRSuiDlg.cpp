@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <shellapi.h>
 #include "TimerStruct.h"
-
+#include "AddSuite.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -3330,7 +3330,7 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 
 		mnuPopupSubmit->RemoveMenu(ID_INFO_DISABLE, MF_BYCOMMAND);
 		mnuPopupSubmit->RemoveMenu(ID_INFO_ENABLE, MF_BYCOMMAND);  
-		mnuPopupSubmit->RemoveMenu(ID_INFO_EDIT, MF_BYCOMMAND);
+		//mnuPopupSubmit->RemoveMenu(ID_INFO_EDIT, MF_BYCOMMAND);
 
 
 	}
@@ -3543,8 +3543,9 @@ bool CMFCTRSuiDlg::FindPathToObject()
 
 void CMFCTRSuiDlg::OnInfoEdit()
 {
+	char *Path = nullptr;
 	if (TestForInfo){
-		char *Path = nullptr;
+		
 		Path = TestForInfo->getPath();
 		if (!FindPathToObject()){
 			MessageBox(L"Cannot get file name or file path", L"Info", MB_OK);
@@ -3565,7 +3566,17 @@ void CMFCTRSuiDlg::OnInfoEdit()
  		w.DoModal();
  	}
 	else{
-		MessageBox(L"Smth wrong with the data", L"Info", MB_OK);
+		// call edit for TestSuite
+		///mAndrychenko
+		CT2A ascii_file_name(sCurrentFileName);
+		char *FileName_XML = ascii_file_name;
+		CT2A ascii_file_path(sCurrentPathToFile);
+		char *Path_to_File_XML = ascii_file_path;
+		std::string PF; PF.assign(Path_to_File_XML); PF.append(FileName_XML);
+		AddSuite w;
+		w.PathToFile.assign(PF);
+		w.DoModal();
+		
 		return;
 	
 	}

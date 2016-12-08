@@ -7,7 +7,7 @@
     <priority>4</priority>
     <disable>true</disable>
     <metadata>
-        <author>Alex</author>
+        <author>gfgfdff</author>
         <date>20.20.12</date>
         <version>1.0.0</version>
         <mail>mykhailo.mastykash@globallogic.com</mail>
@@ -15,14 +15,14 @@
         <license />
         <info />
     </metadata>
-    <test name="Test 1" description="Test description">
+    <test name="Test 1" description="Test description ffff rrrr">
         <priority>4</priority>
-        <tag>Release</tag>
-        <disable>true</disable>
-        <execution path="..">test.exe</execution>
-        <parameters repeat="32">1000</parameters>
+        <tag>sadsa</tag>
+        <disable>dsad</disable>
+        <execution path="..">dsad</execution>
+        <parameters repeat="64">dsa</parameters>
         <result>0</result>
-        <repeat pause="100">2</repeat>
+        <repeat pause="4444">2</repeat>
         <maxTime>200</maxTime>
     </test>
     <test name="Test 2" description="Test description">

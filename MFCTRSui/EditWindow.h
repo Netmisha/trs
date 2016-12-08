@@ -24,26 +24,14 @@ protected:
 public:
 	afx_msg void OnBnClickedOk();
 	bool compareData_andChange();
-	CEdit Author_name;
+	
 	CButton Save_button;
-	CEdit date_V;
-	CEdit Version_V;
-	CEdit Mail_V;
-	CEdit Copyrgiht_V;
-	CEdit License_V;
-	CEdit Info_V;
+	
 	afx_msg void OnEnChangeAuthor();
 	afx_msg void OnBnClickedSaveb();
-	CString Author;
-	CString Date;
-	CString Version;
-	CString Mail;
-	CString Copyright;
-	CString License;
-	CString Info;
+	
 	void setMetadataFromXML();
 	void setTestdataFromXML();
-	afx_msg void OnBnClickedRefresh();
 	CString test;
 	CString Test_desc;
 	CString TestName_TS;
@@ -75,15 +63,7 @@ public:
 	void ParseForHeaderData(); // get attributes from the .xml file + header of the file
 
 	//--------------XML header data----------------//
-	CString SuiteName_S;
-	CString SuiteDesc_S;
-	CString Head_Repeat_S;
-	CString Head_MaxTime_S;
-	CString Head_MaxThreads_S;
-	CString Head_Priority_S;
-	CString Head_Disable_S;
-	CString Head_Tag_S;
-	CString HeadRepeat_Pause;
+	
 	std::string Tag_S = "tag";
 	std::string Repeat_S = "repeat";
 	std::string Max_S = "maxTime";
@@ -92,14 +72,6 @@ public:
 	std::string Disable_S = "disable";
 	std::string Test_S = "test";
 	//--------------end_of_block----------------//
-	CEdit TagV;
-	CEdit RepeatV;
-	CEdit MaxThreadsV;
-	CEdit PauseV;
-	CEdit maxTimeV;
-	CEdit PriorityV;
-	CEdit DisableV;
-	CEdit SuiteNameV;
 	TiXmlDocument *doc;
 	CString TempData;
 	CString DescDataHeader;
@@ -110,8 +82,6 @@ public:
 	char *ascii_name;
 	void WriteOnChangeToFile(std::string tag, CString new_data, std::string block);
 	void WriteOnHeaderChange();
-	
-	ShowDescription *dlg = NULL;
 	ShowDescription *dlgT = NULL;
 	CString D;
 	BOOL OnInitDialog();
@@ -123,6 +93,7 @@ public:
 	//void(CMFCTRSuiDlg::*callback_refresh_func)(void);
 	
 	//------------end of callbackstuff-----------//
+	afx_msg void OnBnClickedButtonRefresh();
 };
 extern TRSTest* TestForInfo;
 //extern void(CMFCTRSuiDlg::*callback_refresh_func)();
