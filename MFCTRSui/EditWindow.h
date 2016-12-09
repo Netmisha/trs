@@ -61,9 +61,7 @@ public:
 	std::string PathToFile;
 	void CString_to_ascii(CString in, char** out);
 	void ParseForHeaderData(); // get attributes from the .xml file + header of the file
-
 	//--------------XML header data----------------//
-	
 	std::string Tag_S = "tag";
 	std::string Repeat_S = "repeat";
 	std::string Max_S = "maxTime";
@@ -77,7 +75,7 @@ public:
 	CString DescDataHeader;
 	afx_msg void OnBnClickedButton3();
 	afx_msg void OnEnChangeCopyright();
-	afx_msg void OnBnClickedHeaderdescshow();
+	
 	afx_msg void OnBnClickedTestdescshow();
 	char *ascii_name;
 	void WriteOnChangeToFile(std::string tag, CString new_data, std::string block);
@@ -85,15 +83,7 @@ public:
 	ShowDescription *dlgT = NULL;
 	CString D;
 	BOOL OnInitDialog();
-	
-	//----callbackstuf for the onProgramRefresh func----------//
-	//CMFCTRSuiDlg *poin = new CMFCTRSuiDlg;
 	void changeTestData();
-	// int c;
-	//void(CMFCTRSuiDlg::*callback_refresh_func)(void);
-	
-	//------------end of callbackstuff-----------//
 	afx_msg void OnBnClickedButtonRefresh();
 };
 extern TRSTest* TestForInfo;
-//extern void(CMFCTRSuiDlg::*callback_refresh_func)();
