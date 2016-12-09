@@ -42,13 +42,10 @@ void EditWindow::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(EditWindow, CDialogEx)
 	ON_BN_CLICKED(IDOK, &EditWindow::OnBnClickedOk)
-	//	ON_EN_CHANGE(IDC_EDIT20, &EditWindow::OnEnChangeEdit20)
-	//	ON_EN_CHANGE(IDC_EDIT26, &EditWindow::OnEnChangeEdit26)
 	ON_EN_CHANGE(IDC_AUTHOR, &EditWindow::OnEnChangeAuthor)
 	ON_BN_CLICKED(ID_SAVEB, &EditWindow::OnBnClickedSaveb)
 	ON_BN_CLICKED(IDC_BUTTON3, &EditWindow::OnBnClickedButton3)
 	ON_EN_CHANGE(IDC_COPYRIGHT, &EditWindow::OnEnChangeCopyright)
-	ON_BN_CLICKED(IDC_HEADERDESCSHOW, &EditWindow::OnBnClickedHeaderdescshow)
 	ON_BN_CLICKED(IDC_TESTDESCSHOW, &EditWindow::OnBnClickedTestdescshow)
 	ON_BN_CLICKED(IDC_BUTTON_REFRESH, &EditWindow::OnBnClickedButtonRefresh)
 END_MESSAGE_MAP()
@@ -93,63 +90,16 @@ void EditWindow::setTestdataFromXML(){
 	WaitFor_TS = TestForInfo->getWaitFor();
 
 }
-void EditWindow::setMetadataFromXML(){
-	/*
-	Author = TestForInfo->getMetadata()->getName();
-	Date = TestForInfo->getMetadata()->getDate();
-	Version = TestForInfo->getMetadata()->getVersion();
-	Mail = TestForInfo->getMetadata()->getMail();
-	Copyright = TestForInfo->getMetadata()->getCopyright();
-	License = TestForInfo->getMetadata()->getLicense();
-	Info = TestForInfo->getMetadata()->getInfo();
-	if (Author.IsEmpty()){ Author = L"EMPTY"; }
-	if (Date.IsEmpty()){ Date = L"EMPTY"; }
-	if (Version.IsEmpty()){ Version = L"EMPTY"; }
-	if (Mail.IsEmpty()){ Mail = L"EMPTY"; }
-	if (Copyright.IsEmpty()){ Copyright = L"EMPTY"; }
-	if (License.IsEmpty()){ License = L"EMPTY"; }
-	if (Info.IsEmpty()){ Info = L"EMPTY"; }
-	*/
-}
+
 void EditWindow::ParseForHeaderData(){
 	doc = new TiXmlDocument(PathToFile.c_str());
 	bool OpenOk = doc->LoadFile(PathToFile.c_str());
 	if (OpenOk){
-		//TiXmlElement *head;
-		//TiXmlElement *f = doc->RootElement();
-		//SuiteName_S = f->Attribute("name"); //      <----- sets Suites name 
-		//SuiteDesc_S = f->Attribute("description");
+		
 		TiXmlElement *el = doc->FirstChildElement();
 		std::string getN;
 		for (TiXmlElement *Parent = el->FirstChildElement(); Parent != 0; Parent = Parent->NextSiblingElement()){
 			getN.assign(TestForInfo->getName());
-			/*
-			if (!Tag_S.compare(Parent->Value())){
-				Head_Tag_S = Parent->GetText();
-				continue;
-			}
-			else if (!Repeat_S.compare(Parent->Value())){
-				Head_Repeat_S = Parent->GetText();
-				HeadRepeat_Pause = Parent->Attribute("pause");
-				continue;
-			}
-			else if (!Max_S.compare(Parent->Value())){
-				Head_MaxTime_S = Parent->GetText();
-				continue;
-			}
-			else if (!maxThreads_S.compare(Parent->Value())){
-				Head_MaxThreads_S = Parent->GetText();
-				continue;
-			}
-			else if (!Disable_S.compare(Parent->Value())){
-				Head_Disable_S = Parent->GetText();
-				continue;
-			}
-			else if (!Priority_S.compare(Parent->Value())){
-				Head_Priority_S = Parent->GetText();
-				continue;
-			}
-			*/
 			if (!Test_S.compare(Parent->Value()) && !getN.compare(Parent->Attribute("name"))){
 				//-------this block will get the test attributes_such as (repeat) and (pause)-------//
 				Test_desc = Parent->Attribute("description");
@@ -181,65 +131,15 @@ void EditWindow::WriteOnChangeToFile(std::string tag, CString new_data, std::str
 				CT2A ascii_tempData(new_data);
 				char *name = ascii_tempData;
 				child->LinkEndChild(new TiXmlText(ascii_tempData));
-				//TempData.Empty();
 				doc->SaveFile();
 				break;
 			}
 		}
 	}
 }
-bool EditWindow::compareData_andChange(){ // create func for comparition
-	//FINDMEHERE
-	//------metadata tags---------//
-	
-		/*
-		std::string a = "author";
-		std::string d = "date";
-		std::string v = "version";
-		std::string m = "mail";
-		std::string c = "copyright";
-		std::string l = "license";
-		std::string i = "info";
-		std::string me = "metadata";
-		//-----end of metadata tags-----//
-		//-------METADATA_COMPARE_AND_CHANGE---------------//  
-		Author_name.GetWindowText(TempData);
-		if (TempData.Compare(Author)){
-			WriteOnChangeToFile(a, TempData, me);
-
-		}
-		Version_V.GetWindowText(TempData);
-		if (TempData.Compare(Version)){
-			WriteOnChangeToFile(v, TempData, me);
-		}
-		date_V.GetWindowText(TempData);
-		if (TempData.Compare(Date)){
-			WriteOnChangeToFile(d, TempData, me);
-
-		}
-		Mail_V.GetWindowText(TempData);
-		if (TempData.Compare(Mail)){
-			WriteOnChangeToFile(m, TempData, me);
-		}
-		Copyrgiht_V.GetWindowText(TempData);
-		if (TempData.Compare(Copyright)){
-			WriteOnChangeToFile(c, TempData, me);
-		}
-		License_V.GetWindowText(TempData);
-		if (TempData.Compare(License)){
-			WriteOnChangeToFile(l, TempData, me);
-		}
-		Info_V.GetWindowText(TempData);
-		if (TempData.Compare(Info)){
-			WriteOnChangeToFile(i, TempData, me);
-		}
-	}
-	*/
-	//WriteOnHeaderChange();
+bool EditWindow::compareData_andChange(){ 
 	changeTestData();
-	//----------end of compare and change block-----//
 	return 0;
-
 }
 
 #define CompareAndChange(StrData,parent,EditLine,DataString) \
@@ -252,56 +152,6 @@ parent->Clear(); CT2A ascii(TempData); \
 	TempData.Empty(); \
 	doc->SaveFile();}\
 }
-
-void EditWindow::WriteOnHeaderChange(){
-	/*
-	TiXmlElement *el = doc->RootElement();
-	SuiteNameV.GetWindowText(TempData);
-	CT2A a(TempData);
-	char *t = a;
-	std::string tn = el->Attribute("name");
-	if (tn.compare(t)){
-		el->SetAttribute("name", t);
-		TempData.Empty();
-		doc->SaveFile();
-	}
-	for (TiXmlElement *parent = el->FirstChildElement(); parent != 0; parent = parent->NextSiblingElement()){
-		//CompareAndChangeFuncHeader(parent, Tag_S, TagV, Head_Tag_S);
-		CompareAndChange(Tag_S, parent, TagV, Head_Tag_S)
-			CompareAndChange(Repeat_S, parent, RepeatV, Head_Repeat_S)
-			CompareAndChange(Max_S, parent, maxTimeV, Head_MaxTime_S)
-			CompareAndChange(maxThreads_S, parent, MaxThreadsV, Head_MaxThreads_S)
-			CompareAndChange(Priority_S, parent, PriorityV, Head_Priority_S)
-			CompareAndChange(Disable_S, parent, DisableV, Head_Disable_S)
-			//------------make a macros---------------//
-		if (!Repeat_S.compare(parent->Value())){
-			RepeatV.GetWindowText(TempData);
-			if (Head_Repeat_S.Compare(TempData)){
-				parent->Clear();
-				CT2A ascii_tempData(TempData);
-				char *name = ascii_tempData;
-				parent->LinkEndChild(new TiXmlText(ascii_tempData));
-				TempData.Empty();
-				doc->SaveFile();
-			}
-			PauseV.GetWindowText(TempData);
-			if (HeadRepeat_Pause.Compare(TempData)){  // change attribute not text 
-				//parent->Clear();
-				CT2A ascii_tempData(TempData);
-				char *name = ascii_tempData;
-				parent->SetAttribute("pause", name);
-				//parent->LinkEndChild(new TiXmlText(ascii_tempData));
-				TempData.Empty();
-				doc->SaveFile();
-
-			}
-		}
-
-		//------------end of make a macros block----------------//
-	}
-	*/
-}
-
 #define CheckAndChangeTestData(StrData,child,EditLine,DataString) \
 if (!StrData.compare(child->Value())){\
 EditLine.GetWindowText(TempData); \
@@ -394,14 +244,6 @@ void EditWindow::changeTestData(){
 	}
 
 }
-
-void EditWindow::OnBnClickedHeaderdescshow()
-{
-	//dlg = new ShowDescription;
-	//dlg->Description = SuiteDesc_S;
-	//dlg->DoModal();
-}
-
 void EditWindow::OnBnClickedTestdescshow()
 {
 	dlgT = new ShowDescription;
@@ -432,10 +274,6 @@ void EditWindow::OnBnClickedTestdescshow()
 
 void EditWindow::OnBnClickedButtonRefresh()
 {
-	// make a callback to the Refresh function
-
-	//((poin)->*(this->callback_refresh_func))();
-	
 	setTestdataFromXML();
 	TestName_T.SetWindowTextW(TestName_TS);
 	Priority_T.SetWindowTextW(Priority_TS);
@@ -447,18 +285,7 @@ void EditWindow::OnBnClickedButtonRefresh()
 	Repeat_TM.SetWindowTextW(Repeat_TMS);
 	MaxTime_T.SetWindowTextW(MaxTime_TS);
 	WaitFor_T.SetWindowTextW(WaitFor_TS);
-
 	ParseForHeaderData();
-	/*
-	TagV.SetWindowTextW(Head_Tag_S);
-	RepeatV.SetWindowTextW(Head_Repeat_S);
-	MaxThreadsV.SetWindowTextW(Head_MaxThreads_S);
-	PauseV.SetWindowTextW(HeadRepeat_Pause);
-	maxTimeV.SetWindowTextW(Head_MaxTime_S);
-	PriorityV.SetWindowTextW(Head_Priority_S);
-	DisableV.SetWindowTextW(Head_Disable_S);
-	SuiteNameV.SetWindowTextW(SuiteName_S);
-	*/
 	Repeat_T.SetWindowTextW(Repeat_TS);
 	Pause_TR.SetWindowTextW(Pause_TRS);
 
