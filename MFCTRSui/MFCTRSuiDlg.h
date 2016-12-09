@@ -62,7 +62,6 @@ public:
 	CTreeCtrl m_Tree;
 	afx_msg void OnTvnSelchangedTree1(NMHDR *pNMHDR, LRESULT *pResult);
 	INT_PTR CALLBACK DialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 	afx_msg void OnEnChangeEdit2();
 	CEdit report_edit;
 
@@ -77,7 +76,7 @@ protected:
 	std::vector<int> m_SelectedRoots;
 	CImageList m_ImageList;
 	CImageList m_PathImageList;
-	
+	bool auto_del = false;
 	std::map<CString, std::vector<TRSInfo>> PasMap;
 	std::map<CString, std::vector<TRSInfo>> FailMap;
 	CToolBar m_ToolBar;
@@ -86,6 +85,7 @@ protected:
 	CMenu* m_Menu;
 	ProjectProperties properties;
 	std::map<CString, std::vector<HTREEITEM*>> mapOfColls;
+	std::map<HTREEITEM, CString> mapOfSuite;
 ///	afx_msg void OnLbnSelchangeListroot();
 	int resizible_raw = 2;
 	int resizible_column = 2;
