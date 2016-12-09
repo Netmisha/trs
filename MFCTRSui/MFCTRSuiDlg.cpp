@@ -964,6 +964,7 @@ void CMFCTRSuiDlg::UpdateToolbar(int mask)
 
 void CMFCTRSuiDlg::OnProgramAddfolder()
 {
+	mapOfSuite.clear();
 	BROWSEINFO bi = { 0 };
 	bi.lpszTitle = _T("Select Folder");
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
@@ -1079,6 +1080,7 @@ void CMFCTRSuiDlg::OnProgramDeleteselecteditems()
 		}
 		UpdateToolbar();
 		dRoots.clear();
+		mapOfSuite.clear();
 	}
 }
 
@@ -1619,7 +1621,7 @@ bool checkDiff(int begin, char* source)
 }
 
 // $$$ Do you really need a reference to a count parameter???
-void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CTreeCtrl* m_Tree, int& count, HTREEITEM* hHead, std::list<Suite*>* checkList, std::vector<HTREEITEM*>* TreeControlsList)
+void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CTreeCtrl* m_Tree, int& count, HTREEITEM* hHead, std::list<Suite*>* checkList, std::vector<HTREEITEM*>* TreeControlsList, std::map<HTREEITEM, CString> &mapOfSuite)
 {
 	// $$$ as I understood it is kind of a guard for redrawing Tree on exactly the same one?! 
 	if (count != suiteColl->size())
@@ -1675,7 +1677,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
 					{
 						if (checkDiff(strlen(rootPath), (*it)->get_path()))
-							TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList, TreeControlsList);
+							TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList, TreeControlsList, mapOfSuite);
 					}
 
 				}
@@ -1688,9 +1690,9 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 					{
 						TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 						convertToTCHAR(buf, (*it)->getName());
-
 						*hSuite = m_Tree->InsertItem(buf, 0, 0, *hHead);
 						m_Tree->Expand(*hSuite, TVE_EXPAND);
+						mapOfSuite.insert(std::pair<HTREEITEM, CString>(*hSuite, CString((*it)->get_path())));
 						++count;
 						
 						// $$$ the same suggestion about loops
@@ -1788,7 +1790,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
 					{
 						if (checkDiff(strlen(rootPath), (*it)->get_path()))
-							TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList, TreeControlsList);
+							TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList, TreeControlsList, mapOfSuite);
 					}
 					
 				}
@@ -1800,6 +1802,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 							convertToTCHAR(buf, (*it)->getName());
 							*hSuite = m_Tree->InsertItem(buf, 0, 0, *hHead);
 							m_Tree->Expand(*hSuite, TVE_EXPAND);
+							mapOfSuite.insert(std::pair<HTREEITEM, CString>(*hSuite, CString((*it)->get_path())));
 							++count;
 							
 							std::list<TRSTest*>::iterator iter = (*it)->getList().begin();
@@ -1873,7 +1876,7 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 					if (!strncmp(rootPath, (*it)->get_path(), strlen(rootPath)))
 					{
 						if (checkDiff(strlen(rootPath), (*it)->get_path()))
-							TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList, TreeControlsList);
+							TreeParse(it, suiteColl, m_Tree, count, hSuite, checkList, TreeControlsList, mapOfSuite);
 					}
 				}
 				else
@@ -1883,7 +1886,8 @@ void TreeParse(std::list<Suite*>::iterator& it, std::list<Suite*>* suiteColl, CT
 						{
 							TCHAR* buf = new TCHAR[strlen((*it)->getName()) + 1];
 							convertToTCHAR(buf, (*it)->getName());
-							*hSuite = m_Tree->InsertItem(buf,0,0, *hHead);
+							*hSuite = m_Tree->InsertItem(buf, 0, 0, *hHead);
+							mapOfSuite.insert(std::pair<HTREEITEM, CString>(*hSuite, CString((*it)->get_path())));
 							//m_Tree->Expand(*hSuite, TVE_EXPAND);
 							++count;
 							
@@ -1989,12 +1993,12 @@ std::vector<HTREEITEM*> CMFCTRSuiDlg::Info(TCHAR* path)
 		{
 			if (strlen((*it)->get_path()) == count)
 			{
-				TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList, &TreeControlsList);
+				TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList, &TreeControlsList, mapOfSuite);
 			}
 		}
 		if (strlen((*it)->get_path()) == count)
 		{
-			TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList, &TreeControlsList);
+			TreeParse(it, suiteColl, &m_Tree, lic, &hHead, &checkList, &TreeControlsList, mapOfSuite);
 		}
 		for (it; it != suiteColl->end(); ++it)
 		{
@@ -2892,7 +2896,7 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 					if (strlen((*it)->get_path()) == count)
 					{
 						std::vector<HTREEITEM*> coll;
-						TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &coll);
+						TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &coll, mapOfSuite);
 						mapOfColls.insert(std::pair<CString,std::vector<HTREEITEM*>>(RootList.GetItemText(check, 0), coll));
 					}
 				}
@@ -2900,7 +2904,7 @@ void CMFCTRSuiDlg::OnCbnSelchangeCombo1()
 				if (strlen((*it)->get_path()) == count)
 				{
 					std::vector<HTREEITEM*> coll;
-					TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &coll);
+					TreeParse(it, suiteColl, &m_Tree, chtoeto, &hHead, &checkList, &coll, mapOfSuite);
 					mapOfColls.insert(std::pair<CString, std::vector<HTREEITEM*>>(RootList.GetItemText(check, 0), coll));
 				}
 
@@ -3499,37 +3503,9 @@ bool CMFCTRSuiDlg::FindPathToObject()
 			sCurrentPathToFile = m_Tree.GetItemText(m_Tree.GetSelectedItem()) + L"\\";
 			return true;
 		}
-		HTREEITEM hChild = m_Tree.GetSelectedItem();
+		HTREEITEM hItem = m_Tree.GetSelectedItem();
 		int enter_count = 1;
-		while (hChild) {
-			hChild = m_Tree.GetChildItem(hChild);
-			std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(RootList.GetItemText(lastSelected, 0));
-			for (int i = 0; i < iter->second.size(); ++i)
-			{
-				if (*iter->second[i] == hChild)
-				{
-					TestForInfo = (TRSTest*)m_Tree.GetItemData(*iter->second[i]);
-					break;
-				}
-			}
-			if (TestForInfo) {
-				break;
-			}
-			enter_count++;
-		}
-		CString path(TestForInfo->getPath());
-		for (TCHAR *p = path.GetBuffer() + path.GetLength() - 1; p != path.GetBuffer(); p--) {
-			if (enter_count) {
-				if (*p == '\\') {
-					enter_count--;
-				}
-			}
-			else {
-				*(p + 2) = '\0';
-				break;
-			}
-		}
-		sCurrentPathToFile = CString(path.GetBuffer());
+		sCurrentPathToFile = mapOfSuite[hItem];
 		WIN32_FIND_DATA FindFileData;
 		HANDLE hFind;
 		hFind = FindFirstFile(sCurrentPathToFile + L"*.xml", &FindFileData);
@@ -3786,6 +3762,7 @@ void CMFCTRSuiDlg::OnProgramRefresh()
 {
 	//CALLBACKFUNCTION
 	//callback_refresh_func = &CMFCTRSuiDlg::OnProgramRefresh;
+	mapOfSuite.clear();
 	if (RootList.GetItemCount())
 	{
 		int index = -1;
@@ -4156,16 +4133,7 @@ void CMFCTRSuiDlg::OnInfoAddsuite()
 	if (!TestForInfo) {
 		AddSuite add_suite;
 		add_suite.setPath(sCurrentPathToFile);
-		if (add_suite.DoModal() == IDOK) {
-			AddTest add_test;
-			add_test.setPath(add_suite.getPathToFile());
-			if (add_test.DoModal() == IDCANCEL) {
-				CStringA path(add_suite.getPath());
-				CStringA delete_command("rmdir /s/q ");
-				delete_command += path;
-				system(delete_command);
-			}
-		}
+		add_suite.DoModal();
 	}
 	OnProgramRefresh();
 }
@@ -4190,6 +4158,7 @@ void CMFCTRSuiDlg::OnInfoDelete()
 		if (res == IDNO) {
 			return;
 		}
+		auto_del = !auto_del;
 		std::map<CString, std::vector<HTREEITEM*>>::iterator iter = mapOfColls.find(RootList.GetItemText(lastSelected, 0));
 		for (int i = 0; i < iter->second.size(); ++i)
 		{
@@ -4242,18 +4211,32 @@ void CMFCTRSuiDlg::OnInfoDelete()
 	}
 	else
 	{
-		int res = MessageBox(_T("Remove test suite ?"), _T("Remove"), MB_ICONINFORMATION | MB_YESNO);
+		int res = MessageBox(_T("Remove all tests ?"), _T("Remove"), MB_ICONINFORMATION | MB_YESNO);
 		if (res == IDNO) {
 			return;
 		}
-		CStringA path(sCurrentPathToFile);
-		path.GetBuffer()[path.GetLength() - 1] = '\0';
-		DeleteDirectory(CString(path));
+		CStringA file(sCurrentPathToFile + sCurrentFileName);
+		std::fstream local_file;
+		local_file.open(file.GetBuffer(), std::ios_base::in);
+		CStringA data;
+		while (!local_file.eof()) {
+			char buff[256];
+			memset(buff, 0, 256);
+			local_file.read(buff, sizeof(buff)-1);
+			data += buff;
+		}
+		local_file.close();
+		char * begin = strstr(data.GetBuffer(), "<test");
+		char * end = strstr(data.GetBuffer(), "</suite>");
+		memcpy(begin, end, strlen(end) + 1);
+		local_file.open(file.GetBuffer(), std::ios_base::out);
+		local_file.write(data.GetBuffer(), strlen(data.GetBuffer()));
+		local_file.close();
+		delete TestForInfo;
+		TestForInfo = nullptr;
 	}
 	OnProgramRefresh();
 }
-
-
 bool CMFCTRSuiDlg::DeleteDirectory(CString sPath) {
 	WIN32_FIND_DATA FindFileData;
 	HANDLE hFind;
