@@ -26,7 +26,6 @@ public:
 	CString sPath_;
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult);
-
 	CString sMDAuthor;
 	CString sMDDate;
 	CString sMDVersion;
@@ -72,4 +71,5 @@ public:
 	CString TempData;
 	void WriteOnChangeToFile(std::string tag, CString new_data, std::string block);
 	void WriteOnHeaderChange();
+	void SetDefault();
 };

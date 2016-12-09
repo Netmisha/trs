@@ -3551,6 +3551,7 @@ void CMFCTRSuiDlg::OnInfoEdit()
 		std::string PF; PF.assign(Path_to_File_XML); PF.append(FileName_XML);
 		AddSuite w;
 		w.PathToFile.assign(PF);
+		w.SetMetaDataAndHeaderDataFromXML();
 		w.DoModal();
 		
 		return;
@@ -4133,6 +4134,7 @@ void CMFCTRSuiDlg::OnInfoAddsuite()
 	if (!TestForInfo) {
 		AddSuite add_suite;
 		add_suite.setPath(sCurrentPathToFile);
+		add_suite.SetDefault();
 		add_suite.DoModal();
 	}
 	OnProgramRefresh();
@@ -4142,7 +4144,8 @@ void CMFCTRSuiDlg::OnInfoAddsuite()
 void CMFCTRSuiDlg::OnInfoAddcase()
 {
 	AddTest add_test;
-	add_test.setPath(sCurrentPathToFile + L"\\" + sCurrentFileName);
+	add_test.setPath(sCurrentPathToFile + sCurrentFileName);
+	add_test.setDefault();
 	add_test.DoModal();
 	OnProgramRefresh();
 }
@@ -4211,51 +4214,64 @@ void CMFCTRSuiDlg::OnInfoDelete()
 	}
 	else
 	{
-		int res = MessageBox(_T("Remove all tests ?"), _T("Remove"), MB_ICONINFORMATION | MB_YESNO);
+		int res = MessageBox(_T("Remove all tests in this tree?"), _T("Remove"), MB_ICONINFORMATION | MB_YESNO);
 		if (res == IDNO) {
-			return;
+			CStringA file(sCurrentPathToFile + sCurrentFileName);
+			std::fstream local_file;
+			local_file.open(file.GetBuffer(), std::ios_base::in);
+			CStringA data;
+			while (!local_file.eof()) {
+				char buff[256];
+				memset(buff, 0, 256);
+				local_file.read(buff, sizeof(buff)-1);
+				data += buff;
+			}
+			local_file.close();
+			char * begin = strstr(data.GetBuffer(), "<test");
+			char * end = strstr(data.GetBuffer(), "</suite>");
+			memcpy(begin, end, strlen(end) + 1);
+			local_file.open(file.GetBuffer(), std::ios_base::out);
+			local_file.write(data.GetBuffer(), strlen(data.GetBuffer()));
+			local_file.close();
 		}
-		CStringA file(sCurrentPathToFile + sCurrentFileName);
-		std::fstream local_file;
-		local_file.open(file.GetBuffer(), std::ios_base::in);
-		CStringA data;
-		while (!local_file.eof()) {
-			char buff[256];
-			memset(buff, 0, 256);
-			local_file.read(buff, sizeof(buff)-1);
-			data += buff;
+		else {
+			HTREEITEM hRoot = m_Tree.GetSelectedItem();
+			DeleteAllTestInTree(hRoot);
 		}
-		local_file.close();
-		char * begin = strstr(data.GetBuffer(), "<test");
+	}
+	OnProgramRefresh();
+}
+bool CMFCTRSuiDlg::DeleteAllTestInTree(HTREEITEM hRoot) {
+	HTREEITEM hItem = m_Tree.GetChildItem(hRoot);
+	sCurrentPathToFile = mapOfSuite[hRoot];
+	WIN32_FIND_DATA FindFileData;
+	HANDLE hFind;
+	hFind = FindFirstFile(sCurrentPathToFile + L"*.xml", &FindFileData);
+	FindClose(hFind);
+	CStringA file(sCurrentPathToFile + CString(FindFileData.cFileName));
+	std::fstream local_file;
+	local_file.open(file.GetBuffer(), std::ios_base::in);
+	CStringA data;
+	while (!local_file.eof()) {
+		char buff[256];
+		memset(buff, 0, 256);
+		local_file.read(buff, sizeof(buff)-1);
+		data += buff;
+	}
+	local_file.close();
+	char * begin = strstr(data.GetBuffer(), "<test");
+	if (begin) {
 		char * end = strstr(data.GetBuffer(), "</suite>");
 		memcpy(begin, end, strlen(end) + 1);
 		local_file.open(file.GetBuffer(), std::ios_base::out);
 		local_file.write(data.GetBuffer(), strlen(data.GetBuffer()));
 		local_file.close();
-		delete TestForInfo;
-		TestForInfo = nullptr;
 	}
-	OnProgramRefresh();
-}
-bool CMFCTRSuiDlg::DeleteDirectory(CString sPath) {
-	WIN32_FIND_DATA FindFileData;
-	HANDLE hFind;
-	hFind = FindFirstFile(sPath + L"\\*", &FindFileData);
-	if (hFind != INVALID_HANDLE_VALUE) {
-		do {
-			if (CString(FindFileData.cFileName) == L"." || CString(FindFileData.cFileName) == L"..") {
-				continue;
-			}
-			if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				if (!RemoveDirectory(sPath + L"\\" + CString(FindFileData.cFileName))) {
-					DeleteDirectory(sPath + L"\\" + CString(FindFileData.cFileName));
-				}
-			}
-			else {
-				DeleteFile(sPath + L"\\" + CString(FindFileData.cFileName));
-			}
-		} while (FindNextFile(hFind, &FindFileData));
+	while (hItem != NULL) {
+		if (m_Tree.ItemHasChildren(hItem)) {
+			DeleteAllTestInTree(hItem);
+		}
+		hItem = m_Tree.GetNextItem(hItem, TVGN_NEXT);
 	}
-	FindClose(hFind);
-	return RemoveDirectory(sPath);
+	return true;
 }

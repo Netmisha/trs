@@ -1,6 +1,3 @@
-// AddSuite.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "AddSuite.h"
 #include "afxdialogex.h"
@@ -207,7 +204,7 @@ void AddSuite::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 #define SetDataFromXML(tag,string,PC) if(!tag.compare(PC->Value())){string = PC->GetText();}
-void AddSuite::SetMetaDataAndHeaderDataFromXML(){	
+void AddSuite::SetMetaDataAndHeaderDataFromXML(){
 	doc = new TiXmlDocument(PathToFile.c_str());
 	bool loadok = doc->LoadFile(PathToFile.c_str());
 	if (!loadok) MessageBox(_T("Could not load test data"), _T("Message"), MB_ICONINFORMATION | MB_OK);
@@ -374,32 +371,17 @@ void AddSuite::WriteOnHeaderChange(){
 }
 BOOL AddSuite::OnInitDialog(){
 	CDialogEx::OnInitDialog();
-	GetDlgItem(IDOK)->ShowWindow(SW_HIDE);
-	GetDlgItem(IDC_EDIT_SUITENAME)->ShowWindow(SW_HIDE);
-	GetDlgItem(IDC_STATIC)->ShowWindow(SW_HIDE);
-	
-	SetMetaDataAndHeaderDataFromXML();
-	Author_EditLine.SetWindowTextW(sMDAuthor);
-	Date_EditLine.SetWindowTextW(sMDDate);
-	Version_EditLine.SetWindowTextW(sMDVersion);
-	Mail_EditLine.SetWindowTextW(sMDMail);
-	Copyright_EditLine.SetWindowTextW(sMDCopyright);
-	License_EditLine.SetWindowTextW(sMDLicense);
-	Info_EditLine.SetWindowTextW(sMDInfo);
-	TTag_EditLine.SetWindowTextW(sHTag);
-	TRepeat_EditLine.SetWindowTextW(sHRepeat);
-	TMaxThreads_EditLine.SetWindowTextW(sHThread);
-	TmaxTime_EditLine.SetWindowTextW(sHTime);
-	TPriority_EditLine.SetWindowTextW(sHPriority);
-	TDisable_EditLine.SetWindowTextW(sHDisable);
-	TAPause_EditLine.SetWindowTextW(sHPause);
-	TASuiteName_EditLine.SetWindowTextW(sHSuiteName);	
-	ATDescription_EditLine.SetWindowTextW(sHDescription);
-
+	if (PathToFile != "") {
+		GetDlgItem(IDOK)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_SUITENAME)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_STATIC)->ShowWindow(SW_HIDE);
+	}
+	UpdateData(false);
 	return TRUE;
 }
 void AddSuite::OnBnClickedCancel()
 {
+	RemoveDirectory(sPath_ + sSuiteName);
 	sSuiteName = sMDAuthor = sMDDate = sMDVersion = sMDMail = sMDCopyright = sMDLicense = sMDInfo = sHTag = sHRepeat =
 		sHThread = sHTime = sHPriority = sHDisable = sHSuiteName = sHPause = "";
 	UpdateData(false);
@@ -411,4 +393,32 @@ void AddSuite::OnBnClickedSavebutton()
 {
 	CompareAndChangeDataXML();
 	// TODO: Add your control notification handler code here
+}
+void AddSuite::SetDefault() {
+	sMDAuthor=L"Mykhailo";
+	sMDDate=L"05.20.2016";
+	sMDVersion=L"1.0.0";
+	sMDMail=L"mykhailo.mastykash@globallogic.com";
+	sMDCopyright=L"";
+	sMDLicense=L"";
+	sMDInfo=L"";
+	sHTag=L"Release";
+	sHRepeat=L"120";
+	sHThread=L"3";
+	sHTime=L"2s";
+	sHPriority=L"4";
+	sHDisable=L"false";
+	sHSuiteName=L"Test";
+	sHDescription=L"Test description";
+	sHPause=L"100";
+	sSuiteName = L"Suite";
+	int i = 1;
+	CString name = sSuiteName;
+	while (i<1000) {
+		if (CreateDirectory(sPath_ + name, NULL)) {
+			sSuiteName = name;
+			break;
+		}
+		name = sSuiteName + CString(std::to_string(i++).c_str());
+	}
 }

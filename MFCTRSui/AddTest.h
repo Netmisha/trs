@@ -1,6 +1,8 @@
 #pragma once
 #include "afxwin.h"
 #include "Resource.h"
+#include <string>
+#include <fstream>
 
 // AddTest dialog
 
@@ -20,6 +22,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
+	BOOL OnInitDialog();
 	CString sTName;
 	CString sTDescription;
 	CString sTPriority;
@@ -39,4 +42,5 @@ public:
 	afx_msg void OnBnClickedCancel();
 	CEdit cExecution;
 	void setPath(CString path);
+	void setDefault();
 };

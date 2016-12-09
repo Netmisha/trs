@@ -160,3 +160,44 @@ void AddTest::setPath(CString path)
 {
 	sPath_ = path;
 }
+BOOL AddTest::OnInitDialog(){
+	CDialogEx::OnInitDialog();
+	UpdateData(false);
+	return TRUE;
+}
+void AddTest::setDefault() {
+	sTName = L"Test";
+	sTDescription=L"Test description";
+	sTPriority=L"4";
+	sTTag=L"Debug";
+	sTDisable=L"false";
+	sTResult=L"0";
+	sTParameters=L"1000";
+	sTParamRepeat=L"32";
+	sTRepeat=L"1";
+	sTPause=L"100";
+	sTWait=L"";
+	sTTime=L"2s";
+	sTExecution = L"Test.exe";
+	CString name = sTName;
+	int i = 1;
+	std::fstream local_file;
+	CStringA file(sPath_);
+	local_file.open(file.GetBuffer(), std::ios_base::in);
+	CStringA data;
+	while (!local_file.eof()) {
+		char buff[256];
+		memset(buff, 0, 256);
+		local_file.read(buff, sizeof(buff)-1);
+		data += buff;
+	}
+	local_file.close();
+	while (i<1000) {
+		name = sTName + L" " +CString(std::to_string(i++).c_str());
+		CStringA line("name=\"" + CStringA(name));
+		if (!strstr(data.GetBuffer(), line)) {
+			sTName = name;
+			break;
+		}
+	}
+}
