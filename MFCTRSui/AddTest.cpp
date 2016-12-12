@@ -178,7 +178,18 @@ void AddTest::setDefault() {
 	sTPause=L"100";
 	sTWait=L"";
 	sTTime=L"2s";
-	sTExecution = L"Test.exe";
+	sTExecution = L"";
+	CStringA path(sPath_);
+	char *p = path.GetBuffer() + path.GetLength() - 1;
+	while (*(--p) != '\\');
+	*(p+1) = '\0';
+	WIN32_FIND_DATA FindFileData;
+	HANDLE hFind;
+	hFind = FindFirstFile(CString(path.GetBuffer()) + L"*.exe", &FindFileData);
+	if (hFind != INVALID_HANDLE_VALUE) {
+		sTExecution = CString(FindFileData.cFileName);
+	}
+	FindClose(hFind);
 	CString name = sTName;
 	int i = 1;
 	std::fstream local_file;

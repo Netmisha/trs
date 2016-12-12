@@ -375,6 +375,10 @@ BOOL AddSuite::OnInitDialog(){
 		GetDlgItem(IDOK)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_EDIT_SUITENAME)->ShowWindow(SW_HIDE);
 		GetDlgItem(IDC_STATIC)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_SaveButton)->ShowWindow(SW_SHOW);
+	}
+	else {
+		GetDlgItem(IDC_SaveButton)->ShowWindow(SW_HIDE);
 	}
 	UpdateData(false);
 	return TRUE;
