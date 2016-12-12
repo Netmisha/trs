@@ -3333,14 +3333,18 @@ void CMFCTRSuiDlg::OnNMRClickTree1(NMHDR *pNMHDR, LRESULT *pResult)
 	if (!TestForInfo) {
 
 		mnuPopupSubmit->RemoveMenu(ID_INFO_DISABLE, MF_BYCOMMAND);
-		mnuPopupSubmit->RemoveMenu(ID_INFO_ENABLE, MF_BYCOMMAND);  
+		mnuPopupSubmit->RemoveMenu(ID_INFO_ENABLE, MF_BYCOMMAND); 
+		if (m_Tree.GetSelectedItem() == m_Tree.GetRootItem()) {
+			mnuPopupSubmit->RemoveMenu(ID_INFO_ADDCASE, MF_BYCOMMAND);
+		}
+
 		//mnuPopupSubmit->RemoveMenu(ID_INFO_EDIT, MF_BYCOMMAND);
 
 
 	}
 	else {
 		mnuPopupSubmit->RemoveMenu(ID_INFO_ADDSUITE, MF_BYCOMMAND);
-		mnuPopupSubmit->RemoveMenu(ID_INFO_DISABLEALL, MF_BYCOMMAND);	
+		mnuPopupSubmit->RemoveMenu(ID_INFO_DISABLEALL, MF_BYCOMMAND);
 	    mnuPopupSubmit->RemoveMenu(ID_INFO_ENABLEFOLDER, MF_BYCOMMAND);
 	}
 	CMenu* nextMenu = mnuPopupSubmit->GetSubMenu(0);
