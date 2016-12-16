@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<suite name="Suite 1" description="Test description">
+	<tag>Release</tag>
+	<repeat pause = "100">120</repeat>
+	<maxTime>2s</maxTime>
+	<disable>false</disable>
+	<metadata>
+		<author>Mykhailo</author>
+		<date>05.20.2016</date>
+		<version>1.0.0</version>
+		<mail>mmastykash@smarttech.com</mail>
+		<copyright></copyright>
+		<license></license>
+		<info></info>
+	</metadata>
+
+	<test name="Test" description="Test description">
+		<tag>Release</tag>
+		<disable>false</disable>
+		<execution>test.js</execution>
+		<result>0</result>
+		<repeat pause="100">1</repeat>
+        <maxTime>80</maxTime>
+	</test>
+</suite>
