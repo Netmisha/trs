@@ -1,4 +1,4 @@
-var manageapp = require("./lib/Win/ApplicationManagementWin")
+var manageapp = require("./ApplicationManagementWin")
 var manage = new manageapp.ApplicationManagement()
 function close() {
 	manage.CloseApp();
