@@ -4,6 +4,8 @@
 	<repeat pause = "100">120</repeat>
 	<maxTime>2s</maxTime>
 	<disable>false</disable>
+	<application>C:\Program Files (x86)\SMART Technologies\Education Software\Notebook.exe</application>
+	<windowName>Untitled - SMART Notebook</windowName>
 	<metadata>
 		<author>Mykhailo</author>
 		<date>05.20.2016</date>
@@ -19,7 +21,7 @@
 		<disable>false</disable>
 		<execution>test.js</execution>
 		<result>0</result>
-		<repeat pause="100">1</repeat>
+		<repeat pause="1000">8</repeat>
         <maxTime>80</maxTime>
 	</test>
 </suite>

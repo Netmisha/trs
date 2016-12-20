@@ -3,7 +3,9 @@
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
 	<maxTime>2s</maxTime>
-	<disable>false</disable>
+	<disable>true</disable>
+	<application></application>
+	<windowName></windowName>
 	<metadata>
 		<author>Mykhailo</author>
 		<date>05.20.2016</date>
@@ -19,7 +21,7 @@
 		<disable>false</disable>
 		<execution>test.js</execution>
 		<result>0</result>
-		<repeat pause="100">1</repeat>
+		<repeat pause="1000">5</repeat>
         <maxTime>80</maxTime>
 	</test>
 </suite>

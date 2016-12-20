@@ -26,6 +26,7 @@ var _isEnable = function(file) {
             }
         }
         else {
+             console.log(file + " is started");
             var index = file.indexOf("/");
             var jsFile;
             while (index!=-1) {

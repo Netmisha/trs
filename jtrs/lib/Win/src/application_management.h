@@ -8,8 +8,7 @@ class ApplicationManagement
 {
 public:
 	ApplicationManagement() {}
-	BOOL StartApp(char * name){
-		CString sAppName(name);
+	BOOL StartApp(){
 		STARTUPINFO cif;
 		ZeroMemory(&cif, sizeof(STARTUPINFO));
 		if (started_) {
@@ -20,9 +19,10 @@ public:
 	}
 	BOOL CloseApp(){
 		if (started_) {
-			return TerminateProcess(app_.hProcess, NO_ERROR);
+			started_=!TerminateProcess(app_.hProcess, NO_ERROR);
+			ZeroMemory(&app_, sizeof(PROCESS_INFORMATION));
 		}
-		return FALSE;
+		return !started_;
 	}
 	BOOL WindowMinimize() {
 		if (WindowHandle) {
@@ -38,6 +38,22 @@ public:
 	}
 	BOOL SetActive() {
 		return SetForegroundWindow(WindowHandle);
+	}
+	int isActive() {
+		CString title;
+		TCHAR * buff = new TCHAR[1024];
+		while (title != WindowName)
+		{
+			GetWindowText(GetForegroundWindow(), buff, GetWindowTextLength(GetForegroundWindow()) + 1);
+			title = CString(buff);
+			ZeroMemory(buff, sizeof(TCHAR)*1024);
+			if (title.Find("activationwizard.exe") >= 0) {
+				KeyPress(13);
+			}
+			Sleep(500);
+			SetActive();
+		}
+		return 1;
 	}
 	BOOL WindowRestore() {
 		if (WindowHandle) {
@@ -132,11 +148,15 @@ public:
 		WindowName = CString(name);
 		WindowHandle = FindWindow(NULL, WindowName);
 	}
+	void SetAppName(char * name) {
+		sAppName = CString(name);
+	}
 private:
 	PROCESS_INFORMATION app_;
 	BOOL started_ = FALSE;
 	HWND WindowHandle = NULL;
 	CString WindowName;
+	CString sAppName;
 	POINT current_pos;
 };
 
