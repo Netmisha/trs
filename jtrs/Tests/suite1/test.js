@@ -1,4 +1,6 @@
 var os = require('os');
+var messages = require(FindLibPath()+"modules/messages");
+var msg;
 var manage;
 if (os.platform()=="win32") {
 	var manageapp = require(FindLibPath()+"lib/Win/ApplicationManagementWin")
@@ -14,6 +16,9 @@ function CloseApp(repeat, pause){
 	manage.CloseApp();
 	if(--repeat>0) {
 		setTimeout(StartApp,pause, repeat, pause);
+	}
+	else {
+		msg.ResultOk(process);
 	}
 }
 function SetActive(repeat, pause) {
@@ -36,6 +41,7 @@ function Test(){
                 parser.parseString(data, function (err, result) {
                 	manage.SetAppName(String(result.suite.application));
                 	manage.SetWindowName(String(result.suite.windowName));
+                	msg = new messages.Messages(result.suite.$.name, result.suite.test[0].$.name);
                     StartApp(Number(result.suite.test[0].repeat[0]._),Number(result.suite.test[0].repeat[0].$.pause));
                 });
             });

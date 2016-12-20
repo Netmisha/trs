@@ -1,16 +1,10 @@
 
 var suiteList = [];
 var _runScript = function(file) {
-    var exec = require('child_process').exec;
-    child = exec('node '+file,(error, stdout, stderr) => {
-        if (error) {
-            console.log("error");
-            throw error;
-        }
-        console.log(stdout);
-        if(suiteList.length != 0) {
-            _isEnable(suiteList.shift());
-        }
+    var fork = require('child_process').fork;
+    var child = fork(file);
+    child.on('message', (m) => {
+        console.log(m.msg);
     });
 }
 var _isEnable = function(file) {
