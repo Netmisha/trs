@@ -1,5 +1,5 @@
-var TRSManager = require(process.argv[2]+"/modules/TRSManager");
-var manager = new TRSManager.Manager(__dirname);
+var trs = require('trs');
+var manager = new trs.Manager(__dirname);
 manager.StartTest(function Test(manager) {
 	manager.manage.StartApp();
 	manager.manage.isActive();
