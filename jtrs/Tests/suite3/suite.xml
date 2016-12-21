@@ -3,7 +3,7 @@
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
 	<maxTime>2s</maxTime>
-	<disable>true</disable>
+	<disable>false</disable>
 	<application>C:\Program Files (x86)\SMART Technologies\Education Software\Notebook.exe</application>
 	<windowName>Untitled - SMART Notebook</windowName>
 	<metadata>
@@ -21,7 +21,7 @@
 		<disable>false</disable>
 		<execution>test.js</execution>
 		<result>0</result>
-		<repeat pause="500">20</repeat>
+		<repeat pause="500">1</repeat>
         <maxTime>80</maxTime>
 	</test>
 </suite>

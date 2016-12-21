@@ -5,6 +5,9 @@ var _runScript = function(file) {
     var child = fork(file);
     child.on('message', (m) => {
         console.log(m.msg);
+        if(suiteList.length != 0) {
+            _isEnable(suiteList.shift());
+        }
     });
 }
 var _isEnable = function(file) {
