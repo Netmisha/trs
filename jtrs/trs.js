@@ -2,7 +2,7 @@
 var suiteList = [];
 var _runScript = function(file) {
     var fork = require('child_process').fork;
-    var child = fork(file);
+    var child = fork(file,[__dirname]);
     child.on('message', (m) => {
         console.log(m.msg);
         if(suiteList.length != 0) {
