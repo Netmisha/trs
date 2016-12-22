@@ -1,6 +1,6 @@
-var trs = require('trs');
-var manager = new trs.Manager(__dirname);
-manager.StartTest(function Test(manager) {
+var manager = require('trs');
+var manager = new manager.Manager();
+manager.Test(function Test(manager) {
 	manager.manage.StartApp();
 	manager.manage.isActive();
     setTimeout(function(){manager.manage.CloseApp();},manager.pause);
@@ -11,4 +11,3 @@ manager.StartTest(function Test(manager) {
 		manager.msg.ResultOk(process);
 	}
 });
-var trs = require(process.argv[2]);

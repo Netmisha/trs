@@ -100,6 +100,7 @@ public:
 			Sleep(pause);
 			SetCursorPos(i, fun(i));
 		}
+		SetCursorPos(x, y);
 		GetCursorPos(&current_pos);
 		return TRUE;
 	}
