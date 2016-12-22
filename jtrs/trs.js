@@ -1,49 +1,32 @@
 
+var fileSystem = require("fs");
+var xml2js = require('xml2js');
 var suiteList = [];
-var _runScript = function(file) {
+function runScript(file) {
     var fork = require('child_process').fork;
     var child = fork(file,[__dirname]);
     child.on('message', (m) => {
         console.log(m.msg);
-        if(suiteList.length != 0) {
-            _isEnable(suiteList.shift());
-        }
+        runTests();
     });
 }
-var _isEnable = function(file) {
-    var fs = require('fs'); 
-    var xml2js = require('./xml2js/node_modules/xml2js'); 
+function isEnable(file) {
+    var enabled;
     var parser = new xml2js.Parser();  
-    fs.readFile(file, function(err, data) {
+    fileSystem.readFile(file, function(err, data) {
     parser.parseString(data, function (err, result) {
         if(result.suite.disable=="true") {
-            console.log(file + " is disabled");
-            if(suiteList.length != 0) {
-                _isEnable(suiteList.shift());
-            }
+            enabled = false;
         }
         else {
-             console.log(file + " is started");
-            var index = file.indexOf("/");
-            var jsFile;
-            while (index!=-1) {
-                var tmpIndex = file.indexOf("/", index+1);
-                if(tmpIndex==-1) {
-                    break;
-                }
-                else {
-                    index=tmpIndex;
-                }
-            }
-            index++;
-            var jsFile = file.substring(0, index) + result.suite.test[0].execution;
-            _runScript(jsFile);
+            enabled = true;
         }
     });
+    console.log(enabled);
+    return enabled;
 });
 };
-var _parseFolder = function(dir) {
-    var fileSystem = require("fs");
+function parseFolder(dir) {
     var childDir=[];
     fileSystem.readdirSync(dir).forEach(function(file) {
         file = dir+'/'+file;
@@ -58,26 +41,40 @@ var _parseFolder = function(dir) {
         }
     });
     childDir.forEach(function(file){
-        _parseFolder(file);
+        parseFolder(file);
     });
 };
-var _runTest = function(dir) {
-    var fileSystem = require("fs");
-    var xml2js = require('./xml2js/node_modules/xml2js'); 
-    fileSystem.readdirSync(dir).forEach(function(file) {
-        file = dir+'/'+file;
+function runTests() {
+    if(suiteList.length!=0) {
+        var file = suiteList.shift();
+        var parser = new xml2js.Parser();  
+        fileSystem.readFile(file, function(err, data) {
+            parser.parseString(data, function (err, result) {
+                if(result.suite.disable=="true") {
+                    console.log(file + " is disabled");
+                    runTests();
+                }
+                else {
+                    console.log(file + " is started");
+                    runScript(file.substring(0, file.lastIndexOf("/")+1) + result.suite.test[0].execution);
+                }
+            });
+        });
+    }                                 
+};
+function FindTests() {
+    fileSystem.readdirSync(__dirname).forEach(function(file) {
+        file = __dirname+'/'+file;
         var stat = fileSystem.statSync(file);
         if(file.split('.').pop()=='xml') {
-            var parser = new xml2js.Parser();  
-            fileSystem.readFile(file, function(err, data) {
-                parser.parseString(data, function (err, result) {
-                    _parseFolder(dir + '/' + result.config.dir);
-                    if(suiteList.length != 0) {
-                        _isEnable(suiteList.shift());
-                    }
-                });
+            var parser = new xml2js.Parser();
+            var dir;
+            parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
+                dir = __dirname + '/' + result.config.dir;
             });
+            parseFolder(dir);
+            runTests();
         }
     });
-};
-_runTest(__dirname);
+}
+FindTests();

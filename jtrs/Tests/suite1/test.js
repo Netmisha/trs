@@ -1,11 +1,11 @@
-var manager = require('trs');
-var manager = new manager.Manager();
+require('trs');
+var manager = new Manager()
 manager.Test(function Test(manager) {
 	manager.manage.StartApp();
-	manager.manage.isActive();
-    setTimeout(function(){manager.manage.CloseApp();},manager.pause);
+	Sleep(3);
+    manager.manage.CloseApp();
     if(--manager.repeat>0) {
-		setTimeout(Test, manager.pause, manager);
+		Test(manager);
 	}
 	else {
 		manager.msg.ResultOk(process);

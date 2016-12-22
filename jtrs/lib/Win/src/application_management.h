@@ -12,9 +12,11 @@ public:
 		STARTUPINFO cif;
 		ZeroMemory(&cif, sizeof(STARTUPINFO));
 		if (started_) {
+			isActive();
 			return FALSE;
 		}
 		started_ = CreateProcess(sAppName, NULL, NULL, NULL, FALSE, NULL, NULL, NULL, &cif, &app_);
+		isActive();
 		return started_;
 	}
 	BOOL CloseApp(){

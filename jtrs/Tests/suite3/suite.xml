@@ -3,7 +3,7 @@
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
 	<maxTime>2s</maxTime>
-	<disable>true</disable>
+	<disable>false</disable>
 	<application>C:\Program Files (x86)\SMART Technologies\Education Software\Notebook.exe</application>
 	<windowName>Untitled - SMART Notebook</windowName>
 	<metadata>
