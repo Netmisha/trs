@@ -10,22 +10,6 @@ function runScript(file) {
         runTests();
     });
 }
-function isEnable(file) {
-    var enabled;
-    var parser = new xml2js.Parser();  
-    fileSystem.readFile(file, function(err, data) {
-    parser.parseString(data, function (err, result) {
-        if(result.suite.disable=="true") {
-            enabled = false;
-        }
-        else {
-            enabled = true;
-        }
-    });
-    console.log(enabled);
-    return enabled;
-});
-};
 function parseFolder(dir) {
     var childDir=[];
     fileSystem.readdirSync(dir).forEach(function(file) {
