@@ -1,4 +1,3 @@
-
 var fileSystem = require("fs");
 var xml2js = require('xml2js');
 var suiteList = [];
@@ -6,7 +5,7 @@ function runScript(file, suite, index) {
     var fork = require('child_process').fork;
     var child = fork(file.substring(0, file.lastIndexOf("/")+1) + suite.test[index].execution,[__dirname,index]);
     child.on('message', (m) => {
-        console.log(m.msg);
+        onTestFinished(m.msg);
         runTests(file, suite, index+1);
     });
 }
@@ -28,16 +27,30 @@ function parseFolder(dir) {
         parseFolder(file);
     });
 };
+function onSuiteStarted (suite) {
+    console.log('Suite started '+suite.$.name);
+}
+function onTestStarted (test) {
+    console.log('Test started '+test.$.name);
+}
+function onTestFinished (msg) {
+    console.log('Test finished '+msg);
+}
+function onSuiteFinished (suite) {
+    console.log('Suite finished '+suite.$.name);
+}
 function runTests(file, suite, index) {
     if(index<Object.keys(suite.test).length){
         if(suite.test[index].disable=="true") {
             runTests(file, suite, index+1);
         }
         else {
+            onTestStarted(suite.test[index]);
             runScript(file, suite, index);
         }
     }
     else {
+        onSuiteFinished(suite);
         runSuite();
     }                                
 };
@@ -51,6 +64,7 @@ function runSuite() {
                     runSuite();
                 }
                 else {
+                    onSuiteStarted(result.suite);
                     runTests(file, result.suite, 0);
                 }
             });

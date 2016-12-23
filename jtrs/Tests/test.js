@@ -11,7 +11,7 @@ manager.Test(function Test(manager) {
 	manager.MouseMove(1400,500,2);
 	manager.MouseMove(800,900,2);
 	manager.MouseUp(0);
-	Sleep(4000);
+	Sleep(1000);
 	manager.PrintScreen("D:\\ScreenShot\\","1.bmp");
     manager.CloseApp();
     if(--manager.repeat>0) {
