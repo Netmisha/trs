@@ -2,12 +2,12 @@
 var fileSystem = require("fs");
 var xml2js = require('xml2js');
 var suiteList = [];
-function runScript(file) {
+function runScript(file, suite, index) {
     var fork = require('child_process').fork;
-    var child = fork(file,[__dirname]);
+    var child = fork(file.substring(0, file.lastIndexOf("/")+1) + suite.test[index].execution,[__dirname,index]);
     child.on('message', (m) => {
         console.log(m.msg);
-        runTests();
+        runTests(file, suite, index+1);
     });
 }
 function parseFolder(dir) {
@@ -28,19 +28,30 @@ function parseFolder(dir) {
         parseFolder(file);
     });
 };
-function runTests() {
+function runTests(file, suite, index) {
+    if(index<Object.keys(suite.test).length){
+        if(suite.test[index].disable=="true") {
+            runTests(file, suite, index+1);
+        }
+        else {
+            runScript(file, suite, index);
+        }
+    }
+    else {
+        runSuite();
+    }                                
+};
+function runSuite() {
     if(suiteList.length!=0) {
         var file = suiteList.shift();
         var parser = new xml2js.Parser();  
         fileSystem.readFile(file, function(err, data) {
             parser.parseString(data, function (err, result) {
                 if(result.suite.disable=="true") {
-                    console.log(file + " is disabled");
-                    runTests();
+                    runSuite();
                 }
                 else {
-                    console.log(file + " is started");
-                    runScript(file.substring(0, file.lastIndexOf("/")+1) + result.suite.test[0].execution);
+                    runTests(file, result.suite, 0);
                 }
             });
         });
@@ -57,7 +68,7 @@ function FindTests() {
                 dir = __dirname + '/' + result.config.dir;
             });
             parseFolder(dir);
-            runTests();
+            runSuite();
         }
     });
 }
