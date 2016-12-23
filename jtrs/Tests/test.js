@@ -12,7 +12,8 @@ manager.Test(function Test(manager) {
 	manager.MouseMove(1400*kofX,500*kofY,2);
 	manager.MouseMove(800*kofX,900*kofY,2);
 	manager.MouseUp(0);
-	Sleep(4);
+	Sleep(4000);
+	manager.PrintScreen("D:\\Projects\\","1.bmp");
     manager.CloseApp();
     if(--manager.repeat>0) {
 		Test(manager);
