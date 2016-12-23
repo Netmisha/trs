@@ -26,7 +26,7 @@
 	</test>
 	<test name="Test2" description="Test description">
 		<tag>Release</tag>
-		<disable>true</disable>
+		<disable>false</disable>
 		<execution>test.js</execution>
 		<result>0</result>
 		<repeat pause="1000">2</repeat>

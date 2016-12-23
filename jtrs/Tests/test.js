@@ -18,6 +18,6 @@ manager.Test(function Test(manager) {
 		Test(manager);
 	}
 	else {
-		manager.msg.ResultOk(process);
+		manager.ResultOk(process);
 	}
 });

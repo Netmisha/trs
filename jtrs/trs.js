@@ -1,11 +1,12 @@
 var fileSystem = require("fs");
 var xml2js = require('xml2js');
+require('trs');
 var suiteList = [];
 function runScript(file, suite, index) {
     var fork = require('child_process').fork;
     var child = fork(file.substring(0, file.lastIndexOf("/")+1) + suite.test[index].execution,[__dirname,index]);
     child.on('message', (m) => {
-        onTestFinished(m.msg);
+        onTestFinished(m);
         runTests(file, suite, index+1);
     });
 }
@@ -28,16 +29,16 @@ function parseFolder(dir) {
     });
 };
 function onSuiteStarted (suite) {
-    console.log('Suite started '+suite.$.name);
+    console.log('Suite: "'+suite.$.name+'" started ');
 }
 function onTestStarted (test) {
-    console.log('Test started '+test.$.name);
+    console.log('\tTest: "'+test.$.name+'" started ');
 }
-function onTestFinished (msg) {
-    console.log('Test finished '+msg);
+function onTestFinished (data) {
+    console.log('\tTest: "'+data.test+'" finished '+data.msg);
 }
 function onSuiteFinished (suite) {
-    console.log('Suite finished '+suite.$.name);
+    console.log('Suite: "'+suite.$.name+'" finished ');
 }
 function runTests(file, suite, index) {
     if(index<Object.keys(suite.test).length){
@@ -69,6 +70,9 @@ function runSuite() {
                 }
             });
         });
+    }
+    else {
+        //process.send({msg:"done" });
     }                                 
 };
 function FindTests() {
@@ -86,4 +90,5 @@ function FindTests() {
         }
     });
 }
+Sleep(2000);
 FindTests();
