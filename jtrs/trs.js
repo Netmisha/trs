@@ -2,12 +2,30 @@ var fileSystem = require("fs");
 var xml2js = require('xml2js');
 require('trs');
 var suiteList = [];
+var stopTRS = false;
+var pauseTRS = false;
+var testFile;
+var testSuite;
+var testIndex = -1;
 function runScript(file, suite, index) {
     var fork = require('child_process').fork;
     var child = fork(file.substring(0, file.lastIndexOf("/")+1) + suite.test[index].execution,[__dirname,index]);
     child.on('message', (m) => {
         onTestFinished(m);
-        runTests(file, suite, index+1);
+        if(pauseTRS) {
+            testFile=file;
+            testSuite=suite;
+            testIndex=index+1;
+            console.log('paused');
+        } 
+        else if(stopTRS) {
+            suiteList = [];
+            testIndex=-1;
+            console.log('stopped');
+        }
+        else {
+            runTests(file, suite, index+1);
+        }
     });
 }
 function parseFolder(dir) {
@@ -87,9 +105,22 @@ function FindTests() {
     });
 }
 function Start() {
-    FindTests();
-    Sleep(2000);
-    runSuite();
+    stopTRS = false;
+    pauseTRS = false;
+    if(testIndex==-1) {  
+        FindTests();
+        Sleep(2000);
+        runSuite(); 
+    }
+    else {
+        runTests(testFile, testSuite, testIndex);
+    }
+}
+function fStopTRS() {
+    stopTRS = true;
+}
+function fPauseTRS() {
+    pauseTRS = true;
 }
 function ParseSuite(suite) {
     var string="";
@@ -109,9 +140,9 @@ function ParseSuite(suite) {
         string+="\t\tCopyright: "+suite.metadata[0].copyright+'\n';
         string+="\t\tLicense: "+suite.metadata[0].license+'\n';
         string+="\t\tInfo: "+suite.metadata[0].info+'\n';
-    for(var i=0; i<1; i++) {//Object.keys(suite.$.test).length
+    for(var i=0; i<Object.keys(suite.test).length; i++) {
         string+="\tTest name: "+suite.test[i].$.name+'\n';
-        string+="\t\tTest description: "+suite.test[i].$.description+'\n';
+        string+="\t\tDescription: "+suite.test[i].$.description+'\n';
         string+="\t\tTag: "+suite.test[i].tag+'\n';
         string+="\t\tDisable: "+suite.test[i].disable+'\n';
         string+="\t\tExecution: "+suite.test[i].execution+'\n';
@@ -136,3 +167,5 @@ function GetTestsInfo() {
 
 global.Start = Start;
 global.GetTestsInfo = GetTestsInfo;
+global.fPauseTRS = fPauseTRS;
+global.fStopTRS = fStopTRS;
