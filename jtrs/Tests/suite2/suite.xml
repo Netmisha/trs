@@ -16,12 +16,36 @@
 		<info></info>
 	</metadata>
 
-	<test name="Test" description="Test description">
+		<test name="Test1" description="Test description">
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.js</execution>
 		<result>0</result>
-		<repeat pause="1000">3</repeat>
+		<repeat pause="500">5</repeat>
+        <maxTime>80</maxTime>
+	</test>
+	<test name="Test2" description="Test description">
+		<tag>Release</tag>
+		<disable>false</disable>
+		<execution>test.js</execution>
+		<result>0</result>
+		<repeat pause="500">5</repeat>
+        <maxTime>80</maxTime>
+	</test>
+	<test name="Test3" description="Test description">
+		<tag>Release</tag>
+		<disable>false</disable>
+		<execution>test.js</execution>
+		<result>0</result>
+		<repeat pause="500">5</repeat>
+        <maxTime>80</maxTime>
+	</test>
+	<test name="Test4" description="Test description">
+		<tag>Release</tag>
+		<disable>false</disable>
+		<execution>test.js</execution>
+		<result>0</result>
+		<repeat pause="500">5</repeat>
         <maxTime>80</maxTime>
 	</test>
 </suite>

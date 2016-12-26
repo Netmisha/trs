@@ -16,12 +16,12 @@ function runScript(file, suite, index) {
             testFile=file;
             testSuite=suite;
             testIndex=index+1;
-            console.log('paused');
+            pauseTRS = false;
         } 
         else if(stopTRS) {
             suiteList = [];
             testIndex=-1;
-            console.log('stopped');
+            stopTRS = false;
         }
         else {
             runTests(file, suite, index+1);
@@ -118,9 +118,11 @@ function Start() {
 }
 function fStopTRS() {
     stopTRS = true;
+    return 'TRS stopped';
 }
 function fPauseTRS() {
     pauseTRS = true;
+    return 'TRS paused';
 }
 function ParseSuite(suite) {
     var string="";

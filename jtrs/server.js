@@ -22,13 +22,11 @@ server.on('request', function(req, res){
 			res.end(list);
 		}
 		else if(urlParsed.pathname == '/pause') {
-			fPauseTRS();
-			res.end('TRS paused');
+			res.end(fPauseTRS());
 			trsStarted=false;
 		}
 		else if(urlParsed.pathname == '/stop') {
-			fStopTRS();
-			res.end('TRS stopped');
+			res.end(fStopTRS());
 			trsStarted=false;
 		}
 		else {
