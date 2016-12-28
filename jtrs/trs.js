@@ -16,12 +16,12 @@ function runScript(file, suite, index) {
             testFile=file;
             testSuite=suite;
             testIndex=index+1;
-            pauseTRS = false;
+            server.emit('event', {event:"paused"});
         } 
         else if(stopTRS) {
             suiteList = [];
             testIndex=-1;
-            stopTRS = false;
+            server.emit('event', {event:"stopped"});
         }
         else {
             runTests(file, suite, index+1);
@@ -107,6 +107,7 @@ function FindTests() {
 function Start() {
     stopTRS = false;
     pauseTRS = false;
+    server.emit('event', {event:"working"});
     if(testIndex==-1) {  
         FindTests();
         Sleep(2000);
@@ -116,58 +117,67 @@ function Start() {
         runTests(testFile, testSuite, testIndex);
     }
 }
-function fStopTRS() {
-    stopTRS = true;
-    return 'TRS stopped';
-}
-function fPauseTRS() {
-    pauseTRS = true;
-    return 'TRS paused';
-}
 function ParseSuite(suite) {
     var string="";
-    string+="Suite name: "+suite.$.name+'\n';
-    string+="\tDescription: "+suite.$.description+'\n';
-    string+="\tTag: "+suite.tag+'\n';
-    string+="\tRepeat: "+suite.repeat[0]._+" (pause = "+suite.repeat[0].$.pause+")"+'\n';
-    string+="\tMax time: "+suite.maxTime+'\n';
-    string+="\tDisable: "+suite.disable+'\n';
-    string+="\tApplication: "+suite.application+'\n';
-    string+="\tWindow name: "+suite.windowName+'\n';
-    string+="\tMetadata:"+'\n';
-        string+="\t\tAuthor: "+suite.metadata[0].author+'\n';
-        string+="\t\tDate: "+suite.metadata[0].date+'\n';
-        string+="\t\tVersion: "+suite.metadata[0].version+'\n';
-        string+="\t\tMail: "+suite.metadata[0].mail+'\n';
-        string+="\t\tCopyright: "+suite.metadata[0].copyright+'\n';
-        string+="\t\tLicense: "+suite.metadata[0].license+'\n';
-        string+="\t\tInfo: "+suite.metadata[0].info+'\n';
+    string+="<li>Suite name: "+suite.$.name+'</li>';
+    string+="<ul><li>Description: "+suite.$.description+'</li>';
+    string+="<li>Tag: "+suite.tag+'</li>';
+    string+="<li>Repeat: "+suite.repeat[0]._+" (pause = "+suite.repeat[0].$.pause+")"+'</li>';
+    string+="<li>Max time: "+suite.maxTime+'</li>';
+    string+="<li>Disable: "+suite.disable+'</li>';
+    string+="<li>Application: "+suite.application+'</li>';
+    string+="<li>Window name: "+suite.windowName+'</li>';
+    string+="<li>Metadata:"+'</li>';
+        string+="<ul><li>Author: "+suite.metadata[0].author+'</li>';
+        string+="<li>Date: "+suite.metadata[0].date+'</li>';
+        string+="<li>Version: "+suite.metadata[0].version+'</li>';
+        string+="<li>Mail: "+suite.metadata[0].mail+'</li>';
+        string+="<li>Copyright: "+suite.metadata[0].copyright+'</li>';
+        string+="<li>License: "+suite.metadata[0].license+'</li>';
+        string+="<li>Info: "+suite.metadata[0].info+'</li></ul>';
     for(var i=0; i<Object.keys(suite.test).length; i++) {
-        string+="\tTest name: "+suite.test[i].$.name+'\n';
-        string+="\t\tDescription: "+suite.test[i].$.description+'\n';
-        string+="\t\tTag: "+suite.test[i].tag+'\n';
-        string+="\t\tDisable: "+suite.test[i].disable+'\n';
-        string+="\t\tExecution: "+suite.test[i].execution+'\n';
-        string+="\t\tResult: "+suite.test[i].result+'\n';
-        string+="\t\tRepeat: "+suite.test[i].repeat[0]._+" (pause = "+suite.test[i].repeat[0].$.pause+")"+'\n';
-        string+="\t\tMax time: "+suite.test[i].maxTime+'\n';
+        string+="<li>Test name: "+suite.test[i].$.name+'</li>';
+        string+="<ul><li>Description: "+suite.test[i].$.description+'</li>';
+        string+="<li>Tag: "+suite.test[i].tag+'</li>';
+        string+="<li>Disable: "+suite.test[i].disable+'</li>';
+        string+="<li>Execution: "+suite.test[i].execution+'</li>';
+        string+="<li>Result: "+suite.test[i].result+'</li>';
+        string+="<li>Repeat: "+suite.test[i].repeat[0]._+" (pause = "+suite.test[i].repeat[0].$.pause+")"+'</li>';
+        string+="<li>Max time: "+suite.test[i].maxTime+'</li></ul>';
     }
+    string+="</ul>";
     return string;
 }
 function GetTestsInfo() {
     FindTests();
     var parser = new xml2js.Parser();  
-    var info = "";
+    var info = "<ul>";
     for(var i=0; i<suiteList.length;i++) {
         parser.parseString(fileSystem.readFileSync(suiteList[i]).toString(),function (err, result) {
             info=info + ParseSuite(result.suite);
         });
     }
     suiteList=[];
+    info+="</ul>";
     return info;
 }
-
+function PauseTRS() {
+    pauseTRS=true;
+}
+function IsTRSPaused() {
+    return pauseTRS;
+}
+function StopTRS() {
+    stopTRS=true;    
+}
+function CancelTRS() {
+    suiteList = [];
+    testIndex=-1;
+    server.emit('event', {event:"stopped"});
+}
 global.Start = Start;
 global.GetTestsInfo = GetTestsInfo;
-global.fPauseTRS = fPauseTRS;
-global.fStopTRS = fStopTRS;
+global.PauseTRS = PauseTRS;
+global.StopTRS = StopTRS;
+global.IsTRSPaused = IsTRSPaused;
+global.CancelTRS = CancelTRS;
