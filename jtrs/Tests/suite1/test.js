@@ -1,5 +1,5 @@
 require('trs');
-var manager = new Manager()
+var manager = new global.Manager()
 manager.Test(function Test(manager) {
 	manager.manage.StartApp();
 	Sleep(1000);
