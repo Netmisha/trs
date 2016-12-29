@@ -65,6 +65,9 @@ server.on('event', function(req){
 	else if(req.event=='working') {
 		response.write(SetStatus('TRS is working'));
 	}
+	else if(req.event=='done') {
+		trsStarted=false;
+	}
 	response.end();
 });
 function GetIndexPage() {

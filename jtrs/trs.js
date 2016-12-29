@@ -88,6 +88,9 @@ function runSuite() {
                 }
             });
         });
+    }
+    else {
+        server.emit('event', {event:"done"});
     }                                
 };
 function FindTests() {
