@@ -1,4 +1,40 @@
-var http = require('http');
+var express = require("express");
+var fs = require('fs');
+var trs=require('./trs.js');
+var url = require('url');
+var index = fs.readFileSync('web/index.html');
+var app = express();
+app.use(express.static(__dirname + '/web'));
+app.get('/', function(req, res) {
+    res.end(index);
+});
+app.get('/info', function(req, res) {
+    res.write(GetTestsInfo());
+	res.end();
+});
+app.get('/tests', function(req, res) {
+    res.write(GetTestsList());
+	res.end();
+});
+app.get('/suites', function(req, res) {
+    res.write(GetSuitesInfo());
+	res.end();
+});
+app.get('/file', function(req, res) {
+	var urlParsed = url.parse(req.url, true);
+   	res.write(fs.readFileSync(urlParsed.path.split("?")[1].split("=")[1]).toString());
+	res.end();
+});
+var port = Number(process.env.PORT || 5000);
+app.listen(port, function() {
+    console.log("Listening on " + port);
+});
+
+
+
+
+
+/*var http = require('http');
 var url = require('url');
 var trs=require('./trs.js');
 var fileSystem = require("fs");
@@ -37,95 +73,8 @@ var server = new http.Server(function(req, res){
 		}
 	});
 server.listen(8888,'127.0.0.1');
-/*server.on('request', function(req, res){
-	var urlParsed = url.parse(req.url, true);
-		var htmlPage = fileSystem.readFileSync('src/index.html').toString();
-		console.log(req.url)
-		if(req.url=='/Start') {
-			console.log("Accept");
-			var urlParsed = url.parse(req.url, true);
-			res.write(urlParsed.pathname);
-			res.end();
-			return;
-		}
-		res.write(htmlPage);
-		res.end();
-		/*res.writeHead(200,{Location:"/index"} );
-		if(urlParsed.pathname == '/start') {
-			if(!trsStarted || trsStarted && IsTRSPaused()) {
-				trsStarted=true;
-				response=res;
-				Start();
-			}
-			else {
-				res.write(SetStatus('TRS has been working'));
-			}
-		}
-		else if(urlParsed.pathname == '/list') {
-			res.write(SetStatus(GetTestsInfo()));
-		}
-		else if(urlParsed.pathname == '/pause') {
-			if(trsStarted && !IsTRSPaused()) {
-				response=res;
-				PauseTRS();
-				return;
-			}
-			else {
-				res.write(SetStatus('TRS is not working'));
-			}
-		}
-		else if(urlParsed.pathname == '/stop') {
-			if(trsStarted) {
-				response=res;
-				if(IsTRSPaused()) {
-					CancelTRS();
-				}
-				else {
-					StopTRS();
-				}
-				return;
-			}
-			else {
-				res.write(SetStatus('TRS is not working'));
-			}
-		}
-		else {
-			res.write(header+footer);
-		}
-});*/
-server.on('event', function(req){
-	if(req.event=='paused') {
-		response.write(SetStatus('TRS paused'));
-	}
-	else if(req.event=='stopped') {
-		response.write(SetStatus('TRS stopped'));
-		trsStarted=false;
-	}
-	else if(req.event=='working') {
-		response.write(SetStatus('TRS is working'));
-	}
-	else if(req.event=='done') {
-		trsStarted=false;
-	}
-	response.end();
-});
-function GetIndexPage() {
-	return require("fs").readFileSync('server/index.html').toString()
-}
-function SetStatus(msg) {
-	var page= header;
-	page += "<div class=\"uk-panel uk-panel-box uk-text-left\"><h3 id=\"status\">" +msg + "</h3></div> "; 
-	page+=footer;
-	return page;
-}
-function AddList(msg) {
-	var page= header;
-	page += "<div class=\"uk-panel uk-panel-box uk-text-left\"><h5 id=\"testinfo\">" +msg + "</h5></div> "; 
-	page+=footer;
-	return page;
-}
-process.on('message', (m) => {
-    	console.log(m.msg);
-    });
+
+
 
 global.server=server;
+*/
