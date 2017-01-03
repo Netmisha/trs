@@ -1,125 +1,7 @@
 var fileSystem = require("fs");
 var xml2js = require('xml2js');
-require('trs');
 var suiteList = [];
-var stopTRS = false;
-var pauseTRS = false;
-var testFile;
-var testSuite;
-var testIndex = -1;
-function runScript(file, suite, index) {
-    var fork = require('child_process').fork;
-    var child = fork(file.substring(0, file.lastIndexOf("/")+1) + suite.test[index].execution,[__dirname,index]);
-    child.on('message', (m) => {
-        onTestFinished(m);
-        if(pauseTRS) {
-            testFile=file;
-            testSuite=suite;
-            testIndex=index+1;
-            server.emit('event', {event:"paused"});
-        } 
-        else if(stopTRS) {
-            suiteList = [];
-            testIndex=-1;
-            server.emit('event', {event:"stopped"});
-        }
-        else {
-            runTests(file, suite, index+1);
-        }
-    });
-}
-function parseFolder(dir) {
-    var childDir=[];
-    fileSystem.readdirSync(dir).forEach(function(file) {
-        file = dir+'/'+file;
-        var stat = fileSystem.statSync(file);
-        if (stat && stat.isDirectory()) {
-            childDir.push(file);
-        }
-        else {
-            if(file.split('.').pop()=='xml') {
-                suiteList.push(file);
-            }
-        }
-    });
-    childDir.forEach(function(file){
-        parseFolder(file);
-    });
-};
-function onSuiteStarted (suite) {
-    console.log('Suite: "'+suite.$.name+'" started ');
-}
-function onTestStarted (test) {
-    console.log('\tTest: "'+test.$.name+'" started ');
-}
-function onTestFinished (data) {
-    console.log('\tTest: "'+data.test+'" finished '+data.msg);
-}
-function onSuiteFinished (suite) {
-    console.log('Suite: "'+suite.$.name+'" finished ');
-}
-function runTests(file, suite, index) {
-    if(index<Object.keys(suite.test).length){
-        if(suite.test[index].disable=="true") {
-            runTests(file, suite, index+1);
-        }
-        else {
-            onTestStarted(suite.test[index]);
-            runScript(file, suite, index);
-        }
-    }
-    else {
-        onSuiteFinished(suite);
-        runSuite();
-    }                                
-};
-function runSuite() {
-    if(suiteList.length!=0) {
-        var file = suiteList.shift();
-        var parser = new xml2js.Parser();  
-        fileSystem.readFile(file, function(err, data) {
-            parser.parseString(data, function (err, result) {
-                if(result.suite.disable=="true") {
-                    runSuite();
-                }
-                else {
-                    onSuiteStarted(result.suite);
-                    runTests(file, result.suite, 0);
-                }
-            });
-        });
-    }
-    else {
-        server.emit('event', {event:"done"});
-    }                                
-};
-function FindTests() {
-    fileSystem.readdirSync(__dirname).forEach(function(file) {
-        file = __dirname+'/'+file;
-        var stat = fileSystem.statSync(file);
-        if(file.split('.').pop()=='xml') {
-            var parser = new xml2js.Parser();
-            var dir;
-            parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
-                dir = __dirname + '/' + result.config.dir;
-            });
-            parseFolder(dir);
-        }
-    });
-}
-function Start() {
-    stopTRS = false;
-    pauseTRS = false;
-    server.emit('event', {event:"working"});
-    if(testIndex==-1) {  
-        FindTests();
-        Sleep(2000);
-        runSuite(); 
-    }
-    else {
-        runTests(testFile, testSuite, testIndex);
-    }
-}
+var testsList = [];
 function ParseSuite(suite) {
     var string="";
     string+="<li>Suite name: "+suite.$.name+'</li>';
@@ -160,27 +42,85 @@ function GetTestsInfo() {
             info=info + ParseSuite(result.suite);
         });
     }
-    suiteList=[];
     info+="</ul>";
     return info;
 }
-function PauseTRS() {
-    pauseTRS=true;
+function GetSuitesInfo() {
+    FindTests();
+    var parser = new xml2js.Parser();  
+    var suites= [];
+    for(var i=0; i<suiteList.length;i++) {
+        parser.parseString(fileSystem.readFileSync(suiteList[i]).toString(),function (err, result) {
+            suites.push(result.suite);
+        });
+    }
+    return JSON.stringify(suites);
 }
-function IsTRSPaused() {
-    return pauseTRS;
+function parseFolder(dir) {
+    var childDir=[];
+    fileSystem.readdirSync(dir).forEach(function(file) {
+        file = dir+'/'+file;
+        var stat = fileSystem.statSync(file);
+        if (stat && stat.isDirectory()) {
+            childDir.push(file);
+        }
+        else {
+            if(file.split('.').pop()=='xml') {
+                suiteList.push(file);
+            }
+        }
+    });
+    childDir.forEach(function(file){
+        parseFolder(file);
+    });
+};
+function FindTests() {
+    suiteList=[];
+    fileSystem.readdirSync(__dirname).forEach(function(file) {
+        file = __dirname+'/'+file;
+        var stat = fileSystem.statSync(file);
+        if(file.split('.').pop()=='xml') {
+            var parser = new xml2js.Parser();
+            var dir;
+            parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
+                dir = __dirname + '/' + result.config.dir;
+            });
+            parseFolder(dir);
+        }
+    });
 }
-function StopTRS() {
-    stopTRS=true;    
+function GetTestsList () {
+    testsList=[];
+    FindTests();
+    var parser = new xml2js.Parser();
+    for(var i=0; i<suiteList.length; i++) { 
+        parser.parseString(fileSystem.readFileSync(suiteList[i]).toString(),function (err, result) {
+            if(result.suite.disable=="false") {
+               for(var j=0; j<Object.keys(result.suite.test).length; j++) {
+                    if(result.suite.test[j].disable=="false") {
+                        var info = {
+                            "name" : result.suite.test[j].$.name,
+                            "file" : suiteList[i].substring(0, suiteList[i].lastIndexOf("/")+1) + result.suite.test[j].execution,
+                            "suite": result.suite.$.name,
+                            "description":result.suite.test[j].$.description,
+                            "tag":result.suite.test[j].tag,
+                            "disable":result.suite.test[j].disable,
+                            "execution":result.suite.test[j].execution,
+                            "result":result.suite.test[j].result,
+                            "repeat":result.suite.test[j].repeat[0]._,
+                            "repeatPause":result.suite.test[j].repeat[0].$.pause,
+                            "maxTime":result.suite.test[j].maxTime,
+                            "repeat":result.suite.test[j].repeat[0]._,
+                            "pause":result.suite.test[j].repeat[0].$.pause
+                        }
+                        testsList.push(info);
+                    }
+               } 
+            }
+        });
+    }
+    return JSON.stringify(testsList);
 }
-function CancelTRS() {
-    suiteList = [];
-    testIndex=-1;
-    server.emit('event', {event:"stopped"});
-}
-global.Start = Start;
+global.GetTestsList = GetTestsList;
 global.GetTestsInfo = GetTestsInfo;
-global.PauseTRS = PauseTRS;
-global.StopTRS = StopTRS;
-global.IsTRSPaused = IsTRSPaused;
-global.CancelTRS = CancelTRS;
+global.GetSuitesInfo = GetSuitesInfo;

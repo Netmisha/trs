@@ -1,16 +1,56 @@
-var header= "<!DOCTYPE html><html><head><title>TRS Service</title><link rel=\"stylesheet\" href=\"http://cdnjs.cloudflare.com/ajax/libs/uikit/2.12.0/css/uikit.min.css\"><script type=\"text/javascript\" src=\"http://cdnjs.cloudflare.com/ajax/libs/uikit/2.12.0/js/uikit.min.js\"></script><script type=\"text/javascript\" src=\"http://cdnjs.cloudflare.com/ajax/libs/uikit/2.12.0/js/uikit.min.js\"></script></head><body class=\"tm-background\"><div class=\"uk-container uk-container-center uk-margin-top\"><div class=\"uk-panel uk-panel-box uk-text-center\"><h1>TRS Manager</h1><p>Some description</p></div><div class=\"uk-panel uk-panel-box uk-text-left\">\n<a href=\"/start\" class=\"uk-button uk-button-primary uk-button-large\">Start</a>\n<a href=\"/stop\" class=\"uk-button uk-button-primary uk-button-large\">Stop</a>\n<a href=\"/pause\" class=\"uk-button uk-button-primary uk-button-large\">Pause</a>\n<a href=\"/list\" class=\"uk-button uk-button-primary uk-button-large\">Info</a></div>";
-var footer="</div></body></html>";
-
 var http = require('http');
 var url = require('url');
 var trs=require('./trs.js');
+var fileSystem = require("fs");
 var trsStarted=false;
 var response;
-var server = new http.Server();
-server.listen(8888,'127.0.0.1');
-server.on('request', function(req, res){
+var server = new http.Server(function(req, res){
 	var urlParsed = url.parse(req.url, true);
-	res.writeHead(200,{Location:"/index"} );
+		var htmlPage = fileSystem.readFileSync('src/index.html').toString();
+		if(req.url=='/tests') {
+			res.writeHead(200, {
+      			'Content-Type': 'text/plain',
+      			'Cache-Control': 'no-cache'
+    		});
+			res.write(GetTestsList());
+			res.end();
+		}
+		else if(urlParsed.path.split("?")[0]=='/info') {
+			res.write(GetTestsInfo());
+			res.end();
+		}
+		else if(urlParsed.path.split("?")[0]=='/file') {
+			res.write(fileSystem.readFileSync(urlParsed.path.split("?")[1].split("=")[1]).toString());
+			res.end();
+		}
+		else if(urlParsed.path=='/suites') {
+			res.write(GetSuitesInfo());
+			res.end();
+		}
+		else if(urlParsed.path=='/trs') {
+			res.write(fileSystem.readFileSync('src/trs.js').toString());
+			res.end();
+		}
+		else {
+			res.write(htmlPage);
+			res.end();
+		}
+	});
+server.listen(8888,'127.0.0.1');
+/*server.on('request', function(req, res){
+	var urlParsed = url.parse(req.url, true);
+		var htmlPage = fileSystem.readFileSync('src/index.html').toString();
+		console.log(req.url)
+		if(req.url=='/Start') {
+			console.log("Accept");
+			var urlParsed = url.parse(req.url, true);
+			res.write(urlParsed.pathname);
+			res.end();
+			return;
+		}
+		res.write(htmlPage);
+		res.end();
+		/*res.writeHead(200,{Location:"/index"} );
 		if(urlParsed.pathname == '/start') {
 			if(!trsStarted || trsStarted && IsTRSPaused()) {
 				trsStarted=true;
@@ -52,8 +92,7 @@ server.on('request', function(req, res){
 		else {
 			res.write(header+footer);
 		}
-		res.end();
-});
+});*/
 server.on('event', function(req){
 	if(req.event=='paused') {
 		response.write(SetStatus('TRS paused'));
