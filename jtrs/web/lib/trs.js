@@ -1,4 +1,5 @@
 var testsList = GetTestsInfo();
+var suitesList = GetSuitesInfo();
 var stopTests=false;
 var pauseTests=false;
 var init=0;
@@ -21,13 +22,68 @@ function RunTests (file) {
 	document.head.removeChild(document.getElementById("run")); 
 }
 function TestsInfo () {
-	if(document.getElementById("info") !=undefined) {
+	var tree = document.getElementById("tree")
+	tree.innerHTML = SendRequestSync('info');
+	/*if(document.getElementById("info") !=undefined) {
 		document.body.removeChild(document.getElementById("info")); 
 	}
 	var info = document.createElement('div');
 	info.id = "info";
 	info.innerHTML = SendRequestSync('info');
-	document.body.appendChild(info);
+	document.body.appendChild(info);*/
+}
+function GetInfo (suite, test) {
+	var string = "";
+	if(suite=="") {
+		string+="<li>All tests:</li><ul>";
+		for(var i=0; i<suitesList.length; i++) {
+	        for(var j=0; j<Object.keys(suitesList[i].test).length; j++) {
+		       string+="<li>"+suitesList[i].$.name+" : "+suitesList[i].test[j].$.name+"</li>";
+		    }
+    	}
+    	string+="</ul>";
+	}
+	else if(test=="") {
+		for(var i=0; i<suitesList.length; i++) {
+	        if(suitesList[i].$.name == suite) {
+	        	string+="<li>Suite name: "+suitesList[i].$.name+"</li>";
+			    string+="<li>Description: "+suitesList[i].$.description+"</li>";
+			    string+="<li>Tag: "+suitesList[i].tag+"</li>";
+			    string+="<li>Repeat: "+suitesList[i].repeat[0]._+" (pause = "+suitesList[i].repeat[0].$.pause+")"+"</li>";
+			    string+="<li>Max time: "+suitesList[i].maxTime+"</li>";
+			    string+="<li>Disable: "+suitesList[i].disable+"</li>";
+			    string+="<li>Application: "+suitesList[i].application+"</li>";
+			    string+="<li>Window name: "+suitesList[i].windowName+"</li>";
+			    string+="<li>Metadata:"+"</li>";
+			        string+="<ul><li>Author: "+suitesList[i].metadata[0].author+"</li>";
+			        string+="<li>Date: "+suitesList[i].metadata[0].date+"</li>";
+			        string+="<li>Version: "+suitesList[i].metadata[0].version+"</li>";
+			        string+="<li>Mail: "+suitesList[i].metadata[0].mail+"</li>";
+			        string+="<li>Copyright: "+suitesList[i].metadata[0].copyright+"</li>";
+			        string+="<li>License: "+suitesList[i].metadata[0].license+"</li>";
+			        string+="<li>Info: "+suitesList[i].metadata[0].info+"</li></ul>";
+	        }
+	    }	
+	}
+	else {
+		for(var i=0; i<suitesList.length; i++) {
+	        if(suitesList[i].$.name == suite) {
+	        	for(var j=0; j<Object.keys(suitesList[i].test).length; j++) {
+			        if(suitesList[i].test[j].$.name == test) {
+			        	string+="<li>Test name: "+suitesList[i].test[j].$.name+'</li>';
+				        string+="<li>Description: "+suitesList[i].test[j].$.description+'</li>';
+				        string+="<li>Tag: "+suitesList[i].test[j].tag+'</li>';
+				        string+="<li>Disable: "+suitesList[i].test[j].disable+'</li>';
+				        string+="<li>Execution: "+suitesList[i].test[j].execution+'</li>';
+				        string+="<li>Result: "+suitesList[i].test[j].result+'</li>';
+				        string+="<li>Repeat: "+suitesList[i].test[j].repeat[0]._+" (pause = "+suitesList[i].test[j].repeat[0].$.pause+")"+'</li>';
+				        string+="<li>Max time: "+suitesList[i].test[j].maxTime+'</li>';		        	
+			        }
+			    }
+	        }
+    	}
+	}
+	info.innerHTML = string;
 }
 function Stop () {
 	stopTests=true;
@@ -36,7 +92,7 @@ function Stop () {
 function Pause () {
 	pauseTests=true;
 }
-function GetSuitesInfo (argument) {
+function GetSuitesInfo () {
 	return JSON.parse(SendRequestSync('suites'));
 }
 function GetTestsInfo () {

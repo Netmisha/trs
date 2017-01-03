@@ -2,9 +2,26 @@ var fileSystem = require("fs");
 var xml2js = require('xml2js');
 var suiteList = [];
 var testsList = [];
-function ParseSuite(suite) {
-    var string="";
-    string+="<li>Suite name: "+suite.$.name+'</li>';
+function ParseSuite(suite, index) {
+    var string = "";
+    if(suite.disable=='false') {
+        string="<li><input type=\"checkbox\" id=\"node-0-"+index+"\"  /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+suite.$.name+"', '')\" for=\"node-0-"+index+"\">";
+    }
+    else {
+        string="<li><input type=\"checkbox\" id=\"node-0-"+index+"\"  /><label><input type=\"checkbox\" /><span></span></label><label onClick=\"GetInfo('"+suite.$.name+"', '')\" for=\"node-0-"+index+"\">";    
+    }
+    string+=suite.$.name+"</label><ul>";
+    for(var i=0; i<Object.keys(suite.test).length; i++) {
+        if(suite.disable=='false' && suite.test[i].disable == 'false') {
+            string+="<li><input type=\"checkbox\" id=\"node-0-"+index+"-"+i+"\" checked=\"checked\" /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+suite.$.name+"', '"+suite.test[i].$.name+"')\" style=\"padding-left:10px;\">";
+        }
+        else {
+            string+="<li><input type=\"checkbox\" id=\"node-0-"+index+"-"+i+"\" checked=\"checked\" /><label><input type=\"checkbox\" /><span></span></label><label onClick=\"GetInfo('"+suite.$.name+"', '"+suite.test[i].$.name+"')\" style=\"padding-left:10px;\">";  
+        }
+        string+=suite.test[i].$.name+"</label></li>";
+    }
+    string+="</ul></li>";
+    /*string+="<li>Suite name: "+suite.$.name+'</li>';
     string+="<ul><li>Description: "+suite.$.description+'</li>';
     string+="<li>Tag: "+suite.tag+'</li>';
     string+="<li>Repeat: "+suite.repeat[0]._+" (pause = "+suite.repeat[0].$.pause+")"+'</li>';
@@ -30,19 +47,22 @@ function ParseSuite(suite) {
         string+="<li>Repeat: "+suite.test[i].repeat[0]._+" (pause = "+suite.test[i].repeat[0].$.pause+")"+'</li>';
         string+="<li>Max time: "+suite.test[i].maxTime+'</li></ul>';
     }
-    string+="</ul>";
+    string+="</ul>";*/
     return string;
 }
 function GetTestsInfo() {
     FindTests();
+    if(suiteList.length == 0) {
+        return "";
+    }
     var parser = new xml2js.Parser();  
-    var info = "<ul>";
+    var info = "<ul><li><input type=\"checkbox\" id=\"node-0\" checked=\"checked\" /><label><input type=\"checkbox\" checked=\"checked\" /><span></span></label><label onClick=\"GetInfo('', '')\" for=\"node-0\">Tests</label><ul>";
     for(var i=0; i<suiteList.length;i++) {
         parser.parseString(fileSystem.readFileSync(suiteList[i]).toString(),function (err, result) {
-            info=info + ParseSuite(result.suite);
+            info=info + ParseSuite(result.suite, i);
         });
     }
-    info+="</ul>";
+    info+="</ul></li></ul>";
     return info;
 }
 function GetSuitesInfo() {
