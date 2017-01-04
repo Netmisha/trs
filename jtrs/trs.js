@@ -2,7 +2,7 @@ var fileSystem = require("fs");
 var xml2js = require('xml2js');
 var suiteList = [];
 var testsList = [];
-var rootSuite={"suiteId":"0", "suite":{}, "children":[]};
+var rootSuite={"suiteId":"0","path":"", "suite":{}, "children":[]};
 function ParseSuite(node, suiteId) {
     var string = "<li>";
     if(node.suite.disable=='false') {
@@ -48,7 +48,6 @@ function GetTestsInfo() {
 }
 function GetSuitesInfo() {
     FindTests('node-0');
-
     return JSON.stringify(rootSuite);
 }
 function parseFolder(dir, rootSuite, suiteId) {
@@ -66,12 +65,13 @@ function parseFolder(dir, rootSuite, suiteId) {
                 parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
                     rootSuite.suite=result.suite;
                     rootSuite.suiteId=suiteId;
+                    rootSuite.path=file;
                 });
             }
         }
     });
     childDir.forEach(function(file){
-        rootSuite.children[index]={"suiteId":suiteId+"-"+String(index), "suite":{}, "children":[]};
+        rootSuite.children[index]={"suiteId":suiteId+"-"+String(index), "path":"", "suite":{}, "children":[]};
         parseFolder(file,rootSuite.children[index], rootSuite.children[index++].suiteId);
     });
 };
@@ -90,7 +90,7 @@ function FindTests(suiteId) {
         }
     });
 }
-function GetTestsList () {
+/*function GetTestsList () {
     testsList=[];
     FindTests();
     var parser = new xml2js.Parser();
@@ -122,18 +122,6 @@ function GetTestsList () {
     }
     return JSON.stringify(testsList);
 }
-global.GetTestsList = GetTestsList;
+global.GetTestsList = GetTestsList;*/
 global.GetTestsInfo = GetTestsInfo;
 global.GetSuitesInfo = GetSuitesInfo;
-
-function ttt () {
-    var parser = new xml2js.Parser();
-        parser.parseString(fileSystem.readFileSync('1.xml').toString(),function (err, result) {
-            console.log(result);
-            console.log(result.node.info);
-            for(var j=0; j<Object.keys(result.node.children).length; j++)
-            {
-                console.log(result.node.children[j]);
-            }
-        });
-}

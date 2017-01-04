@@ -38,6 +38,7 @@ function ShowInfo (node, suiteId, test) {
 		if(test=="") {
 	    	string+="<li>Suite name: "+node.suite.$.name+"</li>";
 		    string+="<li>Description: "+node.suite.$.description+"</li>";
+		    string+="<li>Path: "+node.path+"</li>";
 		    string+="<li>Tag: "+node.suite.tag+"</li>";
 		    string+="<li>Repeat: "+node.suite.repeat[0]._+" (pause = "+node.suite.repeat[0].$.pause+")"+"</li>";
 		    string+="<li>Max time: "+node.suite.maxTime+"</li>";
@@ -58,6 +59,7 @@ function ShowInfo (node, suiteId, test) {
 		        if(node.suite.test[j].$.name == test) {
 		        	string+="<li>Test name: "+node.suite.test[j].$.name+'</li>';
 			        string+="<li>Description: "+node.suite.test[j].$.description+'</li>';
+		    		string+="<li>Path: "+node.path+"</li>";
 			        string+="<li>Tag: "+node.suite.test[j].tag+'</li>';
 			        string+="<li>Disable: "+node.suite.test[j].disable+'</li>';
 			        string+="<li>Execution: "+node.suite.test[j].execution+'</li>';
