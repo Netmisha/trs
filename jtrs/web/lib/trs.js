@@ -1,16 +1,20 @@
 var rootSuite;
+var currentTestInfo={"test":{}, "path":"", "execution":""};
 var stopTests=false;
 var pauseTests=false;
 var init=0;
 function Start () {
 	stopTests=false;
 	pauseTests=false;
-	for(var index=init; index<testsList.length; index++) {
+	if(currentTestInfo.path!="") {
+		RunTests(currentTestInfo.execution);
+	}
+	/*for(var index=init; index<testsList.length; index++) {
 		RunTests(testsList[index].file);
 		if(stopTests || pauseTests) {
 			break;
 		}
-	}
+	}*/
 }
 function RunTests (file) {
 	var script = document.createElement('script');
@@ -36,6 +40,7 @@ function ShowInfo (node, suiteId, test) {
 	}
 	else {
 		if(test=="") {
+			currentTestInfo={"test":{}, "path":"", "execution":""};
 	    	string+="<li>Suite name: "+node.suite.$.name+"</li>";
 		    string+="<li>Description: "+node.suite.$.description+"</li>";
 		    string+="<li>Path: "+node.path+"</li>";
@@ -57,6 +62,7 @@ function ShowInfo (node, suiteId, test) {
 		else {
 			for(var j=0; j<Object.keys(node.suite.test).length; j++) {
 		        if(node.suite.test[j].$.name == test) {
+		        	currentTestInfo={"test":node.suite.test[j], "path":node.path, "execution":node.path.substring(0, node.path.lastIndexOf("/")+1) + node.suite.test[j].execution};
 		        	string+="<li>Test name: "+node.suite.test[j].$.name+'</li>';
 			        string+="<li>Description: "+node.suite.test[j].$.description+'</li>';
 		    		string+="<li>Path: "+node.path+"</li>";
