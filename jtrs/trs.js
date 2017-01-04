@@ -6,19 +6,19 @@ var rootSuite={"suiteId":"0", "suite":{}, "children":[]};
 function ParseSuite(node, suiteId) {
     var string = "<li>";
     if(node.suite.disable=='false') {
-        string+="<input type=\"checkbox\" id=\""+suiteId+"\"  /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+node.suite.$.name+"', '')\" for=\""+suiteId+"\">";
+        string+="<input type=\"checkbox\" id=\""+suiteId+"\"  /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+suiteId+"', '')\" for=\""+suiteId+"\">";
     }
     else {
-        string+="<input type=\"checkbox\" id=\""+suiteId+"\"  /><label><input type=\"checkbox\" /><span></span></label><label onClick=\"GetInfo('"+node.suite.$.name+"', '')\" for=\""+suiteId+"\">";    
+        string+="<input type=\"checkbox\" id=\""+suiteId+"\"  /><label><input type=\"checkbox\" /><span></span></label><label onClick=\"GetInfo('"+suiteId+"', '')\" for=\""+suiteId+"\">";    
     }
     string+=node.suite.$.name+"</label><ul>";
     string+=ParseChildren(node.children, node.suiteId);
     for(var i=0; i<Object.keys(node.suite.test).length; i++) {
         if(node.suite.disable=='false' && node.suite.test[i].disable == 'false') {
-            string+="<li><input type=\"checkbox\" id=\""+suiteId+"-"+String(i)+"\" checked=\"checked\" /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+node.suite.$.name+"', '"+node.suite.test[i].$.name+"')\" style=\"padding-left:10px;\">";
+            string+="<li><input type=\"checkbox\" id=\""+suiteId+"-"+String(i)+"\" checked=\"checked\" /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+suiteId+"', '"+node.suite.test[i].$.name+"')\" style=\"padding-left:10px;\">";
         }
         else {
-            string+="<li><input type=\"checkbox\" id=\""+suiteId+"-"+String(i)+"\" checked=\"checked\" /><label><input type=\"checkbox\" /><span></span></label><label onClick=\"GetInfo('"+node.suite.$.name+"', '"+node.suite.test[i].$.name+"')\" style=\"padding-left:10px;\">";  
+            string+="<li><input type=\"checkbox\" id=\""+suiteId+"-"+String(i)+"\" checked=\"checked\" /><label><input type=\"checkbox\" /><span></span></label><label onClick=\"GetInfo('"+suiteId+"', '"+node.suite.test[i].$.name+"')\" style=\"padding-left:10px;\">";  
         }
         string+=node.suite.test[i].$.name+"</label></li>";
     }
@@ -48,13 +48,7 @@ function GetTestsInfo() {
 }
 function GetSuitesInfo() {
     FindTests('node-0');
-    /*var parser = new xml2js.Parser();  
-    var suites= [];
-    for(var i=0; i<suiteList.length;i++) {
-        parser.parseString(fileSystem.readFileSync(suiteList[i]).toString(),function (err, result) {
-            suites.push(result.suite);
-        });
-    }*/
+
     return JSON.stringify(rootSuite);
 }
 function parseFolder(dir, rootSuite, suiteId) {

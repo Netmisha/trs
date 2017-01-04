@@ -24,11 +24,11 @@ function TestsInfo () {
 	var tree = document.getElementById("tree")
 	tree.innerHTML = SendRequestSync('info');
 }
-function ShowInfo (node, suite, test) {
+function ShowInfo (node, suiteId, test) {
 	var string = "";
-	if(node.suite.$.name != suite) {
+	if(node.suiteId != suiteId) {
 		for(var j=0; j<node.children.length; j++) {
-	    		string += ShowInfo (node.children[j], suite, test);
+	    		string += ShowInfo (node.children[j], suiteId, test);
 	    		if(string!="") {
 	    			break;
 	    		}
@@ -70,9 +70,9 @@ function ShowInfo (node, suite, test) {
 	}
 	return string;
 }
-function GetInfo (suite, test) {
+function GetInfo (suiteId, test) {
 	var string = "";
-	string += ShowInfo (rootSuite, suite, test);
+	string += ShowInfo (rootSuite, suiteId, test);
 	info.innerHTML = string;
 }
 function Stop () {

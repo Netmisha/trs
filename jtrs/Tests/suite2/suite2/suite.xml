@@ -20,7 +20,7 @@
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.js</execution>
-		<result>0</result>
+		<result>666</result>
 		<repeat pause="500">5</repeat>
         <maxTime>80</maxTime>
 	</test>
