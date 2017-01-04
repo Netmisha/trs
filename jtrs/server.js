@@ -12,10 +12,10 @@ app.get('/info', function(req, res) {
     res.write(GetTestsInfo());
 	res.end();
 });
-app.get('/tests', function(req, res) {
+/*app.get('/tests', function(req, res) {
     res.write(GetTestsList());
 	res.end();
-});
+});*/
 app.get('/suites', function(req, res) {
     res.write(GetSuitesInfo());
 	res.end();

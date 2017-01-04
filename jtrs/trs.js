@@ -2,82 +2,65 @@ var fileSystem = require("fs");
 var xml2js = require('xml2js');
 var suiteList = [];
 var testsList = [];
-function ParseSuite(suite, index) {
-    var string = "";
-    if(suite.disable=='false') {
-        string="<li><input type=\"checkbox\" id=\"node-0-"+index+"\"  /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+suite.$.name+"', '')\" for=\"node-0-"+index+"\">";
+var rootSuite={"suiteId":"0", "suite":{}, "children":[]};
+function ParseSuite(node, suiteId) {
+    var string = "<li>";
+    if(node.suite.disable=='false') {
+        string+="<input type=\"checkbox\" id=\""+suiteId+"\"  /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+node.suite.$.name+"', '')\" for=\""+suiteId+"\">";
     }
     else {
-        string="<li><input type=\"checkbox\" id=\"node-0-"+index+"\"  /><label><input type=\"checkbox\" /><span></span></label><label onClick=\"GetInfo('"+suite.$.name+"', '')\" for=\"node-0-"+index+"\">";    
+        string+="<input type=\"checkbox\" id=\""+suiteId+"\"  /><label><input type=\"checkbox\" /><span></span></label><label onClick=\"GetInfo('"+node.suite.$.name+"', '')\" for=\""+suiteId+"\">";    
     }
-    string+=suite.$.name+"</label><ul>";
-    for(var i=0; i<Object.keys(suite.test).length; i++) {
-        if(suite.disable=='false' && suite.test[i].disable == 'false') {
-            string+="<li><input type=\"checkbox\" id=\"node-0-"+index+"-"+i+"\" checked=\"checked\" /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+suite.$.name+"', '"+suite.test[i].$.name+"')\" style=\"padding-left:10px;\">";
+    string+=node.suite.$.name+"</label><ul>";
+    string+=ParseChildren(node.children, node.suiteId);
+    for(var i=0; i<Object.keys(node.suite.test).length; i++) {
+        if(node.suite.disable=='false' && node.suite.test[i].disable == 'false') {
+            string+="<li><input type=\"checkbox\" id=\""+suiteId+"-"+String(i)+"\" checked=\"checked\" /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+node.suite.$.name+"', '"+node.suite.test[i].$.name+"')\" style=\"padding-left:10px;\">";
         }
         else {
-            string+="<li><input type=\"checkbox\" id=\"node-0-"+index+"-"+i+"\" checked=\"checked\" /><label><input type=\"checkbox\" /><span></span></label><label onClick=\"GetInfo('"+suite.$.name+"', '"+suite.test[i].$.name+"')\" style=\"padding-left:10px;\">";  
+            string+="<li><input type=\"checkbox\" id=\""+suiteId+"-"+String(i)+"\" checked=\"checked\" /><label><input type=\"checkbox\" /><span></span></label><label onClick=\"GetInfo('"+node.suite.$.name+"', '"+node.suite.test[i].$.name+"')\" style=\"padding-left:10px;\">";  
         }
-        string+=suite.test[i].$.name+"</label></li>";
+        string+=node.suite.test[i].$.name+"</label></li>";
     }
     string+="</ul></li>";
-    /*string+="<li>Suite name: "+suite.$.name+'</li>';
-    string+="<ul><li>Description: "+suite.$.description+'</li>';
-    string+="<li>Tag: "+suite.tag+'</li>';
-    string+="<li>Repeat: "+suite.repeat[0]._+" (pause = "+suite.repeat[0].$.pause+")"+'</li>';
-    string+="<li>Max time: "+suite.maxTime+'</li>';
-    string+="<li>Disable: "+suite.disable+'</li>';
-    string+="<li>Application: "+suite.application+'</li>';
-    string+="<li>Window name: "+suite.windowName+'</li>';
-    string+="<li>Metadata:"+'</li>';
-        string+="<ul><li>Author: "+suite.metadata[0].author+'</li>';
-        string+="<li>Date: "+suite.metadata[0].date+'</li>';
-        string+="<li>Version: "+suite.metadata[0].version+'</li>';
-        string+="<li>Mail: "+suite.metadata[0].mail+'</li>';
-        string+="<li>Copyright: "+suite.metadata[0].copyright+'</li>';
-        string+="<li>License: "+suite.metadata[0].license+'</li>';
-        string+="<li>Info: "+suite.metadata[0].info+'</li></ul>';
-    for(var i=0; i<Object.keys(suite.test).length; i++) {
-        string+="<li>Test name: "+suite.test[i].$.name+'</li>';
-        string+="<ul><li>Description: "+suite.test[i].$.description+'</li>';
-        string+="<li>Tag: "+suite.test[i].tag+'</li>';
-        string+="<li>Disable: "+suite.test[i].disable+'</li>';
-        string+="<li>Execution: "+suite.test[i].execution+'</li>';
-        string+="<li>Result: "+suite.test[i].result+'</li>';
-        string+="<li>Repeat: "+suite.test[i].repeat[0]._+" (pause = "+suite.test[i].repeat[0].$.pause+")"+'</li>';
-        string+="<li>Max time: "+suite.test[i].maxTime+'</li></ul>';
-    }
-    string+="</ul>";*/
     return string;
 }
+function ParseChildren (suites, id) {
+    var info="";
+    if(suites.length == 0) {
+        return info;
+    }
+    info+="<ul>";
+    for(var i=0; i<suites.length; i++) {
+        info+=ParseSuite(suites[i], suites[i].suiteId);
+    }
+    return info+"</ul>";
+}
 function GetTestsInfo() {
-    FindTests();
-    if(suiteList.length == 0) {
-        return "";
+    FindTests('node-0');
+    var info="";
+    if(rootSuite.suiteId=="0") {
+        return;
     }
-    var parser = new xml2js.Parser();  
-    var info = "<ul><li><input type=\"checkbox\" id=\"node-0\" checked=\"checked\" /><label><input type=\"checkbox\" checked=\"checked\" /><span></span></label><label onClick=\"GetInfo('', '')\" for=\"node-0\">Tests</label><ul>";
-    for(var i=0; i<suiteList.length;i++) {
-        parser.parseString(fileSystem.readFileSync(suiteList[i]).toString(),function (err, result) {
-            info=info + ParseSuite(result.suite, i);
-        });
-    }
+    info=info + ParseSuite(rootSuite, rootSuite.suiteId);
     info+="</ul></li></ul>";
     return info;
 }
 function GetSuitesInfo() {
-    FindTests();
-    var parser = new xml2js.Parser();  
+    FindTests('node-0');
+    /*var parser = new xml2js.Parser();  
     var suites= [];
     for(var i=0; i<suiteList.length;i++) {
         parser.parseString(fileSystem.readFileSync(suiteList[i]).toString(),function (err, result) {
             suites.push(result.suite);
         });
-    }
-    return JSON.stringify(suites);
+    }*/
+    return JSON.stringify(rootSuite);
 }
-function parseFolder(dir) {
+function parseFolder(dir, rootSuite, suiteId) {
     var childDir=[];
+    var index = 0;
+    var parser = new xml2js.Parser();
     fileSystem.readdirSync(dir).forEach(function(file) {
         file = dir+'/'+file;
         var stat = fileSystem.statSync(file);
@@ -86,15 +69,19 @@ function parseFolder(dir) {
         }
         else {
             if(file.split('.').pop()=='xml') {
-                suiteList.push(file);
+                parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
+                    rootSuite.suite=result.suite;
+                    rootSuite.suiteId=suiteId;
+                });
             }
         }
     });
     childDir.forEach(function(file){
-        parseFolder(file);
+        rootSuite.children[index]={"suiteId":suiteId+"-"+String(index), "suite":{}, "children":[]};
+        parseFolder(file,rootSuite.children[index], rootSuite.children[index++].suiteId);
     });
 };
-function FindTests() {
+function FindTests(suiteId) {
     suiteList=[];
     fileSystem.readdirSync(__dirname).forEach(function(file) {
         file = __dirname+'/'+file;
@@ -105,7 +92,7 @@ function FindTests() {
             parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
                 dir = __dirname + '/' + result.config.dir;
             });
-            parseFolder(dir);
+            parseFolder(dir, rootSuite, suiteId);
         }
     });
 }
@@ -144,3 +131,15 @@ function GetTestsList () {
 global.GetTestsList = GetTestsList;
 global.GetTestsInfo = GetTestsInfo;
 global.GetSuitesInfo = GetSuitesInfo;
+
+function ttt () {
+    var parser = new xml2js.Parser();
+        parser.parseString(fileSystem.readFileSync('1.xml').toString(),function (err, result) {
+            console.log(result);
+            console.log(result.node.info);
+            for(var j=0; j<Object.keys(result.node.children).length; j++)
+            {
+                console.log(result.node.children[j]);
+            }
+        });
+}

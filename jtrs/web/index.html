@@ -17,28 +17,29 @@
         </div>
         <div class = "uk-container uk-container-center uk-margin-top">
             <div class="uk-grid">
-                <div class="uk-width-medium-1-4">
+                <div class="uk-width-large-3-10">
                     <div class="uk-panel">
                         <div class="acidjs-css3-treeview uk-panel-box uk-text-left" id = "tree">
                         </div>
                     </div>
                 </div>
-                <div class="uk-width-medium-3-4">
-                    <div class="uk-panel">
+                <div class="uk-width-large-7-10 uk-container-right">
+                    <div class="uk-panel uk-width-large-1-1">
                         <div class="uk-panel uk-panel-box uk-text-left">
                             <button onclick="Start()" class="uk-button uk-button-primary uk-button-large">Start</button>
                             <button onclick="Stop()" class="uk-button uk-button-primary uk-button-large">Stop</button>
                             <button onclick="Pause()" class="uk-button uk-button-primary uk-button-large">Pause</button>
                         </div>
-                        <div class="uk-panel uk-panel-box uk-text-top" id = "info">
+                    </div>
+                    <div class="uk-panel uk-panel-box uk-text-top" id = "info">
 
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <script type="text/javascript">
             TestsInfo();
+            rootSuite = GetSuitesInfo();
         	$(".acidjs-css3-treeview").delegate("label input:checkbox", "change", function() {
             var
                 checkbox = $(this),
