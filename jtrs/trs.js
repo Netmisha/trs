@@ -3,52 +3,76 @@ var xml2js = require('xml2js');
 var suiteList = [];
 var testsList = [];
 var rootSuite={"suiteId":"0","path":"", "suite":{}, "children":[]};
-function ParseSuite(node, suiteId) {
-    var string = "<li>";
-    if(node.suite.disable=='false') {
-        string+="<input type=\"checkbox\" id=\""+suiteId+"\"  /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+suiteId+"', '')\" for=\""+suiteId+"\">";
+var rootNode={"id":"0","path":"", "name":{}, "tests":[], "children":[]};
+function ParseSuite(suite, node) {
+    node.id=suite.suiteId;
+    node.path=suite.path;
+    node.name=suite.suite.$.name;
+    for(var i=0; i<Object.keys(suite.suite.test).length; i++) {
+        node.tests[i]={'id':suite.suiteId+"-"+String(i), 'name':suite.suite.test[i].$.name, 'path':node.path};
     }
-    else {
-        string+="<input type=\"checkbox\" id=\""+suiteId+"\"  /><label><input type=\"checkbox\" /><span></span></label><label onClick=\"GetInfo('"+suiteId+"', '')\" for=\""+suiteId+"\">";    
+    for(var i=0; i<Object.keys(suite.children).length; i++) {
+        node.children[i]={"id":"0","path":"", "name":{}, "tests":[], "children":[]};
+        ParseSuite(suite.children[i], node.children[i]);
     }
-    string+=node.suite.$.name+"</label><ul>";
-    string+=ParseChildren(node.children, node.suiteId);
-    for(var i=0; i<Object.keys(node.suite.test).length; i++) {
-        if(node.suite.disable=='false' && node.suite.test[i].disable == 'false') {
-            string+="<li><input type=\"checkbox\" id=\""+suiteId+"-"+String(i)+"\" checked=\"checked\" /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+suiteId+"', '"+node.suite.test[i].$.name+"')\" style=\"padding-left:10px;\">";
-        }
-        else {
-            string+="<li><input type=\"checkbox\" id=\""+suiteId+"-"+String(i)+"\" checked=\"checked\" /><label><input type=\"checkbox\" /><span></span></label><label onClick=\"GetInfo('"+suiteId+"', '"+node.suite.test[i].$.name+"')\" style=\"padding-left:10px;\">";  
-        }
-        string+=node.suite.test[i].$.name+"</label></li>";
-    }
-    string+="</ul></li>";
-    return string;
 }
-function ParseChildren (suites, id) {
-    var info="";
-    if(suites.length == 0) {
-        return info;
-    }
-    info+="<ul>";
-    for(var i=0; i<suites.length; i++) {
-        info+=ParseSuite(suites[i], suites[i].suiteId);
-    }
-    return info+"</ul>";
-}
-function GetTestsInfo() {
+function GetStructure() {
     FindTests('node-0');
-    var info="";
     if(rootSuite.suiteId=="0") {
         return;
     }
-    info=info + ParseSuite(rootSuite, rootSuite.suiteId);
-    info+="</ul></li></ul>";
-    return info;
+    ParseSuite(rootSuite, rootNode);
+    return JSON.stringify(rootNode);
 }
-function GetSuitesInfo() {
+function GetAllInfo() {
     FindTests('node-0');
     return JSON.stringify(rootSuite);
+}
+function GetSuiteInfo(file) {
+    var parser = new xml2js.Parser();
+    var suite;
+    parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
+        suite=result.suite;
+        suite.path=file;
+    });
+    return JSON.stringify(suite);
+}
+function GetTestInfo(file, name) {
+    var parser = new xml2js.Parser();
+    var test;
+    parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
+        for(var j=0; j<Object.keys(result.suite.test).length; j++) {
+            if(result.suite.test[j].$.name==name) {
+                test=result.suite.test[j];
+                test.path=file;
+                break;
+            }
+       } 
+    });
+    return JSON.stringify(test);
+}
+function GetProperty(file, property) {
+    var path=property.split('/');
+    var parser = new xml2js.Parser();
+    var res="";
+    parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
+        var obj=result.suite;
+        for(var i=0; i<path.length;i++) {
+            if(path[i]=='name') {
+                res=obj.$.name;
+                break;
+            }
+            if(path[i]=='description') {
+                res=obj.$.description;
+                break;
+            }
+            if(path[i]=='repeat') {
+                res=obj.$.description;
+                break;
+            }
+        }
+    });
+    return JSON.stringify(suite);
 }
 function parseFolder(dir, rootSuite, suiteId) {
     var childDir=[];
@@ -123,5 +147,6 @@ function FindTests(suiteId) {
     return JSON.stringify(testsList);
 }
 global.GetTestsList = GetTestsList;*/
-global.GetTestsInfo = GetTestsInfo;
-global.GetSuitesInfo = GetSuitesInfo;
+global.GetStructure = GetStructure;
+global.GetSuiteInfo = GetSuiteInfo;
+global.GetTestInfo = GetTestInfo;
