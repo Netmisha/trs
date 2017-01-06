@@ -41,7 +41,30 @@ var wss = new ws.Server({ noServer: true });
  
 app.use('/list', function (req, res, next) {
   res.websocket(function (ws) {
-    ws.send(GetStructure());
+    var path=req.url.split('?')[1];
+    if(path==undefined) {
+        ws.send(GetStructure(__dirname));
+    }
+    else {
+        if(path.indexOf('verbose')!=-1) {
+            if(path.indexOf('path')!=-1) {
+                ws.send(GetAllInfo(path.split('&')[0].split('=')[1]));
+            }
+            else {
+                var tro=GetAllInfo(__dirname);
+                console.log(tro);
+                ws.send(tro);
+            }
+        }
+        else {
+            if(path.indexOf('path')!=-1) {
+                ws.send(GetStructure(path.split('&')[0].split('=')[1]));
+            }
+            else {
+                ws.send(GetStructure(__dirname));
+            }
+        }
+    }
   });
 });
 app.use('/get', function (req, res, next) {

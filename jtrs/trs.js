@@ -16,16 +16,16 @@ function ParseSuite(suite, node) {
         ParseSuite(suite.children[i], node.children[i]);
     }
 }
-function GetStructure() {
-    FindTests('node-0');
+function GetStructure(dir) {
+    FindTests(dir, 'node-0');
     if(rootSuite.suiteId=="0") {
         return;
     }
     ParseSuite(rootSuite, rootNode);
     return JSON.stringify(rootNode);
 }
-function GetAllInfo() {
-    FindTests('node-0');
+function GetAllInfo(dir) {
+    FindTests(dir, 'node-0');
     return JSON.stringify(rootSuite);
 }
 function GetSuiteInfo(file) {
@@ -57,7 +57,8 @@ function GetProperty(file, property) {
     var res="";
     parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
         var obj=result.suite;
-        for(var i=0; i<path.length;i++) {
+        return obj.property;
+        /*for(var i=0; i<path.length;i++) {
             if(path[i]=='name') {
                 res=obj.$.name;
                 break;
@@ -67,10 +68,29 @@ function GetProperty(file, property) {
                 break;
             }
             if(path[i]=='repeat') {
-                res=obj.$.description;
+                res=obj.repeat[0]._;
                 break;
             }
-        }
+            if(path[i]=='pause') {
+                res=obj.repeat[0].$.pause;
+                break;
+            }
+            if(path[i]=='metadata') {
+                res=obj.metadata[0];
+                break;
+            }
+            if(path[i]=='test') {
+                i++;
+                res=obj.test;
+                for(var j=0; j<obj.test.length; j++) {
+                    if(obj.test[j].$.name==path[i]) {
+                        obj=obj.test[j];
+                        break;
+                    }
+                }
+            }
+
+        }*/
     });
     return JSON.stringify(suite);
 }
@@ -99,20 +119,24 @@ function parseFolder(dir, rootSuite, suiteId) {
         parseFolder(file,rootSuite.children[index], rootSuite.children[index++].suiteId);
     });
 };
-function FindTests(suiteId) {
-    suiteList=[];
-    fileSystem.readdirSync(__dirname).forEach(function(file) {
-        file = __dirname+'/'+file;
-        var stat = fileSystem.statSync(file);
-        if(file.split('.').pop()=='xml') {
-            var parser = new xml2js.Parser();
-            var dir;
-            parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
-                dir = __dirname + '/' + result.config.dir;
-            });
-            parseFolder(dir, rootSuite, suiteId);
-        }
-    });
+function FindTests(dir, suiteId) {
+    if(dir!=__dirname) {
+        parseFolder(dir, rootSuite, suiteId);
+    }
+    else {
+        fileSystem.readdirSync(dir).forEach(function(file) {
+            file = dir+'/'+file;
+            var stat = fileSystem.statSync(file);
+            if(file.split('.').pop()=='xml') {
+                var parser = new xml2js.Parser();
+                var testsDir;
+                parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
+                    testsDir = dir + '/' + result.config.dir;
+                });
+                parseFolder(testsDir, rootSuite, suiteId);
+            }
+        });
+    }
 }
 /*function GetTestsList () {
     testsList=[];
@@ -150,3 +174,4 @@ global.GetTestsList = GetTestsList;*/
 global.GetStructure = GetStructure;
 global.GetSuiteInfo = GetSuiteInfo;
 global.GetTestInfo = GetTestInfo;
+global.GetAllInfo = GetAllInfo;

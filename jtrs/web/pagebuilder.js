@@ -36,7 +36,6 @@ function ParseChildren (suites, id) {
     return info+"</ul>";
 }
 function BuildTree() {
-	console.log(rootNode);
     var info="";
     if(rootNode.suiteId=="0") {
         return;
@@ -111,7 +110,6 @@ function ShowInfo (node, suiteId, test) {
 	}
 	return string;
 }
-
 
 
 

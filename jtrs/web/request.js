@@ -28,6 +28,7 @@ function SendRequestSync(req) {
   			if(req[1]!=undefined) {
   				if(req[1].indexOf('verbose')!=-1) {
 		  			rootSuite = JSON.parse(event.data);
+		  			console.log(rootSuite);
   				}
   				else {
 	  				rootNode = JSON.parse(event.data);
