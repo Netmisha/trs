@@ -33,7 +33,6 @@
                             <button onclick="Start()" class="uk-button uk-button-primary uk-button-large">Start</button>
                             <button onclick="Stop()" class="uk-button uk-button-primary uk-button-large">Stop</button>
                             <button onclick="Pause()" class="uk-button uk-button-primary uk-button-large">Pause</button>
-                            <button onclick="SendReq()" class="uk-button uk-button-primary uk-button-large">Send</button>
                         </div>
                     </div>
                     <div class="uk-panel uk-panel-box uk-text-top" id = "info">
@@ -43,9 +42,6 @@
             </div>
         </div>
         <script type="text/javascript">
-            function SendReq () {
-                Set('D:/Projects/trs/jtrs/Tests/suite.xml/metadata/version', "1.0.1");
-            }
         	$(".acidjs-css3-treeview").delegate("label input:checkbox", "change", function() {
             var
                 checkbox = $(this),

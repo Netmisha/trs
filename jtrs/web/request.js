@@ -1,30 +1,28 @@
 function List () {
-	SendRequestSync('list');
+	SendRequest('list');
 }
 function ListPath (path) {
-	SendRequestSync('list?path='+path);
+	SendRequest('list?path='+path);
 }
 function ListVerbose () {
-	SendRequestSync('list?verbose=true');
+	SendRequest('list?verbose=true');
 }
 function ListAll (path) {
-	SendRequestSync('list?path='+path+'&verbose=true');
+	SendRequest('list?path='+path+'&verbose=true');
 }
 function Verify () {
-	SendRequestSync('verify');
+	SendRequest('verify');
 }
 function VerifyPath (path) {
-	SendRequestSync('verify?path='+path);
+	SendRequest('verify?path='+path);
 }
 function Get (path) {
-	SendRequestSync('get?path='+path);
+	SendRequest('get?path='+path);
 }
 function Set (path, value) {
-	//var socket = new WebSocket('ws://127.0.0.1:5000');
-	//socket.send(JSON.stringify({'type':'set', 'path':path, 'value':value});
-	SendRequestSync('set?path='+path+'&value='+encodeURIComponent(value));
+	SendRequest('set?path='+path+'&value='+encodeURIComponent(value));
 }
-function SendRequestSync(req) {
+function SendRequest(req) {
 	var socket = new WebSocket('ws://127.0.0.1:5000/' + req);
 	socket.onmessage = function(event) {
 		var pathName = event.currentTarget.url.substr(event.currentTarget.url.indexOf('/', 6)+1, event.currentTarget.url.length);
@@ -71,4 +69,73 @@ function SendRequestSync(req) {
 		    alert(event.data);
   		}
 	};
+}
+function SetWindowName(name) {
+	SendRequest('event?type=SetWindowName&name='+encodeURIComponent(name));	
+}
+function SetAppName(name) {
+	SendRequest('event?type=SetAppName&name='+encodeURIComponent(name));
+}
+function StartApp(name) {
+	SendRequest('event?type=StartApp');
+}
+function CloseApp() {
+	SendRequest('event?type=CloseApp');
+}
+function WindowMinimize()  {
+	
+}
+function WindowMaximize() {
+	
+}
+function SetActive() {
+	
+}
+function WindowRestore() {
+	
+}
+function GetScreenWidth() {
+	
+}
+function GetScreenHeight() {
+	
+}
+function KeyDown(dkey) {
+	
+}
+function KeyUp(dkey) {
+	
+}
+function KeyPress(dkey) {
+	
+}
+function SetMousePos(x, y) {
+	
+}
+function MouseMove(x, y, pause) {
+	
+}
+function MouseDown(button) {
+	
+}
+function MouseUp(button) {
+	
+}
+function MouseClick(button) {
+	
+}
+function MouseWheelDown() {
+	
+}
+function MouseWheelUp() {
+	
+}
+function MouseWheelLeft() {
+	
+}
+function MouseWheelRight() {
+	
+}
+function GetPID() {
+	
 }
