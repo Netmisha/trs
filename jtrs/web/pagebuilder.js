@@ -1,5 +1,6 @@
 var rootSuite;
 var rootNode;
+var currentTest = "";
 var suiteList = "tree";
 var infoId = "info";
 function ParseSuite(node) {
@@ -97,13 +98,13 @@ function ShowInfo (node, suiteId, test) {
 	}
 	else {
 		if(test=="") {
-			document.getElementById("req").value =node.path+'/';
+			currentTest="";
 			Get(node.path);
 	    }
 		else {
 			for(var j=0; j<Object.keys(node.tests).length; j++) {
 		        if(node.tests[j].name == test) {
-		        	document.getElementById("req").value =node.path+'/test/'+node.tests[j].name+'/';
+		        	currentTest=node.path+'/test/'+node.tests[j].name+'/execution.js';
 		        	Get(node.path+'/test/'+node.tests[j].name);	        	
 		        }
 		    }
@@ -111,11 +112,11 @@ function ShowInfo (node, suiteId, test) {
 	}
 	return string;
 }
-function SendReq() {
-	var req=document.getElementById("req").value;
-	Get(req);
+function Start () {
+	if(currentTest!="") {
+		Get(currentTest);
+	}
 }
-
 
 
 

@@ -50,6 +50,14 @@ function SendRequestSync(req) {
 		    else if(path.split('.')[1].split('/')[1]=='test' && path.split('.')[1].split('/').length == 3) {
 		        ShowTestInfo(JSON.parse(event.data));
 		    }
+		    else if(path.split('.').length == 3){
+		    	var script = document.createElement('script');
+				script.id = "run";
+				script.innerHTML = event.data;
+				document.head.appendChild(script);
+				RunTest();  
+				document.head.removeChild(document.getElementById("run")); 
+		    }
 		    else {
 		        alert(event.data);
 		    }
