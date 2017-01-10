@@ -1,5 +1,6 @@
 var rootSuite;
 var rootNode;
+var currentTest = "";
 var suiteList = "tree";
 var infoId = "info";
 function ParseSuite(node) {
@@ -51,7 +52,6 @@ function GetInfo (suiteId, test) {
 	info.innerHTML = string;
 }
 function ShowSuiteInfo (suite) {
-	console.log(suite);
 	var string = "";
 	string+="<li>Suite name: "+suite.$.name+"</li>";
     string+="<li>Description: "+suite.$.description+"</li>";
@@ -98,19 +98,25 @@ function ShowInfo (node, suiteId, test) {
 	}
 	else {
 		if(test=="") {
+			currentTest="";
 			Get(node.path);
 	    }
 		else {
 			for(var j=0; j<Object.keys(node.tests).length; j++) {
 		        if(node.tests[j].name == test) {
-		        	Get(node.path+'/'+node.tests[j].name);	        	
+		        	currentTest=node.path+'/test/'+node.tests[j].name+'/execution.js';
+		        	Get(node.path+'/test/'+node.tests[j].name);	        	
 		        }
 		    }
 		}
 	}
 	return string;
 }
-
+function Start () {
+	if(currentTest!="") {
+		Get(currentTest);
+	}
+}
 
 
 
