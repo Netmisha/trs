@@ -19,6 +19,11 @@ function VerifyPath (path) {
 function Get (path) {
 	SendRequestSync('get?path='+path);
 }
+function Set (path, value) {
+	//var socket = new WebSocket('ws://127.0.0.1:5000');
+	//socket.send(JSON.stringify({'type':'set', 'path':path, 'value':value});
+	SendRequestSync('set?path='+path+'&value='+encodeURIComponent(value));
+}
 function SendRequestSync(req) {
 	var socket = new WebSocket('ws://127.0.0.1:5000/' + req);
 	socket.onmessage = function(event) {
@@ -61,6 +66,9 @@ function SendRequestSync(req) {
 		    else {
 		        alert(event.data);
 		    }
+  		}
+  		else if(req[0]=='set') {
+		    alert(event.data);
   		}
 	};
 }

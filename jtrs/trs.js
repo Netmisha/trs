@@ -150,8 +150,75 @@ function FindTests(dir, suiteId) {
         });
     }
 }
+function SetInfo (file, property, value) {
+    value=decodeURIComponent(value);
+    var path=property.split('/');
+    var parser = new xml2js.Parser();
+    var builder = new xml2js.Builder();
+    var res="";
+    parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
+        var obj=result.suite;
+        if(path[0]=='name') {
+            obj=obj.$.name=value;
+        }
+        else if(path[0]=='description') {
+            obj=obj.$.description=value;
+        }
+        else if(path[0]=='repeat') {
+            obj=obj.repeat[0]._=value;
+        }
+        else if(path[0]=='pause') {
+            obj=obj.repeat[0].$.pause=value;
+        }
+        else if(path[0]=='metadata') {
+            obj=obj.metadata[0];
+            obj=obj[path[1]]=value;
+        }
+        else if(path[0]=='test') {
+            for(var j=0; j<obj.test.length; j++) {
+                if(obj.test[j].$.name==path[1]) {
+                    obj=obj.test[j];
+                    if(path[2]=='name') {
+                        obj=obj.$.name=value;
+                    }
+                    else if(path[2]=='description') {
+                        obj=obj.$.description=value;
+                    }
+                    else if(path[2]=='repeat') {
+                        obj=obj.repeat[0]._=value;
+                    }
+                    else if(path[2]=='pause') {
+                        obj=obj.repeat[0].$.pause=value;
+                    }
+                    else if(path[2]=='execution.js') {
+                        fileSystem.writeFileSync(file.substr(0, file.lastIndexOf('/')+1)+obj.execution, value);
+                        res='done';
+                    }
+                    else {
+                        obj[path[2]]=value;
+                    }
+                    break;
+                }
+            }
+        }
+        else  {
+            obj=obj[path[0]]=value;
+        }
+        if(res!='done') {
+            if(obj!=undefined) {
+                res='done';
+            }
+            else {
+                res=undefined;
+            }
+            fileSystem.writeFileSync(file, String(builder.buildObject(result)));
+        }
+    });
+    return res;
+}
 global.GetStructure = GetStructure;
 global.GetSuiteInfo = GetSuiteInfo;
 global.GetTestInfo = GetTestInfo;
 global.GetAllInfo = GetAllInfo;
 global.GetProperty = GetProperty;
+global.SetInfo = SetInfo;

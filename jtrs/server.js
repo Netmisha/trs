@@ -10,7 +10,7 @@ var handleUpgrade = require('express-websocket');
 var app = express();
 var server = http.createServer(app);
 var wss = new ws.Server({ noServer: true });
- 
+
 app.use('/list', function (req, res, next) {
   res.websocket(function (ws) {
     var path=req.url.split('?')[1];
@@ -49,6 +49,12 @@ app.use('/get', function (req, res, next) {
     else {
         ws.send(GetProperty(path.substr(0, path.indexOf('xml')+3), path.substr(path.indexOf('xml')+4, path.length)));
     }
+  });
+});
+app.use('/set', function (req, res, next) {
+  res.websocket(function (ws) {
+    var path=req.url.split('&');
+    ws.send(SetInfo(path[0].split('=')[1].substr(0, path[0].split('=')[1].indexOf('xml')+3), path[0].split('=')[1].substr(path[0].split('=')[1].indexOf('xml')+4, path[0].split('=')[1].length), path[1].split('=')[1]));
   });
 });
 server.on('upgrade', handleUpgrade(app, wss));
