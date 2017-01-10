@@ -1,4 +1,4 @@
-var fileSystem = require("fs");
+var fileSystem = require("fs"); // loads module
 var xml2js = require('xml2js');
 var suiteList = [];
 var testsList = [];
@@ -22,10 +22,12 @@ function GetStructure(dir) {
         return;
     }
     ParseSuite(rootSuite, rootNode);
+    console.log(rootNode);
     return JSON.stringify(rootNode);
 }
 function GetAllInfo(dir) {
     FindTests(dir, 'node-0');
+    console.log(rootSuite);
     return JSON.stringify(rootSuite);
 }
 function GetSuiteInfo(file) {

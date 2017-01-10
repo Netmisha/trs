@@ -1,0 +1,42 @@
+#Start{
+
+    display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    margin: 8px;
+    vertical-align: top;
+ 	height: 25px;  
+    width: 30px;
+
+}
+
+#Stop{
+
+    display: inline-block;
+    background-color: transparent;
+    margin: 8px;
+    padding: 0;
+ 	margin-right: 10px
+    vertical-align: top;
+ 	height: 25px;  
+    width: 30px;
+}
+#Pause{
+  	margin: 8px;
+    display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    vertical-align: top;
+  	margin: 8px;
+   	height: 25px;  
+    width: 30px;
+}
+#Sync{
+    display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    margin: 8px;
+    vertical-align: top;
+ 	height: 25px;  
+    width: 30px;
+}

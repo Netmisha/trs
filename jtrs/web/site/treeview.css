@@ -40,9 +40,7 @@
 {
     -webkit-user-select: none;
     -moz-user-select: none;
-    user-select: none;'
-
-    color:red;
+    user-select: none;
 }
  
 .acidjs-css3-treeview input[type="checkbox"]
