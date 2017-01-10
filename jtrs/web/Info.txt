@@ -1,0 +1,29 @@
+Get suite structure
+	request: list
+	example : ws://127.0.0.1:5000/list
+	return: JSON object, which contains all suites and tests and theirs main info(name and path to file)
+	
+Get suite structure from folder
+	request: list?path="your_path"
+	example : ws://127.0.0.1:5000/list?path="your_path"
+	return: JSON object, which contains all suites and tests from some folder and theirs main info(name and path to file)
+
+Get all info about suite structure
+	request: list?verbose=true
+	example : ws://127.0.0.1:5000/list?verbose=true
+	return: JSON object, which contains all suites and tests and theirs full info
+	
+Get all info about suite structure from folder
+	request: list?path="your_path"&verbose=true
+	example : ws://127.0.0.1:5000/list?path="your_path&verbose=true
+	return: JSON object, which contains all suites and tests from some folder and theirs full info
+	
+Get some info from suite or test
+	request: get?path="your_path"
+	example : ws://127.0.0.1:5000/get?path="D:/Tests/Suite1/suite.xml/name;
+	return: some value from suite.xml, for example name of suite
+
+Get execution file
+	request: get?path="your_path"/execution.js
+	example : ws://127.0.0.1:5000/get?path="D:/Tests/Suite1/suite.xml/test/Test1/execution.js;
+	return: JS code from execution file

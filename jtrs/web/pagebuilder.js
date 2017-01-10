@@ -51,7 +51,6 @@ function GetInfo (suiteId, test) {
 	info.innerHTML = string;
 }
 function ShowSuiteInfo (suite) {
-	console.log(suite);
 	var string = "";
 	string+="<li>Suite name: "+suite.$.name+"</li>";
     string+="<li>Description: "+suite.$.description+"</li>";
@@ -98,17 +97,23 @@ function ShowInfo (node, suiteId, test) {
 	}
 	else {
 		if(test=="") {
+			document.getElementById("req").value =node.path+'/';
 			Get(node.path);
 	    }
 		else {
 			for(var j=0; j<Object.keys(node.tests).length; j++) {
 		        if(node.tests[j].name == test) {
-		        	Get(node.path+'/'+node.tests[j].name);	        	
+		        	document.getElementById("req").value =node.path+'/test/'+node.tests[j].name+'/';
+		        	Get(node.path+'/test/'+node.tests[j].name);	        	
 		        }
 		    }
 		}
 	}
 	return string;
+}
+function SendReq() {
+	var req=document.getElementById("req").value;
+	Get(req);
 }
 
 

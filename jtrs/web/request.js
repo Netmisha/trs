@@ -28,7 +28,6 @@ function SendRequestSync(req) {
   			if(req[1]!=undefined) {
   				if(req[1].indexOf('verbose')!=-1) {
 		  			rootSuite = JSON.parse(event.data);
-		  			console.log(rootSuite);
   				}
   				else {
 	  				rootNode = JSON.parse(event.data);
@@ -44,12 +43,16 @@ function SendRequestSync(req) {
   			
   		}
   		else if(req[0]=='get') {
-  			if(req[1].substr(req[1].lastIndexOf('/')+1, req[1].length).split('.')[1]=='xml') {
-  				ShowSuiteInfo(JSON.parse(event.data));
-  			}
-  			else {
-  				ShowTestInfo(JSON.parse(event.data));
-  			}
+  			var path=req[1];
+  			if(path.split('.')[1]=='xml') {
+		        ShowSuiteInfo(JSON.parse(event.data));
+		    }
+		    else if(path.split('.')[1].split('/')[1]=='test' && path.split('.')[1].split('/').length == 3) {
+		        ShowTestInfo(JSON.parse(event.data));
+		    }
+		    else {
+		        alert(event.data);
+		    }
   		}
 	};
 }

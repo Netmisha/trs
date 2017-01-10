@@ -57,42 +57,54 @@ function GetProperty(file, property) {
     var res="";
     parser.parseString(fileSystem.readFileSync(file).toString(),function (err, result) {
         var obj=result.suite;
-        return obj.property;
-        /*for(var i=0; i<path.length;i++) {
-            if(path[i]=='name') {
-                res=obj.$.name;
-                break;
-            }
-            if(path[i]=='description') {
-                res=obj.$.description;
-                break;
-            }
-            if(path[i]=='repeat') {
-                res=obj.repeat[0]._;
-                break;
-            }
-            if(path[i]=='pause') {
-                res=obj.repeat[0].$.pause;
-                break;
-            }
-            if(path[i]=='metadata') {
-                res=obj.metadata[0];
-                break;
-            }
-            if(path[i]=='test') {
-                i++;
-                res=obj.test;
-                for(var j=0; j<obj.test.length; j++) {
-                    if(obj.test[j].$.name==path[i]) {
-                        obj=obj.test[j];
-                        break;
+        if(path[0]=='name') {
+            res=obj.$.name;
+        }
+        else if(path[0]=='description') {
+            res=obj.$.description;
+        }
+        else if(path[0]=='repeat') {
+            res=obj.repeat[0]._;
+        }
+        else if(path[0]=='pause') {
+            res=obj.repeat[0].$.pause;
+        }
+        else if(path[0]=='metadata') {
+            obj=obj.metadata[0];
+            res=obj[path[1]]
+        }
+        else if(path[0]=='test') {
+            res=obj.test;
+            for(var j=0; j<obj.test.length; j++) {
+                if(obj.test[j].$.name==path[1]) {
+                    obj=obj.test[j];
+                    if(path[2]=='name') {
+                        res=obj.$.name;
                     }
+                    else if(path[2]=='description') {
+                        res=obj.$.description;
+                    }
+                    else if(path[2]=='repeat') {
+                        res=obj.repeat[0]._;
+                    }
+                    else if(path[2]=='pause') {
+                        res=obj.repeat[0].$.pause;
+                    }
+                    else if(path[2]=='execution.js') {
+                        res=fileSystem.readFileSync(file.substr(0, file.lastIndexOf('/')+1)+obj.execution).toString();
+                    }
+                    else {
+                        res=obj[path[2]]
+                    }
+                    break;
                 }
             }
-
-        }*/
+        }
+        else  {
+            res=obj[path[0]]
+        }
     });
-    return JSON.stringify(suite);
+    return String(res);
 }
 function parseFolder(dir, rootSuite, suiteId) {
     var childDir=[];
@@ -138,40 +150,8 @@ function FindTests(dir, suiteId) {
         });
     }
 }
-/*function GetTestsList () {
-    testsList=[];
-    FindTests();
-    var parser = new xml2js.Parser();
-    for(var i=0; i<suiteList.length; i++) { 
-        parser.parseString(fileSystem.readFileSync(suiteList[i]).toString(),function (err, result) {
-            if(result.suite.disable=="false") {
-               for(var j=0; j<Object.keys(result.suite.test).length; j++) {
-                    if(result.suite.test[j].disable=="false") {
-                        var info = {
-                            "name" : result.suite.test[j].$.name,
-                            "file" : suiteList[i].substring(0, suiteList[i].lastIndexOf("/")+1) + result.suite.test[j].execution,
-                            "suite": result.suite.$.name,
-                            "description":result.suite.test[j].$.description,
-                            "tag":result.suite.test[j].tag,
-                            "disable":result.suite.test[j].disable,
-                            "execution":result.suite.test[j].execution,
-                            "result":result.suite.test[j].result,
-                            "repeat":result.suite.test[j].repeat[0]._,
-                            "repeatPause":result.suite.test[j].repeat[0].$.pause,
-                            "maxTime":result.suite.test[j].maxTime,
-                            "repeat":result.suite.test[j].repeat[0]._,
-                            "pause":result.suite.test[j].repeat[0].$.pause
-                        }
-                        testsList.push(info);
-                    }
-               } 
-            }
-        });
-    }
-    return JSON.stringify(testsList);
-}
-global.GetTestsList = GetTestsList;*/
 global.GetStructure = GetStructure;
 global.GetSuiteInfo = GetSuiteInfo;
 global.GetTestInfo = GetTestInfo;
 global.GetAllInfo = GetAllInfo;
+global.GetProperty = GetProperty;
