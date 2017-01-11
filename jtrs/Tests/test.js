@@ -1,5 +1,4 @@
 function RunTest() {
-	alert("Hello from main suite!");
 	trs.SetAppName('C:/Windows/SYSTEM32/mspaint.exe');
 	trs.SetWindowName('Untitled - Paint');
 	trs.StartApp();
@@ -10,6 +9,7 @@ function RunTest() {
 	trs.MouseMove(600,600,5);
 	trs.MouseUp(0);
 	trs.CloseApp();
-	alert('end');
+	trs.Log("Done!");
+	
 	return;
 }

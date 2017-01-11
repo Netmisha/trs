@@ -27,3 +27,23 @@ Get execution file
 	request: get?path="your_path"/execution.js
 	example : ws://127.0.0.1:5000/get?path="D:/Tests/Suite1/suite.xml/test/Test1/execution.js;
 	return: JS code from execution file
+	
+Set some info in suite or test
+	request: set?path="your_path"&value="your_value"
+	example : ws://127.0.0.1:5000/set?path="D:/Tests/Suite1/suite.xml/name&value=Suite1;
+	result: set some value to tag in suite.xml, for example set name of suite
+
+Set execution file
+	request: set?path="your_path"&value="your_value"
+	example : ws://127.0.0.1:5000/set?path="D:/Tests/Suite1/suite.xml/test/Test1/execution.js&value="console.log('Hello!')";
+	result: change JS code in execution file
+	
+Send mouse and keyboard event to server
+	request: event?type="event_name"&"parametr_name"="value"&...
+	example : ws://127.0.0.1:5000/event?type=SetWindowName&name=Untitled - Paint
+	result: set window name of application
+	
+Send log to server
+	request: log?msg="your_massage"
+	example : ws://127.0.0.1:5000/log?msg="Done!"
+	result: write message in log file

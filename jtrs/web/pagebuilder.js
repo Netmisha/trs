@@ -113,11 +113,14 @@ function ShowInfo (node, suiteId, test) {
 	return string;
 }
 function Start () {
+	CreateLog();
 	if(currentTest!="") {
 		Get(currentTest);
 	}
 }
-
+function Stop () {
+	SaveLog();
+}
 
 
 /*var currentTestInfo={"test":{}, "path":"", "execution":""};

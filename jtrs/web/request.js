@@ -22,6 +22,12 @@ function Get (path) {
 function Set (path, value) {
 	SendRequest('set?path='+path+'&value='+encodeURIComponent(value));
 }
+function CreateLog () {
+	SendRequest('start');
+}
+function SaveLog () {
+	SendRequest('save');
+}
 function SendRequest(req) {
 	var socket = new WebSocket('ws://127.0.0.1:5000/' + req);
 	socket.onmessage = function(event) {
@@ -58,7 +64,8 @@ function SendRequest(req) {
 				script.id = "run";
 				script.innerHTML = event.data;
 				document.head.appendChild(script);
-				RunTest();  
+				RunTest(); 
+				SaveLog(); 
 				document.head.removeChild(document.getElementById("run")); 
 		    }
 		    else {
@@ -76,7 +83,6 @@ function SendRequest(req) {
 		    else if(type=='GetScreenHeight') {
 		        trs.screenHeight=Number(event.data);
 		    }
-		    //alert(event.data);
   		}
 	};
 }
@@ -156,7 +162,6 @@ TRS.prototype.MouseWheelRight = function() {
 	SendRequest('event?type=MouseWheelRight');
 }
 TRS.prototype.Log = function(msg) {
-	SendRequest('Log?msg='+encodeURIComponent(msg));
+	SendRequest('log?msg='+encodeURIComponent(msg));
 }
-
 var trs = new TRS();

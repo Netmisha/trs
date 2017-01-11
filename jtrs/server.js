@@ -8,6 +8,7 @@ var ws = require('ws');
 var handleUpgrade = require('express-websocket');
  
 var manager = new Manager();
+var log = new Logs(__dirname+'/logs');
 var app = express();
 var server = http.createServer(app);
 var wss = new ws.Server({ noServer: true });
@@ -58,9 +59,32 @@ app.use('/set', function (req, res, next) {
     ws.send(SetInfo(path[0].split('=')[1].substr(0, path[0].split('=')[1].indexOf('xml')+3), path[0].split('=')[1].substr(path[0].split('=')[1].indexOf('xml')+4, path[0].split('=')[1].length), path[1].split('=')[1]));
   });
 });
+app.use('/start', function (req, res, next) {
+  res.websocket(function (ws) {
+    log.Create();
+  });
+});
+app.use('/save', function (req, res, next) {
+  res.websocket(function (ws) {
+    log.SaveToFile();
+  });
+});
+app.use('/log', function (req, res, next) {
+  res.websocket(function (ws) {
+    log.AddLog(decodeURIComponent(req.url.split('?')[1].split('=')[1]));
+  });
+});
 app.use('/event', function (req, res, next) {
   res.websocket(function (ws) {
     var path=req.url.split('?')[1].split('&');
+    var msg="Request: "+decodeURIComponent(path[0].split('=')[1]);
+    if(path.length>1) {
+        msg+=", parametrs: ";
+        for(var i=1; i<path.length; i++) {
+            msg+=decodeURIComponent(path[i])+"; ";
+        }
+    }
+    log.AddLog(msg);
     if(path[0].split('=')[1]=='StartApp') {
         manager.StartApp();
     }
