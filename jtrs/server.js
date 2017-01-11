@@ -73,6 +73,60 @@ app.use('/event', function (req, res, next) {
     else if(path[0].split('=')[1]=='SetWindowName') {
         manager.SetWindowName(decodeURIComponent(path[1].split('=')[1]));
     }
+    else if(path[0].split('=')[1]=='WindowMinimize') {
+        manager.WindowMinimize();
+    }
+    else if(path[0].split('=')[1]=='WindowMaximize') {
+        manager.WindowMaximize()
+    }
+    else if(path[0].split('=')[1]=='SetActive') {
+        manager.SetActive();
+    }
+    else if(path[0].split('=')[1]=='WindowRestore') {
+        manager.WindowRestore();
+    }
+    else if(path[0].split('=')[1]=='KeyDown') {
+        manager.KeyDown(Number(path[1].split('=')[1]));
+    }
+    else if(path[0].split('=')[1]=='KeyUp') {
+        manager.KeyUp(Number(path[1].split('=')[1]));
+    }
+    else if(path[0].split('=')[1]=='KeyPress') {
+        manager.KeyPress(Number(path[1].split('=')[1]));
+    }
+    else if(path[0].split('=')[1]=='SetMousePos') {
+        manager.SetMousePos(Number(path[1].split('=')[1]),Number(path[2].split('=')[1]));
+    }
+    else if(path[0].split('=')[1]=='MouseMove') {
+        manager.MouseMove(Number(path[1].split('=')[1]),Number(path[2].split('=')[1]),Number(path[3].split('=')[1]));
+    }
+    else if(path[0].split('=')[1]=='MouseDown') {
+        manager.MouseDown(Number(path[1].split('=')[1]));
+    }
+    else if(path[0].split('=')[1]=='MouseUp') {
+        manager.MouseUp(Number(path[1].split('=')[1]));
+    }
+    else if(path[0].split('=')[1]=='MouseClick') {
+        manager.MouseClick(Number(path[1].split('=')[1]));
+    }
+    else if(path[0].split('=')[1]=='MouseWheelDow') {
+        manager.MouseWheelDow();
+    }
+    else if(path[0].split('=')[1]=='MouseWheelUp') {
+        manager.MouseWheelUp();
+    }
+    else if(path[0].split('=')[1]=='MouseWheelLeft') {
+        manager.MouseWheelLeft();
+    }
+    else if(path[0].split('=')[1]=='MouseWheelRight') {
+        manager.MouseWheelRight();
+    }
+    else if(path[0].split('=')[1]=='GetScreenWidth') {
+        ws.send(String(manager.GetScreenWidth()));
+    }
+    else if(path[0].split('=')[1]=='GetScreenHeight') {
+        ws.send(String(manager.GetScreenHeight()));
+    }
   });
 });
 server.on('upgrade', handleUpgrade(app, wss));

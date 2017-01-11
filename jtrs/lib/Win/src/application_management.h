@@ -51,6 +51,9 @@ public:
 				KeyPress(13);
 			}
 			Sleep(500);
+			if(!WindowHandle) {
+				WindowHandle = FindWindow(NULL, WindowName);
+			}
 			SetActive();
 		}
 		return 1;

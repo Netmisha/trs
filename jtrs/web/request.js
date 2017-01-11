@@ -68,74 +68,95 @@ function SendRequest(req) {
   		else if(req[0]=='set') {
 		    alert(event.data);
   		}
+  		else if(req[0]=='event') {
+  			var type=req[1].split('=')[1];
+  			if(type=='GetScreenWidth') {
+		        trs.screenWidth=Number(event.data);
+		    }
+		    else if(type=='GetScreenHeight') {
+		        trs.screenHeight=Number(event.data);
+		    }
+		    //alert(event.data);
+  		}
 	};
 }
-function SetWindowName(name) {
+function TRS () {
+	this.screenHeight=-1;
+	this.screenWidth=-1;
+	this.Init();
+}
+TRS.prototype.Init = function() {
+	this.GetScreenWidth();
+	this.GetScreenHeight();
+}
+TRS.prototype.SetWindowName = function(name) {
 	SendRequest('event?type=SetWindowName&name='+encodeURIComponent(name));	
 }
-function SetAppName(name) {
+TRS.prototype.SetAppName = function(name) {
 	SendRequest('event?type=SetAppName&name='+encodeURIComponent(name));
 }
-function StartApp(name) {
+TRS.prototype.StartApp = function(name) {
 	SendRequest('event?type=StartApp');
 }
-function CloseApp() {
+TRS.prototype.CloseApp = function() {
 	SendRequest('event?type=CloseApp');
 }
-function WindowMinimize()  {
-	
+TRS.prototype.WindowMinimize = function()  {
+	SendRequest('event?type=WindowMinimize');
 }
-function WindowMaximize() {
-	
+TRS.prototype.WindowMaximize = function() {
+	SendRequest('event?type=WindowMaximize');
 }
-function SetActive() {
-	
+TRS.prototype.SetActive = function() {
+	SendRequest('event?type=SetActive');
 }
-function WindowRestore() {
-	
+TRS.prototype.WindowRestore = function() {
+	SendRequest('event?type=WindowRestore');
 }
-function GetScreenWidth() {
-	
+TRS.prototype.GetScreenWidth = function() {
+	SendRequest('event?type=GetScreenWidth');
 }
-function GetScreenHeight() {
-	
+TRS.prototype.GetScreenHeight = function() {
+	SendRequest('event?type=GetScreenHeight');
 }
-function KeyDown(dkey) {
-	
+TRS.prototype.KeyDown = function(key) {
+	SendRequest('event?type=KeyDown&key='+String(key));
 }
-function KeyUp(dkey) {
-	
+TRS.prototype.KeyUp = function(key) {
+	SendRequest('event?type=KeyUp&key='+String(key));
 }
-function KeyPress(dkey) {
-	
+TRS.prototype.KeyPress = function(key) {
+	SendRequest('event?type=KeyPress&key='+String(key));
 }
-function SetMousePos(x, y) {
-	
+TRS.prototype.SetMousePos = function(x, y) {
+	SendRequest('event?type=SetMousePos&x='+String(x)+'&y='+String(y));
 }
-function MouseMove(x, y, pause) {
-	
+TRS.prototype.MouseMove = function(x, y, pause) {
+	SendRequest('event?type=MouseMove&x='+String(x)+'&y='+String(y)+'&pause='+String(pause));
 }
-function MouseDown(button) {
-	
+TRS.prototype.MouseDown = function(button) {
+	SendRequest('event?type=MouseDown&button='+String(button));
 }
-function MouseUp(button) {
-	
+TRS.prototype.MouseUp = function(button) {
+	SendRequest('event?type=MouseUp&button='+String(button));
 }
-function MouseClick(button) {
-	
+TRS.prototype.MouseClick = function(button) {
+	SendRequest('event?type=MouseClick&button='+String(button));
 }
-function MouseWheelDown() {
-	
+TRS.prototype.MouseWheelDown = function() {
+	SendRequest('event?type=MouseWheelDown');
 }
-function MouseWheelUp() {
-	
+TRS.prototype.MouseWheelUp = function() {
+	SendRequest('event?type=MouseWheelUp');
 }
-function MouseWheelLeft() {
-	
+TRS.prototype.MouseWheelLeft = function() {
+	SendRequest('event?type=MouseWheelLeft');
 }
-function MouseWheelRight() {
-	
+TRS.prototype.MouseWheelRight = function() {
+	SendRequest('event?type=MouseWheelRight');
 }
-function GetPID() {
-	
+TRS.prototype.Log = function(msg) {
+	SendRequest('Log?msg='+encodeURIComponent(msg));
 }
+
+var trs = new TRS();
