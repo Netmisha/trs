@@ -36,10 +36,10 @@
                     </div>
                    
                 </div>
-            </div> <!-- end of header -->
+            </div> <!-- end of header    EDECEC-->
 
             <div id="main_top"></div>
-            <div id="main" class="uk-container uk-container-center uk-margin-top">
+            <div id="main" style="background-color:#EDECEC; border-radius:10px;" class="uk-container uk-container-center uk-margin-top">
                 <span id="side_top"></span><span id="side_bottom"></span>
 
                 <div id="sidebar" class="uk-grid">
@@ -48,24 +48,37 @@
                         
 
                         <div class="sb_title">TRS tree Menu</div>
-                         <div class="uk-panel uk-panel-box">
+                         <div class="uk-panel uk-panel-box" style="width:201px; background-color:#D5D3D3; margin-top: -1px; margin-left:1px;height:10px" >
                             <button id = "Start" onclick="Start()" class="uk-button uk-button-primary "><img src ="images/img_buttons/Run.png"></button>
                             <button id = "Pause"  onclick="Pause()" class="uk-button uk-button-primary "><img src ="images/img_buttons/Pause.png"></button>
                             <button id = "Stop"  onclick="Stop()" class="uk-button uk-button-primary "><img src ="images/img_buttons/Stop.png"></button>
                             <button id = "Sync"  onclick="Sync()" class="uk-button uk-button-primary "><img src ="images/img_buttons/Sync.png"></button>  
                         </div>
-                               <div style="clear: both" class="acidjs-css3-treeview uk-panel-box uk-text-left" id = "tree"></div>
+                               <div style="clear: both; width:231px; background-color:#FFFFFF; margin-left:1px;border-bottom-left-radius:10px; border-bottom-right-radius:10px;" class="acidjs-css3-treeview uk-panel-box uk-text-left" id = "tree"></div>
                     </div>
                      
                       
                 </div>
+
                     <div class = "uk-width-large-7-10 uk-container-right">
-                        <div style="margin-left:  300px; text-align: top;" class="uk-panel uk-width-large-1-1">                  
-                        <div style="margin-top: 10px;" class="uk-panel uk-panel-box uk-text-top" id = "info"></div>
+                 <div style="margin-left: 250px; border-radius:10px; text-align: top;" class="uk-panel uk-width-large-1-1">
+           
+                        <div style="background-color:#D5D3D3;border-top-left-radius:10px; border-top-right-radius:10px;text-align: center;height: 77px"> 
+                        <div id="TestName"> Test Name</div>
+                            <button id = "Start_Info" onclick="StartInfo()" class="uk-button uk-button-primary "><img src="images/img_buttons/Run.png"></button>  
+                            <button id = "Pause_Info" onclick="Pausenfo()" class="uk-button uk-button-primary "><img src="images/img_buttons/Pause.png"></button> 
+                            <button id = "Stop_Info" onclick="StopInfo()" class="uk-button uk-button-primary "><img src="images/img_buttons/Stop.png"></button> 
+                            <button id = "Sync_Info" onclick="SyncInfo()" class="uk-button uk-button-primary "><img src="images/img_buttons/Sync.png"></button>
+                            <button id = "Save_Info" onclick="SaveInfo()" class="uk-button uk-button-primary "><img src="images/img_buttons/Save.png"></button>  
+                            <button id = "Edit_Info" onclick="EditInfo()" class="uk-button uk-button-primary "><img src="images/img_buttons/Edit.png"></button> 
+                        </div>
+          
+                        <div style=" border-bottom-left-radius:10px; border-bottom-right-radius:10px;  background-color:#FFFFFF; " class="uk-panel uk-panel-box uk-text-top" id = "info"></div>
                         </div>
                         <div class="cleaner"></div>
 
-                    </div> <!-- end of sidebar -->
+                    <!-- end of sidebar -->
+                </div>
             </div>         
 
 
