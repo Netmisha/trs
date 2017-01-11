@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>TRS Service</title>
+    <meta name="keywords" content="EasyTree free jquery tree menu js javascript" />
+    <meta name="description" content="EasyTree, free jquery tree menu" />
+    <link href="content/style.css" rel="stylesheet" type="text/css"/>
+    <link href="content/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="content/skin-win8/ui.easytree.css" rel="stylesheet" class="skins" type="text/css"/>
+    <script src="bundles/jquery.js"></script>
+    <script src="Scripts/jquery.easytree.min.js"></script>
+    <link href="content/button_style.css" rel="stylesheet" type="text/css"/>
+
+        
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/uikit/2.12.0/css/uikit.min.css">
+    <link rel="stylesheet" href="treeview.css">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/uikit/2.12.0/js/uikit.min.js"></script>
+    <script type="text/javascript" src="request.js"></script>
+    <script type="text/javascript" src="pagebuilder.js"></script>
+    <script type="text/javascript">
+        List();
+    </script>
+</head>
+
+<body class ="tm-background">
+
+    <div id="body_wrapper">
+        <div id="wrapper">
+            <div id="header">
+                <div id="header_content">
+                    <div id="site_title">
+                        <a>TRS Manager</a>
+                        <p> - some description</p>
+                    </div>
+                   
+                </div>
+            </div> <!-- end of header -->
+
+            <div id="main_top"></div>
+            <div id="main" class="uk-container uk-container-center uk-margin-top">
+                <span id="side_top"></span><span id="side_bottom"></span>
+
+                <div id="sidebar" class="uk-grid">
+
+                    <div class="sidebar_box">
+                        
+
+                        <div class="sb_title">TRS tree Menu</div>
+                         <div class="uk-panel uk-panel-box">
+                            <button id = "Start" onclick="Start()" class="uk-button uk-button-primary "><img src ="images/img_buttons/Run.png"></button>
+                            <button id = "Pause"  onclick="Pause()" class="uk-button uk-button-primary "><img src ="images/img_buttons/Pause.png"></button>
+                            <button id = "Stop"  onclick="Stop()" class="uk-button uk-button-primary "><img src ="images/img_buttons/Stop.png"></button>
+                            <button id = "Sync"  onclick="Sync()" class="uk-button uk-button-primary "><img src ="images/img_buttons/Sync.png"></button>  
+                        </div>
+                               <div style="clear: both" class="acidjs-css3-treeview uk-panel-box uk-text-left" id = "tree"></div>
+                    </div>
+                     
+                      
+                </div>
+                    <div class = "uk-width-large-7-10 uk-container-right">
+                        <div style="margin-left:  300px; text-align: top;" class="uk-panel uk-width-large-1-1">                  
+                        <div style="margin-top: 10px;" class="uk-panel uk-panel-box uk-text-top" id = "info"></div>
+                        </div>
+                        <div class="cleaner"></div>
+
+                    </div> <!-- end of sidebar -->
+            </div>         
+
+
+
+
+
+            <div class="cleaner"></div>
+        </div>
+
+        <div id="main_bottom"></div>
+
+    </div> <!-- end of wrapper -->
+    <div id="footer_wrapper">
+        <div id="footer">
+            Copyright © 2017 
+        </div>
+    </div>
+<script type="text/javascript">
+
+            $(".acidjs-css3-treeview").delegate("label input:checkbox", "change", function() {
+            var checkbox = $(this), nestedList = checkbox.parent().next().next(), selectNestedListCheckbox = nestedList.find("label:not([for]) input:checkbox");
+            if(checkbox.is(":checked")) {
+                return selectNestedListCheckbox.prop("checked", true);
+            }
+            selectNestedListCheckbox.prop("checked", false);
+        });
+</script>
+</body>
+</html>
+
