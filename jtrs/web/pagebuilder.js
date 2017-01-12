@@ -4,6 +4,7 @@ var testList = [];
 var currentTest = "";
 var suiteList = "tree";
 var infoId = "info";
+var pauseRun=false;
 function ParseSuite(node) {
     var string = "<li>";
     if(node.disable!="true") {
@@ -134,12 +135,18 @@ function ParseSuiteStructure(node) {
 	}
 }
 function StartTree () {
-	ParseSuiteStructure(rootNode);
-	console.log(testList);
+	pauseRun=false;
+	if(testList.length==0) {
+		ParseSuiteStructure(rootNode);
+	}
 	if(testList.length>0) {	
 		currentTest=testList.shift();
 		Start();
 	}
 }
-function Stop () {
+function StopTree () {
+	testList=[];
+}
+function PauseTree () {
+	pauseRun=true;
 }

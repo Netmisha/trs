@@ -94,13 +94,13 @@ function SendRequest(req) {
 		    }
   		}
   		else if(req[0]=='success') {
-  			if(testList.length>0) {	
+  			if(testList.length>0 && pauseRun==false) {	
 				currentTest=testList.shift();
 				Start();
 			}
   		}
   		else if(req[0]=='fail') {
-  			if(testList.length>0) {	
+  			if(testList.length>0 && pauseRun==false) {	
 				currentTest=testList.shift();
 				Start();
 			}
