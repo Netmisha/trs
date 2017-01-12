@@ -51,10 +51,9 @@ public:
 				KeyPress(13);
 			}
 			Sleep(500);
-			if(!WindowHandle) {
+			if(!SetActive()) {
 				WindowHandle = FindWindow(NULL, WindowName);
 			}
-			SetActive();
 		}
 		return 1;
 	}
@@ -233,7 +232,7 @@ public:
 			return TRUE;
 		} 
 	}
-	BOOL PrintScreen(int x, int y, int w, int h, char * file){
+	BOOL PrintScreenA(int x, int y, int w, int h, char * file){
 		int ScreenWidth = GetScreenWidth();
 		int ScreenHeight = GetScreenHeight();
 		HWND DesktopWnd = GetDesktopWindow();

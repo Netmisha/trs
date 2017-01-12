@@ -59,19 +59,23 @@ app.use('/set', function (req, res, next) {
     ws.send(SetInfo(path[0].split('=')[1].substr(0, path[0].split('=')[1].indexOf('xml')+3), path[0].split('=')[1].substr(path[0].split('=')[1].indexOf('xml')+4, path[0].split('=')[1].length), path[1].split('=')[1]));
   });
 });
-app.use('/start', function (req, res, next) {
-  res.websocket(function (ws) {
-    log.Create();
-  });
-});
-app.use('/save', function (req, res, next) {
-  res.websocket(function (ws) {
-    log.SaveToFile();
-  });
-});
 app.use('/log', function (req, res, next) {
   res.websocket(function (ws) {
-    log.AddLog(decodeURIComponent(req.url.split('?')[1].split('=')[1]));
+    if(decodeURIComponent(req.url.split('?')[1].split('=')[1])=='create') {
+        log.Create();
+    }
+    else if(decodeURIComponent(req.url.split('?')[1].split('=')[1])=='save') {
+        log.SaveToFile();
+    }
+    else if(decodeURIComponent(req.url.split('?')[1].split('=')[1])=='list') {
+        ws.send(log.GetList());
+    }
+    else if(decodeURIComponent(req.url.split('?')[1].split('&')[0].split('=')[1])=='get') {
+        ws.send(log.GetLog(decodeURIComponent(req.url.split('&')[1].split('=')[1])));
+    }
+    else {
+        log.AddLog(decodeURIComponent(req.url.split('?')[1].split('=')[1]));        
+    }
   });
 });
 app.use('/event', function (req, res, next) {
@@ -85,6 +89,7 @@ app.use('/event', function (req, res, next) {
         }
     }
     log.AddLog(msg);
+    var resp="Done!";
     if(path[0].split('=')[1]=='StartApp') {
         manager.StartApp();
     }
@@ -127,6 +132,12 @@ app.use('/event', function (req, res, next) {
     else if(path[0].split('=')[1]=='MouseDown') {
         manager.MouseDown(Number(path[1].split('=')[1]));
     }
+    else if(path[0].split('=')[1]=='PrintScreenA') {
+        manager.PrintScreenA(Number(path[1].split('=')[1]),Number(path[2].split('=')[1]),Number(path[3].split('=')[1]),Number(path[4].split('=')[1]),decodeURIComponent(path[5].split('=')[1]));
+    }
+    else if(path[0].split('=')[1]=='PrintScreen') {
+        manager.PrintScreen(decodeURIComponent(path[1].split('=')[1]));
+    }
     else if(path[0].split('=')[1]=='MouseUp') {
         manager.MouseUp(Number(path[1].split('=')[1]));
     }
@@ -146,11 +157,12 @@ app.use('/event', function (req, res, next) {
         manager.MouseWheelRight();
     }
     else if(path[0].split('=')[1]=='GetScreenWidth') {
-        ws.send(String(manager.GetScreenWidth()));
+        resp=String(manager.GetScreenWidth());
     }
     else if(path[0].split('=')[1]=='GetScreenHeight') {
-        ws.send(String(manager.GetScreenHeight()));
+        resp=String(manager.GetScreenHeight());
     }
+    ws.send(resp);
   });
 });
 server.on('upgrade', handleUpgrade(app, wss));

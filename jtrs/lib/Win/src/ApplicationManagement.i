@@ -1,4 +1,4 @@
-%module "ApplicationManagement"
+%module "ApplicationManagementWin"
 %{
 #include "application_management.h"
 %}

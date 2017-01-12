@@ -22,12 +22,6 @@ function Get (path) {
 function Set (path, value) {
 	SendRequest('set?path='+path+'&value='+encodeURIComponent(value));
 }
-function CreateLog () {
-	SendRequest('start');
-}
-function SaveLog () {
-	SendRequest('save');
-}
 function SendRequest(req) {
 	var socket = new WebSocket('ws://127.0.0.1:5000/' + req);
 	socket.onmessage = function(event) {
@@ -65,7 +59,7 @@ function SendRequest(req) {
 				script.innerHTML = event.data;
 				document.head.appendChild(script);
 				RunTest(); 
-				SaveLog(); 
+				trs.SaveLog(); 
 				document.head.removeChild(document.getElementById("run")); 
 		    }
 		    else {
@@ -84,12 +78,20 @@ function SendRequest(req) {
 		        trs.screenHeight=Number(event.data);
 		    }
   		}
+  		else if(req[0]=='log') {
+  			var type=req[1].split('&')[0].split('=')[1];
+  			if(type=='list') {
+		        alert(event.data.split('&'));
+		    }
+		    else if(type=='get') {
+		        alert(event.data);
+		    }
+  		}
 	};
 }
 function TRS () {
 	this.screenHeight=-1;
 	this.screenWidth=-1;
-	this.Init();
 }
 TRS.prototype.Init = function() {
 	this.GetScreenWidth();
@@ -161,7 +163,26 @@ TRS.prototype.MouseWheelLeft = function() {
 TRS.prototype.MouseWheelRight = function() {
 	SendRequest('event?type=MouseWheelRight');
 }
-TRS.prototype.Log = function(msg) {
+TRS.prototype.PrintScreen = function(file) {
+	SendRequest('event?type=PrintScreen&file='+encodeURIComponent(file));
+}
+TRS.prototype.PrintScreenA = function(x, y, w, h, file) {
+	SendRequest('event?type=PrintScreenA&x='+String(x)+'&y='+String(y)+'&w='+String(w)+'&h='+String(h)+'&file='+encodeURIComponent(file));
+}
+TRS.prototype.WriteLog = function(msg) {
 	SendRequest('log?msg='+encodeURIComponent(msg));
 }
+TRS.prototype.CreateLog = function() {
+	SendRequest('log?msg=create');
+}
+TRS.prototype.SaveLog = function() {
+	SendRequest('log?msg=save');
+}
+TRS.prototype.LogList = function() {
+	SendRequest('log?msg=list');
+}
+TRS.prototype.GetLog = function(name) {
+	SendRequest('log?msg=get&name='+encodeURIComponent(name));
+}
 var trs = new TRS();
+trs.Init();
