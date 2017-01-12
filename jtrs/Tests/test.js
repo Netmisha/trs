@@ -8,8 +8,8 @@ function RunTest() {
 	trs.MouseDown(0);
 	trs.MouseMove(600,600,5);
 	trs.MouseUp(0);
+	trs.PrintScreen('D:/1.bmp');
 	trs.CloseApp();
-	trs.Log("Done!");
-	
+	trs.WriteLog("Done!");
 	return;
 }

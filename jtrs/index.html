@@ -5,16 +5,16 @@
     <title>TRS Service</title>
     <meta name="keywords" content="TRS" />
     <meta name="description" content="TRS" />
-    <link href="web/content/style.css" rel="stylesheet" type="text/css"/>
-    <link href="web/content/jquery-ui.css" rel="stylesheet" type="text/css"/>
-    <link href="web/content/skin-win8/ui.easytree.css" rel="stylesheet" class="skins" type="text/css"/>
+    <link href="web/Style/style.css" rel="stylesheet" type="text/css"/>
+    <link href="web/Style/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="web/Style/ui.easytree.css" rel="stylesheet" class="skins" type="text/css"/>
     <script src="web/Scripts/jquery.js"></script>
     <script src="web/Scripts/jquery.easytree.min.js"></script>
-    <link href="web/content/button_style.css" rel="stylesheet" type="text/css"/>
+    <link href="web/Style/button_style.css" rel="stylesheet" type="text/css"/>
 
         
     <script type="text/javascript" src="web/Scripts/jquery.min.js"></script>
-    <link rel="stylesheet" href="web/content/uikit.min.css">
+    <link rel="stylesheet" href="web/Style/uikit.min.css">
     <link rel="stylesheet" href="web/treeview.css">
     <script type="text/javascript" src="web/Scripts/uikit.min.js"></script>
     <script type="text/javascript" src="web/request.js"></script>
@@ -39,20 +39,21 @@
             </div> <!-- end of header    EDECEC-->
 
             <div id="main_top"></div>
-            <div id="main" style="background-color:#EDECEC; border-radius:10px;" class="uk-container uk-container-center uk-margin-top">
+            <div id="main" style="background-color:#EDECEC; border-radius:10px;" class="uk-container uk-container-center uk-margin-top uk-text-top">
                 <span id="side_top"></span><span id="side_bottom"></span>
 
                 <div id="sidebar" class="uk-grid">
 
                     <div class="sidebar_box">
                         
-
-                        <div class="sb_title">TRS tree Menu</div>
-                         <div class="uk-panel uk-panel-box" style="width:201px; background-color:#D5D3D3; margin-top: -1px; margin-left:1px;height:10px" >
-                            <button id = "Start" onclick="Start()" class="uk-button uk-button-primary "><img src ="web/images/img_buttons/Run.png"></button>
-                            <button id = "Pause"  onclick="Pause()" class="uk-button uk-button-primary "><img src ="web/images/img_buttons/Pause.png"></button>
-                            <button id = "Stop"  onclick="Stop()" class="uk-button uk-button-primary "><img src ="web/images/img_buttons/Stop.png"></button>
-                            <button id = "Sync"  onclick="Sync()" class="uk-button uk-button-primary "><img src ="web/images/img_buttons/Sync.png"></button>  
+                         <div style="background-color:#D1CDCC;border-top-left-radius:10px; border-top-right-radius:10px;text-align: center;height: 35px; width:232px"> 
+                        <div class="sb_title" >TRS tree Menu</div>
+                        </div>
+                         <div class="uk-panel uk-panel-box" style="width:201px; background-color:#D5D3D3; margin-top: -1px; margin-left:1px;height:10px;" >
+                            <button id = "Start" onclick="StartTree()" class="uk-button uk-button-primary"><img src ="web/images/img_buttons/Run.png"></button>
+                            <button id = "Pause"  onclick="PauseTree()" class="uk-button uk-button-primary "><img src ="web/images/img_buttons/Pause.png"></button>
+                            <button id = "Stop"  onclick="StopTree()" class="uk-button uk-button-primary "><img src ="web/images/img_buttons/Stop.png"></button>
+                            <button id = "Sync"  onclick="SyncTree()" class="uk-button uk-button-primary "><img src ="web/images/img_buttons/Sync.png"></button>  
                         </div>
                                <div style="clear: both; width:231px; background-color:#FFFFFF; margin-left:1px;border-bottom-left-radius:10px; border-bottom-right-radius:10px;" class="acidjs-css3-treeview uk-panel-box uk-text-left" id = "tree"></div>
                     </div>
@@ -65,15 +66,15 @@
            
                         <div style="background-color:#D5D3D3;border-top-left-radius:10px; border-top-right-radius:10px;text-align: center;height: 77px"> 
                         <div id="TestName"> Test Name</div>
-                            <button id = "Start_Info" onclick="StartInfo()" class="uk-button uk-button-primary "><img src="web/images/img_buttons/Run.png"></button>  
-                            <button id = "Pause_Info" onclick="Pausenfo()" class="uk-button uk-button-primary "><img src="web/images/img_buttons/Pause.png"></button> 
-                            <button id = "Stop_Info" onclick="StopInfo()" class="uk-button uk-button-primary "><img src="web/images/img_buttons/Stop.png"></button> 
+                            <button id = "Start_Info" onclick="Start()" class="uk-button uk-button-primary "><img src="web/images/img_buttons/Run.png"></button>  
+                            <button id = "Pause_Info" onclick="Paus()" class="uk-button uk-button-primary "><img src="web/images/img_buttons/Pause.png"></button> 
+                            <button id = "Stop_Info" onclick="Stop()" class="uk-button uk-button-primary "><img src="web/images/img_buttons/Stop.png"></button> 
                             <button id = "Sync_Info" onclick="SyncInfo()" class="uk-button uk-button-primary "><img src="web/images/img_buttons/Sync.png"></button>
                             <button id = "Save_Info" onclick="SaveInfo()" class="uk-button uk-button-primary "><img src="web/images/img_buttons/Save.png"></button>  
                             <button id = "Edit_Info" onclick="EditInfo()" class="uk-button uk-button-primary "><img src="web/images/img_buttons/Edit.png"></button> 
                         </div>
           
-                        <div style=" border-bottom-left-radius:10px; border-bottom-right-radius:10px;  background-color:#FFFFFF; " class="uk-panel uk-panel-box uk-text-top" id = "info"></div>
+                        <div style=" border-bottom-left-radius:10px; border-bottom-right-radius:10px;  background-color:#FFFFFF;" class="uk-panel uk-panel-box uk-text-top" id = "info"></div>
                         </div>
                         <div class="cleaner"></div>
 
@@ -88,7 +89,7 @@
             <div class="cleaner"></div>
         </div>
 
-        <div id="main_bottom"></div>
+        <div id="main_bottom" style="margin-top: 10px"></div>
 
     </div> <!-- end of wrapper -->
     <div id="footer_wrapper">

@@ -11,8 +11,8 @@ body {
 	font-family: Tahoma, Geneva, sans-serif;
 	font-size: 12px;
 	line-height: 1.7em; 
-	background: url(images/body.jpg);
-	background-color: #dbdbdd;
+	background: url(background_img.jpg);
+	
 	background-position: top;
 	background-repeat: repeat-x;
 }
@@ -127,10 +127,11 @@ color:red;
 	background: url(images/content_bottom.png) no-repeat 
 }
 */
+
 #main {
 	position: relative;
 	width: 912px;
-	height:470px; /* footer problem if height is 0*/
+	height:470px; 
 	padding: 10px 30px;
 	background: url(images/content_middle.png) repeat-y
 }
