@@ -114,6 +114,8 @@ function ShowInfo (node, suiteId, test) {
 }
 function Start () {
 	trs.CreateLog();
+	trs.CreateReport();
+
 	if(currentTest!="") {
 		Get(currentTest);
 	}

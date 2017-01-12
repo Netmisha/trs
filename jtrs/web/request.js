@@ -206,6 +206,9 @@ TRS.prototype.WriteLog = function(msg) {
 TRS.prototype.CreateLog = function() {
 	SendRequest('log?msg=create');
 }
+TRS.prototype.CreateReport = function(){
+	SendRequest('report?msg=create');
+}
 TRS.prototype.SaveLog = function() {
 	SendRequest('log?msg=save');
 }
