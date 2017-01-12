@@ -11,10 +11,12 @@ body {
 	font-family: Tahoma, Geneva, sans-serif;
 	font-size: 12px;
 	line-height: 1.7em; 
-	background: url(images/body.jpg);
-	background-color: #dbdbdd;
+	padding: 0 0 0 0 ;
+	background-color:grey;
+ height: 0px !important
 	background-position: top;
 	background-repeat: repeat-x;
+
 }
 
 a, a:link, a:visited { color: #777700; text-decoration: none; }
@@ -68,17 +70,11 @@ em { color: #000; }
 
 #body_wrapper {
 	width: 100%;
-	
-
-
 }
 
 #wrapper {
 	width: 1000px;
 	margin: 0 auto;
-	
-
-
 }
 
 #header { 
@@ -107,33 +103,36 @@ em { color: #000; }
 color:red;
 
 }
+#main_bottom{
+
+
+}
+#tm-background{
+	height:100%;
+}
 #header_content p {
     display: inline;
 	font-size: 20px;
 	color: #fff;
 	text-align: justify;
 }
-/*
+
 #main_top {
-	width: 965px;
-	height: 30px;
-	background: url(images/content_top.png) no-repeat 
+
 }
 
-#main_bottom {
-	width: 965px;
-	height: 30px;
-	margin-left: 145px;
-	background: url(images/content_bottom.png) no-repeat 
-}
-*/
+
+
 #main {
-	position: relative;
-	width: 912px;
-	height:470px; /* footer problem if height is 0*/
-	padding: 10px 30px;
-	background: url(images/content_middle.png) repeat-y
+	overflow: hidden;
+    position: relative;
+    width: 875px;
+    margin:0;
+
+
+
 }
+
 
 /*#side_top { position: absolute; left: 265px; top: 0px; width: 13px; height: 364px; background: url(images/sidebar_top.jpg) 0 -30px no-repeat } */
 /*#side_bottom { position: absolute; left: 265px; bottom: 0px; width: 13px; height: 364px; background: url(images/sidebar_bottom.jpg) 0 scroll no-repeat } */
@@ -141,13 +140,16 @@ color:red;
 #sidebar {
 	float: left;
 	width: 235px;
+
 }
 
 #main_menu .easytree-container{
     border:0 !important;
 }
 
-.sidebar_box { clear: both;	width: 235px; margin-bottom: 30px; }
+.sidebar_box { clear: both;	width: 235px; margin-bottom: 30px;
+
+ }
 
 .sb_title {
 	width: 180px;
@@ -155,15 +157,15 @@ color:red;
 	padding: 9px 30px;
 	font-size: 18px;
 	color: #666666;
-	background: url(images/sidebar_box_top.jpg) no-repeat top left;
+
 }
 .sb_content { 
 	padding: 10px 10px;
-	background: url(images/sidebar_box_middle.jpg) repeat-y left;
+	
 }
 .sb_bottom {
 	height: 8px;
-	background: url(images/sidebar_box_bottom.jpg) no-repeat top left
+	
 }
 
 .box{
@@ -247,18 +249,22 @@ td{
 	border-left: none;
 	border-right: none;
 	background: #252525;
+
 }
 
 #footer {
 	width: 984px;
-	margin: 0 auto;
+
 	text-align: center;
 	color: #CCCCCC;
 	padding: 5px 0;
 	margin-top: 10px;
+	margin:auto;
 
 }
+#spacer{
 
+}
 #footer a {
 	color: #CCCCCC;
 }

@@ -8,6 +8,12 @@
  	height: 20px;  
     width: 30px;
     margin-top: -10px;
+    
+}
+#Start:hover{
+    background-color:   #C0C0C0 ;
+    border-radius:5px;
+  transform: scale(1.2);
 }
 
 #Stop{
@@ -21,6 +27,12 @@
     width: 30px;
     margin-top: -10px;
 }
+#Stop:hover{
+    background-color:   #C0C0C0 ;
+    border-radius:5px;
+transform: scale(1.2);
+}
+
 #Pause{
   	margin: 8px;
     display: inline-block;
@@ -32,6 +44,12 @@
     width: 30px;
     margin-top: -10px;
 }
+#Pause:hover{
+    background-color:   #C0C0C0 ;
+    border-radius:5px;
+transform: scale(1.2);
+}
+
 #Sync{
     display: inline-block;
     background-color: transparent;
@@ -42,6 +60,11 @@
     width: 30px;
     margin-top: -10px;
 }
+#Sync:hover{
+    background-color:   #C0C0C0 ;
+    border-radius:5px;
+transform: scale(1.2);
+}
 #TestName{
 	font-size: 18px;
 	color: #666666;
@@ -50,6 +73,11 @@
 	border-top-right-radius: 10px;
 	height: 35px;
 
+}
+#Start_Info:hover{
+    background-color:   #C0C0C0 ;
+    border-radius:5px;
+transform: scale(1.2);
 }
 #Start_Info{
 	display: inline-block;
@@ -73,7 +101,11 @@
     width: 30px;
      margin-top: 5px;
 }
-
+#Pause_Info:hover{
+    background-color:   #C0C0C0 ;
+    border-radius:5px;
+transform: scale(1.2);
+}
 #Stop_Info{
 	display: inline-block;
     background-color: transparent;
@@ -83,6 +115,11 @@
  	height: 25px;  
     width: 30px;
      margin-top: 5px;
+}
+#Stop_Info:hover{
+    background-color:   #C0C0C0 ;
+    border-radius:5px;
+transform: scale(1.2);
 }
 #Save_Info{
 	display: inline-block;
@@ -94,6 +131,11 @@
     width: 30px;
      margin-top: 5px;
 }
+#Save_Info:hover{
+    background-color:   #C0C0C0 ;
+    border-radius:5px;
+transform: scale(1.2);
+}
 #Edit_Info{
 	display: inline-block;
     background-color: transparent;
@@ -104,6 +146,11 @@
     width: 30px;
      margin-top: 5px;
 }
+#Edit_Info:hover{
+    background-color:   #C0C0C0 ;
+    border-radius:5px;
+transform: scale(1.2);
+}
 #Sync_Info{
 	display: inline-block;
     background-color: transparent;
@@ -113,4 +160,9 @@
  	height: 25px;  
     width: 30px;
      margin-top: 5px;
+}
+#Sync_Info:hover{
+    background-color:   #C0C0C0 ;
+    border-radius:5px;
+transform: scale(1.2);
 }
