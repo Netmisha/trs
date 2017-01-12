@@ -68,14 +68,16 @@ em { color: #000; }
 
 #body_wrapper {
 	width: 100%;
-	background: url(images/header.jpg) center top no-repeat;
+	
+
 
 }
 
 #wrapper {
-	width: 984px;
+	width: 1000px;
 	margin: 0 auto;
-	background: url(images/header.jpg) center top no-repeat;
+	
+
 
 }
 
@@ -83,7 +85,7 @@ em { color: #000; }
 	position: relative;
 	width: 984px;
 	height: 100px;
-	background: url(images/header.jpg) no-repeat center top
+	
 
 }
 
@@ -100,6 +102,7 @@ em { color: #000; }
 	font-weight: bold;
 	text-decoration: none
 }
+
 #Start{
 color:red;
 
