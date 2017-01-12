@@ -1,0 +1,116 @@
+#Start{
+
+    display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    margin: 8px;
+    vertical-align: top;
+ 	height: 20px;  
+    width: 30px;
+    margin-top: -10px;
+}
+
+#Stop{
+    display: inline-block;
+    background-color: transparent;
+    margin: 8px;
+    padding: 0;
+ 	margin-right: 10px
+    vertical-align: top;
+ 	height: 25px;  
+    width: 30px;
+    margin-top: -10px;
+}
+#Pause{
+  	margin: 8px;
+    display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    vertical-align: top;
+  	margin: 8px;
+   	height: 25px;  
+    width: 30px;
+    margin-top: -10px;
+}
+#Sync{
+    display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    margin: 8px;
+    vertical-align: top;
+ 	height: 25px;  
+    width: 30px;
+    margin-top: -10px;
+}
+#TestName{
+	font-size: 18px;
+	color: #666666;
+	background-color:#D1CDCC;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	height: 35px;
+
+}
+#Start_Info{
+	display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    margin: 20px;
+    vertical-align: top;
+ 	height: 25px;  
+    width: 30px;
+    margin-top: 5px;
+
+}
+
+#Pause_Info{
+	display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    margin: 20px;
+    vertical-align: top;
+ 	height: 25px;  
+    width: 30px;
+     margin-top: 5px;
+}
+
+#Stop_Info{
+	display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    margin: 20px;
+    vertical-align: top;
+ 	height: 25px;  
+    width: 30px;
+     margin-top: 5px;
+}
+#Save_Info{
+	display: inline-block;
+    background-color: transparent;
+    padding: 0;
+ 	margin: 20px;
+    vertical-align: top;
+ 	height: 25px;  
+    width: 30px;
+     margin-top: 5px;
+}
+#Edit_Info{
+	display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    margin: 20px;
+    vertical-align: top;
+ 	height: 25px;  
+    width: 30px;
+     margin-top: 5px;
+}
+#Sync_Info{
+	display: inline-block;
+    background-color: transparent;
+    padding: 0;
+    margin: 20px;
+    vertical-align: top;
+ 	height: 25px;  
+    width: 30px;
+     margin-top: 5px;
+}

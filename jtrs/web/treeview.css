@@ -19,6 +19,8 @@
     color:#0c00ff; 
     font-size: 12px;
     line-height: 13px;
+
+
 }
  
 .acidjs-css3-treeview li ul
@@ -40,9 +42,7 @@
 {
     -webkit-user-select: none;
     -moz-user-select: none;
-    user-select: none;'
-
-    color:red;
+    user-select: none;
 }
  
 .acidjs-css3-treeview input[type="checkbox"]
