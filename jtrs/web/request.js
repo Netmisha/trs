@@ -73,7 +73,6 @@ function SendRequest(req) {
   		else if(req[0]=='event') {
   			var type=req[1].split('=')[1];
   			if(event.data=="Done!") {
-  				console.log(type);
   				if(typeof lastCallback === 'function') {
   					lastCallback();
   				}
@@ -93,6 +92,18 @@ function SendRequest(req) {
 		    else if(type=='get') {
 		        alert(event.data);
 		    }
+  		}
+  		else if(req[0]=='success') {
+  			if(testList.length>0) {	
+				currentTest=testList.shift();
+				Start();
+			}
+  		}
+  		else if(req[0]=='fail') {
+  			if(testList.length>0) {	
+				currentTest=testList.shift();
+				Start();
+			}
   		}
 	};
 }
@@ -200,6 +211,10 @@ TRS.prototype.PrintScreenA = function(x, y, w, h, file, callback) {
 	lastCallback=callback;
 	SendRequest('event?type=PrintScreenA&x='+String(x)+'&y='+String(y)+'&w='+String(w)+'&h='+String(h)+'&file='+encodeURIComponent(file));
 }
+TRS.prototype.Sleep = function(time, callback){
+	lastCallback=callback;
+	SendRequest('event?type=Sleep&time='+time);
+};
 TRS.prototype.WriteLog = function(msg) {
 	SendRequest('log?msg='+encodeURIComponent(msg));
 }
@@ -214,6 +229,22 @@ TRS.prototype.LogList = function() {
 }
 TRS.prototype.GetLog = function(name) {
 	SendRequest('log?msg=get&name='+encodeURIComponent(name));
+}
+TRS.prototype.Success = function(msg) {
+	if(msg==undefined) {
+		SendRequest('success');
+	}
+	else {
+		SendRequest('success?msg='+encodeURIComponent(msg));
+	}
+}
+TRS.prototype.Fail = function(name) {
+	if(msg==undefined) {
+		SendRequest('fail');
+	}
+	else {
+		SendRequest('fail?msg='+encodeURIComponent(msg));
+	}
 }
 var trs = new TRS();
 trs.Init();

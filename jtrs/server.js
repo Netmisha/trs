@@ -59,6 +59,16 @@ app.use('/set', function (req, res, next) {
     ws.send(SetInfo(path[0].split('=')[1].substr(0, path[0].split('=')[1].indexOf('xml')+3), path[0].split('=')[1].substr(path[0].split('=')[1].indexOf('xml')+4, path[0].split('=')[1].length), path[1].split('=')[1]));
   });
 });
+app.use('/success', function (req, res, next) {
+  res.websocket(function (ws) {
+    ws.send();
+  });
+});
+app.use('/fail', function (req, res, next) {
+  res.websocket(function (ws) {
+    ws.send();
+  });
+});
 app.use('/log', function (req, res, next) {
   res.websocket(function (ws) {
     if(decodeURIComponent(req.url.split('?')[1].split('=')[1])=='create') {
@@ -161,6 +171,9 @@ app.use('/event', function (req, res, next) {
     }
     else if(path[0].split('=')[1]=='GetScreenHeight') {
         resp=String(manager.GetScreenHeight());
+    }
+    else if(path[0].split('=')[1]=='Sleep') {
+        manager.Sleep(Number(path[1].split('=')[1]));
     }
     ws.send(resp);
   });
