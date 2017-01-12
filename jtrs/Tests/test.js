@@ -9,6 +9,7 @@ function RunTest() {
 								trs.MouseUp(0, function () {
 									trs.CloseApp(function () {
 										trs.WriteLog("Done!");
+										trs.Success();
 									});
 								});
 							});
@@ -18,5 +19,4 @@ function RunTest() {
 			});
 		});
 	});	
-	return;
 }

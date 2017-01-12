@@ -63,6 +63,7 @@ app.use('/set', function (req, res, next) {
   });
 });
 
+
 app.use('/report', function (req, res, next) {
   res.websocket(function (ws) {
   
@@ -75,6 +76,18 @@ app.use('/report', function (req, res, next) {
   });
 });
 
+
+
+app.use('/success', function (req, res, next) {
+  res.websocket(function (ws) {
+    ws.send();
+  });
+});
+app.use('/fail', function (req, res, next) {
+  res.websocket(function (ws) {
+    ws.send();
+  });
+});
 
 app.use('/log', function (req, res, next) {
   res.websocket(function (ws) {
@@ -179,6 +192,9 @@ app.use('/event', function (req, res, next) {
     }
     else if(path[0].split('=')[1]=='GetScreenHeight') {
         resp=String(manager.GetScreenHeight());
+    }
+    else if(path[0].split('=')[1]=='Sleep') {
+        manager.Sleep(Number(path[1].split('=')[1]));
     }
     ws.send(resp);
   });
