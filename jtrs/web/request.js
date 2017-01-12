@@ -1,3 +1,4 @@
+var lastCallback=undefined;
 function List () {
 	SendRequest('list');
 }
@@ -71,6 +72,12 @@ function SendRequest(req) {
   		}
   		else if(req[0]=='event') {
   			var type=req[1].split('=')[1];
+  			if(event.data=="Done!") {
+  				console.log(type);
+  				if(typeof lastCallback === 'function') {
+  					lastCallback();
+  				}
+  			}
   			if(type=='GetScreenWidth') {
 		        trs.screenWidth=Number(event.data);
 		    }
@@ -97,76 +104,100 @@ TRS.prototype.Init = function() {
 	this.GetScreenWidth();
 	this.GetScreenHeight();
 }
-TRS.prototype.SetWindowName = function(name) {
+TRS.prototype.SetWindowName = function(name, callback) {
+	lastCallback=callback;
 	SendRequest('event?type=SetWindowName&name='+encodeURIComponent(name));	
 }
-TRS.prototype.SetAppName = function(name) {
+TRS.prototype.SetAppName = function(name, callback) {
+	lastCallback=callback;
 	SendRequest('event?type=SetAppName&name='+encodeURIComponent(name));
 }
-TRS.prototype.StartApp = function(name) {
+TRS.prototype.StartApp = function(callback) {
+	lastCallback=callback;
 	SendRequest('event?type=StartApp');
 }
-TRS.prototype.CloseApp = function() {
+TRS.prototype.CloseApp = function(callback) {
+	lastCallback=callback;
 	SendRequest('event?type=CloseApp');
 }
-TRS.prototype.WindowMinimize = function()  {
+TRS.prototype.WindowMinimize = function(callback) {
+	lastCallback=callback;
 	SendRequest('event?type=WindowMinimize');
 }
-TRS.prototype.WindowMaximize = function() {
+TRS.prototype.WindowMaximize = function(callback) {
+	lastCallback=callback;
 	SendRequest('event?type=WindowMaximize');
 }
-TRS.prototype.SetActive = function() {
+TRS.prototype.SetActive = function(callback) {
+	lastCallback=callback;
 	SendRequest('event?type=SetActive');
 }
-TRS.prototype.WindowRestore = function() {
+TRS.prototype.WindowRestore = function(callback) {
+	lastCallback=callback;
 	SendRequest('event?type=WindowRestore');
 }
-TRS.prototype.GetScreenWidth = function() {
+TRS.prototype.GetScreenWidth = function(callback) {
+	lastCallback=callback;
 	SendRequest('event?type=GetScreenWidth');
 }
-TRS.prototype.GetScreenHeight = function() {
+TRS.prototype.GetScreenHeight = function(callback) {
+	lastCallback=callback;
 	SendRequest('event?type=GetScreenHeight');
 }
-TRS.prototype.KeyDown = function(key) {
+TRS.prototype.KeyDown = function(key, callback) {
+	lastCallback=callback;
 	SendRequest('event?type=KeyDown&key='+String(key));
 }
-TRS.prototype.KeyUp = function(key) {
+TRS.prototype.KeyUp = function(key, callback) {
+	lastCallback=callback;
 	SendRequest('event?type=KeyUp&key='+String(key));
 }
-TRS.prototype.KeyPress = function(key) {
+TRS.prototype.KeyPress = function(key, callback) {
+	lastCallback=callback;
 	SendRequest('event?type=KeyPress&key='+String(key));
 }
-TRS.prototype.SetMousePos = function(x, y) {
+TRS.prototype.SetMousePos = function(x, y, callback) {
+	lastCallback=callback;
 	SendRequest('event?type=SetMousePos&x='+String(x)+'&y='+String(y));
 }
-TRS.prototype.MouseMove = function(x, y, pause) {
+TRS.prototype.MouseMove = function(x, y, pause, callback) {
+	lastCallback=callback;
 	SendRequest('event?type=MouseMove&x='+String(x)+'&y='+String(y)+'&pause='+String(pause));
 }
-TRS.prototype.MouseDown = function(button) {
+TRS.prototype.MouseDown = function(button, callback) {
+	lastCallback=callback;
 	SendRequest('event?type=MouseDown&button='+String(button));
 }
-TRS.prototype.MouseUp = function(button) {
+TRS.prototype.MouseUp = function(button, callback) {
+	lastCallback=callback;
 	SendRequest('event?type=MouseUp&button='+String(button));
 }
-TRS.prototype.MouseClick = function(button) {
+TRS.prototype.MouseClick = function(button, callback) {
+	lastCallback=callback;
 	SendRequest('event?type=MouseClick&button='+String(button));
 }
-TRS.prototype.MouseWheelDown = function() {
+TRS.prototype.MouseWheelDown = function( callback) {
+	lastCallback=callback;
 	SendRequest('event?type=MouseWheelDown');
 }
-TRS.prototype.MouseWheelUp = function() {
+TRS.prototype.MouseWheelUp = function( callback) {
+	lastCallback=callback;
 	SendRequest('event?type=MouseWheelUp');
 }
-TRS.prototype.MouseWheelLeft = function() {
+TRS.prototype.MouseWheelLeft = function( callback) {
+	lastCallback=callback;
 	SendRequest('event?type=MouseWheelLeft');
 }
-TRS.prototype.MouseWheelRight = function() {
+TRS.prototype.MouseWheelRight = function( callback) {
+	lastCallback=callback;
 	SendRequest('event?type=MouseWheelRight');
 }
-TRS.prototype.PrintScreen = function(file) {
+TRS.prototype.PrintScreen = function(file, callback) {
+	lastCallback=callback;
 	SendRequest('event?type=PrintScreen&file='+encodeURIComponent(file));
 }
-TRS.prototype.PrintScreenA = function(x, y, w, h, file) {
+TRS.prototype.PrintScreenA = function(x, y, w, h, file, callback) {
+	lastCallback=callback;
 	SendRequest('event?type=PrintScreenA&x='+String(x)+'&y='+String(y)+'&w='+String(w)+'&h='+String(h)+'&file='+encodeURIComponent(file));
 }
 TRS.prototype.WriteLog = function(msg) {
