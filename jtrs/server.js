@@ -12,6 +12,7 @@ var log = new Logs(__dirname+'/logs');
 var app = express();
 var server = http.createServer(app);
 var wss = new ws.Server({ noServer: true });
+var rep = new Report(__dirname+'/report');
 
 app.use('/list', function (req, res, next) {
   res.websocket(function (ws) {
@@ -53,12 +54,30 @@ app.use('/get', function (req, res, next) {
     }
   });
 });
+
+
 app.use('/set', function (req, res, next) {
   res.websocket(function (ws) {
     var path=req.url.split('&');
     ws.send(SetInfo(path[0].split('=')[1].substr(0, path[0].split('=')[1].indexOf('xml')+3), path[0].split('=')[1].substr(path[0].split('=')[1].indexOf('xml')+4, path[0].split('=')[1].length), path[1].split('=')[1]));
   });
 });
+
+
+app.use('/report', function (req, res, next) {
+  res.websocket(function (ws) {
+  
+    if(decodeURIComponent(req.url.split('?')[1].split('=')[1])=='create') {
+       var report_path = rep.Create_rep();
+       
+       fs.openSync(report_path.toString(),'a');
+    }
+    
+  });
+});
+
+
+
 app.use('/success', function (req, res, next) {
   res.websocket(function (ws) {
     ws.send();
@@ -69,8 +88,10 @@ app.use('/fail', function (req, res, next) {
     ws.send();
   });
 });
+
 app.use('/log', function (req, res, next) {
   res.websocket(function (ws) {
+
     if(decodeURIComponent(req.url.split('?')[1].split('=')[1])=='create') {
         log.Create();
     }
