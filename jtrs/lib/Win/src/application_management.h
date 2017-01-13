@@ -54,6 +54,7 @@ public:
 			if(!SetActive()) {
 				WindowHandle = FindWindow(NULL, WindowName);
 			}
+			SetActiveWindow(WindowHandle);
 		}
 		return 1;
 	}

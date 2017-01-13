@@ -7,7 +7,7 @@ var infoId = "info";
 var pauseRun=false;
 function ParseSuite(node) {
     var string = "<li>";
-    if(node.disable!="true") {
+    if(node.disable[0]!='true') {
         string+="<input type=\"checkbox\" id=\""+node.id+"\"  /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+node.id+"', '')\" for=\""+node.id+"\">";
     }
     else {
@@ -16,11 +16,11 @@ function ParseSuite(node) {
     string+=node.name+"</label><ul>";
     string+=ParseChildren(node.children);
     for(var i=0; i<Object.keys(node.tests).length; i++) {
-        if(node.disable!="true" && node.tests[i].disable!="true") {
-            string+="<li><input type=\"checkbox\" id=\""+node.id+"-"+String(i)+"\" checked=\"checked\" /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+node.id+"', '"+node.tests[i].name+"')\" style=\"padding-left:10px;\">";
+        if(node.disable[0]!='true' && node.tests[i].disable[0]!='true') {
+            string+="<li><input type=\"checkbox\" id=\""+node.tests[i].id+"\" checked=\"checked\" /><label><input type=\"checkbox\" checked=\"checked\"/><span></span></label><label onClick=\"GetInfo('"+node.id+"', '"+node.tests[i].name+"')\" style=\"padding-left:10px;\">";
         }
         else {
-            string+="<li><input type=\"checkbox\" id=\""+node.id+"-"+String(i)+"\" checked=\"checked\"/><label><input type=\"checkbox\" disabled /><span></span></label><label onClick=\"GetInfo('"+node.id+"', '"+node.tests[i].name+"')\" style=\"padding-left:10px;\">";  
+            string+="<li><input type=\"checkbox\" id=\""+node.tests[i].id+"\" checked=\"checked\"/><label><input type=\"checkbox\" disabled /><span></span></label><label onClick=\"GetInfo('"+node.id+"', '"+node.tests[i].name+"')\" style=\"padding-left:10px;\">";  
         }
         string+=node.tests[i].name+"</label></li>";
     }
@@ -123,13 +123,13 @@ function Start () {
 function ParseSuiteStructure(node) {
 	if(node.children.length>0) {
 		for(var j=0; j<node.children.length; j++) {
-			if(document.getElementById(node.children[j].id).nextElementSibling.firstChild.getAttribute('checked')!=null) {
+			if(document.getElementById(node.children[j].id).nextElementSibling.firstChild.checked==true) {
 				ParseSuiteStructure(node.children[j]);
 			}
 		}
 	}
 	for(var j=0; j<Object.keys(node.tests).length; j++) {
-	        if(document.getElementById(node.tests[j].id).nextElementSibling.firstChild.getAttribute('checked')!=null) {
+	        if(document.getElementById(node.tests[j].id).nextElementSibling.firstChild.checked==true) {
 	        	testList.push(node.path+'/test/'+node.tests[j].name+'/execution.js');	
 	        }
 	}
