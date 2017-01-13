@@ -63,6 +63,11 @@ function SendRequest(req) {
 				trs.SaveLog(); 
 				document.head.removeChild(document.getElementById("run")); 
 		    }
+		    else if(path.split('.')[1].split('/')[3]=='repeat') {
+		    	console.log('repeat');
+		        testRepeat=Number(event.data);
+		        Start();
+		    }
 		    else {
 		        alert(event.data);
 		    }
@@ -94,14 +99,25 @@ function SendRequest(req) {
 		    }
   		}
   		else if(req[0]=='success') {
-  			if(testList.length>0 && pauseRun==false) {	
-				currentTest=testList.shift();
-				Start();
-			}
+  			console.log(testRepeat);
+  			if(--testRepeat>0) {
+  				if(pauseRun==false) {	
+					Start();
+				}
+  			}
+  			else if(testList.length>0) {
+  				currentTest=testList.shift();
+  				Get(currentTest.substr(0, currentTest.lastIndexOf('/')+1)+'repeat');
+  			}
   		}
   		else if(req[0]=='fail') {
-  			if(testList.length>0 && pauseRun==false) {	
-				currentTest=testList.shift();
+  			if(testRepeat>0) {
+  				testRepeat--;
+  			}
+  			else if(testList.length>0) {
+  				currentTest=testList.shift();
+  			}
+  			if(pauseRun==false) {	
 				Start();
 			}
   		}

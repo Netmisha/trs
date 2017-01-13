@@ -5,6 +5,7 @@ var currentTest = "";
 var suiteList = "tree";
 var infoId = "info";
 var pauseRun=false;
+var testRepeat=0;
 function ParseSuite(node) {
     var string = "<li>";
     if(node.disable[0]!='true') {
@@ -115,6 +116,7 @@ function ShowInfo (node, suiteId, test) {
 	return string;
 }
 function Start () {
+	console.log('Start');
 	trs.CreateLog();
 	trs.CreateReport();
 
@@ -143,7 +145,7 @@ function StartTree () {
 	}
 	if(testList.length>0) {	
 		currentTest=testList.shift();
-		Start();
+		Get(currentTest.substr(0, currentTest.lastIndexOf('/')+1)+'repeat');
 	}
 }
 function StopTree () {
