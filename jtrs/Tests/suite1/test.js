@@ -1,4 +1,4 @@
-function RunTest() {
+/*function RunTest() {
 	trs.SetAppName('C:/Windows/SYSTEM32/mspaint.exe', function () {
 		trs.SetWindowName('Untitled - Paint',function () {
 			trs.StartApp(function () {
@@ -9,4 +9,11 @@ function RunTest() {
 			});
 		});
 	});	
+}
+*/
+
+function RunTest(){
+	var t = new Timer();
+	t.StartTimer();
+ 	alert("Debugging");	
 }

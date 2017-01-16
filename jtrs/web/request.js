@@ -84,6 +84,7 @@ function SendRequest(req) {
 		        trs.screenHeight=Number(event.data);
 		    }
   		}
+
   		else if(req[0]=='log') {
   			var type=req[1].split('&')[0].split('=')[1];
   			if(type=='list') {
@@ -221,8 +222,8 @@ TRS.prototype.WriteLog = function(msg) {
 TRS.prototype.CreateLog = function() {
 	SendRequest('log?msg=create');
 }
-TRS.prototype.CreateReport = function(){
-	SendRequest('report?msg=create');
+TRS.prototype.CreateReport = function(msg){
+	SendRequest('report?msg=create&repData='+msg.toString());
 }
 TRS.prototype.SaveLog = function() {
 	SendRequest('log?msg=save');

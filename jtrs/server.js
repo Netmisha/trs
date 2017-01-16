@@ -66,11 +66,8 @@ app.use('/set', function (req, res, next) {
 
 app.use('/report', function (req, res, next) {
   res.websocket(function (ws) {
-  
-    if(decodeURIComponent(req.url.split('?')[1].split('=')[1])=='create') {
-       var report_path = rep.Create_rep();
-       
-       fs.openSync(report_path.toString(),'a');
+    if(decodeURIComponent(req.url.split('?')[1].split('&')[0].split('=')[1])=='create') {
+       rep.Create_rep(decodeURIComponent(req.url.split('?')[1].split('&')[1]).split('=')[1]);  
     }
     
   });

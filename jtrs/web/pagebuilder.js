@@ -5,6 +5,7 @@ var currentTest = "";
 var suiteList = "tree";
 var infoId = "info";
 var pauseRun=false;
+var repData;
 function ParseSuite(node) {
     var string = "<li>";
     if(node.disable!="true") {
@@ -54,6 +55,7 @@ function GetInfo (suiteId, test) {
 	info.innerHTML = string;
 }
 function ShowSuiteInfo (suite) {
+	
 	var string = "";
 	string+="<li>Suite name: "+suite.$.name+"</li>";
     string+="<li>Description: "+suite.$.description+"</li>";
@@ -77,6 +79,7 @@ function ShowSuiteInfo (suite) {
 }
 function ShowTestInfo (test){
 	var string = "";
+	test_info = test
 	string+="<li>Test name: "+test.$.name+'</li>';
 	string+="<li>Description: "+test.$.description+'</li>';
 	string+="<li>Path: "+test.path+"</li>";
@@ -115,9 +118,13 @@ function ShowInfo (node, suiteId, test) {
 	return string;
 }
 function Start () {
+	var repData="";
+	repData+=test_info.$.name+'|';
+	repData+=test_info.path+'|';
+	repData+=test_info.execution;
 	trs.CreateLog();
-	trs.CreateReport();
-
+	trs.CreateReport(repData.toString());
+	repData="";
 	if(currentTest!="") {
 		Get(currentTest);
 	}
