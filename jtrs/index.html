@@ -11,7 +11,8 @@
     <script src="web/Scripts/jquery.js"></script>
     <script src="web/Scripts/jquery.easytree.min.js"></script>
     <link href="web/Style/button_style.css" rel="stylesheet" type="text/css"/>
- 
+
+        
     <script type="text/javascript" src="web/Scripts/jquery.min.js"></script>
     <link rel="stylesheet" href="web/Style/uikit.min.css">
     <link rel="stylesheet" href="web/treeview.css">
@@ -99,14 +100,33 @@
         </div>
     </div>
 <script type="text/javascript">
-
-            $(".acidjs-css3-treeview").delegate("label input:checkbox", "change", function() {
-            var checkbox = $(this), nestedList = checkbox.parent().next().next(), selectNestedListCheckbox = nestedList.find("label:not([for]) input:checkbox");
-            if(checkbox.is(":checked")) {
-                return selectNestedListCheckbox.prop("checked", true);
-            }
+    $(".acidjs-css3-treeview").delegate("label input:checkbox", "change", function() {
+        var checkbox = $(this), nestedList = checkbox.parent().next().next(), selectNestedListCheckbox = nestedList.find("label:not([for]) input:checkbox");
+        if(checkbox.is(":checked")) {
+            selectNestedListCheckbox.prop("checked", true);
+        }
+        else {
             selectNestedListCheckbox.prop("checked", false);
-        });
+        }
+        UnChecked(rootNode); 
+    });
+    function UnChecked (node) {
+        var elem = document.getElementById(node.id).nextElementSibling.firstChild;
+        if(elem.disabled==true) {
+            elem.checked = false;
+        }
+        if(node.children.length>0) {
+            for(var j=0; j<node.children.length; j++) {
+                UnChecked(node.children[j]);
+            }
+        }
+        for(var j=0; j<Object.keys(node.tests).length; j++) {
+            var elem = document.getElementById(node.tests[j].id).nextElementSibling.firstChild;
+            if(elem.disabled==true) {
+                elem.checked = false;
+            }
+        }
+    }    
 </script>
 </body>
 </html>
