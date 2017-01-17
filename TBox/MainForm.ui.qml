@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 1.5
 import QtQuick.Layouts 1.3
+import QtWebEngine 1.2
 
 Item {
     width: 640
@@ -25,22 +26,18 @@ Item {
                             ToolButton {
                                 id: startButton
                                 iconSource: "icons/icons/Run.png"
-                                activeFocusOnTab: !browserWindow.platformIsMac
                             }
                             ToolButton {
                                 id: stopButton
                                 iconSource: "icons/icons/Stop.png"
-                                activeFocusOnTab: !browserWindow.platformIsMac
                             }
                             ToolButton {
                                 id: reportsButton
                                 iconSource: "icons/icons/Edit.png"
-                                activeFocusOnTab: !browserWindow.platformIsMac
                             }
                             ToolButton {
                                 id: settingButton
                                 iconSource: "icons/icons/Settings.png"
-                                activeFocusOnTab: !browserWindow.platformIsMac
                             }
                         }
                     }
@@ -74,11 +71,10 @@ Item {
                             Layout.minimumHeight: 200
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            color: "lightgray"
-                            Text {
-                                text: "pageView"
-                                anchors.centerIn: parent
-                            }
+                            WebEngineView {
+                                    anchors.fill: parent
+                                    url: "http://www.qt.io"
+                                }
                         }
                         Rectangle {
                             id: consoleLog

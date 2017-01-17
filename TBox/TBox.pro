@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += qml quick widgets
+QT += qml quick widgets webengine
 
 CONFIG += c++11
 
@@ -15,3 +15,6 @@ QML_IMPORT_PATH =
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+HEADERS += \
+    utils.h
