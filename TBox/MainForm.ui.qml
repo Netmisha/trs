@@ -14,34 +14,34 @@ Item {
             height: 33
             Layout.fillWidth: true
             ToolBar {
-                    id: navigationBar
-                    x: 0
-                    y: 0
-                    Layout.fillHeight: true
-                    Rectangle {
-                        RowLayout {
-                            id: layout
-                            spacing: 5
-                            anchors.fill: parent;
-                            ToolButton {
-                                id: startButton
-                                iconSource: "icons/icons/Run.png"
-                            }
-                            ToolButton {
-                                id: stopButton
-                                iconSource: "icons/icons/Stop.png"
-                            }
-                            ToolButton {
-                                id: reportsButton
-                                iconSource: "icons/icons/Edit.png"
-                            }
-                            ToolButton {
-                                id: settingButton
-                                iconSource: "icons/icons/Settings.png"
-                            }
+                id: navigationBar
+                x: 0
+                y: 0
+                Layout.fillHeight: true
+                Rectangle {
+                    RowLayout {
+                        id: layout
+                        spacing: 5
+                        anchors.fill: parent;
+                        ToolButton {
+                            id: startButton
+                            iconSource: "icons/icons/Run.png"
+                        }
+                        ToolButton {
+                            id: stopButton
+                            iconSource: "icons/icons/Stop.png"
+                        }
+                        ToolButton {
+                            id: reportsButton
+                            iconSource: "icons/icons/Edit.png"
+                        }
+                        ToolButton {
+                            id: settingButton
+                            iconSource: "icons/icons/Settings.png"
                         }
                     }
                 }
+            }
         }
         Rectangle {
             Layout.fillWidth: true
@@ -53,7 +53,6 @@ Item {
                     id: mainTree
                     width: 200
                     Layout.maximumWidth: 400
-                    color: "lightblue"
                     Text {
                         text: "mainTree"
                         anchors.centerIn: parent
@@ -71,19 +70,29 @@ Item {
                             Layout.minimumHeight: 200
                             Layout.fillWidth: true
                             Layout.fillHeight: true
+                            TextEdit {
+                                id: textEdit1
+                                text: qsTr("Text Edit")
+                                anchors.fill: parent
+                                font.pixelSize: 12
+                            }
+
                             WebEngineView {
-                                    anchors.fill: parent
-                                    url: "http://www.qt.io"
-                                }
+                                width: 10
+                                height: 10
+                                visible: false
+                            }
+
                         }
                         Rectangle {
                             id: consoleLog
                             height: 200
                             Layout.fillWidth: true
-                            color: "lightgreen"
+                            color: "lightgray"
                             Text {
                                 text: "consoleLog"
-                                anchors.centerIn: parent
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.fill: parent
                             }
                         }
                     }
