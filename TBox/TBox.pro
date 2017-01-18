@@ -1,20 +1,26 @@
+#-------------------------------------------------
+#
+# Project created by QtCreator 2017-01-17T17:37:37
+#
+#-------------------------------------------------
+
+QT       += core gui webkit webkitwidgets qml quick
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+TARGET = TBox
 TEMPLATE = app
 
-QT += qml quick widgets webengine
 
-CONFIG += c++11
+SOURCES += main.cpp\
+        mainwindow.cpp
 
-SOURCES += main.cpp
+HEADERS  += mainwindow.h
 
-RESOURCES += qml.qrc
+FORMS    += mainwindow.ui
 
-# Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH =
+DISTFILES += \
+    test.html
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
-
-HEADERS += \
-    utils.h
+RESOURCES += \
+    qml.qrc

@@ -1,11 +1,9 @@
-import QtQuick 2.7
-import QtQuick.Controls 1.5
-import QtQuick.Layouts 1.3
-import QtWebEngine 1.2
+import QtQuick 2.0
+import QtQuick.Controls 1.0
+import QtQuick.Layouts 1.0
 
 Item {
-    width: 640
-    height: 480
+    anchors.fill: parent
     ColumnLayout{
         anchors.fill: parent
         spacing: 2
@@ -29,6 +27,9 @@ Item {
                         }
                         ToolButton {
                             id: stopButton
+                            /*onClicked: function () {
+                                textEdit1.text=utils.ParseFolder("D:/Projects/trs/TBox/Tests");
+                            }*/
                             iconSource: "icons/icons/Stop.png"
                         }
                         ToolButton {
@@ -76,13 +77,6 @@ Item {
                                 anchors.fill: parent
                                 font.pixelSize: 12
                             }
-
-                            WebEngineView {
-                                width: 10
-                                height: 10
-                                visible: false
-                            }
-
                         }
                         Rectangle {
                             id: consoleLog

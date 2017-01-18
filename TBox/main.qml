@@ -1,23 +1,15 @@
-import QtQuick 2.7
-import QtQuick.Controls 1.5
-import QtQuick.Dialogs 1.2
+import QtQuick 2.0
+import QtQuick.Controls 1.0
 
 ApplicationWindow {
+    id: idApp
     visible: true
     width: 640
     height: 480
     title: qsTr("TBox")
+
     MainForm {
+        id: idForm
         anchors.fill: parent
-    }
-
-    MessageDialog {
-        id: messageDialog
-        title: qsTr("May I have your attention, please?")
-
-        function show(caption) {
-            messageDialog.text = caption;
-            messageDialog.open();
-        }
     }
 }
