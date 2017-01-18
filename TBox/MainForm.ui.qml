@@ -1,7 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
-
 Item {
     anchors.fill: parent
     ColumnLayout{
@@ -27,9 +26,9 @@ Item {
                         }
                         ToolButton {
                             id: stopButton
-                            /*onClicked: function () {
-                                textEdit1.text=utils.ParseFolder("D:/Projects/trs/TBox/Tests");
-                            }*/
+                            onClicked: function () {
+                                textEdit1.text=qsTr(trssdvfsd.ParseFolder("D:/Projects/trs/TBox/Tests"));
+                            }
                             iconSource: "icons/icons/Stop.png"
                         }
                         ToolButton {
@@ -66,17 +65,13 @@ Item {
                     SplitView {
                         anchors.fill: parent
                         orientation: Qt.Vertical
-                        Rectangle {
-                            id: pageView
+                        TextEdit {
+                            id: textEdit1
+                            text: qsTr("Text Edit")
                             Layout.minimumHeight: 200
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            TextEdit {
-                                id: textEdit1
-                                text: qsTr("Text Edit")
-                                anchors.fill: parent
-                                font.pixelSize: 12
-                            }
+                            font.pixelSize: 12
                         }
                         Rectangle {
                             id: consoleLog

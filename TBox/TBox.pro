@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui webkit webkitwidgets qml quick
-
+CONFIG   += c++11
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = TBox
@@ -13,14 +13,17 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    trsmanager.cpp \
+    maintree.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    trsmanager.h \
+    maintree.h
 
 FORMS    += mainwindow.ui
 
-DISTFILES += \
-    test.html
+DISTFILES +=
 
 RESOURCES += \
     qml.qrc
