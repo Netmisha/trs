@@ -1,12 +1,9 @@
-<!DOCTYPE RCC><RCC version="1.0">
+<RCC>
     <qresource prefix="/">
-        <file>ApplicationRoot.qml</file>
-        <file>BrowserDialog.qml</file>
-        <file>BrowserWindow.qml</file>
-        <file>DownloadView.qml</file>
-        <file>FullScreenNotification.qml</file>
+        <file>report_window.qml</file>
+        <file>DB_data.qml</file>
     </qresource>
-    <qresource prefix="icons">
+    <qresource prefix="/icons">
         <file alias="go-next.png">icons/go-next.png</file>
         <file alias="go-previous.png">icons/go-previous.png</file>
         <file alias="process-stop.png">icons/process-stop.png</file>
