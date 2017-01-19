@@ -15,6 +15,11 @@ signals:
 
 public slots:
     Q_INVOKABLE QString ParseFolder(QString);
+    QString Parse(MainTree *, QString , QString);
+    static QStringList getTestsName(QString);
+    static QString getSuiteName(QString);
+    static QString getJS(QString, QString);
+    static QString Run(QString);
 
 private:
     MainTree tree_;
