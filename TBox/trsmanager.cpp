@@ -93,18 +93,20 @@ QString TRSManager::getJS(QString file_name, QString test_name)
         Rxml.readNext();
     }
     file.close();
-    qDebug()<<exe;
     file.setFileName(exe);
     file.open(QIODevice::ReadOnly);
     QString data(file.readAll());
     return data;
 }
-QString TRSManager::Run(QString script) {
-    QFile file("qrc:/html/test.html");
-    file.open(QIODevice::ReadWrite);
-    QString data(file.readAll());
-    QString newData = data.split("<script type=\"text/javascript\">")[0]+"<script type=\"text/javascript\">"+script+"</script>"+data.split("<script type=\"text/javascript\">")[1].split("</script>")[1];
-    qDebug()<<newData;
+void TRSManager::Run(QString script) {
+    QFile file("D:/Projects/trs/TBox/test.html");
+    file.open(QIODevice::WriteOnly);
+    if(file.isOpen()) {
+        QString newData = "<html><head><script type=\"text/javascript\">\n" +script + "\n</script></head></html>";
+        file.write(newData.toLatin1());
+        file.close();
+        view->load(QUrl("file:///D:/Projects/trs/TBox/test.html"));
+    }
 }
 QString TRSManager::ParseFolder(QString path)
 {

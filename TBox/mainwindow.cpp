@@ -1,21 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "trsmanager.h"
-#include <QDebug>
-#include <QtWebKitWidgets/QWebPage>
-#include <QtWebKitWidgets/QWebView>
-#include <QtWebKitWidgets/QWebFrame>
-#include <QQmlContext>
-#include <QQmlEngine>
-#include <QUrl>
-#include <QVariant>
-#include <QQuickView>
-#include <QQuickItem>
-#include <QBoxLayout>
-#include <QTreeView>
-#include <QStandardItemModel>
-#include <QItemSelectionModel>
-#include <QVector>
+QWebView * view;
 struct TreeInfo {
     QString file;
     QString name;
@@ -69,7 +55,7 @@ public slots:
         }
         return "";
     }
-    Q_INVOKABLE QString Run() {
+    Q_INVOKABLE void Run() {
         TRSManager::Run(currentScript);
     }
     private:
@@ -116,52 +102,19 @@ public slots:
             QStandardItem * root= new QStandardItem (QString("Tests"));
             this->appendRow(root);
             Parse(path,root);
-            TreeInfo info;
-            info.file=path;
-            info.item=this->indexFromItem(root);
-            info.type="root";
-            treeData.push_back(info);
-        }
-        void addEntry( const QString& name, const QString& type)
-        {
-            auto childEntry = new QStandardItem( name );
-
-            QStandardItem* entry = getBranch( type );
-            entry->appendRow( childEntry );
-        }
-        QStandardItem* getBranch(const QString &branchName)
-        {
-            QStandardItem* entry;
-            auto entries = this->findItems( branchName );
-            if ( entries.count() > 0 )
-            {
-                entry = entries.at(0);
-            }
-            else
-            {
-                entry = new QStandardItem( branchName );
-                this->appendRow( entry );
-            }
-            return entry;
         }
         QHash<int, QByteArray> m_roleNameMapping;
         QVector<TreeInfo> treeData;
         QString currentScript="";
 };
-
-
-QWebView *view;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     view = ui->webView;
-    view->resize(400, 500);
     view->page()->mainFrame()->addToJavaScriptWindowObject("myoperations", new TRSManager);
-    view->load(QUrl("qrc:/html/test.html"));
     view->setVisible(false);
-
     qmlRegisterType<MyTreeModel>("ca.models", 1, 0, "MyTreeModel" );
 
     QQuickView* qmlView = new QQuickView();

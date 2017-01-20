@@ -64,7 +64,7 @@ Item {
                        model: theModel
                        itemDelegate: Rectangle {
                           id : recid
-                          color: "white"
+                          color: ( styleData.row % 2 == 0 ) ? "white" : "#f6f6f6"
                           height: 20
                           Text {
                               anchors.verticalCenter: parent.verticalCenter
@@ -77,7 +77,7 @@ Item {
                        }
                        TableViewColumn {
                            role: "name_role"
-                           title: "Name"
+                           title: "Tests"
                        }
 
                    }
