@@ -1,7 +1,7 @@
 import QtQuick 2.4
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
-import ca.models 1.0
+import cMainTree 1.0
 import QtQml.Models 2.2
 Item {
     id: root
@@ -61,7 +61,7 @@ Item {
                     id : ttree;
                     width: 200
                     Layout.maximumWidth: 400
-                    MyTreeModel {
+                    MainTree {
                         id: theModel
                     }
                     TreeView {

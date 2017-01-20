@@ -6,9 +6,17 @@
 #include <QtWebKitWidgets/QWebPage>
 #include <QtWebKitWidgets/QWebView>
 #include <QtWebKitWidgets/QWebFrame>
-#include "maintree.h"
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
+#include <QVector>
 #include <QDebug>
 extern QWebView * view;
+namespace tags {
+    const QString kTest="test";
+    const QString kSuite="suite";
+    const QString kName="name";
+    const QString kExecution="execution";
+}
 class TRSManager : public QObject
 {
     Q_OBJECT
@@ -18,15 +26,12 @@ signals:
     void RunNext();
     void writeMSG(QString);
 public slots:
-    Q_INVOKABLE QString ParseFolder(QString);
-    QString Parse(MainTree *, QString , QString);
     static QStringList getTestsName(QString);
     static QString getSuiteName(QString);
     static QString getJS(QString, QString);
     static void Run(QString);
 
 private:
-    MainTree tree_;
 };
 
 #endif // TRSMANAGER_H

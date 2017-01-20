@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui webkit webkitwidgets qml quick
+QT       += core gui webkit webkitwidgets qml quick testlib
 CONFIG   += c++11
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     trsmanager.cpp \
-    maintree.cpp
+    maintree.cpp \
+    trscore.cpp
 
 HEADERS  += mainwindow.h \
     trsmanager.h \
-    maintree.h
+    maintree.h \
+    trscore.h
 
 FORMS    += mainwindow.ui
 
