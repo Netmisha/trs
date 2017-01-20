@@ -1,4 +1,5 @@
 function RunTest() {
-	alert("Hello!");	
+	alert("Hello from siute2/siute3!");
+	trs.writeMSG('Hello from siute2/siute3!');
 }
 RunTest();

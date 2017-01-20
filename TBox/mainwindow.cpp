@@ -17,7 +17,6 @@ class MyTreeModel : public QStandardItemModel
             {
 
                 m_roleNameMapping[MyTreeModel_Role_Name] = "name_role";
-
                 ParseFolder("D:/Projects/trs/TBox/Tests");
             }
 
@@ -32,12 +31,24 @@ class MyTreeModel : public QStandardItemModel
                 return m_roleNameMapping;
             }
 public slots:
+            Q_INVOKABLE void RunNext(){
+                while (treeData.size()>0) {
+                    TreeInfo ti=treeData.first();
+                    treeData.removeFirst();
+                    if(ti.type=="test") {
+                        TRSManager::Run(TRSManager::getJS(ti.file, ti.name));
+                        break;
+                    }
+                }
+                if(treeData.isEmpty()) {
+                    Reload();
+                }
+            }
     Q_INVOKABLE void Reload() {
         this->clear();
         ParseFolder("D:/Projects/trs/TBox/Tests");
     }
     Q_INVOKABLE QString getFile(QModelIndex item) {
-        currentScript="";
         for(auto&it:treeData) {
             if(it.item==item) {
                 return it.file;
@@ -46,17 +57,22 @@ public slots:
         return NULL;
     }
     Q_INVOKABLE QString getJS(QModelIndex item) {
-                currentScript="";
         for(auto&it:treeData) {
             if(it.item==item && it.type=="test") {
-                currentScript=TRSManager::getJS(it.file, it.name);
-                return currentScript;
+                return TRSManager::getJS(it.file, it.name);
             }
         }
         return "";
     }
     Q_INVOKABLE void Run() {
-        TRSManager::Run(currentScript);
+                while (treeData.size()>0) {
+                    TreeInfo ti=treeData.first();
+                    treeData.removeFirst();
+                    if(ti.type=="test") {
+                        TRSManager::Run(TRSManager::getJS(ti.file, ti.name));
+                        break;
+                    }
+                }
     }
     private:
         QStandardItem * Parse(QString path, QStandardItem * root) {
@@ -105,7 +121,6 @@ public slots:
         }
         QHash<int, QByteArray> m_roleNameMapping;
         QVector<TreeInfo> treeData;
-        QString currentScript="";
 };
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -113,16 +128,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     view = ui->webView;
-    view->page()->mainFrame()->addToJavaScriptWindowObject("myoperations", new TRSManager);
+
+    QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    TRSManager *trs=new TRSManager();
+    view->page()->mainFrame()->addToJavaScriptWindowObject("trs", trs);
     view->setVisible(false);
     qmlRegisterType<MyTreeModel>("ca.models", 1, 0, "MyTreeModel" );
-
     QQuickView* qmlView = new QQuickView();
-    TRSManager trs;
-
     QWidget* container = QWidget::createWindowContainer(qmlView, ui->centralWidget);
-    qmlView->rootContext()->setContextProperty("trsCore", &trs);
+    QObject::connect(trs, SIGNAL(RunNext()),this, SLOT(RunNext()));
+    QObject::connect(trs, SIGNAL(writeMSG(QString)),this, SLOT(writeMSG(QString)));
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
+    object = qmlView->rootObject();
     ui->verticalLayout->addWidget(container);
 }
 

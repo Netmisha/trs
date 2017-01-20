@@ -99,14 +99,7 @@ QString TRSManager::getJS(QString file_name, QString test_name)
     return data;
 }
 void TRSManager::Run(QString script) {
-    QFile file("D:/Projects/trs/TBox/test.html");
-    file.open(QIODevice::WriteOnly);
-    if(file.isOpen()) {
-        QString newData = "<html><head><script type=\"text/javascript\">\n" +script + "\n</script></head></html>";
-        file.write(newData.toLatin1());
-        file.close();
-        view->load(QUrl("file:///D:/Projects/trs/TBox/test.html"));
-    }
+    view->page()->mainFrame()->evaluateJavaScript(script + "trs.RunNext();");
 }
 QString TRSManager::ParseFolder(QString path)
 {

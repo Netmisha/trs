@@ -6,6 +6,12 @@ import QtQml.Models 2.2
 Item {
     id: root
     anchors.fill: parent
+    function runNext() {
+        theModel.RunNext();
+    }
+    function writeLog(msg) {
+        consoleText.text=consoleText.text+msg+"\n";
+    }
     ColumnLayout{
         anchors.fill: parent
         spacing: 2
@@ -98,7 +104,6 @@ Item {
                                 textFormat: Text.PlainText
                                 renderType: Text.NativeRendering
                                 selectByMouse: true
-                                text: qsTr("Text Edit")
                                 font.pixelSize: 12
                             }
                         }
@@ -106,12 +111,15 @@ Item {
                             id: consoleLog
                             height: 200
                             Layout.fillWidth: true
-                            color: "lightgray"
-                            Text {
-                                id: consoleText
-                                text: "consoleLog"
-                                anchors.horizontalCenter: parent.horizontalCenter
+                            color: "#f6f6f6"
+                            ScrollView {
                                 anchors.fill: parent
+                                TextEdit {
+                                    id: consoleText
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    selectByMouse: true
+                                    font.pixelSize: 12
+                                }
                             }
                         }
                     }

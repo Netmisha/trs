@@ -15,6 +15,8 @@ class TRSManager : public QObject
 public:
     explicit TRSManager(QObject *parent = 0);
 signals:
+    void RunNext();
+    void writeMSG(QString);
 public slots:
     Q_INVOKABLE QString ParseFolder(QString);
     QString Parse(MainTree *, QString , QString);

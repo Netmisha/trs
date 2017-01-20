@@ -1,1 +1,2 @@
-alert("Hello from Suite1!");
+alert("Hello from siute1!");
+trs.writeMSG('Hello from siute1!');

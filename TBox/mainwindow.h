@@ -8,6 +8,7 @@
 #include <QtWebKitWidgets/QWebFrame>
 #include <QQmlContext>
 #include <QQmlEngine>
+#include <QWebInspector>
 #include <QUrl>
 #include <QVariant>
 #include <QQuickView>
@@ -30,10 +31,16 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
+public slots:
+    void RunNext(){
+        QMetaObject::invokeMethod(object, "runNext");
+    }
+    void writeMSG(QString msg){
+        QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, msg));
+    }
 private:
     Ui::MainWindow *ui;
-    QApplication *ap;
+    QObject *object;
 };
 
 #endif // MAINWINDOW_H
