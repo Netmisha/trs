@@ -17,9 +17,9 @@ TreeModel::TreeModel(QObject *parent) :
              }
 
 }
-void TreeModel::ConnectToDb(){
+/*void TreeModel::ConnectToDb(){
 
-}
+}*/
 void TreeModel::FillTreeData(QStandardItem *root_node){
        QSqlQuery q("select * from Info LIMIT 0,0 ");
        QSqlRecord rec = q.record();

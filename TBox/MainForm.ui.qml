@@ -97,16 +97,31 @@ Item {
                     SplitView {
                         anchors.fill: parent
                         orientation: Qt.Vertical
-                        ScrollView {
-                            Layout.minimumHeight: 200
+                        ColumnLayout {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            TextEdit {
-                                id: jsCodeEdit
-                                textFormat: Text.PlainText
-                                renderType: Text.NativeRendering
-                                selectByMouse: true
-                                font.pixelSize: 12
+                            ScrollView {
+                                Layout.minimumHeight: 200
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                TextEdit {
+                                    id: jsCodeEdit
+                                    textFormat: Text.PlainText
+                                    renderType: Text.NativeRendering
+                                    selectByMouse: true
+                                    font.pixelSize: 12
+                                }
+                            }
+                            RowLayout {
+                                height: 30
+                                Layout.alignment: Qt.AlignRight
+                                Layout.fillWidth: true
+                                Button {
+                                    id: saveJS
+                                    text: qsTr("Save")
+                                    onClicked: theModel.setJS(jsCodeEdit.text);
+                                }
+
                             }
                         }
                         Rectangle {

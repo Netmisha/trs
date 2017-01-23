@@ -30,7 +30,7 @@
             QString row_data;
             QStandardItem *filt;
             QStandardItem *rep;
-            void TreeModel::ConnectToDb();
+            //void TreeModel::ConnectToDb();
             void FillTreeData(QStandardItem *root);
             void add_root();
             QStandardItem *root;

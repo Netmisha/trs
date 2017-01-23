@@ -24,6 +24,7 @@ public:
     Q_INVOKABLE void Load(QString path);
     Q_INVOKABLE QString getFile(QModelIndex);
     Q_INVOKABLE QString getJS(QModelIndex);
+    Q_INVOKABLE void setJS(QString);
     Q_INVOKABLE void Run();
     Q_INVOKABLE void setRootDir(QString);
 private:
@@ -32,6 +33,7 @@ private:
     QHash<int, QByteArray> m_roleNameMapping;
     QVector<TreeInfo> treeData;
     QString rootDir;
+    QModelIndex currentIndex;
 };
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -98,12 +100,21 @@ QString MainTree::getFile(QModelIndex item) {
     return NULL;
 }
 QString MainTree::getJS(QModelIndex item) {
+    currentIndex=this->index(0,0);
     for (auto&it : treeData) {
         if (it.item == item && it.type == "test") {
+            currentIndex=item;
             return TRSManager::getJS(it.file, it.name);
         }
     }
     return "";
+}
+void MainTree::setJS(QString data) {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex && it.type == "test") {
+            TRSManager::setJS(it.file, it.name, data);
+        }
+    }
 }
 void MainTree::Run() {
     while (treeData.size()>0) {
