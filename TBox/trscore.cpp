@@ -6,9 +6,22 @@ TRSCore::TRSCore(QObject *parent) : QObject(parent) {
 }
 void TRSCore::StartApp(QString appName) {
     process->start(appName);
+    process->waitForStarted();
 }
 void TRSCore::CloseApp() {
     process->close();
+}
+
+void TRSCore::SetOnTop(QString windowName)
+{
+    windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    SetForegroundWindow(windowHandle);
+    while (GetForegroundWindow() != windowHandle)
+    {
+        windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+        SetForegroundWindow(windowHandle);
+        Sleep(200);
+    }
 }
 void TRSCore::Sleep(int msec) {
     QTest::qSleep(msec);
@@ -28,17 +41,17 @@ int TRSCore::GetScreenHeight()
 
 void TRSCore::WindowMinimize()
 {
-
+    ShowWindow(windowHandle, SW_MINIMIZE);
 }
 
 void TRSCore::WindowMaximize()
 {
-
+    ShowWindow(windowHandle, SW_MAXIMIZE);
 }
 
 void TRSCore::WindowRestore()
 {
-
+    ShowWindow(windowHandle, SW_RESTORE);
 }
 void TRSCore::KeyDown(int dkey){
     keybd_event(dkey, 0, 0, 0);
