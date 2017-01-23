@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     trsmanager.cpp \
     maintree.cpp \
-    trscore.cpp
+    trscore.cpp \
+    mainsetting.cpp
 
 HEADERS  += mainwindow.h \
     trsmanager.h \
     maintree.h \
-    trscore.h
+    trscore.h \
+    mainsetting.h
 
 FORMS    += mainwindow.ui
 

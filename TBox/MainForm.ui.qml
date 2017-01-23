@@ -1,7 +1,9 @@
 import QtQuick 2.4
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
+import QtQuick.Window 2.2
 import cMainTree 1.0
+import MainSetting 1.0
 import QtQml.Models 2.2
 Item {
     id: root
@@ -44,7 +46,7 @@ Item {
                         }
                         ToolButton {
                             id: settingButton
-                            onClicked: theModel.Reload()
+                            onClicked: mainsetting.show()
                             iconSource: "icons/icons/Settings.png"
                         }
                     }
@@ -123,6 +125,89 @@ Item {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+    Setting {
+        id:settingFile
+    }
+    Window {
+        id:mainsetting
+        width: 300
+        height: 200
+        ColumnLayout {
+            id: columnLayout1
+            anchors.fill: parent
+            RowLayout {
+                id: rowLayout1
+                width: 100
+                height: 100
+                clip: false
+                spacing: 10
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Text {
+                    id: text1
+                    text: qsTr("Root directory")
+                    font.pixelSize: 12
+                }
+                Rectangle {
+                    id: rootDirInput
+                    width: 82
+                    height: 22
+                    border.color: "lightgray"
+                    border.width: 1
+                    Layout.fillWidth: true
+                    TextInput {
+                        id: rootDir
+                        verticalAlignment: TextInput.AlignVCenter
+                        selectByMouse: true
+                        anchors.fill: parent
+                        smooth: true
+                        text: {
+                            var dir=settingFile.getRootDir();
+                            theModel.Load(dir);
+                            return dir;
+                        }
+                        layer.enabled: true
+                        font.pixelSize: 12
+                        onFocusChanged: {
+                                    if(focus){
+                                        rootDirInput.border.color = "#569ffd"
+                                    }else{
+                                        rootDirInput.border.color = "lightgray"
+                                    }
+                                }
+                    }
+                }
+            }
+            RowLayout {
+                id: rowLayout2
+                width: 100
+                height: 100
+                Layout.preferredWidth: -1
+                Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                Layout.fillHeight: false
+                Layout.maximumHeight: 65535
+                Layout.rowSpan: 1
+                Layout.fillWidth: true
+
+                Button {
+                    id: saveSetting
+                    text: qsTr("Save")
+                    onClicked: {
+                        theModel.Load(rootDir.text);
+                        settingFile.setRootDir(rootDir.text);
+                        mainsetting.close();
+                    }
+                }
+
+                Button {
+                    id: cancelSetting
+                    onClicked: mainsetting.close()
+                    text: qsTr("Cancel")
                 }
             }
         }

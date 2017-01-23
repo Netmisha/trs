@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "trsmanager.h"
+#include "mainsetting.h"
 QWebView * view;
 
 class MainTree : public QStandardItemModel
@@ -10,7 +11,6 @@ public:
     explicit MainTree(QObject *parent = 0) :
         QStandardItemModel(parent){
         m_roleNameMapping[MainTree_Role_Name] = "name_role";
-        ParseFolder("D:/Projects/trs/TBox/Tests");
     }
     virtual ~MainTree() = default;
     enum MainTree_Roles{
@@ -21,15 +21,17 @@ public:
     }
     public slots:
     Q_INVOKABLE void RunNext();
-    Q_INVOKABLE void Reload();
+    Q_INVOKABLE void Load(QString path);
     Q_INVOKABLE QString getFile(QModelIndex);
     Q_INVOKABLE QString getJS(QModelIndex);
     Q_INVOKABLE void Run();
+    Q_INVOKABLE void setRootDir(QString);
 private:
     QStandardItem * Parse(QString, QStandardItem *);
     void ParseFolder(QString);
     QHash<int, QByteArray> m_roleNameMapping;
     QVector<TreeInfo> treeData;
+    QString rootDir;
 };
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -41,9 +43,10 @@ MainWindow::MainWindow(QWidget *parent) :
     view->page()->mainFrame()->addToJavaScriptWindowObject("trs", trs);
     TRSCore *trscore=new TRSCore();
     view->page()->mainFrame()->addToJavaScriptWindowObject("core", trscore);
-    view->load(QUrl("file:///D:/Projects/trs/TBox/test.html"));
+    view->load(QUrl("file:///"+QDir::currentPath()+"/"+"test.html"));
     //view->setVisible(false);
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
+    qmlRegisterType<MainSetting>("MainSetting", 1, 0, "Setting" );
     QQuickView* qmlView = new QQuickView();
     QWidget* container = QWidget::createWindowContainer(qmlView, ui->centralWidget);
     QObject::connect(trs, SIGNAL(RunNext()),this, SLOT(RunNext()));
@@ -71,13 +74,20 @@ void MainTree::RunNext(){
             break;
         }
     }
-    if (treeData.isEmpty()) {
-        Reload();
-    }
 }
-void MainTree::Reload() {
+void MainTree::Load(QString path) {
+    if(path=="") {
+        path=rootDir;
+    }
+    if(path!=rootDir) {
+        rootDir=path;
+    }
     this->clear();
-    ParseFolder("D:/Projects/trs/TBox/Tests");
+    treeData.clear();
+    ParseFolder(path);
+}
+void MainTree::setRootDir(QString path) {
+    rootDir=path;
 }
 QString MainTree::getFile(QModelIndex item) {
     for (auto&it : treeData) {
