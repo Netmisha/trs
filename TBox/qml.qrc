@@ -8,7 +8,4 @@
         <file>icons/Settings.png</file>
         <file>icons/Stop.png</file>
     </qresource>
-    <qresource prefix="/html">
-        <file>test.html</file>
-    </qresource>
 </RCC>

@@ -1,8 +1,17 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.0
-import QtQuick.Layouts 1.0
+import QtQuick 2.4
+import QtQuick.Controls 1.4
+import QtQuick.Layouts 1.2
+import cMainTree 1.0
+import QtQml.Models 2.2
 Item {
+    id: root
     anchors.fill: parent
+    function runNext() {
+        theModel.RunNext();
+    }
+    function writeLog(msg) {
+        consoleText.text=consoleText.text+msg+"\n";
+    }
     ColumnLayout{
         anchors.fill: parent
         spacing: 2
@@ -22,13 +31,11 @@ Item {
                         anchors.fill: parent;
                         ToolButton {
                             id: startButton
+                            onClicked: theModel.Run();
                             iconSource: "icons/icons/Run.png"
                         }
                         ToolButton {
                             id: stopButton
-                            onClicked: function () {
-                                textEdit1.text=qsTr(trssdvfsd.ParseFolder("D:/Projects/trs/TBox/Tests"));
-                            }
                             iconSource: "icons/icons/Stop.png"
                         }
                         ToolButton {
@@ -37,6 +44,7 @@ Item {
                         }
                         ToolButton {
                             id: settingButton
+                            onClicked: theModel.Reload()
                             iconSource: "icons/icons/Settings.png"
                         }
                     }
@@ -50,13 +58,35 @@ Item {
                 anchors.fill: parent
                 orientation: Qt.Horizontal
                 Rectangle {
-                    id: mainTree
+                    id : ttree;
                     width: 200
                     Layout.maximumWidth: 400
-                    Text {
-                        text: "mainTree"
-                        anchors.centerIn: parent
+                    MainTree {
+                        id: theModel
                     }
+                    TreeView {
+                       id: mainTree
+                       anchors.fill: parent
+                       model: theModel
+                       itemDelegate: Rectangle {
+                          id : recid
+                          color: ( styleData.row % 2 == 0 ) ? "white" : "#f6f6f6"
+                          height: 20
+                          Text {
+                              anchors.verticalCenter: parent.verticalCenter
+                              text: styleData.value
+                          }
+                          MouseArea{
+                              anchors.fill: parent
+                              onClicked: jsCodeEdit.text = theModel.getJS(styleData.index)
+                          }
+                       }
+                       TableViewColumn {
+                           role: "name_role"
+                           title: "Tests"
+                       }
+
+                   }
                 }
                 Rectangle {
                     id: centerItem
@@ -65,23 +95,31 @@ Item {
                     SplitView {
                         anchors.fill: parent
                         orientation: Qt.Vertical
-                        TextEdit {
-                            id: textEdit1
-                            text: qsTr("Text Edit")
+                        ScrollView {
                             Layout.minimumHeight: 200
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            font.pixelSize: 12
+                            TextEdit {
+                                id: jsCodeEdit
+                                textFormat: Text.PlainText
+                                renderType: Text.NativeRendering
+                                selectByMouse: true
+                                font.pixelSize: 12
+                            }
                         }
                         Rectangle {
                             id: consoleLog
                             height: 200
                             Layout.fillWidth: true
-                            color: "lightgray"
-                            Text {
-                                text: "consoleLog"
-                                anchors.horizontalCenter: parent.horizontalCenter
+                            color: "#f6f6f6"
+                            ScrollView {
                                 anchors.fill: parent
+                                TextEdit {
+                                    id: consoleText
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    selectByMouse: true
+                                    font.pixelSize: 12
+                                }
                             }
                         }
                     }

@@ -3,21 +3,35 @@
 
 #include <QObject>
 #include <QDirIterator>
-#include "maintree.h"
+#include <QtWebKitWidgets/QWebPage>
+#include <QtWebKitWidgets/QWebView>
+#include <QtWebKitWidgets/QWebFrame>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
+#include <QVector>
 #include <QDebug>
-
+extern QWebView * view;
+namespace tags {
+    const QString kTest="test";
+    const QString kSuite="suite";
+    const QString kName="name";
+    const QString kExecution="execution";
+}
 class TRSManager : public QObject
 {
     Q_OBJECT
 public:
     explicit TRSManager(QObject *parent = 0);
 signals:
-
+    void RunNext();
+    void writeMSG(QString);
 public slots:
-    Q_INVOKABLE QString ParseFolder(QString);
+    static QStringList getTestsName(QString);
+    static QString getSuiteName(QString);
+    static QString getJS(QString, QString);
+    static void Run(QString);
 
 private:
-    MainTree tree_;
 };
 
 #endif // TRSMANAGER_H

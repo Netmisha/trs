@@ -1,22 +1,10 @@
-function RunTest() {
-	trs.SetAppName('C:/Windows/SYSTEM32/mspaint.exe', function () {
-		trs.SetWindowName('Untitled - Paint',function () {
-			trs.StartApp(function () {
-				trs.WindowMaximize(function () {
-					trs.SetMousePos(300,300, function () {
-						trs.MouseDown(0, function () {
-							trs.MouseMove(600,600,5, function () {
-								trs.MouseUp(0, function () {
-									trs.CloseApp(function () {
-										trs.WriteLog("Done!");
-										trs.Success();
-									});
-								});
-							});
-						});
-					});
-				});
-			});
-		});
-	});	
-}
+alert("Hello from main siute!");
+core.StartApp("C:/Windows/SYSTEM32/mspaint.exe");
+core.Sleep(1000);
+core.SetMousePos(300,300);
+core.MouseDown(0);
+core.MouseMove(600,600, 5);
+core.MouseUp(0);
+core.CloseApp();
+core.PrintScreen("D:/1.jpg");
+trs.writeMSG('Hello from main siute!');
