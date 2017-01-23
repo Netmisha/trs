@@ -156,6 +156,7 @@ void MainWindow::on_actionStart_triggered()
 {
     //a.StartApp("C:/Windows/SYSTEM32/mspaint.exe");
     a.GetScreenWidth();
+    a.PrintScreenA(300,300,300,300,"D:/1.jpg");
 }
 
 void MainWindow::on_actionClose_triggered()
