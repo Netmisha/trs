@@ -39,7 +39,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     TRSManager *trs=new TRSManager();
     view->page()->mainFrame()->addToJavaScriptWindowObject("trs", trs);
-    view->setVisible(false);
+    TRSCore *trscore=new TRSCore();
+    view->page()->mainFrame()->addToJavaScriptWindowObject("core", trscore);
+    view->load(QUrl("file:///D:/Projects/trs/TBox/test.html"));
+    //view->setVisible(false);
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
     QQuickView* qmlView = new QQuickView();
     QWidget* container = QWidget::createWindowContainer(qmlView, ui->centralWidget);
@@ -151,7 +154,8 @@ void MainTree::ParseFolder(QString path)
 
 void MainWindow::on_actionStart_triggered()
 {
-    a.StartApp("C:/Windows/SYSTEM32/mspaint.exe");
+    //a.StartApp("C:/Windows/SYSTEM32/mspaint.exe");
+    a.GetScreenWidth();
 }
 
 void MainWindow::on_actionClose_triggered()
