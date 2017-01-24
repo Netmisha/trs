@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui webkit webkitwidgets qml quick testlib sql
+QT       += core gui webkit webkitwidgets qml quick testlib sql xml
 CONFIG   += c++11
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

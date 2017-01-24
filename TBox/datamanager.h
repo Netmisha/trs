@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+#include <QDomDocument>
 namespace tags_name {
     const QString kXml = ".xml";
     const QString kName = "name";
