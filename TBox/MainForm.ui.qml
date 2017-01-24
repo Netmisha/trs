@@ -31,6 +31,11 @@ Item {
                         id: layout
                         spacing: 5
                         anchors.fill: parent;
+                        ComboBox {
+                            id: runTags
+                            model: [ "All"]
+                        }
+
                         ToolButton {
                             id: startButton
                             onClicked: theModel.Run();
@@ -39,16 +44,23 @@ Item {
                         ToolButton {
                             id: stopButton
                             iconSource: "icons/icons/Stop.png"
+                            onClicked: theModel.Stop();
                         }
                         ToolButton {
                             id: reportsButton
-                            iconSource: "icons/icons/Edit.png"
+                            iconSource: "icons/icons/report.png"
                         }
                         ToolButton {
                             id: settingButton
-                            onClicked: mainsetting.show()
+                            onClicked: mainsetting.show();
                             iconSource: "icons/icons/Settings.png"
                         }
+                        ToolButton {
+                            id: saveJS
+                            onClicked: theModel.FindJSFile(jsCodeEdit.text);
+                            iconSource: "icons/icons/jssave.png"
+                        }
+
                     }
                 }
             }
@@ -80,7 +92,7 @@ Item {
                           }
                           MouseArea{
                               anchors.fill: parent
-                              onClicked: jsCodeEdit.text = theModel.getJS(styleData.index)
+                              onClicked: jsCodeEdit.text = theModel.FindTest(styleData.index)
                           }
                        }
                        TableViewColumn {
@@ -97,31 +109,18 @@ Item {
                     SplitView {
                         anchors.fill: parent
                         orientation: Qt.Vertical
-                        ColumnLayout {
+                        ScrollView {
+                            Layout.minimumHeight: 200
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            ScrollView {
-                                Layout.minimumHeight: 200
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                TextEdit {
-                                    id: jsCodeEdit
-                                    textFormat: Text.PlainText
-                                    renderType: Text.NativeRendering
-                                    selectByMouse: true
-                                    font.pixelSize: 12
-                                }
-                            }
-                            RowLayout {
-                                height: 30
-                                Layout.alignment: Qt.AlignRight
-                                Layout.fillWidth: true
-                                Button {
-                                    id: saveJS
-                                    text: qsTr("Save")
-                                    onClicked: theModel.setJS(jsCodeEdit.text);
-                                }
-
+                            TextEdit {
+                                id: jsCodeEdit
+                                width: 439
+                                height: 244
+                                textFormat: Text.PlainText
+                                renderType: Text.NativeRendering
+                                selectByMouse: true
+                                font.pixelSize: 12
                             }
                         }
                         Rectangle {

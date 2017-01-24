@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     export_txt.cpp \
     reporter.cpp \
     treemodel.cpp \
-    mainsetting.cpp
+    mainsetting.cpp \
+    datamanager.cpp
 
 HEADERS  += mainwindow.h \
     trsmanager.h \
@@ -33,7 +34,8 @@ HEADERS  += mainwindow.h \
     export_txt.h \
     reporter.h \
     treemodel.h \
-    mainsetting.h
+    mainsetting.h \
+    datamanager.h
 
 FORMS    += mainwindow.ui
 
