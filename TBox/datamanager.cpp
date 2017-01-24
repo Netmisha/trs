@@ -65,9 +65,3 @@ QString DataManager::Get(QString path) {
     file.close();
     return "";
 }
-void DataManager::SetData(QString, QString) {
-
-}
-QString DataManager::GetData(QString path) {
-    return Get(path);
-}

@@ -3,13 +3,12 @@
 
 #include <QObject>
 #include <QFile>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
 #include <QDomDocument>
 namespace tags_name {
     const QString kXml = ".xml";
     const QString kName = "name";
     const QString kTest = "test";
+    const QString kData = "data";
 }
 class DataManager : public QObject
 {
@@ -19,10 +18,9 @@ public:
 
 signals:
 public slots:
-    Q_INVOKABLE void Set(QString, QString);
-    Q_INVOKABLE QString Get(QString);
-    Q_INVOKABLE void SetData(QString, QString);
-    Q_INVOKABLE QString GetData(QString);
+    void Set(QString, QString);
+    QString Get(QString);
+private:
 };
 
 #endif // DATAMANAGER_H

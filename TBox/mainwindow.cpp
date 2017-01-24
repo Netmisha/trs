@@ -3,6 +3,7 @@
 #include "trsmanager.h"
 #include "mainsetting.h"
 #include "datamanager.h"
+#include "testinfo.h"
 QWebView * view;
 
 class MainTree : public QStandardItemModel
@@ -43,57 +44,17 @@ private:
     QModelIndex currentIndex;
     bool run=false;
 };
-void fun() {
-    DataManager d;
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/name");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/description");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/tag");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/repeat");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/repeat/pause");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/maxTime");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/disable");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/application");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/windowName");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/metadata/author");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/metadata/date");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/metadata/version");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/metadata/mail");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/metadata/copyright");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/metadata/license");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/metadata/info");
-
-
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test1/name");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test1/description");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test1/tag");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test1/disable");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test1/execution");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test1/result");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test1/repeat");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test1/repeat/pause");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test1/maxTime");
-
-
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test2/name");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test2/description");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test2/tag");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test2/disable");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test2/execution");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test2/result");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test2/repeat");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test2/repeat/pause");
-    qDebug() << d.Get(QDir::currentPath()+"/Tests/suite.xml/suite/test/Test2/maxTime");
-}
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     view = ui->webView;
-    fun();
     QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     TRSManager *trs=new TRSManager();
     view->page()->mainFrame()->addToJavaScriptWindowObject("trs", trs);
     TRSCore *trscore=new TRSCore();
     view->page()->mainFrame()->addToJavaScriptWindowObject("core", trscore);
+    TestInfo *testinfo=new TestInfo();
+    view->page()->mainFrame()->addToJavaScriptWindowObject("Test", testinfo);
     view->load(QUrl("file:///"+QDir::currentPath()+"/"+"test.html"));
     //view->setVisible(false);
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
@@ -121,7 +82,7 @@ void MainTree::RunNext(){
         TreeInfo ti = treeData.first();
         treeData.removeFirst();
         if (ti.type == "test") {
-            TRSManager::Run(getJS(ti.file, ti.name));
+            TRSManager::Run(getJS(ti.file, ti.name), ti.file, ti.name);
             break;
         }
     }
@@ -175,7 +136,7 @@ void MainTree::Run() {
         TreeInfo ti = treeData.first();
         treeData.removeFirst();
         if (ti.type == "test") {
-             TRSManager::Run(getJS(ti.file, ti.name));
+             TRSManager::Run(getJS(ti.file, ti.name), ti.file, ti.name);
             break;
         }
     }

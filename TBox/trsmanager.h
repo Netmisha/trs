@@ -26,8 +26,7 @@ signals:
     void RunNext();
     void writeMSG(QString);
 public slots:
-    static void Run(QString);
-
+    static void Run(QString, QString, QString);
 private:
 };
 

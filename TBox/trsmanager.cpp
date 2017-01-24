@@ -3,6 +3,6 @@
 TRSManager::TRSManager(QObject *parent) : QObject(parent) {
 
 }
-void TRSManager::Run(QString script) {
-    view->page()->mainFrame()->evaluateJavaScript(script + "trs.RunNext();");
+void TRSManager::Run(QString script, QString path, QString name) {
+    view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+path+"'); Test.setName('"+name+"');"+script + "trs.RunNext();");
 }
