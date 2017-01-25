@@ -101,7 +101,10 @@ Item {
                           }
                           MouseArea{
                               anchors.fill: parent
-                              onClicked: jsCodeEdit.text = theModel.FindTest(styleData.index)
+                              onClicked: {
+                                  jsCodeEdit.text = theModel.FindTest(styleData.index);
+                                  consoleText.text=jsCodeEdit.lineCount;
+                              }
                           }
                        }
                        TableViewColumn {
