@@ -4,6 +4,12 @@ Reporter::Reporter()
 {
 
 }
-void Reporter::init(QDir save_path){
+void Reporter::init(){
+
+}
+void Reporter::export_data(export_txt *data){
+
+}
+void Reporter::export_data(Export_HTML *data){
 
 }

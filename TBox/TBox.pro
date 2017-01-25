@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui webkit webkitwidgets qml quick testlib
+QT       += core gui webkit webkitwidgets qml quick testlib sql
 CONFIG   += c++11
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     export_data.cpp \
     export_txt.cpp \
     reporter.cpp \
-    treemodel.cpp
+    treemodel.cpp \
+    export_html.cpp
 
 HEADERS  += mainwindow.h \
     trsmanager.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h \
     export_data.h \
     export_txt.h \
     reporter.h \
-    treemodel.h
+    treemodel.h \
+    export_html.h
 
 FORMS    += mainwindow.ui
 

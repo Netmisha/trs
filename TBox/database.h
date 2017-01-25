@@ -52,7 +52,7 @@ public:
     QVector<row_data*> getDBdata();
     //void setDataForDB();
 public:
-
+    QString db_name;
     row_fields *rfO;
     row_data *rdO; // rdO = row_data Object
     QVariantList rc_dataV;

@@ -23,14 +23,20 @@
                 MyTreeModel_Role_Name = Qt::DisplayRole,
                 MyTreeModel_Role_Description = Qt::WhatsThisRole
             };
-
+            struct node{
+                QStandardItem *prev;
+                QModelIndex index;
+                QStandardItem *curr;
+                QString name;
+            };
+            QVector <node> leaf;
             QSqlDatabase db;
             QVector<QStringList> db_list;
             QStringList db_col;
             QString row_data;
             QStandardItem *filt;
             QStandardItem *rep;
-            void TreeModel::ConnectToDb();
+            void ConnectToDb();
             void FillTreeData(QStandardItem *root);
             void add_root();
             QStandardItem *root;

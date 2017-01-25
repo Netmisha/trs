@@ -1,14 +1,16 @@
 #ifndef EXPORT_DATA_H
 #define EXPORT_DATA_H
+#pragma once
+#include <reporter.h>
 #include <export_txt.h>
-
-class Export_data: public export_txt
-{
+#include <export_html.h>
+class export_txt;
+class Export_HTML;
+class Export_data: public Reporter{
 public:
     Export_data();
-    export_txt obj;
-    void exportTXT(QDir file_path);
-
+    virtual void export_data(export_txt *data);
+    virtual void export_data(Export_HTML *data);
 };
 
 #endif // EXPORT_DATA_H
