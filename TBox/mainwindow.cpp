@@ -34,6 +34,7 @@ public:
     Q_INVOKABLE static QString getJS(QString, QString);
     Q_INVOKABLE static void setJS(QString, QString, QString);
     Q_INVOKABLE void Run();
+    Q_INVOKABLE void RunOne();
     Q_INVOKABLE QStringList GetTags();
     Q_INVOKABLE void Stop();
     Q_INVOKABLE void setRootDir(QString);
@@ -128,17 +129,28 @@ void MainTree::setCurrentTag(QString tag) {
 }
 void MainTree::Set(QString path, QString data) {
     for (auto&it : treeData) {
-        if (it.item == currentIndex && it.type == "test") {
-            return dm.Set(it.file+"/suite/test/"+it.name+"/"+path, data);
+        if (it.item == currentIndex) {
+            if (it.type == "test") {
+                dm.Set(it.file+"/suite/test/"+it.name+"/"+path, data);
+            }
+            else if(it.type == "suite") {
+                dm.Set(it.file+"/suite/"+path, data);
+            }
         }
     }
 }
 QString MainTree::Get(QString path) {
     for (auto&it : treeData) {
-        if (it.item == currentIndex && it.type == "test") {
-            return dm.Get(it.file+"/suite/test/"+it.name+"/"+path);
+        if (it.item == currentIndex) {
+            if (it.type == "test") {
+                return dm.Get(it.file+"/suite/test/"+it.name+"/"+path);
+            }
+            else if(it.type == "suite") {
+                return dm.Get(it.file+"/suite/"+path);
+            }
         }
     }
+    return "";
 }
 QString MainTree::getFile(QModelIndex item) {
     for (auto&it : treeData) {
@@ -149,10 +161,9 @@ QString MainTree::getFile(QModelIndex item) {
     return NULL;
 }
 QString MainTree::FindTest(QModelIndex item) {
-    currentIndex=this->index(0,0);
+    currentIndex=item;
     for (auto&it : treeData) {
         if (it.item == item && it.type == "test") {
-            currentIndex=item;
             return getJS(it.file, it.name);
         }
     }
@@ -165,19 +176,29 @@ void MainTree::FindJSFile(QString data) {
         }
     }
 }
+void MainTree::RunOne() {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex && it.type == "test") {
+            view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
+        }
+    }
+}
 void MainTree::Run() {
     run=true;
     while (treeData.size()>0) {
         TreeInfo * ti = treeData.begin();
         if (ti->type == "test" && CheckTest(*ti)) {
             ti->repeat--;
-             TRSManager::Run(getJS(ti->file, ti->name), ti->file, ti->name);
-            break;
+             view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+ti->file+"'); Test.setName('"+ti->name+"');"+getJS(ti->file, ti->name) + "trs.RunNext();");
         }
         else {
             treeData.removeFirst();
             ti = treeData.begin();
         }
+    }
+    if (treeData.size()==0 || !run) {
+        Load(rootDir);
+        run = false;
     }
 }
 QStringList MainTree::GetTags() {

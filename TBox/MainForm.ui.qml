@@ -65,11 +65,6 @@ Item {
                             onClicked: mainsetting.show();
                             iconSource: "icons/icons/Settings.png"
                         }
-                        ToolButton {
-                            id: saveJS
-                            onClicked: theModel.FindJSFile(jsCodeEdit.text);
-                            iconSource: "icons/icons/jssave.png"
-                        }
                     }
                 }
             }
@@ -103,6 +98,7 @@ Item {
                               anchors.fill: parent
                               onClicked: {
                                   jsCodeEdit.text = theModel.FindTest(styleData.index);
+                                  testName.text=theModel.Get("name");
                                   if(theModel.Get("disable")=="true"){
                                       testStatus.iconSource="icons/icons/turnoff.png";;
                                   }
@@ -143,7 +139,6 @@ Item {
                                             Text {
                                                 id:testName
                                             }
-                                            Item { Layout.fillWidth: true }
                                             ToolButton {
                                                 id: testStatus
                                                 onClicked: {
@@ -159,6 +154,12 @@ Item {
                                                 iconSource: "icons/icons/turnon.png"
                                             }
                                             ToolButton {
+                                                id: testRun
+                                                iconSource: "icons/icons/Run.png"
+                                                onClicked: theModel.RunOne()
+                                            }
+                                            Item { Layout.fillWidth: true }
+                                            ToolButton {
                                                 id: testDelete
                                                 iconSource: "icons/icons/testdelete.png"
                                                 onClicked:{}
@@ -167,6 +168,11 @@ Item {
                                                 id: testEdit
                                                 iconSource: "icons/icons/testedit.png"
                                                 onClicked:{}
+                                            }
+                                            ToolButton {
+                                                id: saveJS
+                                                onClicked: theModel.FindJSFile(jsCodeEdit.text);
+                                                iconSource: "icons/icons/jssave.png"
                                             }
                                             ToolButton {
                                                 id: testSetting
