@@ -33,16 +33,22 @@ public:
     Q_INVOKABLE static QString getJS(QString, QString);
     Q_INVOKABLE static void setJS(QString, QString, QString);
     Q_INVOKABLE void Run();
+    Q_INVOKABLE QStringList GetTags();
     Q_INVOKABLE void Stop();
     Q_INVOKABLE void setRootDir(QString);
+    Q_INVOKABLE void setCurrentTag(QString);
 private:
     QStandardItem * Parse(QString, QStandardItem *);
     void ParseFolder(QString);
+    bool CheckTest(TreeInfo);
     QHash<int, QByteArray> m_roleNameMapping;
     QVector<TreeInfo> treeData;
     QString rootDir;
     QModelIndex currentIndex;
     bool run=false;
+    QStringList tags;
+    QString currentTag="All";
+    DataManager dm;
 };
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -79,11 +85,19 @@ void MainWindow::writeMSG(QString msg){
 
 void MainTree::RunNext(){
     while (treeData.size()>0 && run) {
-        TreeInfo ti = treeData.first();
-        treeData.removeFirst();
-        if (ti.type == "test") {
-            TRSManager::Run(getJS(ti.file, ti.name), ti.file, ti.name);
+        TreeInfo* ti = treeData.begin();
+        if(ti->repeat<=0) {
+            treeData.removeFirst();
+            ti = treeData.begin();
+        }
+        if (ti->type == "test" && CheckTest(*ti)) {
+            ti->repeat--;
+            TRSManager::Run(getJS(ti->file, ti->name), ti->file, ti->name);
             break;
+        }
+        else {
+            treeData.removeFirst();
+            ti = treeData.begin();
         }
     }
     if (treeData.size()==0 || !run) {
@@ -104,6 +118,9 @@ void MainTree::Load(QString path) {
 }
 void MainTree::setRootDir(QString path) {
     rootDir=path;
+}
+void MainTree::setCurrentTag(QString tag) {
+    currentTag=tag;
 }
 QString MainTree::getFile(QModelIndex item) {
     for (auto&it : treeData) {
@@ -133,13 +150,20 @@ void MainTree::FindJSFile(QString data) {
 void MainTree::Run() {
     run=true;
     while (treeData.size()>0) {
-        TreeInfo ti = treeData.first();
-        treeData.removeFirst();
-        if (ti.type == "test") {
-             TRSManager::Run(getJS(ti.file, ti.name), ti.file, ti.name);
+        TreeInfo * ti = treeData.begin();
+        if (ti->type == "test" && CheckTest(*ti)) {
+            ti->repeat--;
+             TRSManager::Run(getJS(ti->file, ti->name), ti->file, ti->name);
             break;
         }
+        else {
+            treeData.removeFirst();
+            ti = treeData.begin();
+        }
     }
+}
+QStringList MainTree::GetTags() {
+    return tags;
 }
 void MainTree::Stop() {
     run=false;
@@ -162,6 +186,7 @@ QStandardItem * MainTree::Parse(QString path, QStandardItem * root) {
                 info.item = this->indexFromItem(suite);
                 info.name = name;
                 info.type = "suite";
+                info.repeat = dm.Get(info.file+"/suite/repeat").toInt();
                 treeData.push_back(info);
                 QStringList list = getTestsName(it.filePath());
                 for (auto& iter : list) {
@@ -172,6 +197,13 @@ QStandardItem * MainTree::Parse(QString path, QStandardItem * root) {
                     info.name = iter;
                     info.file = it.filePath();
                     info.type = "test";
+                    info.repeat = dm.Get(info.file+"/suite/test/"+iter+"/repeat").toInt();
+                    QStringList t=dm.Get(info.file+"/suite/test/"+iter+"/tag").split(",");
+                    for(auto&i:t) {
+                        if(!tags.contains(i)) {
+                            tags.push_back(i);
+                        }
+                    }
                     treeData.push_back(info);
                 }
             }
@@ -186,7 +218,26 @@ void MainTree::ParseFolder(QString path)
 {
     QStandardItem * root = new QStandardItem(QString("Tests"));
     this->appendRow(root);
+    tags.clear();
+    tags.push_back("All");
     Parse(path, root);
+}
+bool MainTree::CheckTest(TreeInfo info) {
+
+    qDebug() << "check";
+    if(dm.Get(info.file+"/suite/disable")=="false") {
+        if(dm.Get(info.file+"/suite/test/"+info.name+"/disable")=="false") {
+            if(currentTag=="All") {
+                return true;
+            }
+            else {
+                if(dm.Get(info.file+"/suite/test/"+info.name+"/tag").contains(currentTag)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 QStringList MainTree::getTestsName(QString file_name) {
     QFile file(file_name);

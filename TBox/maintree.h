@@ -6,6 +6,7 @@ struct TreeInfo {
     QString file;
     QString name;
     QString type;
+    int repeat;
     QModelIndex item;
 };
 #endif // MAINTREE_H

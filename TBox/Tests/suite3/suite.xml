@@ -17,7 +17,7 @@
 	</metadata>
 
 	<test name="Test1" description="Test description">
-		<tag>Release</tag>
+		<tag>Debug</tag>
 		<disable>false</disable>
 		<execution>test.js</execution>
 		<result>0</result>
@@ -25,7 +25,7 @@
         <maxTime>80</maxTime>
 	</test>
 	<test name="Test2" description="Test description">
-		<tag>Release</tag>
+		<tag>Release,Debug</tag>
 		<disable>false</disable>
 		<execution>test.js</execution>
 		<result>0</result>

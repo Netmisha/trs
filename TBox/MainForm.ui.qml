@@ -5,6 +5,8 @@ import QtQuick.Window 2.2
 import cMainTree 1.0
 import MainSetting 1.0
 import QtQml.Models 2.2
+import QtQuick.Controls.Styles 1.0
+import QtQuick.Controls.Private 1.0
 Item {
     id: root
     anchors.fill: parent
@@ -33,12 +35,18 @@ Item {
                         anchors.fill: parent;
                         ComboBox {
                             id: runTags
-                            model: [ "All"]
+                            width: 200
+                            activeFocusOnPress: true
+                            validator: IntValidator {bottom: 0; top: 10;}
+                            onCurrentIndexChanged: theModel.setCurrentTag(currentText);
                         }
 
                         ToolButton {
                             id: startButton
-                            onClicked: theModel.Run();
+                            onClicked: {
+                                consoleText.text="";
+                                theModel.Run();
+                            }
                             iconSource: "icons/icons/Run.png"
                         }
                         ToolButton {
@@ -115,8 +123,8 @@ Item {
                             Layout.fillHeight: true
                             TextEdit {
                                 id: jsCodeEdit
-                                width: 439
-                                height: 244
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
                                 textFormat: Text.PlainText
                                 renderType: Text.NativeRendering
                                 selectByMouse: true
@@ -183,6 +191,7 @@ Item {
                         text: {
                             var dir=settingFile.getRootDir();
                             theModel.Load(dir);
+                            runTags.model=theModel.GetTags();
                             return dir;
                         }
                         layer.enabled: true
