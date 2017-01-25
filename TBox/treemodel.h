@@ -37,6 +37,9 @@
             QStandardItem *filt;
             QStandardItem *rep;
             void ConnectToDb();
+
+            //void TreeModel::ConnectToDb();
+
             void FillTreeData(QStandardItem *root);
             void add_root();
             QStandardItem *root;

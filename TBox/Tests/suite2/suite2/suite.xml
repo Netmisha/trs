@@ -3,7 +3,7 @@
 	<tag>Release</tag>
 	<repeat pause = "100">120</repeat>
 	<maxTime>2s</maxTime>
-	<disable>false</disable>
+	<disable>true</disable>
 	<application>C:\Windows\SYSTEM32\mspaint.exe</application>
 	<windowName>Untitled - Paint</windowName>
 	<metadata>

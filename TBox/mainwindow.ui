@@ -13,6 +13,19 @@
   <property name="windowTitle">
    <string>TBox</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="qml.qrc">
+    <normaloff>:/icons/icons/tbox.png</normaloff>:/icons/icons/tbox.png</iconset>
+  </property>
+  <property name="iconSize">
+   <size>
+    <width>32</width>
+    <height>32</height>
+   </size>
+  </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <property name="spacing">
@@ -50,24 +63,6 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>748</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuStart">
-    <property name="title">
-     <string>Start</string>
-    </property>
-    <addaction name="actionStart"/>
-    <addaction name="actionClose"/>
-   </widget>
-   <addaction name="menuStart"/>
-  </widget>
   <action name="actionStart">
    <property name="text">
     <string>Start</string>
@@ -88,6 +83,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="qml.qrc"/>
+ </resources>
  <connections/>
 </ui>

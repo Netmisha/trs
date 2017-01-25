@@ -26,11 +26,7 @@ signals:
     void RunNext();
     void writeMSG(QString);
 public slots:
-    static QStringList getTestsName(QString);
-    static QString getSuiteName(QString);
-    static QString getJS(QString, QString);
-    static void Run(QString);
-
+    static void Run(QString, QString, QString);
 private:
 };
 

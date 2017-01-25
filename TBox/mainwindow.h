@@ -28,9 +28,6 @@ public slots:
     void RunNext();
     void writeMSG(QString);
 private slots:
-    void on_actionStart_triggered();
-
-    void on_actionClose_triggered();
 
 private:
     Ui::MainWindow *ui;

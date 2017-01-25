@@ -22,6 +22,7 @@ signals:
 public slots:
     void StartApp(QString);
     void CloseApp();
+    void SetOnTop(QString);
     void Sleep(int);
     int GetScreenWidth();
     int GetScreenHeight();
@@ -45,6 +46,7 @@ public slots:
 private:
     QProcess *process;
     POINT current_pos;
+    HWND windowHandle;
 };
 
 #endif // TRSCORE_H
