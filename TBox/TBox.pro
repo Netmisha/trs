@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui webkit webkitwidgets qml quick testlib sql xml
+QT       += core gui webkit webkitwidgets qml quick testlib sql xml core-private gui-private
 CONFIG   += c++11
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     treemodel.cpp \
     mainsetting.cpp \
     datamanager.cpp \
-    testinfo.cpp
+    testinfo.cpp \
+    filesave.cpp
 
 HEADERS  += mainwindow.h \
     trsmanager.h \
@@ -37,7 +38,8 @@ HEADERS  += mainwindow.h \
     treemodel.h \
     mainsetting.h \
     datamanager.h \
-    testinfo.h
+    testinfo.h \
+    filesave.h
 
 FORMS    += mainwindow.ui
 

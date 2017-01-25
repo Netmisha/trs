@@ -9,5 +9,8 @@
         <file>icons/Settings.png</file>
         <file>icons/Stop.png</file>
         <file>icons/tbox.png</file>
+        <file>icons/clear.png</file>
+        <file>icons/hide.png</file>
+        <file>icons/show.png</file>
     </qresource>
 </RCC>

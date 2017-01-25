@@ -7,6 +7,8 @@ import MainSetting 1.0
 import QtQml.Models 2.2
 import QtQuick.Controls.Styles 1.0
 import QtQuick.Controls.Private 1.0
+import QtQuick.Dialogs 1.2
+import FileSave 1.0
 Item {
     id: root
     anchors.fill: parent
@@ -68,7 +70,6 @@ Item {
                             onClicked: theModel.FindJSFile(jsCodeEdit.text);
                             iconSource: "icons/icons/jssave.png"
                         }
-
                     }
                 }
             }
@@ -132,17 +133,73 @@ Item {
                             }
                         }
                         Rectangle {
-                            id: consoleLog
-                            height: 200
+                            id: consoleRect
+                            height: 10
                             Layout.fillWidth: true
-                            color: "#f6f6f6"
-                            ScrollView {
+                            Layout.fillHeight: true
+                            ColumnLayout {
                                 anchors.fill: parent
-                                TextEdit {
-                                    id: consoleText
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    selectByMouse: true
-                                    font.pixelSize: 12
+                                Rectangle {
+                                    id: consoleLog
+                                    visible: false;
+                                    Layout.fillHeight: true
+                                    Layout.fillWidth: true
+                                    color: "#f6f6f6"
+                                    ColumnLayout {
+                                        anchors.fill: parent
+                                        ToolBar {
+                                            Layout.fillWidth: true
+                                            RowLayout {
+                                                id: consoleLayout
+                                                spacing: 5
+                                                anchors.fill: parent
+                                                Item { Layout.fillWidth: true }
+                                                ToolButton {
+                                                    id: consoleSave
+                                                    onClicked: {
+                                                        saveFile.open();
+                                                    }
+                                                    iconSource: "icons/icons/jssave.png"
+                                                }
+                                                ToolButton {
+                                                    id: consoleClear
+                                                    iconSource: "icons/icons/clear.png"
+                                                    onClicked: consoleText.text="";
+                                                }
+                                                ToolButton {
+                                                    id: consoleHide
+                                                    iconSource: "icons/icons/hide.png"
+                                                    onClicked:{consoleLog.visible=false; consoleUp.visible=true; consoleRect.height=10;}
+                                                }
+                                            }
+                                        }
+                                        ScrollView {
+                                            Layout.fillWidth: true
+                                            Layout.fillHeight: true
+                                            TextEdit {
+                                                id: consoleText
+                                                anchors.horizontalCenter: parent.horizontalCenter
+                                                selectByMouse: true
+                                                font.pixelSize: 12
+                                            }
+                                        }
+                                    }
+                                }
+                                Rectangle {
+                                    id: consoleUp
+                                    visible: true
+                                    height: 10;
+                                    Layout.fillWidth: true
+                                    color: "lightgray"
+                                    Text {
+                                        text: qsTr("^")
+                                        anchors.fill: parent
+                                        horizontalAlignment: Text.AlignHCenter
+                                    }
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {consoleLog.visible=true; consoleUp.visible=false;consoleRect.height=200;}
+                                    }
                                 }
                             }
                         }
@@ -151,6 +208,20 @@ Item {
             }
         }
     }
+    FileSaveDialog {
+            id: saveFile
+            title: "Save file"
+            filename: "log.txt"
+            nameFilters: ["Text file (*.txt)", "All files (*)"]
+
+            onAccepted: {
+                var request = new XMLHttpRequest();
+                request.open("PUT", saveFile.fileUrl, false);
+                request.send(consoleText.text);
+                return request.status;
+            }
+            onRejected: outputSaveFile.text = "File selected: –"
+        }
     Setting {
         id:settingFile
     }

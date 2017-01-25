@@ -4,6 +4,7 @@
 #include "mainsetting.h"
 #include "datamanager.h"
 #include "testinfo.h"
+#include "filesave.h"
 QWebView * view;
 
 class MainTree : public QStandardItemModel
@@ -65,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //view->setVisible(false);
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
     qmlRegisterType<MainSetting>("MainSetting", 1, 0, "Setting" );
+    qmlRegisterType<FileSaveDialog>("FileSave", 1, 0, "FileSaveDialog");
     QQuickView* qmlView = new QQuickView();
     QWidget* container = QWidget::createWindowContainer(qmlView, ui->centralWidget);
     QObject::connect(trs, SIGNAL(RunNext()),this, SLOT(RunNext()));
@@ -223,8 +225,6 @@ void MainTree::ParseFolder(QString path)
     Parse(path, root);
 }
 bool MainTree::CheckTest(TreeInfo info) {
-
-    qDebug() << "check";
     if(dm.Get(info.file+"/suite/disable")=="false") {
         if(dm.Get(info.file+"/suite/test/"+info.name+"/disable")=="false") {
             if(currentTag=="All") {
