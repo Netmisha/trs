@@ -17,5 +17,7 @@
         <file>icons/testsetting.png</file>
         <file>icons/turnoff.png</file>
         <file>icons/turnon.png</file>
+        <file>icons/newsuite.png</file>
+        <file>icons/newtest.png</file>
     </qresource>
 </RCC>

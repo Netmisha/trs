@@ -7,6 +7,14 @@
 namespace tags_name {
     const QString kXml = ".xml";
     const QString kName = "name";
+    const QString kDescription = "description";
+    const QString kTag = "tag";
+    const QString kDisable = "disable";
+    const QString kExecution = "execution";
+    const QString kResult = "result";
+    const QString kRepeat = "repeat";
+    const QString kPause = "pause";
+    const QString kMaxTime = "maxTime";
     const QString kTest = "test";
     const QString kData = "data";
 }
@@ -19,6 +27,8 @@ public:
 signals:
 public slots:
     void Set(QString, QString);
+    QString AddTest(QString, QString);
+    QString AddSuite(QString, QString);
     QString Get(QString);
 private:
 };

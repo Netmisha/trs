@@ -38,9 +38,12 @@ public:
     Q_INVOKABLE QStringList GetTags();
     Q_INVOKABLE void Stop();
     Q_INVOKABLE void setRootDir(QString);
+    Q_INVOKABLE void SetNewType(QString);
+    Q_INVOKABLE QString AddNew(QString);
     Q_INVOKABLE void setCurrentTag(QString);
     Q_INVOKABLE void Set(QString, QString);
     Q_INVOKABLE QString Get(QString);
+    Q_INVOKABLE QString GetType();
 private:
     QStandardItem * Parse(QString, QStandardItem *);
     void ParseFolder(QString);
@@ -51,6 +54,7 @@ private:
     QModelIndex currentIndex;
     bool run=false;
     QStringList tags;
+    QString addNewType="";
     QString currentTag="All";
     DataManager dm;
 };
@@ -124,6 +128,21 @@ void MainTree::Load(QString path) {
 void MainTree::setRootDir(QString path) {
     rootDir=path;
 }
+void MainTree::SetNewType(QString type) {
+    addNewType=type;
+}
+QString MainTree::AddNew(QString name) {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex) {
+            if(addNewType=="suite") {
+
+            }
+            else {
+                return dm.AddTest(it.file, name);
+            }
+        }
+    }
+}
 void MainTree::setCurrentTag(QString tag) {
     currentTag=tag;
 }
@@ -148,6 +167,14 @@ QString MainTree::Get(QString path) {
             else if(it.type == "suite") {
                 return dm.Get(it.file+"/suite/"+path);
             }
+        }
+    }
+    return "";
+}
+QString MainTree::GetType() {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex) {
+            return it.type;
         }
     }
     return "";

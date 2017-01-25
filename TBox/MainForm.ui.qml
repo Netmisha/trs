@@ -18,6 +18,24 @@ Item {
     function writeLog(msg) {
         consoleText.text=consoleText.text+msg+"\n";
     }
+    Item {
+        id: showMenu
+        function menuForSuite() {
+            testToolBar.visible=true;
+            newTest.visible=true;
+            newSuite.visible=true;
+            testEdit.visible=false;
+        }
+        function menuForTest() {
+            testToolBar.visible=true;
+            newTest.visible=false;
+            newSuite.visible=false;
+            testEdit.visible=true;
+        }
+        function hideAll() {
+            testToolBar.visible=false;
+        }
+    }
     ColumnLayout{
         anchors.fill: parent
         spacing: 2
@@ -98,12 +116,21 @@ Item {
                               anchors.fill: parent
                               onClicked: {
                                   jsCodeEdit.text = theModel.FindTest(styleData.index);
-                                  testName.text=theModel.Get("name");
-                                  if(theModel.Get("disable")=="true"){
-                                      testStatus.iconSource="icons/icons/turnoff.png";;
+                                  if(theModel.GetType()=="test") {
+                                      showMenu.menuForTest();
+                                  }
+                                  else if(theModel.GetType()=="suite") {
+                                      showMenu.menuForSuite();
                                   }
                                   else {
+                                    showMenu.hideAll();
+                                  }
+                                  testName.text=theModel.Get("name");
+                                  if(theModel.Get("disable")=="false"){
                                       testStatus.iconSource="icons/icons/turnon.png";
+                                  }
+                                  else {
+                                      testStatus.iconSource="icons/icons/turnoff.png";
                                   }
                               }
                           }
@@ -132,6 +159,8 @@ Item {
                                 ColumnLayout {
                                     anchors.fill: parent
                                     ToolBar {
+                                        id : testToolBar
+                                        visible: false;
                                         Layout.fillWidth: true
                                         RowLayout {
                                             spacing: 5
@@ -160,6 +189,22 @@ Item {
                                             }
                                             Item { Layout.fillWidth: true }
                                             ToolButton {
+                                                id: newTest
+                                                iconSource: "icons/icons/newtest.png"
+                                                onClicked: {
+                                                    theModel.SetNewType("test");
+                                                    addNewItem.show();
+                                                }
+                                            }
+                                            ToolButton {
+                                                id: newSuite
+                                                iconSource: "icons/icons/newsuite.png"
+                                                onClicked: {
+                                                    theModel.SetNewType("suite");
+                                                    addNewItem.show();
+                                                }
+                                            }
+                                            ToolButton {
                                                 id: testDelete
                                                 iconSource: "icons/icons/testdelete.png"
                                                 onClicked:{}
@@ -171,6 +216,7 @@ Item {
                                             }
                                             ToolButton {
                                                 id: saveJS
+                                                visible: false;
                                                 onClicked: theModel.FindJSFile(jsCodeEdit.text);
                                                 iconSource: "icons/icons/jssave.png"
                                             }
@@ -331,6 +377,8 @@ Item {
                         verticalAlignment: TextInput.AlignVCenter
                         selectByMouse: true
                         anchors.fill: parent
+                        anchors.rightMargin: 3
+                        anchors.leftMargin: 3
                         smooth: true
                         text: {
                             var dir=settingFile.getRootDir();
@@ -377,6 +425,98 @@ Item {
                     text: qsTr("Cancel")
                 }
             }
+        }
+    }
+    Window {
+        id: addNewItem
+        width: 320
+        height: 100
+        ColumnLayout {
+            anchors.topMargin: 5
+            anchors.bottomMargin: 10
+            anchors.rightMargin: 10
+            anchors.leftMargin: 10
+            anchors.fill: parent
+            RowLayout {
+                width: 100
+                height: 100
+                spacing: 10
+
+                Text {
+                    text: qsTr("Name")
+                    font.pixelSize: 12
+                }
+                Rectangle {
+                    id: newNameBorder
+                    width: 82
+                    height: 22
+                    border.color: "lightgray"
+                    border.width: 1
+                    Layout.fillWidth: true
+                    TextInput {
+                        id: newName
+                        verticalAlignment: TextInput.AlignVCenter
+                        selectByMouse: true
+                        anchors.fill: parent
+                        anchors.rightMargin: 3
+                        anchors.leftMargin: 3
+                        smooth: true
+                        layer.enabled: true
+                        font.pixelSize: 12
+                        onFocusChanged: {
+                                    if(focus){
+                                        newNameBorder.border.color = "#569ffd"
+                                    }else{
+                                        newNameBorder.border.color = "lightgray"
+                                    }
+                                }
+                    }
+                }
+            }
+            Item {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+            }
+            RowLayout {
+                width: 100
+                height: 100
+                Button {
+                    id: newCancel
+                    text: qsTr("Cancel")
+                    onClicked: {
+                        addNewItem.close();
+                        newName.text="";
+                    }
+                }
+                Button {
+                    id: newOk
+                    text: qsTr("Ok")
+                    onClicked: {
+                        if(newName.text!="") {
+                            var res=theModel.AddNew(newName.text);
+                            if(res!="") {
+                                messageDialog.text=res;
+                                messageDialog.open();
+                            }
+                            theModel.Load(settingFile.getRootDir());
+                            addNewItem.close();
+                            newName.text="";
+                        }
+                        else {
+                            //show error
+                        }
+                    }
+                }
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            }
+        }
+    }
+    MessageDialog {
+        id: messageDialog
+        title: "Warning"
+        onAccepted: {
+            Qt.quit()
         }
     }
 }
