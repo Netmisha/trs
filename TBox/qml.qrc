@@ -12,5 +12,10 @@
         <file>icons/clear.png</file>
         <file>icons/hide.png</file>
         <file>icons/show.png</file>
+        <file>icons/testdelete.png</file>
+        <file>icons/testedit.png</file>
+        <file>icons/testsetting.png</file>
+        <file>icons/turnoff.png</file>
+        <file>icons/turnon.png</file>
     </qresource>
 </RCC>

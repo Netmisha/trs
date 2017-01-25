@@ -38,6 +38,8 @@ public:
     Q_INVOKABLE void Stop();
     Q_INVOKABLE void setRootDir(QString);
     Q_INVOKABLE void setCurrentTag(QString);
+    Q_INVOKABLE void Set(QString, QString);
+    Q_INVOKABLE QString Get(QString);
 private:
     QStandardItem * Parse(QString, QStandardItem *);
     void ParseFolder(QString);
@@ -123,6 +125,20 @@ void MainTree::setRootDir(QString path) {
 }
 void MainTree::setCurrentTag(QString tag) {
     currentTag=tag;
+}
+void MainTree::Set(QString path, QString data) {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex && it.type == "test") {
+            return dm.Set(it.file+"/suite/test/"+it.name+"/"+path, data);
+        }
+    }
+}
+QString MainTree::Get(QString path) {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex && it.type == "test") {
+            return dm.Get(it.file+"/suite/test/"+it.name+"/"+path);
+        }
+    }
 }
 QString MainTree::getFile(QModelIndex item) {
     for (auto&it : treeData) {

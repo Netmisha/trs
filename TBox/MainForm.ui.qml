@@ -101,7 +101,15 @@ Item {
                           }
                           MouseArea{
                               anchors.fill: parent
-                              onClicked: jsCodeEdit.text = theModel.FindTest(styleData.index)
+                              onClicked: {
+                                  jsCodeEdit.text = theModel.FindTest(styleData.index);
+                                  if(theModel.Get("disable")=="true"){
+                                      testStatus.iconSource="icons/icons/turnoff.png";;
+                                  }
+                                  else {
+                                      testStatus.iconSource="icons/icons/turnon.png";
+                                  }
+                              }
                           }
                        }
                        TableViewColumn {
@@ -118,23 +126,74 @@ Item {
                     SplitView {
                         anchors.fill: parent
                         orientation: Qt.Vertical
-                        ScrollView {
+                        ColumnLayout {
                             Layout.minimumHeight: 200
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            TextEdit {
-                                id: jsCodeEdit
+                            Rectangle {
+                                height: 30
+                                Layout.fillWidth: true
+                                ColumnLayout {
+                                    anchors.fill: parent
+                                    ToolBar {
+                                        Layout.fillWidth: true
+                                        RowLayout {
+                                            spacing: 5
+                                            anchors.fill: parent
+                                            Text {
+                                                id:testName
+                                            }
+                                            Item { Layout.fillWidth: true }
+                                            ToolButton {
+                                                id: testStatus
+                                                onClicked: {
+                                                    if(theModel.Get("disable")=="true"){
+                                                        testStatus.iconSource="icons/icons/turnon.png";
+                                                        theModel.Set("disable","false");
+                                                    }
+                                                    else {
+                                                        testStatus.iconSource="icons/icons/turnoff.png";
+                                                        theModel.Set("disable","true");
+                                                    }
+                                                }
+                                                iconSource: "icons/icons/turnon.png"
+                                            }
+                                            ToolButton {
+                                                id: testDelete
+                                                iconSource: "icons/icons/testdelete.png"
+                                                onClicked:{}
+                                            }
+                                            ToolButton {
+                                                id: testEdit
+                                                iconSource: "icons/icons/testedit.png"
+                                                onClicked:{}
+                                            }
+                                            ToolButton {
+                                                id: testSetting
+                                                iconSource: "icons/icons/testsetting.png"
+                                                onClicked:{}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            ScrollView {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                textFormat: Text.PlainText
-                                renderType: Text.NativeRendering
-                                selectByMouse: true
-                                font.pixelSize: 12
+                                TextEdit {
+                                    id: jsCodeEdit
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    textFormat: Text.PlainText
+                                    renderType: Text.NativeRendering
+                                    selectByMouse: true
+                                    font.pixelSize: 12
+                                }
                             }
                         }
                         Rectangle {
                             id: consoleRect
-                            height: 10
+                            Layout.minimumHeight: 10
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             ColumnLayout {
@@ -169,7 +228,11 @@ Item {
                                                 ToolButton {
                                                     id: consoleHide
                                                     iconSource: "icons/icons/hide.png"
-                                                    onClicked:{consoleLog.visible=false; consoleUp.visible=true; consoleRect.height=10;}
+                                                    onClicked:{
+                                                        consoleLog.visible=false;
+                                                        consoleUp.visible=true;
+                                                        consoleRect.height=10;
+                                                    }
                                                 }
                                             }
                                         }
@@ -198,7 +261,11 @@ Item {
                                     }
                                     MouseArea {
                                         anchors.fill: parent
-                                        onClicked: {consoleLog.visible=true; consoleUp.visible=false;consoleRect.height=200;}
+                                        onClicked: {
+                                            consoleLog.visible=true;
+                                            consoleUp.visible=false;
+                                            consoleRect.height=200;
+                                        }
                                     }
                                 }
                             }
