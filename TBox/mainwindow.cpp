@@ -81,6 +81,13 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
     object = qmlView->rootObject();
     ui->verticalLayout->addWidget(container);
+    QWebSettings* settings = QWebSettings::globalSettings();
+    settings->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    settings->setAttribute(QWebSettings::AcceleratedCompositingEnabled, true);
+    settings->setAttribute(QWebSettings::LocalContentCanAccessRemoteUrls, true);
+    settings->setAttribute(QWebSettings::LocalContentCanAccessFileUrls, true);
+    settings->setAttribute(QWebSettings::LocalStorageEnabled, true);
+    settings->setAttribute(QWebSettings::JavascriptEnabled, true);
 }
 MainWindow::~MainWindow(){
     delete ui;
