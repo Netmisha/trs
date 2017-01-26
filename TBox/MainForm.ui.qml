@@ -223,7 +223,15 @@ Item {
                                             ToolButton {
                                                 id: testDelete
                                                 iconSource: "icons/icons/testdelete.png"
-                                                onClicked:{}
+                                                onClicked: {
+                                                    var res=theModel.Remove();
+                                                    if(res!="") {
+                                                        messageDialog.text=res;
+                                                        messageDialog.open()
+                                                        return;
+                                                    }
+                                                    theModel.Load(settingFile.getRootDir());
+                                                }
                                             }
                                             ToolButton {
                                                 id: testEdit

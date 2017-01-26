@@ -34,7 +34,9 @@ void DataManager::Set(QString path, QString data) {
     }
     file.close();
     file.open(QIODevice::WriteOnly);
-    file.write(doc.toString().toLatin1());
+    QTextStream stream( &file );
+    stream << doc.toString();
+    file.close();
     file.close();
 }
 QString DataManager::AddTest(QString path, QString name, QString dis, QString tag, QString exe, QString rep, QString disable) {
@@ -127,6 +129,41 @@ QString DataManager::AddSuite(QString path, QString name, QString dis, QString r
     QTextStream stream( &file );
     stream << doc.toString();
     file.close();
+    return "";
+}
+QString DataManager::RemoveTest(QString path, QString name) {
+    QDomDocument doc;
+    QFile file(path);
+    file.open(QIODevice::ReadOnly);
+    if (!doc.setContent(&file, false)) {
+            return "";
+    }
+    QDomElement root = doc.documentElement();
+    QDomElement test = root.firstChildElement(tags_name::kTest);
+    while (test.attribute(tags_name::kName)!=name) {
+        test = test.nextSiblingElement(tags_name::kTest);
+    }
+    file.close();
+    if(!test.isNull()) {
+        root.removeChild(test);
+        file.open(QIODevice::WriteOnly);
+        QTextStream stream( &file );
+        stream << doc.toString();
+        file.close();
+        return "";
+    }
+    file.close();
+    return "Test dont found!";
+}
+QString DataManager::RemoveSuite(QString path) {
+    QString newpath=path;
+    newpath.data()[path.lastIndexOf("/")]='\0';
+    newpath=QString(newpath.data());
+    if(!QDir(newpath).exists()) {
+        return "Suite does not exists!";
+    }
+    QDir qd(newpath);
+    qd.removeRecursively();
     return "";
 }
 QString DataManager::Get(QString path) {

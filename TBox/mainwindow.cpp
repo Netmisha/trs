@@ -187,7 +187,17 @@ QString MainTree::GetType() {
     return "";
 }
 QString MainTree::Remove() {
-
+    for (auto&it : treeData) {
+        if (it.item == currentIndex) {
+            if(it.type=="suite") {
+                dm.RemoveSuite(it.file);
+            }
+            else {
+                dm.RemoveTest(it.file, it.name);
+            }
+        }
+    }
+    return "";
 }
 QModelIndex MainTree::getCurrentIndex() {
     return currentIndex;
