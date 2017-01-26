@@ -228,18 +228,48 @@ Item {
                                             ToolButton {
                                                 id: testEdit
                                                 iconSource: "icons/icons/testedit.png"
-                                                onClicked:{}
+                                                onClicked:{
+                                                    testStatus.visible=false;
+                                                    testRun.visible=false;
+                                                    testDelete.visible=false;
+                                                    testSetting.visible=false;
+                                                    testEdit.visible=false;
+                                                    jsCodeEdit.readOnly=false;
+                                                    saveJS.visible=true;
+                                                    mainTree.enabled=false;
+                                                    mainToolBar.enabled=false;
+                                                    jsCodeEdit.selectByMouse = true
+                                                }
                                             }
                                             ToolButton {
                                                 id: saveJS
                                                 visible: false;
-                                                onClicked: theModel.FindJSFile(jsCodeEdit.text);
+                                                onClicked: {
+                                                    theModel.FindJSFile(jsCodeEdit.text);
+                                                    testStatus.visible=true;
+                                                    testRun.visible=true;
+                                                    testDelete.visible=true;
+                                                    testSetting.visible=true;
+                                                    jsCodeEdit.readOnly=true;
+                                                    testEdit.visible=true;
+                                                    saveJS.visible=false;
+                                                    mainTree.enabled=true;
+                                                    mainToolBar.enabled=true;
+                                                    jsCodeEdit.selectByMouse = false
+                                                }
                                                 iconSource: "icons/icons/jssave.png"
                                             }
                                             ToolButton {
                                                 id: testSetting
                                                 iconSource: "icons/icons/testsetting.png"
-                                                onClicked:{}
+                                                onClicked:{
+                                                    if(theModel.GetType() == "test") {
+                                                        //addTestLayout.visible=true;
+                                                    }
+                                                    else if(theModel.GetType()=="suite") {
+                                                        //addSuiteLayout.visible=true;
+                                                    }
+                                                }
                                             }
                                             ToolButton {
                                                 id: restoreNew
@@ -324,16 +354,19 @@ Item {
                             }
                             ScrollView {
                                 id: jsCodeScroll
+                                Layout.minimumWidth: 200
+                                Layout.minimumHeight: 200
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 TextEdit {
                                     id: jsCodeEdit
+                                    readOnly: true
+                                    selectByMouse: false
+                                    font.pixelSize: 12
+                                    Layout.minimumWidth: 200
+                                    Layout.minimumHeight: 200
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
-                                    textFormat: Text.PlainText
-                                    renderType: Text.NativeRendering
-                                    selectByMouse: true
-                                    font.pixelSize: 12
                                 }
                             }
                             Rectangle {
