@@ -44,6 +44,7 @@ public:
     Q_INVOKABLE void Set(QString, QString);
     Q_INVOKABLE QString Get(QString);
     Q_INVOKABLE QString GetType();
+    Q_INVOKABLE QString Remove();
     Q_INVOKABLE QModelIndex getCurrentIndex();
 private:
     QStandardItem * Parse(QString, QStandardItem *);
@@ -184,6 +185,9 @@ QString MainTree::GetType() {
         }
     }
     return "";
+}
+QString MainTree::Remove() {
+
 }
 QModelIndex MainTree::getCurrentIndex() {
     return currentIndex;

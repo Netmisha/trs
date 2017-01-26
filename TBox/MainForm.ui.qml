@@ -236,10 +236,30 @@ Item {
                                                     testEdit.visible=false;
                                                     jsCodeEdit.readOnly=false;
                                                     saveJS.visible=true;
+                                                    cancelJS.visible=true;
                                                     mainTree.enabled=false;
                                                     mainToolBar.enabled=false;
                                                     jsCodeEdit.selectByMouse = true
                                                 }
+                                            }
+                                            ToolButton {
+                                                id: cancelJS
+                                                visible: false;
+                                                onClicked: {
+                                                    jsCodeEdit.text = theModel.FindTest(theModel.getCurrentIndex());
+                                                    testStatus.visible=true;
+                                                    testRun.visible=true;
+                                                    testDelete.visible=true;
+                                                    testSetting.visible=true;
+                                                    jsCodeEdit.readOnly=true;
+                                                    testEdit.visible=true;
+                                                    saveJS.visible=false;
+                                                    cancelJS.visible=false;
+                                                    mainTree.enabled=true;
+                                                    mainToolBar.enabled=true;
+                                                    jsCodeEdit.selectByMouse = false
+                                                }
+                                                iconSource: "icons/icons/restore.png"
                                             }
                                             ToolButton {
                                                 id: saveJS
@@ -253,6 +273,7 @@ Item {
                                                     jsCodeEdit.readOnly=true;
                                                     testEdit.visible=true;
                                                     saveJS.visible=false;
+                                                    cancelJS.visible=false;
                                                     mainTree.enabled=true;
                                                     mainToolBar.enabled=true;
                                                     jsCodeEdit.selectByMouse = false
