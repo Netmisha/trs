@@ -209,7 +209,15 @@ Item {
                                                 iconSource: "icons/icons/newsuite.png"
                                                 onClicked: {
                                                     jsCodeScroll.visible=false;
-                                                    addTestLayout.visible=true;
+                                                    addSuiteLayout.visible=true;
+                                                    testName.text="New Suite";
+                                                    testRun.visible=false;
+                                                    newTest.visible=false;
+                                                    newSuite.visible=false;
+                                                    testDelete.visible=false;
+                                                    testSetting.visible=false;
+                                                    restoreNew.visible=true;
+                                                    saveNew.visible=true;
                                                 }
                                             }
                                             ToolButton {
@@ -244,12 +252,15 @@ Item {
                                                         textEditTTag.text="";
                                                         textEditTRepeat.text="";
                                                         addTestLayout.visible=false;
-                                                        jsCodeScroll.visible=true;
                                                     }
                                                     else {
-
+                                                        textEditSName.text="";
+                                                        textEditSDiscr.text="";
+                                                        textEditSRepeat.text="";
+                                                        addSuiteLayout.visible=false;
+                                                        jsCodeScroll.visible=true;
                                                     }
-
+                                                    jsCodeScroll.visible=true;
                                                     testName.text=theModel.Get("name");
                                                     testRun.visible=true;
                                                     newTest.visible=true;
@@ -280,11 +291,22 @@ Item {
                                                         textEditTTag.text="";
                                                         textEditTRepeat.text="";
                                                         addTestLayout.visible=false;
-                                                        jsCodeScroll.visible=true;
-                                                        theModel.Load(settingFile.getRootDir());
                                                     }
                                                     else {
+                                                        var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
+                                                        var res=theModel.AddNewSuite(textEditSName.text,textEditSDiscr.text, textEditSRepeat.text, dis);
+                                                        if(res!="") {
+                                                            messageDialog.text=res;
+                                                            messageDialog.open()
+                                                            return;
+                                                        }
+                                                        textEditSName.text="";
+                                                        textEditSDiscr.text="";
+                                                        textEditSRepeat.text="";
+                                                        addSuiteLayout.visible=false;
                                                     }
+                                                    jsCodeScroll.visible=true;
+                                                    theModel.Load(settingFile.getRootDir());
                                                     testName.text=theModel.Get("name");
                                                     testRun.visible=true;
                                                     newTest.visible=true;
@@ -317,6 +339,154 @@ Item {
                             Rectangle {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
+                                ColumnLayout {
+                                    id: addSuiteLayout
+                                    visible:  false
+                                    spacing: 10
+                                    anchors.rightMargin: 10
+                                    anchors.bottomMargin: 10
+                                    anchors.leftMargin: 10
+                                    anchors.topMargin: 10
+                                    anchors.fill: parent
+                                    RowLayout {
+                                        y: 0
+                                        height: 36
+                                        anchors.right: parent.right
+                                        Text {
+                                            width: 60
+                                            text: qsTr("Name")
+                                            font.pixelSize: 12
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                        Rectangle {
+                                            id: nameSRect
+                                            Layout.fillWidth: true
+                                            Layout.fillHeight: true
+                                            border.color: "lightgray"
+                                            border.width: 1
+                                            TextEdit {
+                                                id: textEditSName
+                                                text: qsTr("")
+                                                anchors.fill: parent
+                                                font.pixelSize: 12
+                                                Layout.fillWidth: true
+                                                anchors.rightMargin: 3
+                                                anchors.leftMargin: 3
+                                                selectByMouse: true
+                                                smooth: true
+                                                verticalAlignment: TextInput.AlignVCenter
+                                                onFocusChanged: {
+                                                            if(focus){
+                                                                nameSRect.border.color = "#569ffd"
+                                                            }else{
+                                                                nameSRect.border.color = "lightgray"
+                                                            }
+                                                        }
+                                            }
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.leftMargin: 0
+                                        anchors.rightMargin: 0
+                                    }
+                                    RowLayout {
+                                        y: 0
+                                        height: 70
+                                        Layout.minimumHeight: 68
+                                        anchors.right: parent.right
+                                        ColumnLayout {
+                                            width: 100
+                                            height: 100
+                                            Layout.minimumHeight: 66
+                                            Text {
+                                                text: qsTr("Description")
+                                                font.pixelSize: 12
+                                                verticalAlignment: Text.AlignVCenter
+                                            }
+                                            Rectangle {
+                                                id: descriptionSRect
+                                                Layout.fillWidth: true
+                                                Layout.fillHeight: true
+                                                border.color: "lightgray"
+                                                border.width: 1
+                                                TextEdit {
+                                                    id: textEditSDiscr
+                                                    text: qsTr("")
+                                                    anchors.fill: parent
+                                                    Layout.minimumHeight: 50
+                                                    font.pixelSize: 12
+                                                    Layout.fillWidth: true
+                                                    anchors.rightMargin: 3
+                                                    anchors.leftMargin: 3
+                                                    selectByMouse: true
+                                                    smooth: true
+                                                    onFocusChanged: {
+                                                                if(focus){
+                                                                    descriptionSRect.border.color = "#569ffd"
+                                                                }else{
+                                                                    descriptionSRect.border.color = "lightgray"
+                                                                }
+                                                            }
+                                                }
+                                            }
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.leftMargin: 0
+                                        anchors.rightMargin: 0
+                                    }
+                                    RowLayout {
+                                        y: 0
+                                        height: 36
+                                        anchors.right: parent.right
+                                        Text {
+                                            width: 60
+                                            text: qsTr("Repeat")
+                                            font.pixelSize: 12
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+
+                                        Rectangle {
+                                            id:repeatSRect
+                                            Layout.fillWidth: true
+                                            Layout.fillHeight: true
+                                            border.color: "lightgray"
+                                            border.width: 1
+                                            TextEdit {
+                                                id: textEditSRepeat
+                                                text: qsTr("")
+                                                anchors.fill: parent
+                                                font.pixelSize: 12
+                                                Layout.fillWidth: true
+                                                anchors.rightMargin: 3
+                                                anchors.leftMargin: 3
+                                                selectByMouse: true
+                                                smooth: true
+                                                verticalAlignment: TextInput.AlignVCenter
+                                                onFocusChanged: {
+                                                            if(focus){
+                                                                repeatSRect.border.color = "#569ffd"
+                                                            }else{
+                                                                repeatSRect.border.color = "lightgray"
+                                                            }
+                                                        }
+                                            }
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.rightMargin: 0
+                                        anchors.leftMargin: 0
+                                    }
+                                    Item {
+                                        width: 200
+                                        height: 200
+                                        Layout.fillHeight: true
+                                        Layout.fillWidth: true
+                                    }
+                                }
                                 ColumnLayout {
                                     id: addTestLayout
                                     visible:  false
@@ -507,7 +677,6 @@ Item {
                                         anchors.leftMargin: 0
                                         anchors.rightMargin: 0
                                     }
-
                                     RowLayout {
                                         y: 0
                                         height: 36

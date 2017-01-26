@@ -1,6 +1,7 @@
 #include "datamanager.h"
 #include <QDebug>
 #include <QDomDocument>
+#include <QDir>
 DataManager::DataManager(QObject *parent) : QObject(parent) {
 
 }
@@ -37,16 +38,16 @@ void DataManager::Set(QString path, QString data) {
     file.close();
 }
 QString DataManager::AddTest(QString path, QString name, QString dis, QString tag, QString exe, QString rep, QString disable) {
-    qDebug()<<name;
-    qDebug()<<dis;
-    qDebug()<<tag;
-    qDebug()<<exe;
-    qDebug()<<rep;
-    qDebug()<<disable;
     if(name=="" || dis=="" || tag=="" || exe=="" || rep=="" || !(disable=="true" || disable=="false")) {
         return "Fill all fields correctly!";
     }
     QDomDocument doc;
+    QString jspath=path;
+    jspath.data()[path.lastIndexOf("/")+1]='\0';
+    jspath=QString(jspath.data())+exe;
+    QFile js(jspath);
+    js.open(QIODevice::WriteOnly);
+    js.close();
     QFile file(path);
     file.open(QIODevice::ReadOnly);
     if (doc.setContent(&file, false)) {
@@ -59,7 +60,6 @@ QString DataManager::AddTest(QString path, QString name, QString dis, QString ta
             }
             test = test.nextSiblingElement(tags_name::kTest);
         }
-        test  = root.lastChildElement(tags_name::kTest);
         QDomElement node = doc.createElement(tags_name::kTest);
         node.setAttribute(tags_name::kName, name);
         node.setAttribute(tags_name::kDescription, dis);
@@ -73,13 +73,8 @@ QString DataManager::AddTest(QString path, QString name, QString dis, QString ta
         snode = doc.createElement(tags_name::kExecution);
         snode.appendChild( doc.createTextNode(exe));
         node.appendChild(snode);
-        snode = doc.createElement(tags_name::kResult);
-        node.appendChild(snode);
         snode = doc.createElement(tags_name::kRepeat);
         snode.appendChild( doc.createTextNode(rep));
-        snode.setAttribute(tags_name::kPause, "");
-        node.appendChild(snode);
-        snode = doc.createElement(tags_name::kMaxTime);
         node.appendChild(snode);
     }
     file.close();
@@ -88,8 +83,51 @@ QString DataManager::AddTest(QString path, QString name, QString dis, QString ta
     file.close();
     return "";
 }
-QString DataManager::AddSuite(QString file, QString name) {
-
+QString DataManager::AddSuite(QString path, QString name, QString dis, QString rep, QString disable) {
+    if(name=="" || dis=="" || rep=="" || !(disable=="true" || disable=="false")) {
+        return "Fill all fields correctly!";
+    }
+    QDomDocument doc;
+    QString newpath=path;
+    newpath.data()[path.lastIndexOf("/")+1]='\0';
+    newpath=QString(newpath.data())+name;
+    if(QDir(newpath).exists()) {
+        return "Suite already exists!";
+    }
+    QDir qd;
+    qd.mkpath(newpath);
+    QFile file(newpath+"/suite.xml");
+    file.open(QIODevice::WriteOnly);
+    QDomElement node = doc.createElement(tags_name::kSuite);
+    node.setAttribute(tags_name::kName, name);
+    node.setAttribute(tags_name::kDescription, dis);
+    QDomElement snode = doc.createElement(tags_name::kRepeat);
+    snode.appendChild( doc.createTextNode(rep));
+    node.appendChild(snode);
+    snode = doc.createElement(tags_name::kDisable);
+    snode.appendChild( doc.createTextNode(disable));
+    node.appendChild(snode);
+    QDomElement mnode = doc.createElement(tags_name::kMetadata);
+    snode = doc.createElement(tags_name::kAuthor);
+    mnode.appendChild(snode);
+    snode = doc.createElement(tags_name::kDate);
+    mnode.appendChild(snode);
+    snode = doc.createElement(tags_name::kVersion);
+    mnode.appendChild(snode);
+    snode = doc.createElement(tags_name::kMail);
+    mnode.appendChild(snode);
+    snode = doc.createElement(tags_name::kCopyright);
+    mnode.appendChild(snode);
+    snode = doc.createElement(tags_name::kLicense);
+    mnode.appendChild(snode);
+    snode = doc.createElement(tags_name::kInfo);
+    mnode.appendChild(snode);
+    node.appendChild(mnode);
+    doc.appendChild(node);
+    QTextStream stream( &file );
+    stream << doc.toString();
+    file.close();
+    return "";
 }
 QString DataManager::Get(QString path) {
     QDomDocument doc;

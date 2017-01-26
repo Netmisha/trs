@@ -39,10 +39,12 @@ public:
     Q_INVOKABLE void Stop();
     Q_INVOKABLE void setRootDir(QString);
     Q_INVOKABLE QString AddNewTest(QString, QString, QString, QString, QString, QString);
+    Q_INVOKABLE QString AddNewSuite(QString, QString, QString, QString);
     Q_INVOKABLE void setCurrentTag(QString);
     Q_INVOKABLE void Set(QString, QString);
     Q_INVOKABLE QString Get(QString);
     Q_INVOKABLE QString GetType();
+    Q_INVOKABLE QModelIndex getCurrentIndex();
 private:
     QStandardItem * Parse(QString, QStandardItem *);
     void ParseFolder(QString);
@@ -126,10 +128,17 @@ void MainTree::Load(QString path) {
 void MainTree::setRootDir(QString path) {
     rootDir=path;
 }
-QString MainTree::AddNewTest(QString name, QString dis, QString tag, QString exe, QString rep, QString disable) {
+QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag, QString rep, QString disable) {
     for (auto&it : treeData) {
         if (it.item == currentIndex) {
             return dm.AddTest(it.file, name, dis, tag, exe, rep, disable);
+        }
+    }
+}
+QString MainTree::AddNewSuite(QString name, QString dis, QString rep, QString disable) {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex) {
+            return dm.AddSuite(it.file, name, dis, rep, disable);
         }
     }
 }
@@ -168,6 +177,9 @@ QString MainTree::GetType() {
         }
     }
     return "";
+}
+QModelIndex MainTree::getCurrentIndex() {
+    return currentIndex;
 }
 QString MainTree::getFile(QModelIndex item) {
     for (auto&it : treeData) {
@@ -227,6 +239,7 @@ void MainTree::Stop() {
 QStandardItem * MainTree::Parse(QString path, QStandardItem * root) {
     QDirIterator it(path, QDirIterator::NoIteratorFlags);
     QStandardItem * suite;
+    QStringList chilSuite;
     while (it.hasNext()) {
         it.next();
         if (it.filePath().contains("/.") || it.filePath().contains("/.")) {
@@ -264,9 +277,12 @@ QStandardItem * MainTree::Parse(QString path, QStandardItem * root) {
                 }
             }
             if (it.fileInfo().isDir()) {
-                Parse(it.filePath(), suite);
+                chilSuite.push_back(it.filePath());
             }
         }
+    }
+    for(auto&ind:chilSuite) {
+        Parse(ind, suite);
     }
     return suite;
 }

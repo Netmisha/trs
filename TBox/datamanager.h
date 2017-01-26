@@ -11,12 +11,19 @@ namespace tags_name {
     const QString kTag = "tag";
     const QString kDisable = "disable";
     const QString kExecution = "execution";
-    const QString kResult = "result";
     const QString kRepeat = "repeat";
-    const QString kPause = "pause";
-    const QString kMaxTime = "maxTime";
     const QString kTest = "test";
     const QString kData = "data";
+    const QString kSuite = "suite";
+
+    const QString kMetadata = "metadata";
+    const QString kAuthor = "author";
+    const QString kDate = "date";
+    const QString kVersion = "version";
+    const QString kMail = "mail";
+    const QString kCopyright = "copyright";
+    const QString kLicense = "license";
+    const QString kInfo = "info";
 }
 class DataManager : public QObject
 {
@@ -28,7 +35,7 @@ signals:
 public slots:
     void Set(QString, QString);
     QString AddTest(QString, QString, QString, QString, QString, QString, QString);
-    QString AddSuite(QString, QString);
+    QString AddSuite(QString, QString, QString, QString, QString);
     QString Get(QString);
 private:
 };
