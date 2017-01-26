@@ -2,7 +2,7 @@ import QtQuick 2.4
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
 import QtQuick.Window 2.2
-import cMainTree 1.0
+import MainTree 1.0
 import MainSetting 1.0
 import QtQml.Models 2.2
 import QtQuick.Controls.Styles 1.0

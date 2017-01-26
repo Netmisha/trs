@@ -4,17 +4,15 @@
 #
 #-------------------------------------------------
 
-QT       += core gui webkit webkitwidgets qml quick testlib sql xml
+QT+= core gui webkit webkitwidgets qml quick testlib sql xml
 
-CONFIG   += c++11
+CONFIG+= c++11
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = TBox
 TEMPLATE = app
-
-
-SOURCES += main.cpp\
-        mainwindow.cpp \
+SOURCES+= main.cpp\
+       mainwindow.cpp \
     trsmanager.cpp \
     maintree.cpp \
     trscore.cpp \
@@ -23,12 +21,14 @@ SOURCES += main.cpp\
     export_txt.cpp \
     reporter.cpp \
     treemodel.cpp \
-    export_html.cpp
+    export_html.cpp \
+    testinfo.cpp \
     mainsetting.cpp \
     datamanager.cpp \
-    testinfo.cpp
+    reportform.cpp \
+    lismodel.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS+= mainwindow.h \
     trsmanager.h \
     maintree.h \
     trscore.h \
@@ -37,11 +37,13 @@ HEADERS  += mainwindow.h \
     export_txt.h \
     reporter.h \
     treemodel.h \
-    export_html.h
+    export_html.h \
+    testinfo.h \
     mainsetting.h \
     datamanager.h \
-    testinfo.h
-FORMS    += mainwindow.ui
-
-RESOURCES += \
+    reportform.h \
+    lismodel.h
+FORMS+=mainwindow.ui \
+    reportform.ui
+RESOURCES+= \
     qml.qrc

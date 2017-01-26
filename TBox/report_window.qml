@@ -1,90 +1,138 @@
 import QtQuick 2.4
-import QtQuick.Controls 1.0
 import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.0
+
+import QtQuick.Layouts 1.2
 import QtQuick.Window 2.2
-import QtQuick.Dialogs 1.2
+import QtQuick.Controls 1.1
+import QtQml.Models 2.2
+import QtQuick.Controls.Styles 1.0
+import QtQuick.Controls.Private 1.0
 import QtQml.Models 2.1
 import QtQml 2.0 as QML
 import QtQml 2.2
-//import models 1.0
-ApplicationWindow {
 
+ApplicationWindow {
+    ListView {
+        id: list_V
+        x: 0
+        y: 42
+        width: 182; height: 438
+
+        TableView{
+            model:MLM
+            x: 0
+            y: -8
+            width: 639
+            height: 446
+        TableViewColumn {
+                            role: "name_role"
+                            title: "Session:"
+                        }
+        }
+    }
+
+    Button{
+        x: 513
+        y: 0
+        width: 127
+        height: 33
+        text:"Show"
+        onClicked: {
+            DD.get_seesion_db(textField1.text,textField2.text);
+        }
+    }
+    Button{
+        x: 401
+        y: 0
+        width: 38
+        height: 33
+        text:"<>"
+    onClicked: {
+    if(end_date.visible == true){
+    end_date.visible =false
+    }
+    else{
+    end_date.visible = true
+    }
+    }
+    }
+    TextField {
+        id: textField1
+        x: 39
+        y: 0
+        readOnly: true
+        width: 130
+        height: 33
+         placeholderText: "Set start date"
+    }
+    Button{
+        x: 168
+        y: 0
+        width: 38
+        height: 33
+        text:"<>"
+    onClicked: {
+    if(calenda.visible == true){
+    calenda.visible =false
+    }
+    else{
+    calenda.visible = true
+    }
+    }
+    }
+    Label{
+        x: 0
+        y: 5
+        width: 33
+        height: 28
+        text: "Start"
+    }
+    Label{
+        x: 238
+        y: 5
+        width: 27
+        height: 23
+        text:"End"
+    }
+    TextField {
+        id: textField2
+        x: 271
+        y: 0
+        readOnly: true
+        width: 130
+        height: 33
+        placeholderText: "Set end date"
+    }
+    Calendar{
+        id:end_date
+        x: 278
+        y: 34
+        width: 257
+        height: 232
+        visible: false
+        frameVisible: true
+        onClicked: {
+            DD.get_EndDate = end_date.selectedDate
+            textField2.text = DD.get_EndDate
+        }
+    }
+    Calendar{
+        id:calenda
+        x: 8
+        y: 34
+        width: 257
+        height: 232
+        visible: false
+        frameVisible: true
+        onClicked: {
+        DD.getDateQML = calenda.selectedDate
+        textField1.text = DD.getDateQML
+        }
+    }
     id: applicationWindow1
     visible: true
     width: 640
     height: 480
-    title: qsTr("Hello World")
-
-
-    Button{
-        id: exportButton
-        x: 503
-        y: 451
-        width: 112
-        height: 29
-        text:"Export"
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        onClicked: {}
-    }
-
-    TabView {
-        id: tabView1
-        anchors.bottomMargin: 30
-        anchors.fill: parent
-
-        Tab {
-            title: "List"
-            Rectangle{
-            //MyTreeModel {
-            //    id: theModel
-            //}
-            TreeView {
-                anchors.fill: parent
-                model: DD
-                id: tree_V
-                itemDelegate: Rectangle {
-                           color: ( styleData.row % 2 == 0 ) ? "white" : "lightblue"
-                           height: 20
-
-                           Text {
-                               anchors.verticalCenter: parent.verticalCenter
-                               text: styleData.value === undefined ? "" : styleData.value
-                           }
-                       }
-                onClicked: {
-                        console.log("clicked", tree_V.currentIndex)
-                    }
-                TableViewColumn {
-                    role: "name_role"
-                    title: "Name"
-                }
-
-
-            }
-            }
-
-        }
-
-
-        Tab {
-            anchors.top: parent.top
-            anchors.right: parent.right
-            anchors.left: parent.left
-
-            title: "Custom"
-
-
-
-
-        }
-
-
-    }
-
-
+    title: qsTr("Report Window")
 
 }

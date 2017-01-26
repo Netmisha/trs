@@ -7,17 +7,34 @@
 #include <treemodel.h>
 #include <QDir>
 #include <database.h>
+#include <reportform.h>
+#include <QObject>
+#include <lismodel.h>
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
           QQmlApplicationEngine engine;
+          //MainWindow w;
+          //w.show();
+
+
+          DataBase O;
+
+          engine.rootContext()->setContextProperty("DD",&O);
+          engine.load(QUrl(QLatin1String("qrc:/report_window.qml")));
+          //ReportForm O;
+         // O.show();
+          return a.exec();
+
+
+          /*
           TreeModel obj;
           DataBase db;
           db.InitDB();
           db.getDataFromDB();
           obj.add_root();
 
-          /*
+
                Reporter *O = new Reporter;
                export_txt *txt = new export_txt;
                Export_HTML *html_ = new Export_HTML;
@@ -25,17 +42,15 @@ int main(int argc, char *argv[])
                O = E;
                O->export_data(txt);
                O->export_data(html_);
-        */
+
 
          // export_txt *obj = new export_txt;
          // obj->init(path);
          // O.export_data(obj);
-          engine.rootContext()->setContextProperty("DD",&obj);
+
           //qmlRegisterType<TreeModel>("models", 1, 0, "MyTreeModel" );
          // engine.rootContext()->setContextProperty("dataB",&dataB);
          engine.load(QUrl(QLatin1String("qrc:/report_window.qml")));
-    //MainWindow w;
-    //w.show();
+     */
 
-    return a.exec();
 }
