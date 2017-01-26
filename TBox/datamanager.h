@@ -27,7 +27,7 @@ public:
 signals:
 public slots:
     void Set(QString, QString);
-    QString AddTest(QString, QString);
+    QString AddTest(QString, QString, QString, QString, QString, QString, QString);
     QString AddSuite(QString, QString);
     QString Get(QString);
 private:

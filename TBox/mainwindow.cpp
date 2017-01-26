@@ -38,8 +38,7 @@ public:
     Q_INVOKABLE QStringList GetTags();
     Q_INVOKABLE void Stop();
     Q_INVOKABLE void setRootDir(QString);
-    Q_INVOKABLE void SetNewType(QString);
-    Q_INVOKABLE QString AddNew(QString);
+    Q_INVOKABLE QString AddNewTest(QString, QString, QString, QString, QString, QString);
     Q_INVOKABLE void setCurrentTag(QString);
     Q_INVOKABLE void Set(QString, QString);
     Q_INVOKABLE QString Get(QString);
@@ -54,7 +53,6 @@ private:
     QModelIndex currentIndex;
     bool run=false;
     QStringList tags;
-    QString addNewType="";
     QString currentTag="All";
     DataManager dm;
 };
@@ -128,18 +126,10 @@ void MainTree::Load(QString path) {
 void MainTree::setRootDir(QString path) {
     rootDir=path;
 }
-void MainTree::SetNewType(QString type) {
-    addNewType=type;
-}
-QString MainTree::AddNew(QString name) {
+QString MainTree::AddNewTest(QString name, QString dis, QString tag, QString exe, QString rep, QString disable) {
     for (auto&it : treeData) {
         if (it.item == currentIndex) {
-            if(addNewType=="suite") {
-
-            }
-            else {
-                return dm.AddTest(it.file, name);
-            }
+            return dm.AddTest(it.file, name, dis, tag, exe, rep, disable);
         }
     }
 }

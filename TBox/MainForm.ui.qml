@@ -175,7 +175,7 @@ Item {
                                                         testStatus.iconSource="icons/icons/turnon.png";
                                                         theModel.Set("disable","false");
                                                     }
-                                                    else {
+                                                    else if(theModel.Get("disable")=="false"){
                                                         testStatus.iconSource="icons/icons/turnoff.png";
                                                         theModel.Set("disable","true");
                                                     }
@@ -192,16 +192,24 @@ Item {
                                                 id: newTest
                                                 iconSource: "icons/icons/newtest.png"
                                                 onClicked: {
-                                                    theModel.SetNewType("test");
-                                                    addNewItem.show();
+                                                    jsCodeScroll.visible=false;
+                                                    addTestLayout.visible=true;
+                                                    testName.text="New Test";
+                                                    testRun.visible=false;
+                                                    newTest.visible=false;
+                                                    newSuite.visible=false;
+                                                    testDelete.visible=false;
+                                                    testSetting.visible=false;
+                                                    restoreNew.visible=true;
+                                                    saveNew.visible=true;
                                                 }
                                             }
                                             ToolButton {
                                                 id: newSuite
                                                 iconSource: "icons/icons/newsuite.png"
                                                 onClicked: {
-                                                    theModel.SetNewType("suite");
-                                                    addNewItem.show();
+                                                    jsCodeScroll.visible=false;
+                                                    addTestLayout.visible=true;
                                                 }
                                             }
                                             ToolButton {
@@ -225,11 +233,75 @@ Item {
                                                 iconSource: "icons/icons/testsetting.png"
                                                 onClicked:{}
                                             }
+                                            ToolButton {
+                                                id: restoreNew
+                                                visible: false;
+                                                onClicked: {
+                                                    if(testName.text== "New Test") {
+                                                        textEditTName.text="";
+                                                        textEditTDiscr.text="";
+                                                        textEditTExe.text="";
+                                                        textEditTTag.text="";
+                                                        textEditTRepeat.text="";
+                                                        addTestLayout.visible=false;
+                                                        jsCodeScroll.visible=true;
+                                                    }
+                                                    else {
+
+                                                    }
+
+                                                    testName.text=theModel.Get("name");
+                                                    testRun.visible=true;
+                                                    newTest.visible=true;
+                                                    newSuite.visible=true;
+                                                    testDelete.visible=true;
+                                                    testSetting.visible=true;
+                                                    restoreNew.visible=false;
+                                                    saveNew.visible=false;
+                                                }
+                                                iconSource: "icons/icons/restore.png"
+                                            }
+                                            ToolButton {
+                                                id: saveNew
+                                                visible: false;
+                                                iconSource: "icons/icons/jssave.png"
+                                                onClicked: {
+                                                    if(testName.text== "New Test") {
+                                                        var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
+                                                        var res=theModel.AddNewTest(textEditTName.text,textEditTDiscr.text, textEditTExe.text, textEditTTag.text, textEditTRepeat.text, dis);
+                                                        if(res!="") {
+                                                            messageDialog.text=res;
+                                                            messageDialog.open()
+                                                            return;
+                                                        }
+                                                        textEditTName.text="";
+                                                        textEditTDiscr.text="";
+                                                        textEditTExe.text="";
+                                                        textEditTTag.text="";
+                                                        textEditTRepeat.text="";
+                                                        addTestLayout.visible=false;
+                                                        jsCodeScroll.visible=true;
+                                                        theModel.Load(settingFile.getRootDir());
+                                                    }
+                                                    else {
+                                                    }
+                                                    testName.text=theModel.Get("name");
+                                                    testRun.visible=true;
+                                                    newTest.visible=true;
+                                                    newSuite.visible=true;
+                                                    testDelete.visible=true;
+                                                    testSetting.visible=true;
+                                                    restoreNew.visible=false;
+                                                    saveNew.visible=false;
+                                                    showMenu.hideAll();
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                             ScrollView {
+                                id: jsCodeScroll
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 TextEdit {
@@ -240,6 +312,251 @@ Item {
                                     renderType: Text.NativeRendering
                                     selectByMouse: true
                                     font.pixelSize: 12
+                                }
+                            }
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                ColumnLayout {
+                                    id: addTestLayout
+                                    visible:  false
+                                    spacing: 10
+                                    anchors.rightMargin: 10
+                                    anchors.bottomMargin: 10
+                                    anchors.leftMargin: 10
+                                    anchors.topMargin: 10
+                                    anchors.fill: parent
+                                    RowLayout {
+                                        y: 0
+                                        height: 36
+                                        anchors.right: parent.right
+                                        Text {
+                                            width: 60
+                                            text: qsTr("Name")
+                                            font.pixelSize: 12
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                        Rectangle {
+                                            id: nameTRect
+                                            Layout.fillWidth: true
+                                            Layout.fillHeight: true
+                                            border.color: "lightgray"
+                                            border.width: 1
+                                            TextEdit {
+                                                id: textEditTName
+                                                text: qsTr("")
+                                                anchors.fill: parent
+                                                font.pixelSize: 12
+                                                Layout.fillWidth: true
+                                                anchors.rightMargin: 3
+                                                anchors.leftMargin: 3
+                                                selectByMouse: true
+                                                smooth: true
+                                                verticalAlignment: TextInput.AlignVCenter
+                                                onFocusChanged: {
+                                                            if(focus){
+                                                                nameTRect.border.color = "#569ffd"
+                                                            }else{
+                                                                nameTRect.border.color = "lightgray"
+                                                            }
+                                                        }
+                                                onTextChanged: {
+                                                    if(textEditTName.text=="") {
+                                                        textEditTExe.text="";
+                                                    }
+                                                    else {
+                                                        textEditTExe.text=textEditTName.text+".js";
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.leftMargin: 0
+                                        anchors.rightMargin: 0
+                                    }
+                                    RowLayout {
+                                        y: 0
+                                        height: 70
+                                        Layout.minimumHeight: 68
+                                        anchors.right: parent.right
+                                        ColumnLayout {
+                                            width: 100
+                                            height: 100
+                                            Layout.minimumHeight: 66
+                                            Text {
+                                                text: qsTr("Description")
+                                                font.pixelSize: 12
+                                                verticalAlignment: Text.AlignVCenter
+                                            }
+                                            Rectangle {
+                                                id: descriptionTRect
+                                                Layout.fillWidth: true
+                                                Layout.fillHeight: true
+                                                border.color: "lightgray"
+                                                border.width: 1
+                                                TextEdit {
+                                                    id: textEditTDiscr
+                                                    text: qsTr("")
+                                                    anchors.fill: parent
+                                                    Layout.minimumHeight: 50
+                                                    font.pixelSize: 12
+                                                    Layout.fillWidth: true
+                                                    anchors.rightMargin: 3
+                                                    anchors.leftMargin: 3
+                                                    selectByMouse: true
+                                                    smooth: true
+                                                    onFocusChanged: {
+                                                                if(focus){
+                                                                    descriptionTRect.border.color = "#569ffd"
+                                                                }else{
+                                                                    descriptionTRect.border.color = "lightgray"
+                                                                }
+                                                            }
+                                                }
+                                            }
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.leftMargin: 0
+                                        anchors.rightMargin: 0
+                                    }
+                                    RowLayout {
+                                        y: 0
+                                        height: 36
+                                        anchors.right: parent.right
+                                        Text {
+                                            width: 60
+                                            text: qsTr("Tag")
+                                            font.pixelSize: 12
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                        Rectangle {
+                                            id:tagTRect
+                                            Layout.fillWidth: true
+                                            Layout.fillHeight: true
+                                            border.color: "lightgray"
+                                            border.width: 1
+                                            TextEdit {
+                                                id: textEditTTag
+                                                text: qsTr("")
+                                                anchors.fill: parent
+                                                font.pixelSize: 12
+                                                Layout.fillWidth: true
+                                                anchors.rightMargin: 3
+                                                anchors.leftMargin: 3
+                                                selectByMouse: true
+                                                smooth: true
+                                                verticalAlignment: TextInput.AlignVCenter
+                                                onFocusChanged: {
+                                                            if(focus){
+                                                                tagTRect.border.color = "#569ffd"
+                                                            }else{
+                                                                tagTRect.border.color = "lightgray"
+                                                            }
+                                                        }
+                                            }
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.leftMargin: 0
+                                        anchors.rightMargin: 0
+                                    }
+                                    RowLayout {
+                                        y: 0
+                                        height: 36
+                                        anchors.right: parent.right
+                                        Text {
+                                            width: 60
+                                            text: qsTr("Execution")
+                                            font.pixelSize: 12
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                        Rectangle {
+                                            id:exeTRect
+                                            Layout.fillWidth: true
+                                            Layout.fillHeight: true
+                                            border.color: "lightgray"
+                                            border.width: 1
+                                            TextEdit {
+                                                id: textEditTExe
+                                                text: qsTr("")
+                                                anchors.fill: parent
+                                                font.pixelSize: 12
+                                                Layout.fillWidth: true
+                                                anchors.rightMargin: 3
+                                                anchors.leftMargin: 3
+                                                selectByMouse: true
+                                                smooth: true
+                                                verticalAlignment: TextInput.AlignVCenter
+                                                onFocusChanged: {
+                                                            if(focus){
+                                                                exeTRect.border.color = "#569ffd"
+                                                            }else{
+                                                                exeTRect.border.color = "lightgray"
+                                                            }
+                                                        }
+                                            }
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.leftMargin: 0
+                                        anchors.rightMargin: 0
+                                    }
+
+                                    RowLayout {
+                                        y: 0
+                                        height: 36
+                                        anchors.right: parent.right
+                                        Text {
+                                            width: 60
+                                            text: qsTr("Repeat")
+                                            font.pixelSize: 12
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+
+                                        Rectangle {
+                                            id:repeatTRect
+                                            Layout.fillWidth: true
+                                            Layout.fillHeight: true
+                                            border.color: "lightgray"
+                                            border.width: 1
+                                            TextEdit {
+                                                id: textEditTRepeat
+                                                text: qsTr("")
+                                                anchors.fill: parent
+                                                font.pixelSize: 12
+                                                Layout.fillWidth: true
+                                                anchors.rightMargin: 3
+                                                anchors.leftMargin: 3
+                                                selectByMouse: true
+                                                smooth: true
+                                                verticalAlignment: TextInput.AlignVCenter
+                                                onFocusChanged: {
+                                                            if(focus){
+                                                                repeatTRect.border.color = "#569ffd"
+                                                            }else{
+                                                                repeatTRect.border.color = "lightgray"
+                                                            }
+                                                        }
+                                            }
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.rightMargin: 0
+                                        anchors.leftMargin: 0
+                                    }
+                                    Item {
+                                        width: 200
+                                        height: 200
+                                        Layout.fillHeight: true
+                                        Layout.fillWidth: true
+                                    }
                                 }
                             }
                         }
@@ -424,91 +741,6 @@ Item {
                     onClicked: mainsetting.close()
                     text: qsTr("Cancel")
                 }
-            }
-        }
-    }
-    Window {
-        id: addNewItem
-        width: 320
-        height: 100
-        ColumnLayout {
-            anchors.topMargin: 5
-            anchors.bottomMargin: 10
-            anchors.rightMargin: 10
-            anchors.leftMargin: 10
-            anchors.fill: parent
-            RowLayout {
-                width: 100
-                height: 100
-                spacing: 10
-
-                Text {
-                    text: qsTr("Name")
-                    font.pixelSize: 12
-                }
-                Rectangle {
-                    id: newNameBorder
-                    width: 82
-                    height: 22
-                    border.color: "lightgray"
-                    border.width: 1
-                    Layout.fillWidth: true
-                    TextInput {
-                        id: newName
-                        verticalAlignment: TextInput.AlignVCenter
-                        selectByMouse: true
-                        anchors.fill: parent
-                        anchors.rightMargin: 3
-                        anchors.leftMargin: 3
-                        smooth: true
-                        layer.enabled: true
-                        font.pixelSize: 12
-                        onFocusChanged: {
-                                    if(focus){
-                                        newNameBorder.border.color = "#569ffd"
-                                    }else{
-                                        newNameBorder.border.color = "lightgray"
-                                    }
-                                }
-                    }
-                }
-            }
-            Item {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-            }
-            RowLayout {
-                width: 100
-                height: 100
-                Button {
-                    id: newCancel
-                    text: qsTr("Cancel")
-                    onClicked: {
-                        addNewItem.close();
-                        newName.text="";
-                    }
-                }
-                Button {
-                    id: newOk
-                    text: qsTr("Ok")
-                    onClicked: {
-                        if(newName.text!="") {
-                            var res=theModel.AddNew(newName.text);
-                            if(res!="") {
-                                messageDialog.text=res;
-                                messageDialog.open();
-                            }
-                            theModel.Load(settingFile.getRootDir());
-                            addNewItem.close();
-                            newName.text="";
-                        }
-                        else {
-                            //show error
-                        }
-                    }
-                }
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             }
         }
     }

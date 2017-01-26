@@ -36,7 +36,16 @@ void DataManager::Set(QString path, QString data) {
     file.write(doc.toString().toLatin1());
     file.close();
 }
-QString DataManager::AddTest(QString path, QString name) {
+QString DataManager::AddTest(QString path, QString name, QString dis, QString tag, QString exe, QString rep, QString disable) {
+    qDebug()<<name;
+    qDebug()<<dis;
+    qDebug()<<tag;
+    qDebug()<<exe;
+    qDebug()<<rep;
+    qDebug()<<disable;
+    if(name=="" || dis=="" || tag=="" || exe=="" || rep=="" || !(disable=="true" || disable=="false")) {
+        return "Fill all fields correctly!";
+    }
     QDomDocument doc;
     QFile file(path);
     file.open(QIODevice::ReadOnly);
@@ -53,18 +62,22 @@ QString DataManager::AddTest(QString path, QString name) {
         test  = root.lastChildElement(tags_name::kTest);
         QDomElement node = doc.createElement(tags_name::kTest);
         node.setAttribute(tags_name::kName, name);
-        node.setAttribute(tags_name::kDescription, test.attribute(tags_name::kDescription));
+        node.setAttribute(tags_name::kDescription, dis);
         root.appendChild(node);
         QDomElement snode = doc.createElement(tags_name::kTag);
+        snode.appendChild( doc.createTextNode(tag));
         node.appendChild(snode);
         snode = doc.createElement(tags_name::kDisable);
+        snode.appendChild( doc.createTextNode(disable));
         node.appendChild(snode);
         snode = doc.createElement(tags_name::kExecution);
+        snode.appendChild( doc.createTextNode(exe));
         node.appendChild(snode);
         snode = doc.createElement(tags_name::kResult);
         node.appendChild(snode);
         snode = doc.createElement(tags_name::kRepeat);
-        snode.setAttribute(tags_name::kPause, test.firstChildElement(tags_name::kRepeat).attribute(tags_name::kPause));
+        snode.appendChild( doc.createTextNode(rep));
+        snode.setAttribute(tags_name::kPause, "");
         node.appendChild(snode);
         snode = doc.createElement(tags_name::kMaxTime);
         node.appendChild(snode);
