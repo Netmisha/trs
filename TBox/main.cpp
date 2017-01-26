@@ -14,10 +14,11 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
           QQmlApplicationEngine engine;
-          //MainWindow w;
-          //w.show();
+          MainWindow w;
+          w.show();
+		  return a.exec();
 
-
+/*
           DataBase O;
 
           engine.rootContext()->setContextProperty("DD",&O);
@@ -52,5 +53,6 @@ int main(int argc, char *argv[])
          // engine.rootContext()->setContextProperty("dataB",&dataB);
          engine.load(QUrl(QLatin1String("qrc:/report_window.qml")));
      */
+	 
 
 }

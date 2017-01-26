@@ -7,8 +7,22 @@
 namespace tags_name {
     const QString kXml = ".xml";
     const QString kName = "name";
+    const QString kDescription = "description";
+    const QString kTag = "tag";
+    const QString kDisable = "disable";
+    const QString kExecution = "execution";
+    const QString kRepeat = "repeat";
     const QString kTest = "test";
     const QString kData = "data";
+    const QString kSuite = "suite";
+    const QString kMetadata = "metadata";
+    const QString kAuthor = "author";
+    const QString kDate = "date";
+    const QString kVersion = "version";
+    const QString kMail = "mail";
+    const QString kCopyright = "copyright";
+    const QString kLicense = "license";
+    const QString kInfo = "info";
 }
 class DataManager : public QObject
 {
@@ -19,6 +33,10 @@ public:
 signals:
 public slots:
     void Set(QString, QString);
+    QString AddTest(QString, QString, QString, QString, QString, QString, QString);
+    QString AddSuite(QString, QString, QString, QString, QString);
+    QString RemoveTest(QString, QString);
+    QString RemoveSuite(QString);
     QString Get(QString);
 private:
 };

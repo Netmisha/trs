@@ -10,7 +10,7 @@ DataBase::DataBase(QObject *parent) :
 //}
 void DataBase::InitDB(){
    db = QSqlDatabase::addDatabase("QSQLITE");
-           db.setDatabaseName("D:\\TRS\\TBox\\TestInfo.db");
+           db.setDatabaseName("D:/TRS/QtTRS/TestInfo.db");
            db.setHostName("127.0.0.1");
             if(db.open()){
                 qDebug()<<"Database: connection ok";

@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>MainForm.ui.qml</file>
-        <file>report_window.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file>icons/jssave.png</file>
@@ -10,5 +9,16 @@
         <file>icons/Settings.png</file>
         <file>icons/Stop.png</file>
         <file>icons/tbox.png</file>
+        <file>icons/clear.png</file>
+        <file>icons/hide.png</file>
+        <file>icons/show.png</file>
+        <file>icons/testdelete.png</file>
+        <file>icons/testedit.png</file>
+        <file>icons/testsetting.png</file>
+        <file>icons/turnoff.png</file>
+        <file>icons/turnon.png</file>
+        <file>icons/newsuite.png</file>
+        <file>icons/newtest.png</file>
+        <file>icons/restore.png</file>
     </qresource>
 </RCC>

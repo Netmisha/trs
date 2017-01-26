@@ -4,6 +4,7 @@
 #include "mainsetting.h"
 #include "datamanager.h"
 #include "testinfo.h"
+#include "filesave.h"
 QWebView * view;
 
 class MainTree : public QStandardItemModel
@@ -33,10 +34,18 @@ public:
     Q_INVOKABLE static QString getJS(QString, QString);
     Q_INVOKABLE static void setJS(QString, QString, QString);
     Q_INVOKABLE void Run();
+    Q_INVOKABLE void RunOne();
     Q_INVOKABLE QStringList GetTags();
     Q_INVOKABLE void Stop();
     Q_INVOKABLE void setRootDir(QString);
+    Q_INVOKABLE QString AddNewTest(QString, QString, QString, QString, QString, QString);
+    Q_INVOKABLE QString AddNewSuite(QString, QString, QString, QString);
     Q_INVOKABLE void setCurrentTag(QString);
+    Q_INVOKABLE void Set(QString, QString);
+    Q_INVOKABLE QString Get(QString);
+    Q_INVOKABLE QString GetType();
+    Q_INVOKABLE QString Remove();
+    Q_INVOKABLE QModelIndex getCurrentIndex();
 private:
     QStandardItem * Parse(QString, QStandardItem *);
     void ParseFolder(QString);
@@ -65,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //view->setVisible(false);
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
     qmlRegisterType<MainSetting>("MainSetting", 1, 0, "Setting" );
+    qmlRegisterType<FileSaveDialog>("FileSave", 1, 0, "FileSaveDialog");
     QQuickView* qmlView = new QQuickView();
     QWidget* container = QWidget::createWindowContainer(qmlView, ui->centralWidget);
     QObject::connect(trs, SIGNAL(RunNext()),this, SLOT(RunNext()));
@@ -72,6 +82,13 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
     object = qmlView->rootObject();
     ui->verticalLayout->addWidget(container);
+    QWebSettings* settings = QWebSettings::globalSettings();
+    settings->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    settings->setAttribute(QWebSettings::AcceleratedCompositingEnabled, true);
+    settings->setAttribute(QWebSettings::LocalContentCanAccessRemoteUrls, true);
+    settings->setAttribute(QWebSettings::LocalContentCanAccessFileUrls, true);
+    settings->setAttribute(QWebSettings::LocalStorageEnabled, true);
+    settings->setAttribute(QWebSettings::JavascriptEnabled, true);
 }
 MainWindow::~MainWindow(){
     delete ui;
@@ -119,8 +136,71 @@ void MainTree::Load(QString path) {
 void MainTree::setRootDir(QString path) {
     rootDir=path;
 }
+QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag, QString rep, QString disable) {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex) {
+            return dm.AddTest(it.file, name, dis, tag, exe, rep, disable);
+        }
+    }
+}
+QString MainTree::AddNewSuite(QString name, QString dis, QString rep, QString disable) {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex) {
+            return dm.AddSuite(it.file, name, dis, rep, disable);
+        }
+    }
+}
 void MainTree::setCurrentTag(QString tag) {
     currentTag=tag;
+}
+void MainTree::Set(QString path, QString data) {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex) {
+            if (it.type == "test") {
+                dm.Set(it.file+"/suite/test/"+it.name+"/"+path, data);
+            }
+            else if(it.type == "suite") {
+                dm.Set(it.file+"/suite/"+path, data);
+            }
+        }
+    }
+}
+QString MainTree::Get(QString path) {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex) {
+            if (it.type == "test") {
+                return dm.Get(it.file+"/suite/test/"+it.name+"/"+path);
+            }
+            else if(it.type == "suite") {
+                return dm.Get(it.file+"/suite/"+path);
+            }
+        }
+    }
+    return "";
+}
+QString MainTree::GetType() {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex) {
+            return it.type;
+        }
+    }
+    return "";
+}
+QString MainTree::Remove() {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex) {
+            if(it.type=="suite") {
+                dm.RemoveSuite(it.file);
+            }
+            else {
+                dm.RemoveTest(it.file, it.name);
+            }
+        }
+    }
+    return "";
+}
+QModelIndex MainTree::getCurrentIndex() {
+    return currentIndex;
 }
 QString MainTree::getFile(QModelIndex item) {
     for (auto&it : treeData) {
@@ -131,10 +211,9 @@ QString MainTree::getFile(QModelIndex item) {
     return NULL;
 }
 QString MainTree::FindTest(QModelIndex item) {
-    currentIndex=this->index(0,0);
+    currentIndex=item;
     for (auto&it : treeData) {
         if (it.item == item && it.type == "test") {
-            currentIndex=item;
             return getJS(it.file, it.name);
         }
     }
@@ -147,19 +226,29 @@ void MainTree::FindJSFile(QString data) {
         }
     }
 }
+void MainTree::RunOne() {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex && it.type == "test") {
+            view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
+        }
+    }
+}
 void MainTree::Run() {
     run=true;
     while (treeData.size()>0) {
         TreeInfo * ti = treeData.begin();
         if (ti->type == "test" && CheckTest(*ti)) {
             ti->repeat--;
-             TRSManager::Run(getJS(ti->file, ti->name), ti->file, ti->name);
-            break;
+             view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+ti->file+"'); Test.setName('"+ti->name+"');"+getJS(ti->file, ti->name) + "trs.RunNext();");
         }
         else {
             treeData.removeFirst();
             ti = treeData.begin();
         }
+    }
+    if (treeData.size()==0 || !run) {
+        Load(rootDir);
+        run = false;
     }
 }
 QStringList MainTree::GetTags() {
@@ -171,6 +260,7 @@ void MainTree::Stop() {
 QStandardItem * MainTree::Parse(QString path, QStandardItem * root) {
     QDirIterator it(path, QDirIterator::NoIteratorFlags);
     QStandardItem * suite;
+    QStringList chilSuite;
     while (it.hasNext()) {
         it.next();
         if (it.filePath().contains("/.") || it.filePath().contains("/.")) {
@@ -208,9 +298,12 @@ QStandardItem * MainTree::Parse(QString path, QStandardItem * root) {
                 }
             }
             if (it.fileInfo().isDir()) {
-                Parse(it.filePath(), suite);
+                chilSuite.push_back(it.filePath());
             }
         }
+    }
+    for(auto&ind:chilSuite) {
+        Parse(ind, suite);
     }
     return suite;
 }
@@ -223,8 +316,6 @@ void MainTree::ParseFolder(QString path)
     Parse(path, root);
 }
 bool MainTree::CheckTest(TreeInfo info) {
-
-    qDebug() << "check";
     if(dm.Get(info.file+"/suite/disable")=="false") {
         if(dm.Get(info.file+"/suite/test/"+info.name+"/disable")=="false") {
             if(currentTag=="All") {
