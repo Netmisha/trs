@@ -3,11 +3,11 @@
 TreeModel::TreeModel(QObject *parent) :
     QStandardItemModel(parent)
 {
-
-
+    QStandardItem *r = new QStandardItem("hello");
+    this->appendRow(r);
     m_roleNameMapping[MyTreeModel_Role_Name] = "name_role";
     db = QSqlDatabase::addDatabase("QSQLITE");
-            db.setDatabaseName("D:/TRS/QtTRS/TestInfo.db");
+            db.setDatabaseName("D:\\TRS\\TBox\\TestInfo.db");
             db.setHostName("127.0.0.1");
              if(db.open()){
                  qDebug()<<"Database: connection ok";

@@ -13,22 +13,25 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-          QQmlApplicationEngine engine;
+          QQmlApplicationEngine *engine = new QQmlApplicationEngine ;
           MainWindow w;
           w.show();
-		  return a.exec();
+          return a.exec();
 
 /*
           DataBase O;
-
-          engine.rootContext()->setContextProperty("DD",&O);
-          engine.load(QUrl(QLatin1String("qrc:/report_window.qml")));
+          TreeModel L;
+          //TreeModel M;
+          engine->rootContext()->setContextProperty("MLM",&L);
+          engine->rootContext()->setContextProperty("DD",&O);
+          engine->load(QUrl(QLatin1String("qrc:/report_window.qml")));
           //ReportForm O;
          // O.show();
           return a.exec();
+          */
+}
 
-
-          /*
+    /*
           TreeModel obj;
           DataBase db;
           db.InitDB();
@@ -52,7 +55,7 @@ int main(int argc, char *argv[])
           //qmlRegisterType<TreeModel>("models", 1, 0, "MyTreeModel" );
          // engine.rootContext()->setContextProperty("dataB",&dataB);
          engine.load(QUrl(QLatin1String("qrc:/report_window.qml")));
-     */
-	 
 
-}
+*/
+
+

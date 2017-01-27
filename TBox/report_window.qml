@@ -1,6 +1,5 @@
 import QtQuick 2.4
 import QtQuick.Controls 1.4
-
 import QtQuick.Layouts 1.2
 import QtQuick.Window 2.2
 import QtQuick.Controls 1.1
@@ -17,9 +16,9 @@ ApplicationWindow {
         x: 0
         y: 42
         width: 182; height: 438
-
         TableView{
-            model:MLM
+
+            id: t_view
             x: 0
             y: -8
             width: 639
@@ -30,7 +29,6 @@ ApplicationWindow {
                         }
         }
     }
-
     Button{
         x: 513
         y: 0
@@ -38,7 +36,8 @@ ApplicationWindow {
         height: 33
         text:"Show"
         onClicked: {
-            DD.get_seesion_db(textField1.text,textField2.text);
+        DD.get_seesion_db(textField1.text,textField2.text);
+       // t_view.model = MLM.
         }
     }
     Button{

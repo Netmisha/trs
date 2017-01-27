@@ -14,6 +14,9 @@
             virtual ~TreeModel() = default;
             QHash <int,int> indexes;
             QVector <QString> dbf;
+            Q_INVOKABLE QStandardItem root;
+           Q_INVOKABLE QStandardItem roo;
+
             QVector<QString> year_nodes;
 
             TreeModel(QVector<QString>);
@@ -33,7 +36,7 @@
             //void TreeModel::ConnectToDb();
             void FillTreeData(QStandardItem *root);
             void add_root();
-            QStandardItem *root;
+            //QStandardItem *root;
             QHash<int, QByteArray> roleNames() const override;
 
         private:

@@ -15,7 +15,8 @@
 #include <QDebug>
 #include <QtGui>
 #include <QStringList>
-class DataBase: public QObject,public QStandardItem
+#include <QQmlApplicationEngine>
+class DataBase: public QObject
 {
 
 Q_OBJECT
@@ -25,12 +26,10 @@ signals:
    void DateChanged();
    void EndDateChanged();
 public slots:
-    Q_INVOKABLE void get_seesion_db( QString start, QString end);
+    Q_INVOKABLE QStringList get_seesion_db( QString start, QString end);
 public:
-   //DataBase(QQmlApplicationEngine *engine);
     explicit DataBase(QObject *parent = 0);
-    QString date;
-
+     QString date;
      Q_INVOKABLE QString DateQML;
      Q_INVOKABLE QString End_date;
     struct row_data{
@@ -41,7 +40,8 @@ public:
        QString Test_Year;
        QString Test_Passed;
     };
-    Q_INVOKABLE QQmlApplicationEngine *engine;
+
+    QStringList it;
     QVector<QString> Years;
     Q_INVOKABLE QString getDateQML(){
        return DateQML;

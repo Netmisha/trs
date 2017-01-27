@@ -4,10 +4,6 @@ DataBase::DataBase(QObject *parent) :
     QObject(parent)
 {
 }
-//DataBase::DataBase(QQmlApplicationEngine *engine):QObject(parent){
- //   this->engine = engine;
-
-//}
 void DataBase::InitDB(){
    db = QSqlDatabase::addDatabase("QSQLITE");
            db.setDatabaseName("D:/TRS/QtTRS/TestInfo.db");
@@ -68,10 +64,10 @@ QString DataBase::ParseDateE(QString data){
     return T;
 
 }
-void DataBase::get_seesion_db( QString start,  QString end){
+QStringList DataBase::get_seesion_db( QString start,  QString end){
 if(start.isEmpty() || end.isEmpty()){
    qDebug()<<"start or end date is empty";
-   return;
+   return it;
 }
 else{
 
@@ -83,7 +79,7 @@ else{
              }
              else{
                  qDebug()<<db.lastError().text();
-                 return;
+                 return it ;
              }
               query = new QSqlQuery(db);
 
@@ -100,15 +96,15 @@ else{
            query->exec("SELECT Session_num FROM Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "
                        +start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+")");
            qDebug()<<query->executedQuery();
-           QStringList *it = new QStringList;
            while(query->next()){
-               qDebug()<<query->value(query->record().indexOf("Session_num")).toString();
-              it->append(query->value(query->record().indexOf("Session_num")).toString());
+              qDebug()<<query->value(query->record().indexOf("Session_num")).toString();
+              it.append(query->value(query->record().indexOf("Session_num")).toString());
            }
-//this->engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(it));
-
+          //this->engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(it));
+           return it;
 
 }
+return it;
 }
 
 QVector<DataBase::row_data*> DataBase::getDBdata(){
