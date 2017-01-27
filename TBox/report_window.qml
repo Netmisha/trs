@@ -10,6 +10,7 @@ import QtQml.Models 2.1
 import QtQml 2.0 as QML
 import QtQml 2.2
 import QtQuick.Window 2.1
+import QtWebKit 3.0
 ApplicationWindow {
     id: root
     visible: true
@@ -17,6 +18,7 @@ ApplicationWindow {
     height: 480
     title: qsTr("Report Window")
      property variant win;
+    property  variant list_;
     ListView {
 
         id: list_V
@@ -24,7 +26,6 @@ ApplicationWindow {
         y: 42
         width: 182; height: 438
         TableView{
-
             model:MLM
             id: t_view
             x: 0
@@ -32,13 +33,13 @@ ApplicationWindow {
             width: 639
             height: 446
             onClicked: {
-                console.log(" selected:",t_view.currentRow)
+                DD.row_selected(t_view.currentRow)
+
             }
             onDoubleClicked: {
                 var component = Qt.createComponent("SessionWindow.qml")
                 win = component.createObject(root);
                 win.show();
-
             }
         TableViewColumn {
                             role: "name_role"
@@ -53,7 +54,7 @@ ApplicationWindow {
         height: 33
         text:"Show"
         onClicked: {
-        DD.get_seesion_db(textField1.text,textField2.text);
+        list_ = DD.get_seesion_db(textField1.text,textField2.text);
         }
     }
     Button{

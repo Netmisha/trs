@@ -83,11 +83,11 @@ else{
              }
               query = new QSqlQuery(db);
 
-            QStringList start_dates = start.split("/");
+            start_dates = start.split("/");
            // QStringList month;
             //month<<"January"<<"February"<<"March"<<"April"<<"May"<<"June"<<"July"<<"August"<<"September"<<"October"<<"November"<<"December";
            // start_dates[1]  = month.at(start_dates.at(1).toInt());
-            QStringList end_dates = end.split("/");
+            end_dates = end.split("/");
            // end_dates[1] = month.at(end_dates.at(1).toInt());
           // query->exec("select Session_num from Info where (Test_Day BETWEEN 01 and 03) or (Test_Month between 01 and 02) or (Test_Year between 2017 and 2017");
             //query->exec("select Session_num from Info where (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") OR "
@@ -101,13 +101,33 @@ else{
               it.append(query->value(query->record().indexOf("Session_num")).toString());
            }
            engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(it));
+           list_from_ui = it;
            it.clear();
            return it;
 
 }
 return it;
 }
+ QString DataBase::row_selected(QString row){
+     qDebug()<<list_from_ui.at(row.toInt());
+     QSqlQuery *qu;
+     if(!db.isOpen()){
+         qDebug()<<"Database is not open";
+         return row;
+     }
 
+         qu = new QSqlQuery(db);
+         qu->exec("SELECT Test_Name,Test_Suite,Test_Passed FROM Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "
+                     +start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") and "+"(Session_num = "+list_from_ui.at(row.toInt())+")");
+         while(qu->next()){
+            qDebug()<<"s";
+         }
+
+
+
+     return row;
+
+ }
 QVector<DataBase::row_data*> DataBase::getDBdata(){
     return rc_data;
 }

@@ -10,11 +10,23 @@ import QtQml.Models 2.1
 import QtQml 2.0 as QML
 import QtQml 2.2
 import QtQuick.Window 2.1
-ApplicationWindow {
-    width: 100; height: 100
+import QtWebKit 3.0
+ApplicationWindow{
+    id: root
+    visible: true
+    width: 640
+    height: 480
+    title: qsTr("Session window")
+    Rectangle {
+        id: content
+        width: 800
+        height: 600
+        color: "black"
 
-    Text {
-        anchors.centerIn: parent
-        text: qsTr("Testing")
+        WebView {
+            id: webView
+            anchors.fill: parent
+            url: "file:///D:/TRS/TBox/T.html"
+        }
     }
 }
