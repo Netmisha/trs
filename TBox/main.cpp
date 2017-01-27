@@ -10,25 +10,24 @@
 #include <reportform.h>
 #include <QObject>
 #include <lismodel.h>
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
           QQmlApplicationEngine *engine = new QQmlApplicationEngine ;
-          MainWindow w;
-          w.show();
-          return a.exec();
 
+         MainWindow w;
+         w.show();
+          return a.exec();
 /*
           DataBase O;
-          TreeModel L;
-          //TreeModel M;
-          engine->rootContext()->setContextProperty("MLM",&L);
+          O.setEngi(engine);
           engine->rootContext()->setContextProperty("DD",&O);
           engine->load(QUrl(QLatin1String("qrc:/report_window.qml")));
-          //ReportForm O;
-         // O.show();
+
           return a.exec();
-          */
+*/
+
 }
 
     /*

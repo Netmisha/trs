@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>MainForm.ui.qml</file>
         <file>report_window.qml</file>
+        <file>SessionWindow.qml</file>
     </qresource>
     <qresource prefix="/icons">
         <file>icons/jssave.png</file>
