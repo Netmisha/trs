@@ -40,14 +40,18 @@ public:
     Q_INVOKABLE void setRootDir(QString);
     Q_INVOKABLE QString AddNewTest(QString, QString, QString, QString, QString, QString);
     Q_INVOKABLE QString AddNewSuite(QString, QString, QString, QString);
+    Q_INVOKABLE QString AddRootSuite(QString, QString, QString, QString);
     Q_INVOKABLE void setCurrentTag(QString);
     Q_INVOKABLE void Set(QString, QString);
     Q_INVOKABLE QString Get(QString);
     Q_INVOKABLE QString GetType();
     Q_INVOKABLE QString Remove();
     Q_INVOKABLE QModelIndex getCurrentIndex();
+    Q_INVOKABLE QStringList List(QString);
+    Q_INVOKABLE bool IsFolderEmpty(QString);
 private:
     QStandardItem * Parse(QString, QStandardItem *);
+    QStandardItem * AddItemToTree(QString);
     void ParseFolder(QString);
     bool CheckTest(TreeInfo);
     QHash<int, QByteArray> m_roleNameMapping;
@@ -63,6 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     view = ui->webView;
+    CreateHtml();
     QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     TRSManager *trs=new TRSManager();
     view->page()->mainFrame()->addToJavaScriptWindowObject("trs", trs);
@@ -91,6 +96,7 @@ MainWindow::MainWindow(QWidget *parent) :
     settings->setAttribute(QWebSettings::JavascriptEnabled, true);
 }
 MainWindow::~MainWindow(){
+    QMetaObject::invokeMethod(object, "closeAll");
     delete ui;
 }
 void MainWindow::RunNext(){
@@ -99,7 +105,15 @@ void MainWindow::RunNext(){
 void MainWindow::writeMSG(QString msg){
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, msg));
 }
-
+void MainWindow::CreateHtml() {
+    QFile file(QDir::currentPath()+"/"+"test.html");
+    if(!file.exists()) {
+        file.open(QIODevice::WriteOnly);
+        QString page="<html>\n\t<head>\n\t</head>\n\t<body>\n\t</body>\n</html>";
+        file.write(page.toLatin1());
+        file.close();
+    }
+}
 void MainTree::RunNext(){
     while (treeData.size()>0 && run) {
         TreeInfo* ti = treeData.begin();
@@ -131,7 +145,9 @@ void MainTree::Load(QString path) {
     }
     this->clear();
     treeData.clear();
-    ParseFolder(path);
+    if(rootDir!="") {
+        ParseFolder(path);
+    }
 }
 void MainTree::setRootDir(QString path) {
     rootDir=path;
@@ -139,16 +155,50 @@ void MainTree::setRootDir(QString path) {
 QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag, QString rep, QString disable) {
     for (auto&it : treeData) {
         if (it.item == currentIndex) {
-            return dm.AddTest(it.file, name, dis, tag, exe, rep, disable);
+            QString res= dm.AddTest(it.file, name, dis, tag, exe, rep, disable);
+            if(res!="") {
+                TreeInfo info;
+                info.file = it.file;
+                info.item = this->indexFromItem(AddItemToTree(name));
+                info.name = name;
+                info.type = "test";
+                info.repeat = rep.toInt();
+                treeData.push_back(info);
+                QStringList t=tag.split(",");
+                for(auto&i:t) {
+                    if(!tags.contains(i)) {
+                        tags.push_back(i);
+                    }
+                }
+            }
+            return res;
         }
     }
+    return "exist";
 }
 QString MainTree::AddNewSuite(QString name, QString dis, QString rep, QString disable) {
     for (auto&it : treeData) {
         if (it.item == currentIndex) {
-            return dm.AddSuite(it.file, name, dis, rep, disable);
+            QString res=dm.AddSuite(it.file, name, dis, rep, disable);
+            if(res!="") {
+                TreeInfo info;
+                info.file = it.file;
+                info.file.data()[info.file.lastIndexOf("/")+1]='\0';
+                info.file = QString(info.file.data())+name+"/suite.xml";
+                info.item = this->indexFromItem(AddItemToTree(name));
+                info.name = name;
+                info.type = "suite";
+                info.repeat = rep.toInt();
+                treeData.push_back(info);
+            }
+            return res;
         }
     }
+    return "exist";
+}
+QString MainTree::AddRootSuite(QString name, QString dis, QString rep, QString disable) {
+    return dm.AddRoot(rootDir+"/suite.xml", name, dis, rep, disable);
+
 }
 void MainTree::setCurrentTag(QString tag) {
     currentTag=tag;
@@ -187,13 +237,25 @@ QString MainTree::GetType() {
     return "";
 }
 QString MainTree::Remove() {
-    for (auto&it : treeData) {
-        if (it.item == currentIndex) {
-            if(it.type=="suite") {
-                dm.RemoveSuite(it.file);
+    for (auto it =treeData.begin(); it!=treeData.end(); it++) {
+        if (it->item == currentIndex) {
+            if(it->type=="suite") {
+                dm.RemoveSuite(it->file);   // need fixing!!!!!!!!!!!!!!!!!
+                QStandardItem * root=this->itemFromIndex(currentIndex);
+                it=treeData.erase(it);
+                while(root->hasChildren()){
+                    it=treeData.erase(it);
+                    this->removeRow(root->child(0)->index().row(), currentIndex);
+                }
+                this->removeRow(currentIndex.row(), currentIndex.parent());
+                break;
             }
             else {
-                dm.RemoveTest(it.file, it.name);
+                dm.RemoveTest(it->file, it->name);
+                this->removeRow(currentIndex.row(), currentIndex.parent());
+                currentIndex=(--it)->item;
+                treeData.erase(++it);
+                break;
             }
         }
     }
@@ -201,6 +263,30 @@ QString MainTree::Remove() {
 }
 QModelIndex MainTree::getCurrentIndex() {
     return currentIndex;
+}
+QStringList MainTree::List(QString path) {
+    QDirIterator it(path, QDirIterator::Subdirectories);
+    QStringList files;
+    while (it.hasNext()) {
+        it.next();
+        if (it.filePath().contains("/.") || it.filePath().contains("/.")) {
+            continue;
+        }
+        else {
+            files.push_back(it.filePath());
+        }
+    }
+    return files;
+}
+bool MainTree::IsFolderEmpty(QString path) {
+    QDirIterator it(path, QDirIterator::NoIteratorFlags);
+    while (it.hasNext()) {
+        it.next();
+        if (it.filePath().contains(".xml")) {
+            return false;
+        }
+    }
+    return true;
 }
 QString MainTree::getFile(QModelIndex item) {
     for (auto&it : treeData) {
@@ -306,6 +392,11 @@ QStandardItem * MainTree::Parse(QString path, QStandardItem * root) {
         Parse(ind, suite);
     }
     return suite;
+}
+QStandardItem * MainTree::AddItemToTree(QString name) {
+    QStandardItem * item = new QStandardItem(name);
+    this->itemFromIndex(currentIndex)->appendRow(item);
+    return item;
 }
 void MainTree::ParseFolder(QString path)
 {

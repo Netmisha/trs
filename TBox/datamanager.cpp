@@ -37,7 +37,6 @@ void DataManager::Set(QString path, QString data) {
     QTextStream stream( &file );
     stream << doc.toString();
     file.close();
-    file.close();
 }
 QString DataManager::AddTest(QString path, QString name, QString dis, QString tag, QString exe, QString rep, QString disable) {
     if(name=="" || dis=="" || tag=="" || exe=="" || rep=="" || !(disable=="true" || disable=="false")) {
@@ -86,7 +85,7 @@ QString DataManager::AddTest(QString path, QString name, QString dis, QString ta
     return "";
 }
 QString DataManager::AddSuite(QString path, QString name, QString dis, QString rep, QString disable) {
-    if(name=="" || dis=="" || rep=="" || !(disable=="true" || disable=="false")) {
+    if(name=="" || !(disable=="true" || disable=="false")) {
         return "Fill all fields correctly!";
     }
     QDomDocument doc;
@@ -99,6 +98,44 @@ QString DataManager::AddSuite(QString path, QString name, QString dis, QString r
     QDir qd;
     qd.mkpath(newpath);
     QFile file(newpath+"/suite.xml");
+    file.open(QIODevice::WriteOnly);
+    QDomElement node = doc.createElement(tags_name::kSuite);
+    node.setAttribute(tags_name::kName, name);
+    node.setAttribute(tags_name::kDescription, dis);
+    QDomElement snode = doc.createElement(tags_name::kRepeat);
+    snode.appendChild( doc.createTextNode(rep));
+    node.appendChild(snode);
+    snode = doc.createElement(tags_name::kDisable);
+    snode.appendChild( doc.createTextNode(disable));
+    node.appendChild(snode);
+    QDomElement mnode = doc.createElement(tags_name::kMetadata);
+    snode = doc.createElement(tags_name::kAuthor);
+    mnode.appendChild(snode);
+    snode = doc.createElement(tags_name::kDate);
+    mnode.appendChild(snode);
+    snode = doc.createElement(tags_name::kVersion);
+    mnode.appendChild(snode);
+    snode = doc.createElement(tags_name::kMail);
+    mnode.appendChild(snode);
+    snode = doc.createElement(tags_name::kCopyright);
+    mnode.appendChild(snode);
+    snode = doc.createElement(tags_name::kLicense);
+    mnode.appendChild(snode);
+    snode = doc.createElement(tags_name::kInfo);
+    mnode.appendChild(snode);
+    node.appendChild(mnode);
+    doc.appendChild(node);
+    QTextStream stream( &file );
+    stream << doc.toString();
+    file.close();
+    return "";
+}
+QString DataManager::AddRoot(QString path, QString name, QString dis, QString rep, QString disable) {
+    if(name=="" || !(disable=="true" || disable=="false")) {
+        return "Fill all fields correctly!";
+    }
+    QDomDocument doc;
+    QFile file(path);
     file.open(QIODevice::WriteOnly);
     QDomElement node = doc.createElement(tags_name::kSuite);
     node.setAttribute(tags_name::kName, name);
