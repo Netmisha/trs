@@ -16,10 +16,10 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
           QQmlApplicationEngine *engine = new QQmlApplicationEngine ;
 
-         //MainWindow w;
-         //w.show();
-          //return a.exec();
-
+         MainWindow w;
+         w.show();
+          return a.exec();
+/*
           DataBase O;
           O.setEngi(engine);
           //TreeModel L;
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
           //ReportForm O;
          // O.show();
           return a.exec();
-
+*/
 
 }
 
