@@ -40,7 +40,17 @@ public:
        QString Test_Year;
        QString Test_Passed;
     };
-
+    QQmlApplicationEngine *engine;
+    Q_INVOKABLE void setEngi(QQmlApplicationEngine *e){
+            engine = e;
+    }
+    //
+    struct sessions{
+        QModelIndex *i;
+        QString data;
+    };
+    QVector <sessions> Se;
+    //
     QStringList it;
     QVector<QString> Years;
     Q_INVOKABLE QString getDateQML(){

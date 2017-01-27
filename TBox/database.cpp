@@ -93,14 +93,15 @@ else{
             //query->exec("select Session_num from Info where (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") OR "
              //           +"( Test_Month BETWEEN "+start_dates.at(1)+" AND "+end_dates.at(1)+") OR "
               //          +"(Test_Year BETWEEEN "+start_dates.at(2)+" AND "+end_dates.at(2)+")");
-           query->exec("SELECT Session_num FROM Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "
+           query->exec("SELECT distinct Session_num FROM Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "
                        +start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+")");
            qDebug()<<query->executedQuery();
            while(query->next()){
               qDebug()<<query->value(query->record().indexOf("Session_num")).toString();
               it.append(query->value(query->record().indexOf("Session_num")).toString());
            }
-          //this->engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(it));
+           engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(it));
+           it.clear();
            return it;
 
 }

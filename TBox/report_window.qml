@@ -9,20 +9,37 @@ import QtQuick.Controls.Private 1.0
 import QtQml.Models 2.1
 import QtQml 2.0 as QML
 import QtQml 2.2
-
+import QtQuick.Window 2.1
 ApplicationWindow {
+    id: root
+    visible: true
+    width: 640
+    height: 480
+    title: qsTr("Report Window")
+     property variant win;
     ListView {
+
         id: list_V
         x: 0
         y: 42
         width: 182; height: 438
         TableView{
 
+            model:MLM
             id: t_view
             x: 0
             y: -8
             width: 639
             height: 446
+            onClicked: {
+                console.log(" selected:",t_view.currentRow)
+            }
+            onDoubleClicked: {
+                var component = Qt.createComponent("SessionWindow.qml")
+                win = component.createObject(root);
+                win.show();
+
+            }
         TableViewColumn {
                             role: "name_role"
                             title: "Session:"
@@ -37,7 +54,6 @@ ApplicationWindow {
         text:"Show"
         onClicked: {
         DD.get_seesion_db(textField1.text,textField2.text);
-       // t_view.model = MLM.
         }
     }
     Button{
@@ -128,10 +144,5 @@ ApplicationWindow {
         textField1.text = DD.getDateQML
         }
     }
-    id: applicationWindow1
-    visible: true
-    width: 640
-    height: 480
-    title: qsTr("Report Window")
 
 }
