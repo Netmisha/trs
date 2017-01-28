@@ -3,8 +3,7 @@
 
 #include <QObject>
 #include <QFile>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
+#include <QDomDocument>
 namespace tags {
     const QString kDir="dir";
 }
@@ -20,6 +19,7 @@ public slots:
     Q_INVOKABLE QString getRootDir();
     Q_INVOKABLE void setRootDir(QString);
 private:
+    void CreateSetting();
     QString file_name="setting.xml";
     QFile file;
 };

@@ -230,7 +230,6 @@ Item {
                                                         messageDialog.open()
                                                         return;
                                                     }
-                                                    theModel.Load(settingFile.getRootDir());
                                                 }
                                             }
                                             ToolButton {
@@ -265,7 +264,7 @@ Item {
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
                                                     mainToolBar.enabled=true;
-                                                    jsCodeEdit.selectByMouse = false
+
                                                 }
                                                 iconSource: "icons/icons/restore.png"
                                             }
@@ -284,7 +283,6 @@ Item {
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
                                                     mainToolBar.enabled=true;
-                                                    jsCodeEdit.selectByMouse = false
                                                 }
                                                 iconSource: "icons/icons/jssave.png"
                                             }
@@ -320,7 +318,7 @@ Item {
                                                     else if(theModel.GetType()=="suite") {
                                                         textEditSName.text=theModel.Get("name");
                                                         textEditSDiscr.text=theModel.Get("description");
-                                                        textEditSRepeat.text=theModel.Get("tag");
+                                                        textEditSRepeat.text=theModel.Get("repeat");
                                                         jsCodeScroll.visible=false;
                                                         addSuiteLayout.visible=true;
                                                         testRun.visible=false;
@@ -332,10 +330,10 @@ Item {
                                                         saveNew.visible=true;
                                                         mainTree.enabled=false;
                                                         mainToolBar.enabled=false;
-                                                        if(theModel.Get("disable")=="true"){
+                                                        if(theModel.Get("disable")=="false"){
                                                             testStatus.iconSource="icons/icons/turnon.png";
                                                         }
-                                                        else if(theModel.Get("disable")=="false"){
+                                                        else if(theModel.Get("disable")=="true"){
                                                             testStatus.iconSource="icons/icons/turnoff.png";
                                                         }
                                                     }
@@ -466,7 +464,7 @@ Item {
                                                             }
                                                         }
                                                     }
-                                                    theModel.Load(settingFile.getRootDir());
+                                                    runTags.model=theModel.GetTags();
                                                     jsCodeScroll.visible=true;
                                                     testName.text=theModel.Get("name");
                                                     testRun.visible=true;
@@ -476,6 +474,37 @@ Item {
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
                                                     mainToolBar.enabled=true;
+                                                }
+                                            }
+                                            ToolButton {
+                                                id: createNew
+                                                visible: false;
+                                                iconSource: "icons/icons/jssave.png"
+                                                onClicked: {
+                                                    var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
+                                                    var res=theModel.AddRootSuite(textEditSName.text,textEditSDiscr.text, textEditSRepeat.text, dis);
+                                                    if(res!="") {
+                                                        messageDialog.text=res;
+                                                        messageDialog.open()
+                                                        return;
+                                                    }
+                                                    textEditSName.text="";
+                                                    textEditSDiscr.text="";
+                                                    textEditSRepeat.text="";
+                                                    addSuiteLayout.visible=false;
+                                                    newTest.visible=true;
+                                                    newSuite.visible=true;
+                                                    theModel.Load(settingFile.getRootDir());
+                                                    runTags.model=theModel.GetTags();
+                                                    jsCodeScroll.visible=true;
+                                                    testRun.visible=true;
+                                                    testDelete.visible=true;
+                                                    testSetting.visible=true;
+                                                    restoreNew.visible=false;
+                                                    saveNew.visible=false;
+                                                    mainTree.enabled=true;
+                                                    mainToolBar.enabled=true;
+                                                    createNew.visible=false
                                                 }
                                             }
                                         }
@@ -491,7 +520,7 @@ Item {
                                 TextEdit {
                                     id: jsCodeEdit
                                     readOnly: true
-                                    selectByMouse: false
+                                    selectByMouse: true
                                     font.pixelSize: 12
                                     Layout.minimumWidth: 200
                                     Layout.minimumHeight: 200
@@ -918,6 +947,7 @@ Item {
                                                 Item { Layout.fillWidth: true }
                                                 ToolButton {
                                                     id: consoleSave
+                                                    enabled: false
                                                     onClicked: {
                                                         saveFile.open();
                                                     }
@@ -925,6 +955,7 @@ Item {
                                                 }
                                                 ToolButton {
                                                     id: consoleClear
+                                                    enabled: false
                                                     iconSource: "icons/icons/clear.png"
                                                     onClicked: consoleText.text="";
                                                 }
@@ -947,6 +978,16 @@ Item {
                                                 anchors.horizontalCenter: parent.horizontalCenter
                                                 selectByMouse: true
                                                 font.pixelSize: 12
+                                                onTextChanged: {
+                                                    if(consoleText.text=="") {
+                                                        consoleClear.enabled=false;
+                                                        consoleSave.enabled=false;
+                                                    }
+                                                    else {
+                                                        consoleClear.enabled=true;
+                                                        consoleSave.enabled=true;
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -999,6 +1040,7 @@ Item {
         id:mainsetting
         width: 300
         height: 200
+        modality: Qt.ApplicationModal
         ColumnLayout {
             id: columnLayout1
             anchors.fill: parent
@@ -1033,9 +1075,15 @@ Item {
                         smooth: true
                         text: {
                             var dir=settingFile.getRootDir();
-                            theModel.Load(dir);
-                            runTags.model=theModel.GetTags();
-                            return dir;
+                            if(dir=="") {
+                                selectFolder.open();
+                                dir=rootDir.text;
+                            }
+                            else {
+                                theModel.Load(dir);
+                                runTags.model=theModel.GetTags();
+                                return dir;
+                            }
                         }
                         layer.enabled: true
                         font.pixelSize: 12
@@ -1046,6 +1094,14 @@ Item {
                                         rootDirInput.border.color = "lightgray"
                                     }
                                 }
+                    }
+                }
+                Button {
+                    id: selectDir
+                    text: "..."
+                    Layout.maximumWidth: 30
+                    onClicked:{
+                        chooseFolder.open();
                     }
                 }
             }
@@ -1064,6 +1120,7 @@ Item {
                     id: saveSetting
                     text: qsTr("Save")
                     onClicked: {
+                        theModel.setRootDir(rootDir.text);
                         theModel.Load(rootDir.text);
                         settingFile.setRootDir(rootDir.text);
                         mainsetting.close();
@@ -1078,11 +1135,68 @@ Item {
             }
         }
     }
-    MessageDialog {
-        id: messageDialog
-        title: "Warning"
+    FileDialog {
+        id: selectFolder
+        title: "Please choose a folder"
+        folder: shortcuts.home
+        selectFolder : true
+        modality: Qt.WindowModal
         onAccepted: {
+            rootDir.text=selectFolder.fileUrl.toString().split("///")[1];
+            settingFile.setRootDir(rootDir.text);
+            rootDir.text=settingFile.getRootDir();
+            theModel.setRootDir(rootDir.text);
+            if(theModel.IsFolderEmpty(rootDir.text)) {
+                showMenu.menuForSuite();
+                jsCodeScroll.visible=false;
+                addSuiteLayout.visible=true;
+                testName.text="New Suite";
+                textEditSName.text="Main suite";
+                testRun.visible=false;
+                newTest.visible=false;
+                newSuite.visible=false;
+                testDelete.visible=false;
+                testSetting.visible=false;
+                restoreNew.visible=false;
+                saveNew.visible=false;
+                createNew.visible=true;
+            }
+            else {
+                theModel.Load(rootDir.text);
+                runTags.model=theModel.GetTags();
+            }
             Qt.quit()
         }
+        onRejected: {
+            Qt.quit();
+        }
+    }
+    FileDialog {
+        id: chooseFolder
+        title: "Please choose a folder"
+        folder: shortcuts.home
+        selectFolder : true
+        modality: Qt.WindowModal
+        onAccepted: {
+            rootDir.text=chooseFolder.fileUrl.toString().split("///")[1];
+            Qt.quit()
+        }
+        onRejected: {
+            Qt.quit();
+        }
+    }
+    MessageDialog {
+        id: messageDialog
+        modality: Qt.WindowModal
+        title: "Warning"
+        onAccepted: {
+            Qt.quit();
+        }
+    }
+    function closeAll() {
+        messageDialog.close();
+        selectFolder.close();
+        saveFile.close();
+        mainsetting.close();
     }
 }

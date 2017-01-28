@@ -30,6 +30,7 @@ public slots:
 private slots:
 
 private:
+    void CreateHtml();
     Ui::MainWindow *ui;
     QObject *object;
 
