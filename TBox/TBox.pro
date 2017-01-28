@@ -24,7 +24,8 @@ SOURCES+= main.cpp\
     filesave.cpp\
     datamanager.cpp \
     reportform.cpp \
-    lismodel.cpp
+    lismodel.cpp \
+    sessionwindowtable.cpp
 
 HEADERS+= mainwindow.h \
     trsmanager.h \
@@ -40,7 +41,8 @@ HEADERS+= mainwindow.h \
     filesave.h\
     datamanager.h \
     reportform.h \
-    lismodel.h
+    lismodel.h \
+    sessionwindowtable.h
 
 FORMS+= mainwindow.ui \
     reportform.ui

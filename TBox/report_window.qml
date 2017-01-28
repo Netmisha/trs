@@ -19,8 +19,8 @@ ApplicationWindow {
     title: qsTr("Report Window")
      property variant win;
     property  variant list_;
-    ListView {
 
+    ListView {
         id: list_V
         x: 0
         y: 42
@@ -47,6 +47,7 @@ ApplicationWindow {
                         }
         }
     }
+
     Button{
         x: 513
         y: 0
@@ -119,6 +120,7 @@ ApplicationWindow {
         height: 33
         placeholderText: "Set end date"
     }
+
     Calendar{
         id:end_date
         x: 278

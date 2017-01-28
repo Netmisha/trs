@@ -74,6 +74,7 @@ else{
             db = QSqlDatabase::addDatabase("QSQLITE");
             db.setDatabaseName("D:\\TRS\\TBox\\TestInfo.db");
             db.setHostName("127.0.0.1");
+
              if(db.open()){
                  qDebug()<<"Database: connection ok";
              }
@@ -109,7 +110,8 @@ else{
 return it;
 }
  QString DataBase::row_selected(QString row){
-     qDebug()<<list_from_ui.at(row.toInt());
+    // qDebug()<<list_from_ui.at(row.toInt());
+
      QSqlQuery *qu;
      if(!db.isOpen()){
          qDebug()<<"Database is not open";
@@ -117,14 +119,39 @@ return it;
      }
 
          qu = new QSqlQuery(db);
-         qu->exec("SELECT Test_Name,Test_Suite,Test_Passed FROM Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "
-                     +start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") and "+"(Session_num = "+list_from_ui.at(row.toInt())+")");
-         while(qu->next()){
-            qDebug()<<"s";
+         qu->exec("select * from Info LIMIT 0,0 ");
+         QSqlRecord rec = qu->record();
+         for(int i=0;i<rec.count();i++){
+             tn.append(rec.fieldName(i)); // save db columns
          }
+         /* check_column nums with its names
+         for(int i=0;i<db_col.size();i++){
+             qDebug()<<db_col.at(i);
+         }
+         */
+         qu->exec("SELECT Test_Name,Test_Suite,Test_Passed FROM Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "
+                     +start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") and "+" ( Session_num = 4) ");//+list_from_ui.at(row.toInt())+")");
+         row_fields rf;
 
 
 
+          for(int i=0;i<list_from_ui.size();i++){
+             e = new QStringList;
+             session_data.push_back(e);
+             pass.push_back(session_data);
+         }
+         while(qu->next()){
+             pass.at(row.toInt()).at(row.toInt())->append(qu->value(qu->record().indexOf(rf.Test_name)).toString());
+             pass.at(row.toInt()).at(row.toInt())->append(qu->value(qu->record().indexOf(rf.Test_Suite)).toString());
+             pass.at(row.toInt()).at(row.toInt())->append(qu->value(qu->record().indexOf(rf.Test_Passed)).toString());
+         }
+      qDebug()<<pass.at(row.toInt()).at(row.toInt())->at(0);
+     //qDebug()<<S.at(row.toInt())->data;
+    SessionWindowTable WindowTable;
+    WindowTable.setIndex(row.toInt());
+    WindowTable.setTableNames(tn);
+    WindowTable.CreateTable("D:/TRS/TBox/T.html",pass);
+    //release data
      return row;
 
  }

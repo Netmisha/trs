@@ -17,16 +17,41 @@ ApplicationWindow{
     width: 640
     height: 480
     title: qsTr("Session window")
+
+    ColumnLayout{
+        x: 0
+        y: 0
+        width: parent.width
+        height: parent.height
+        spacing: 2
+
     Rectangle {
         id: content
         width: 800
         height: 600
         color: "black"
-
+        Layout.alignment: Qt.AlignCenter
+        Layout.preferredHeight: root.height
+        Layout.preferredWidth: root.width
         WebView {
+
             id: webView
             anchors.fill: parent
             url: "file:///D:/TRS/TBox/T.html"
         }
     }
+    Rectangle {
+        id: rectangle1
+        Button{
+        Layout.alignment: Qt.AlignBottom
+        Layout.preferredWidth: 70
+        Layout.preferredHeight: 30
+        id:export_button
+        x: 527
+        y: 445
+        text: "Export"
+        }
+    }
+   }
+
 }

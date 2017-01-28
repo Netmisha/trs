@@ -19,15 +19,16 @@ int main(int argc, char *argv[])
          MainWindow w;
          w.show();
           return a.exec();
-/*
+
+          /*
           DataBase O;
           O.setEngi(engine);
           engine->rootContext()->setContextProperty("DD",&O);
           engine->load(QUrl(QLatin1String("qrc:/report_window.qml")));
 
           return a.exec();
-*/
 
+*/
 }
 
     /*

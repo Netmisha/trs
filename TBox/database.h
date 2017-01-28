@@ -16,6 +16,7 @@
 #include <QtGui>
 #include <QStringList>
 #include <QQmlApplicationEngine>
+#include <sessionwindowtable.h>
 class DataBase: public QObject
 {
 
@@ -42,6 +43,11 @@ public:
         QString Test_Year;
         QString Test_Passed;
      };
+     Q_INVOKABLE QStringList tn;
+    Q_INVOKABLE QStringList *e;
+     Q_INVOKABLE QVector <QStringList*> session_data;
+     Q_INVOKABLE QVector<QVector<QStringList*>> pass;
+
      QQmlApplicationEngine *engine;
      Q_INVOKABLE void setEngi(QQmlApplicationEngine *e){
              engine = e;
@@ -83,8 +89,10 @@ public:
          QString Test_Day="Test_Day";
          QString Test_Month="Test_Month";
          QString Test_Year="Test_Year";
+         QString Test_Suite = "Test_Suite";
          QString Test_Passed="Test_Passed";
      };
+     QVector<QStringList*> htmlData;
      void FilterData();
      void InitDB();
      void getDataFromDB();
