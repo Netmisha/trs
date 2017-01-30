@@ -17,6 +17,7 @@
 #include <QStringList>
 #include <QQmlApplicationEngine>
 #include <sessionwindowtable.h>
+#include <exporthtml.h>
 class DataBase: public QObject
 {
 
@@ -26,15 +27,25 @@ Q_OBJECT
 signals:
    void DateChanged();
    void EndDateChanged();
+   void PassHTMLdata(QVector<QVector<QStringList*>> data,QStringList tn,int index,QString current_session);
 public slots:
     Q_INVOKABLE QStringList get_seesion_db( QString start, QString end);
+   Q_INVOKABLE void Export_Clicked();
+
 public:
+   //use as signal
+   Q_INVOKABLE QString current_session;
+   Q_INVOKABLE int index;
+   Q_INVOKABLE void test(){
+      emit PassHTMLdata(pass,tn,index,current_session);
+   }
     explicit DataBase(QObject *parent = 0);
      QString date;
      Q_INVOKABLE QString DateQML;
      Q_INVOKABLE QString End_date;
      Q_INVOKABLE QString row_selected(QString row);
      Q_INVOKABLE QString row_;
+
      struct row_data{
         QString ID;
         QString Test_name;

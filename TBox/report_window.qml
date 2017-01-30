@@ -19,24 +19,30 @@ ApplicationWindow {
     title: qsTr("Report Window")
      property variant win;
     property  variant list_;
+    property  variant db_list;
 
-    ListView {
+
+        ListView {
         id: list_V
         x: 0
         y: 42
         width: 182; height: 438
         TableView{
+
             model:MLM
             id: t_view
             x: 0
             y: -8
             width: 639
             height: 446
+
             onClicked: {
                 DD.row_selected(t_view.currentRow)
 
+                //db_list = DD.
             }
             onDoubleClicked: {
+               // D_HTML.setHTMLData(db_list);
                 var component = Qt.createComponent("SessionWindow.qml")
                 win = component.createObject(root);
                 win.show();

@@ -10,25 +10,28 @@
 #include <reportform.h>
 #include <QObject>
 #include <lismodel.h>
-
+#include <exporthtml.h>
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-          QQmlApplicationEngine *engine = new QQmlApplicationEngine ;
+         QQmlApplicationEngine *engine = new QQmlApplicationEngine ;
 
          MainWindow w;
          w.show();
           return a.exec();
 
-          /*
+
+          // ExportHTML d_html;
+/*
           DataBase O;
+          ExportHTML H;
           O.setEngi(engine);
+          QObject::connect(&O,SIGNAL(PassHTMLdata(QVector<QVector<QStringList*>>,QStringList,int,QString)),&H,SLOT(ReceiveHTMLdata(QVector<QVector<QStringList*>>,QStringList,int,QString)));
           engine->rootContext()->setContextProperty("DD",&O);
           engine->load(QUrl(QLatin1String("qrc:/report_window.qml")));
-
           return a.exec();
-
 */
+
 }
 
     /*

@@ -40,34 +40,34 @@ void SessionWindowTable::CreateHTMLTable(QVector<QVector<QStringList*>> table_da
      }
      file.resize(0);
      QTextStream output(&file);
-     output<<"<!DOCTYPE html><html><head></head><body><table style='width:100%;border: 1px solid black'; 'border-collapse: collapse'>";
-     output<<"<tr style='border: 1px solid black'>";
+     output<<"<!DOCTYPE html>\n<html>\n<head>\n</head>\n<body>\n<table style='width:100%;border: 1px solid black'; 'border-collapse: collapse'>\n";
+     output<<"<tr style='border: 1px solid black'>\n";
      output<<"<th style='border: 1px solid black'>";
      output<<table_n.at(1);
-     output<<"</th >";
+     output<<"</th >\n";
      output<<"<th style='border: 1px solid black'>";
      output<<table_n.at(7);
-     output<<"</th>";
+     output<<"</th>\n";
      output<<"<th style='border: 1px solid black'>";
      output<<table_n.at(5);
-     output<<"</th>";
-     output<<"</tr>";
+     output<<"</th>\n";
+     output<<"</tr>\n";
      for(int i=0;i<table_data.at(index).size();i++){
-         output<<"<tr style='border: 1px solid black'>";
+         output<<"<tr style='border: 1px solid black'>\n";
          output<<"<td style='border: 1px solid black'>";
          output<<table_data.at(index).at(index)->at(0);
-         output<<"</td>";
+         output<<"</td>\n";
          output<<"<td style='border: 1px solid black'>";
          output<<table_data.at(index).at(index)->at(1);
-         output<<"</td>";
+         output<<"</td>\n";
          output<<"<td style='border: 1px solid black'>";
          output<<table_data.at(index).at(index)->at(2);
-         output<<"</td>";
-         output<<"</tr>";
+         output<<"</td>\n";
+         output<<"</tr>\n";
      }
-    output<<"</table>";
-    output<<"</body>";
-    output<<"</html>";
+    output<<"</table>\n";
+    output<<"</body>\n";
+    output<<"</html>\n";
 
 
 }

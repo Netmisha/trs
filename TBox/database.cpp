@@ -109,7 +109,7 @@ else{
 }
 return it;
 }
- QString DataBase::row_selected(QString row){
+QString DataBase::row_selected(QString row){
     // qDebug()<<list_from_ui.at(row.toInt());
 
      QSqlQuery *qu;
@@ -134,7 +134,7 @@ return it;
          row_fields rf;
 
 
-
+          //fix!
           for(int i=0;i<list_from_ui.size();i++){
              e = new QStringList;
              session_data.push_back(e);
@@ -147,14 +147,23 @@ return it;
          }
       qDebug()<<pass.at(row.toInt()).at(row.toInt())->at(0);
      //qDebug()<<S.at(row.toInt())->data;
+      index = row.toInt();
+      current_session = list_from_ui.at(row.toInt());
     SessionWindowTable WindowTable;
     WindowTable.setIndex(row.toInt());
     WindowTable.setTableNames(tn);
     WindowTable.CreateTable("D:/TRS/TBox/T.html",pass);
+
+
+
     //release data
      return row;
 
  }
+void DataBase::Export_Clicked(){
+    qDebug()<<"Export clicked";
+
+}
 QVector<DataBase::row_data*> DataBase::getDBdata(){
     return rc_data;
 }
