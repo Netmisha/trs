@@ -25,7 +25,8 @@ SOURCES+= main.cpp\
     datamanager.cpp \
     reportform.cpp \
     lismodel.cpp \
-    sessionwindowtable.cpp
+    sessionwindowtable.cpp \
+    exporthtml.cpp
 
 HEADERS+= mainwindow.h \
     trsmanager.h \
@@ -42,7 +43,8 @@ HEADERS+= mainwindow.h \
     datamanager.h \
     reportform.h \
     lismodel.h \
-    sessionwindowtable.h
+    sessionwindowtable.h \
+    exporthtml.h
 
 FORMS+= mainwindow.ui \
     reportform.ui

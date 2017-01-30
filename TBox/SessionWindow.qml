@@ -11,12 +11,15 @@ import QtQml 2.0 as QML
 import QtQml 2.2
 import QtQuick.Window 2.1
 import QtWebKit 3.0
+
 ApplicationWindow{
-    id: root
+    id: se
     visible: true
     width: 640
     height: 480
     title: qsTr("Session window")
+    property variant win_C;
+    property  string st;
 
     ColumnLayout{
         x: 0
@@ -29,17 +32,17 @@ ApplicationWindow{
         id: content
         width: 800
         height: 600
-        color: "black"
+        color: "white"
         Layout.alignment: Qt.AlignCenter
-        Layout.preferredHeight: root.height
-        Layout.preferredWidth: root.width
+        Layout.preferredHeight: se.height
+        Layout.preferredWidth:se.width
         WebView {
-
             id: webView
             anchors.fill: parent
             url: "file:///D:/TRS/TBox/T.html"
         }
     }
+
     Rectangle {
         id: rectangle1
         Button{
@@ -50,6 +53,10 @@ ApplicationWindow{
         x: 527
         y: 445
         text: "Export"
+        onClicked: {
+
+           DD.test();
+        }
         }
     }
    }
