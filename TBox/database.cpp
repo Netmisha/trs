@@ -101,7 +101,7 @@ else{
               qDebug()<<query->value(query->record().indexOf("Session_num")).toString();
               it.append(query->value(query->record().indexOf("Session_num")).toString());
            }
-           engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(it));
+           engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(it)); // list model
            list_from_ui = it;
            it.clear();
            return it;

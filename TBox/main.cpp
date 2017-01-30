@@ -15,14 +15,14 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
          QQmlApplicationEngine *engine = new QQmlApplicationEngine ;
-
+/*
          MainWindow w;
          w.show();
           return a.exec();
 
-
+*/
           // ExportHTML d_html;
-/*
+
           DataBase O;
           ExportHTML H;
           O.setEngi(engine);
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
           engine->rootContext()->setContextProperty("DD",&O);
           engine->load(QUrl(QLatin1String("qrc:/report_window.qml")));
           return a.exec();
-*/
+
 
 }
 
