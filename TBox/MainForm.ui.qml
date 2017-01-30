@@ -230,6 +230,12 @@ Item {
                                                         messageDialog.open()
                                                         return;
                                                     }
+                                                    res=theModel.Load(settingFile.getRootDir());
+                                                    if(res!="") {
+                                                        messageDialog.text=res;
+                                                        messageDialog.open()
+                                                        return;
+                                                    }
                                                 }
                                             }
                                             ToolButton {
@@ -494,7 +500,11 @@ Item {
                                                     addSuiteLayout.visible=false;
                                                     newTest.visible=true;
                                                     newSuite.visible=true;
-                                                    theModel.Load(settingFile.getRootDir());
+                                                    res=theModel.Load(settingFile.getRootDir());
+                                                    if(res!="") {
+                                                        messageDialog.text=res;
+                                                        messageDialog.open()
+                                                    }
                                                     runTags.model=theModel.GetTags();
                                                     jsCodeScroll.visible=true;
                                                     testRun.visible=true;
@@ -1074,15 +1084,13 @@ Item {
                         anchors.leftMargin: 3
                         smooth: true
                         text: {
-                            var dir=settingFile.getRootDir();
-                            if(dir=="") {
-                                selectFolder.open();
-                                dir=rootDir.text;
-                            }
-                            else {
-                                theModel.Load(dir);
-                                runTags.model=theModel.GetTags();
-                                return dir;
+                            rootDir.text=settingFile.getRootDir();
+                            var res=theModel.Load(rootDir.text);
+                            runTags.model=theModel.GetTags();
+                            if(res!="") {
+                                messageDialog.text=res;
+                                messageDialog.open()
+                                return;
                             }
                         }
                         layer.enabled: true
@@ -1121,8 +1129,13 @@ Item {
                     text: qsTr("Save")
                     onClicked: {
                         theModel.setRootDir(rootDir.text);
-                        theModel.Load(rootDir.text);
-                        settingFile.setRootDir(rootDir.text);
+                        var res=theModel.Load(rootDir.text);
+                        runTags.model=theModel.GetTags();
+                        if(res!="") {
+                            messageDialog.text=res;
+                            messageDialog.open()
+                            return;
+                        }
                         mainsetting.close();
                     }
                 }
@@ -1162,7 +1175,12 @@ Item {
                 createNew.visible=true;
             }
             else {
-                theModel.Load(rootDir.text);
+                var res=theModel.Load(rootDir.text);
+                if(res!="") {
+                    messageDialog.text=res;
+                    messageDialog.open()
+                    return;
+                }
                 runTags.model=theModel.GetTags();
             }
             Qt.quit()
@@ -1192,11 +1210,5 @@ Item {
         onAccepted: {
             Qt.quit();
         }
-    }
-    function closeAll() {
-        messageDialog.close();
-        selectFolder.close();
-        saveFile.close();
-        mainsetting.close();
     }
 }

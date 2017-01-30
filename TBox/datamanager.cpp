@@ -39,7 +39,7 @@ void DataManager::Set(QString path, QString data) {
     file.close();
 }
 QString DataManager::AddTest(QString path, QString name, QString dis, QString tag, QString exe, QString rep, QString disable) {
-    if(name=="" || dis=="" || tag=="" || exe=="" || rep=="" || !(disable=="true" || disable=="false")) {
+    if(name=="" || exe=="" || !(disable=="true" || disable=="false")) {
         return "Fill all fields correctly!";
     }
     QDomDocument doc;
