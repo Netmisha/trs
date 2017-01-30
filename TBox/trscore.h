@@ -8,6 +8,10 @@
 #include <Windows.h>
 #include <QPixmap>
 #include <QScreen>
+#include <QDir>
+#include <QFile>
+#include <QDirIterator>
+#include <QFileInfo>
 
 #define MOUSEEVENTF_HWHEEL 4096
 
@@ -43,6 +47,14 @@ public slots:
     void MouseWheelRight();
     void PrintScreen(QString file);
     void PrintScreenA(int x, int y, int w, int h, QString file);
+    QString exec(QString);
+    QStringList getList(QString);
+    QStringList getFullList(QString);
+    bool isFile(QString);
+    bool isDir(QString);
+    bool isExist(QString);
+    bool isReadOnly(QString);
+    qint64 getSize(QString);
 private:
     QProcess *process;
     POINT current_pos;

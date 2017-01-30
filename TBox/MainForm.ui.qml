@@ -1085,12 +1085,17 @@ Item {
                         smooth: true
                         text: {
                             rootDir.text=settingFile.getRootDir();
-                            var res=theModel.Load(rootDir.text);
-                            runTags.model=theModel.GetTags();
-                            if(res!="") {
-                                messageDialog.text=res;
-                                messageDialog.open()
-                                return;
+                            if(rootDir.text!="") {
+                                var res=theModel.Load(rootDir.text);
+                                runTags.model=theModel.GetTags();
+                                if(res!="") {
+                                    messageDialog.text=res;
+                                    messageDialog.open()
+                                    return;
+                                }
+                            }
+                            else {
+                                selectFolder.open();
                             }
                         }
                         layer.enabled: true
