@@ -14,7 +14,7 @@ import QtWebKit 3.0
 ApplicationWindow {
     id: root
     visible: true
-    width: 640
+    width: 800
     height: 480
     title: qsTr("Report Window")
      property variant win;
@@ -33,8 +33,8 @@ ApplicationWindow {
             id: t_view
             x: 0
             y: -8
-            width: 639
-            height: 446
+            width: root.width
+            height: root.height
 
             onClicked: {
                 DD.row_selected(t_view.currentRow)
@@ -49,7 +49,28 @@ ApplicationWindow {
             }
         TableViewColumn {
                             role: "name_role"
-                            title: "Session:"
+                            title: "Session"
+
+                        }
+        TableViewColumn {
+                            role: "test_s"
+                            title: "Session start"
+
+                        }
+        TableViewColumn {
+                            role: "Dur"
+                            title: "Session durration"
+
+                        }
+        TableViewColumn {
+                            role: "test_e"
+                            title: "Session end"
+
+                        }
+        TableViewColumn {
+                            role: "test_s"
+                            title: "Session passed"
+
                         }
         }
     }
