@@ -12,7 +12,9 @@ import QtQml 2.2
 import QtQuick.Window 2.1
 import QtWebKit 3.0
 ApplicationWindow {
+
     id: root
+
     visible: true
     width: 800
     height: 480
@@ -20,14 +22,11 @@ ApplicationWindow {
      property variant win;
     property  variant list_;
     property  variant db_list;
-
-
         ListView {
         id: list_V
         x: 0
         y: 42
         width: 182; height: 438
-
         TableView{
             model: MLM
             id: t_view
@@ -35,7 +34,6 @@ ApplicationWindow {
             y: -8
             width: root.width
             height: root.height
-
             onClicked: {
                 DD.row_selected(t_view.currentRow)
 
@@ -51,14 +49,14 @@ ApplicationWindow {
         TableViewColumn {
                             role: "session_n"
                             title: "Session"
-                            //delegate: Text{text:"dsa"}
+
                         }
 
         TableViewColumn {
 
                             role: "session_s"
                             title: "Session start"
-                           // delegate: Text{text:DD.datad(1)}
+
                         }
         TableViewColumn {
                             role: "session_d"

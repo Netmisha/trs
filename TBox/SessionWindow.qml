@@ -54,7 +54,6 @@ ApplicationWindow{
         y: 445
         text: "Export"
         onClicked: {
-
            DD.test();
         }
         }

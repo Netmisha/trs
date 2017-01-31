@@ -19,7 +19,7 @@
 #include <sessionwindowtable.h>
 #include <exporthtml.h>
 #include <lismodel.h>
-class DataBase: public QObject
+class DataBase: public QObject // class for reading data from DB
 {
 
 Q_OBJECT

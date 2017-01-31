@@ -24,7 +24,7 @@ public:
    Q_INVOKABLE void setSession_d(const QString &sesd);
    Q_INVOKABLE void setSession_e(const QString &sese);
    Q_INVOKABLE void setSession_p(const QString &sesp);
- signals:
+ signals: // just in case
     void session_n_changed();
      void session_s_changed();
       void session_d_changed();
