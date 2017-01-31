@@ -194,7 +194,7 @@ Item {
                                                 id: newTest
                                                 iconSource: "icons/icons/newtest.png"
                                                 onClicked: {
-                                                    jsCodeEdit.visible=false;
+                                                    centerRect.visible=false;
                                                     addTestLayout.visible=true;
                                                     testName.text="New Test";
                                                     testRun.visible=false;
@@ -210,7 +210,7 @@ Item {
                                                 id: newSuite
                                                 iconSource: "icons/icons/newsuite.png"
                                                 onClicked: {
-                                                    jsCodeEdit.visible=false;
+                                                    centerRect.visible=false;
                                                     addSuiteLayout.visible=true;
                                                     testName.text="New Suite";
                                                     testRun.visible=false;
@@ -302,7 +302,7 @@ Item {
                                                         else if(theModel.Get("disable")=="true"){
                                                             testStatus.iconSource="icons/icons/turnoff.png";
                                                         }
-                                                        jsCodeEdit.visible=false;
+                                                        centerRect.visible=false;
                                                         addTestLayout.visible=true;
                                                         testRun.visible=false;
                                                         newTest.visible=false;
@@ -319,7 +319,7 @@ Item {
                                                         textEditSName.text=theModel.Get("name");
                                                         textEditSDiscr.text=theModel.Get("description");
                                                         textEditSRepeat.text=theModel.Get("repeat");
-                                                        jsCodeEdit.visible=false;
+                                                        centerRect.visible=false;
                                                         addSuiteLayout.visible=true;
                                                         testRun.visible=false;
                                                         newTest.visible=false;
@@ -380,7 +380,7 @@ Item {
                                                             newSuite.visible=true;
                                                         }
                                                     }
-                                                    jsCodeEdit.visible=true;
+                                                    centerRect.visible=true;
                                                     testName.text=theModel.Get("name");
                                                     testRun.visible=true;
                                                     testDelete.visible=true;
@@ -465,7 +465,7 @@ Item {
                                                         }
                                                     }
                                                     runTags.model=theModel.GetTags();
-                                                    jsCodeScroll.visible=true;
+                                                    centerRect.visible=true;
                                                     testName.text=theModel.Get("name");
                                                     testRun.visible=true;
                                                     testDelete.visible=true;
@@ -500,7 +500,7 @@ Item {
                                                         messageDialog.open()
                                                     }
                                                     runTags.model=theModel.GetTags();
-                                                    jsCodeScroll.visible=true;
+                                                    centerRect.visible=true;
                                                     testRun.visible=true;
                                                     testDelete.visible=true;
                                                     testSetting.visible=true;
