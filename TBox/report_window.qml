@@ -16,7 +16,7 @@ ApplicationWindow {
     visible: true
     width: 800
     height: 480
-    title: qsTr("Report Window")
+    title: qsTr("Reports")
      property variant win;
     property  variant list_;
     property  variant db_list;
@@ -27,9 +27,9 @@ ApplicationWindow {
         x: 0
         y: 42
         width: 182; height: 438
-        TableView{
 
-            model:MLM
+        TableView{
+            model: MLM
             id: t_view
             x: 0
             y: -8
@@ -47,36 +47,41 @@ ApplicationWindow {
                 win = component.createObject(root);
                 win.show();
             }
+
         TableViewColumn {
-                            role: "name_role"
+                            role: "session_n"
                             title: "Session"
-
+                            //delegate: Text{text:"dsa"}
                         }
+
         TableViewColumn {
-                            role: "test_s"
+
+                            role: "session_s"
                             title: "Session start"
-
+                           // delegate: Text{text:DD.datad(1)}
                         }
         TableViewColumn {
-                            role: "Dur"
+                            role: "session_d"
                             title: "Session durration"
 
                         }
         TableViewColumn {
-                            role: "test_e"
+                            role: "session_e"
                             title: "Session end"
 
                         }
         TableViewColumn {
-                            role: "test_s"
+                            role: "session_p"
                             title: "Session passed"
 
                         }
+
+
         }
     }
 
     Button{
-        x: 513
+        x: 673
         y: 0
         width: 127
         height: 33
@@ -126,7 +131,7 @@ ApplicationWindow {
     }
     Label{
         x: 0
-        y: 5
+        y: 3
         width: 33
         height: 28
         text: "Start"

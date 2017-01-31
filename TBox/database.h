@@ -18,6 +18,7 @@
 #include <QQmlApplicationEngine>
 #include <sessionwindowtable.h>
 #include <exporthtml.h>
+#include <lismodel.h>
 class DataBase: public QObject
 {
 
@@ -33,11 +34,17 @@ public slots:
    Q_INVOKABLE void Export_Clicked();
 
 public:
-   //use as signal
+
+   Q_INVOKABLE QList<QObject*> datalist;
    Q_INVOKABLE QString current_session;
    Q_INVOKABLE int index;
    Q_INVOKABLE void test(){
       emit PassHTMLdata(pass,tn,index,current_session);
+   }
+   Q_INVOKABLE QString datad(int i){
+       if(i==0){
+   return "Hello from func";
+       }else{return "new";}
    }
     explicit DataBase(QObject *parent = 0);
      QString date;
