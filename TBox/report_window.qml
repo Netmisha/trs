@@ -12,14 +12,12 @@ import QtQml 2.2
 import QtQuick.Window 2.1
 import QtWebKit 3.0
 ApplicationWindow {
-
     id: root
-
     visible: true
     width: 800
     height: 480
     title: qsTr("Reports")
-     property variant win;
+    property variant win;
     property  variant list_;
     property  variant db_list;
         ListView {
@@ -36,48 +34,35 @@ ApplicationWindow {
             height: root.height
             onClicked: {
                 DD.row_selected(t_view.currentRow)
-
-                //db_list = DD.
             }
             onDoubleClicked: {
-               // D_HTML.setHTMLData(db_list);
                 var component = Qt.createComponent("SessionWindow.qml")
                 win = component.createObject(root);
                 win.show();
             }
-
         TableViewColumn {
                             role: "session_n"
                             title: "Session"
-
                         }
 
         TableViewColumn {
-
                             role: "session_s"
                             title: "Session start"
-
                         }
         TableViewColumn {
                             role: "session_d"
                             title: "Session durration"
-
                         }
         TableViewColumn {
                             role: "session_e"
                             title: "Session end"
-
                         }
         TableViewColumn {
                             role: "session_p"
                             title: "Session passed"
-
                         }
-
-
         }
     }
-
     Button{
         x: 673
         y: 0
@@ -150,7 +135,6 @@ ApplicationWindow {
         height: 33
         placeholderText: "Set end date"
     }
-
     Calendar{
         id:end_date
         x: 278
@@ -177,5 +161,4 @@ ApplicationWindow {
         textField1.text = DD.getDateQML
         }
     }
-
 }

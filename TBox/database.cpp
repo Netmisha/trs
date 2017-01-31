@@ -215,9 +215,6 @@ QString DataBase::row_selected(QString row){
     WindowTable.setIndex(row.toInt());
     WindowTable.setTableNames(tn);
     WindowTable.CreateTable("D:/TRS/TBox/T.html",pass);
-
-
-
     //release data
      return row;
 

@@ -29,7 +29,6 @@ LisModel::LisModel(const QString &session_n, const QString &session_s,const QStr
      }
 }
  void LisModel::setSession_e(const QString &sese){
-     qDebug()<<sese;
      if (sese != this->session_e_) {
          this->session_e_ = sese;
          emit session_e_changed();
