@@ -5,7 +5,7 @@ import QtQuick.Window 2.2
 import cMainTree 1.0
 import MainSetting 1.0
 import QtQml.Models 2.2
-import QtQuick.Controls.Styles 1.0
+import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls.Private 1.0
 import QtQuick.Dialogs 1.2
 import FileSave 1.0
@@ -60,7 +60,6 @@ Item {
                             validator: IntValidator {bottom: 0; top: 10;}
                             onCurrentIndexChanged: theModel.setCurrentTag(currentText);
                         }
-
                         ToolButton {
                             id: startButton
                             onClicked: {
@@ -103,7 +102,13 @@ Item {
                     TreeView {
                        id: mainTree
                        anchors.fill: parent
+                       TableViewColumn {
+                           role: "name_role"
+                           title: "Tests"
+                       }
                        model: theModel
+                       selectionMode: SelectionMode.SingleSelection
+                       headerVisible: false
                        itemDelegate: Rectangle {
                           id : recid
                           color: ( styleData.row % 2 == 0 ) ? "white" : "#f6f6f6"
@@ -135,11 +140,6 @@ Item {
                               }
                           }
                        }
-                       TableViewColumn {
-                           role: "name_role"
-                           title: "Tests"
-                       }
-
                    }
                 }
                 Rectangle {
@@ -150,9 +150,11 @@ Item {
                         anchors.fill: parent
                         orientation: Qt.Vertical
                         ColumnLayout {
+                            id: centerColumn
                             Layout.minimumHeight: 200
                             Layout.fillWidth: true
                             Layout.fillHeight: true
+                            spacing: 0
                             Rectangle {
                                 height: 30
                                 Layout.fillWidth: true
@@ -192,7 +194,7 @@ Item {
                                                 id: newTest
                                                 iconSource: "icons/icons/newtest.png"
                                                 onClicked: {
-                                                    jsCodeScroll.visible=false;
+                                                    centerRect.visible=false;
                                                     addTestLayout.visible=true;
                                                     testName.text="New Test";
                                                     testRun.visible=false;
@@ -208,7 +210,7 @@ Item {
                                                 id: newSuite
                                                 iconSource: "icons/icons/newsuite.png"
                                                 onClicked: {
-                                                    jsCodeScroll.visible=false;
+                                                    centerRect.visible=false;
                                                     addSuiteLayout.visible=true;
                                                     testName.text="New Suite";
                                                     testRun.visible=false;
@@ -224,18 +226,7 @@ Item {
                                                 id: testDelete
                                                 iconSource: "icons/icons/testdelete.png"
                                                 onClicked: {
-                                                    var res=theModel.Remove();
-                                                    if(res!="") {
-                                                        messageDialog.text=res;
-                                                        messageDialog.open()
-                                                        return;
-                                                    }
-                                                    res=theModel.Load(settingFile.getRootDir());
-                                                    if(res!="") {
-                                                        messageDialog.text=res;
-                                                        messageDialog.open()
-                                                        return;
-                                                    }
+                                                    deleteConfirm.open();
                                                 }
                                             }
                                             ToolButton {
@@ -248,6 +239,7 @@ Item {
                                                     testSetting.visible=false;
                                                     testEdit.visible=false;
                                                     jsCodeEdit.readOnly=false;
+                                                    jsCodeRect.color="white";
                                                     saveJS.visible=true;
                                                     cancelJS.visible=true;
                                                     mainTree.enabled=false;
@@ -267,6 +259,7 @@ Item {
                                                     jsCodeEdit.readOnly=true;
                                                     testEdit.visible=true;
                                                     saveJS.visible=false;
+                                                    jsCodeRect.color="#f6f6f6";
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
                                                     mainToolBar.enabled=true;
@@ -284,6 +277,7 @@ Item {
                                                     testDelete.visible=true;
                                                     testSetting.visible=true;
                                                     jsCodeEdit.readOnly=true;
+                                                    jsCodeRect.color="#f6f6f6";
                                                     testEdit.visible=true;
                                                     saveJS.visible=false;
                                                     cancelJS.visible=false;
@@ -308,7 +302,7 @@ Item {
                                                         else if(theModel.Get("disable")=="true"){
                                                             testStatus.iconSource="icons/icons/turnoff.png";
                                                         }
-                                                        jsCodeScroll.visible=false;
+                                                        centerRect.visible=false;
                                                         addTestLayout.visible=true;
                                                         testRun.visible=false;
                                                         newTest.visible=false;
@@ -325,7 +319,7 @@ Item {
                                                         textEditSName.text=theModel.Get("name");
                                                         textEditSDiscr.text=theModel.Get("description");
                                                         textEditSRepeat.text=theModel.Get("repeat");
-                                                        jsCodeScroll.visible=false;
+                                                        centerRect.visible=false;
                                                         addSuiteLayout.visible=true;
                                                         testRun.visible=false;
                                                         newTest.visible=false;
@@ -386,7 +380,7 @@ Item {
                                                             newSuite.visible=true;
                                                         }
                                                     }
-                                                    jsCodeScroll.visible=true;
+                                                    centerRect.visible=true;
                                                     testName.text=theModel.Get("name");
                                                     testRun.visible=true;
                                                     testDelete.visible=true;
@@ -471,7 +465,7 @@ Item {
                                                         }
                                                     }
                                                     runTags.model=theModel.GetTags();
-                                                    jsCodeScroll.visible=true;
+                                                    centerRect.visible=true;
                                                     testName.text=theModel.Get("name");
                                                     testRun.visible=true;
                                                     testDelete.visible=true;
@@ -506,7 +500,7 @@ Item {
                                                         messageDialog.open()
                                                     }
                                                     runTags.model=theModel.GetTags();
-                                                    jsCodeScroll.visible=true;
+                                                    centerRect.visible=true;
                                                     testRun.visible=true;
                                                     testDelete.visible=true;
                                                     testSetting.visible=true;
@@ -521,21 +515,27 @@ Item {
                                     }
                                 }
                             }
-                            ScrollView {
-                                id: jsCodeScroll
+                            Rectangle {
+                                id: centerRect
                                 Layout.minimumWidth: 200
                                 Layout.minimumHeight: 200
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                TextEdit {
+                                color: "transparent"
+                                Rectangle {
+                                    id: jsCodeRect
+                                    anchors.fill: parent
+                                    color: "#f6f6f6"
+                                }
+                                TextArea {
                                     id: jsCodeEdit
                                     readOnly: true
                                     selectByMouse: true
                                     font.pixelSize: 12
-                                    Layout.minimumWidth: 200
-                                    Layout.minimumHeight: 200
-                                    Layout.fillWidth: true
-                                    Layout.fillHeight: true
+                                    textFormat: Qt.PlainText
+                                    tabChangesFocus: false
+                                    anchors.fill: parent
+                                    backgroundVisible: false
                                 }
                             }
                             Rectangle {
@@ -1085,12 +1085,17 @@ Item {
                         smooth: true
                         text: {
                             rootDir.text=settingFile.getRootDir();
-                            var res=theModel.Load(rootDir.text);
-                            runTags.model=theModel.GetTags();
-                            if(res!="") {
-                                messageDialog.text=res;
-                                messageDialog.open()
-                                return;
+                            if(rootDir.text!="") {
+                                var res=theModel.Load(rootDir.text);
+                                runTags.model=theModel.GetTags();
+                                if(res!="") {
+                                    messageDialog.text=res;
+                                    messageDialog.open()
+                                    return;
+                                }
+                            }
+                            else {
+                                selectFolder.open();
                             }
                         }
                         layer.enabled: true
@@ -1205,9 +1210,38 @@ Item {
     }
     MessageDialog {
         id: messageDialog
+        width: 200;
+        modality: Qt.WindowModal
+        title: "Warning!"
+        icon: StandardIcon.Warning
+        onAccepted: {
+            Qt.quit();
+        }
+    }
+    MessageDialog {
+        id: deleteConfirm
+        width: 200;
         modality: Qt.WindowModal
         title: "Warning"
+        text: "Are you sure?"
+        icon: StandardIcon.Warning
+        standardButtons: StandardButton.Ok | StandardButton.Cancel
         onAccepted: {
+            var res=theModel.Remove();
+            if(res!="") {
+                messageDialog.text=res;
+                messageDialog.open()
+                return;
+            }
+            res=theModel.Load(settingFile.getRootDir());
+            if(res!="") {
+                messageDialog.text=res;
+                messageDialog.open()
+                return;
+            }
+            Qt.quit();
+        }
+        onRejected: {
             Qt.quit();
         }
     }

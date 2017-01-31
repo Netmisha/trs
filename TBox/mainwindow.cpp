@@ -68,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     view = ui->webView;
     CreateHtml();
+    view->setContextMenuPolicy(Qt::NoContextMenu);
     QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     TRSManager *trs=new TRSManager();
     view->page()->mainFrame()->addToJavaScriptWindowObject("trs", trs);
@@ -96,7 +97,6 @@ MainWindow::MainWindow(QWidget *parent) :
     settings->setAttribute(QWebSettings::JavascriptEnabled, true);
 }
 MainWindow::~MainWindow(){
-    QMetaObject::invokeMethod(object, "closeAll");
     delete ui;
 }
 void MainWindow::RunNext(){

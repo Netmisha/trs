@@ -128,3 +128,88 @@ void TRSCore::PrintScreenA(int x, int y, int w, int h, QString file){
     QPixmap cropped = originalPixmap.copy(rect);
     cropped.save(file);
 }
+int TRSCore::exec(QString command) {
+    return system(command.toStdString().c_str());;
+}
+QStringList TRSCore::getList(QString path) {
+    QStringList files;
+    QDirIterator it(path, QDirIterator::NoIteratorFlags);
+    while (it.hasNext()) {
+        it.next();
+        if (it.filePath().contains("/.") || it.filePath().contains("/.")) {
+            continue;
+        }
+        else {
+            files.push_back(it.filePath());
+        }
+    }
+    return files;
+}
+QStringList TRSCore::getFullList(QString path) {
+    QStringList files;
+    QDirIterator it(path, QDirIterator::Subdirectories);
+    while (it.hasNext()) {
+        it.next();
+        if (it.filePath().contains("/.") || it.filePath().contains("/.")) {
+            continue;
+        }
+        else {
+            files.push_back(it.filePath());
+        }
+    }
+    return files;
+}
+bool TRSCore::isFile(QString path) {
+    QFileInfo file(path);
+    return file.isFile();
+}
+bool TRSCore::isDir(QString path) {
+    QFileInfo file(path);
+    return file.isDir();
+}
+bool TRSCore::isExist(QString path) {
+    QFileInfo file(path);
+    return file.exists();
+}
+bool TRSCore::isReadOnly(QString path) {
+    QFileInfo file(path);
+    return !file.isWritable();
+}
+qint64 TRSCore::getSize(QString path) {
+    if(isFile(path)) {
+        QFileInfo file(path);
+        return file.size();
+    }
+    else {
+        qint64 size=0;
+        QDirIterator it(path, QDirIterator::Subdirectories);
+        QFileInfo file;
+        while (it.hasNext()) {
+            it.next();
+            if (it.filePath().contains("/.") || it.filePath().contains("/.")) {
+                continue;
+            }
+            else {
+                file.setFile(it.filePath());
+                size+=file.size();
+            }
+        }
+        return size;
+    }
+}
+bool TRSCore::delDir(QString path) {
+    if(!QDir(path).exists()) {
+        return false;
+    }
+    QDir qd(path);
+    qd.removeRecursively();
+    return true;
+}
+bool TRSCore::delFile(QString path) {
+    if(!QFile(path).exists()) {
+        return false;
+    }
+    QFile file(path);
+    file.remove();
+    return true;
+}
