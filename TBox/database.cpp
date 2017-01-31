@@ -101,11 +101,19 @@ else{
               qDebug()<<query->value(query->record().indexOf("Session_num")).toString();
               it.append(query->value(query->record().indexOf("Session_num")).toString());
            }
-           engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(it)); // list model
+           //QStringList l;
+          // l.append("4");
+            //LisModel M;
+            //QVariant::fromValue(it)
+           //pass database to data list
+
+           datalist.append(new LisModel("4","12","33","3","Passed"));
+           datalist.append(new LisModel("5","13","23","3","!Passed"));
+        // &session_n, const QString &session_s,const QString session_d,const QString session_e,QString session_p,
+           engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(datalist)); // list model
            list_from_ui = it;
            it.clear();
            return it;
-
 }
 return it;
 }
