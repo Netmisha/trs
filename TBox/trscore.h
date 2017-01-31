@@ -47,7 +47,7 @@ public slots:
     void MouseWheelRight();
     void PrintScreen(QString file);
     void PrintScreenA(int x, int y, int w, int h, QString file);
-    QString exec(QString);
+    int exec(QString);
     QStringList getList(QString);
     QStringList getFullList(QString);
     bool isFile(QString);
@@ -55,6 +55,8 @@ public slots:
     bool isExist(QString);
     bool isReadOnly(QString);
     qint64 getSize(QString);
+    bool delDir(QString);
+    bool delFile(QString);
 private:
     QProcess *process;
     POINT current_pos;

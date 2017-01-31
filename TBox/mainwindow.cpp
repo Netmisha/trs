@@ -96,7 +96,6 @@ MainWindow::MainWindow(QWidget *parent) :
     settings->setAttribute(QWebSettings::JavascriptEnabled, true);
 }
 MainWindow::~MainWindow(){
-    QMetaObject::invokeMethod(object, "closeAll");
     delete ui;
 }
 void MainWindow::RunNext(){

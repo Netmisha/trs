@@ -14,6 +14,11 @@
 #include <QVector>
 #include "maintree.h"
 #include "trscore.h"
+#include "trsmanager.h"
+#include "mainsetting.h"
+#include "datamanager.h"
+#include "testinfo.h"
+#include "filesave.h"
 
 namespace Ui {
 class MainWindow;
@@ -33,7 +38,6 @@ private:
     void CreateHtml();
     Ui::MainWindow *ui;
     QObject *object;
-
     TRSCore a;
 };
 
