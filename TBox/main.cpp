@@ -9,7 +9,7 @@
 #include <database.h>
 #include <reportform.h>
 #include <QObject>
-
+#include <databasemanager.h>
 #include <exporthtml.h>
 int main(int argc, char *argv[])
 {
@@ -17,20 +17,28 @@ int main(int argc, char *argv[])
          QQmlApplicationEngine *engine = new QQmlApplicationEngine ;
 
          MainWindow w;
+
           return a.exec();
 
           // ExportHTML d_html;
-/*
-          DataBase O;
-          ExportHTML H;
 
+/*
+    DataBaseManager M;
+    M.sessionStart();
+    Sleep(100);
+    M.sessionEnd();
+    */
+/*
+    DataBase O;
+          ExportHTML H;
           O.setEngi(engine);
+
           QObject::connect(&O,SIGNAL(PassHTMLdata(QVector<QVector<QStringList*>>,QStringList,int,QString)),&H,SLOT(ReceiveHTMLdata(QVector<QVector<QStringList*>>,QStringList,int,QString)));
           engine->rootContext()->setContextProperty("DD",&O);
           engine->load(QUrl(QLatin1String("qrc:/report_window.qml")));
           return a.exec();
-
 */
+
 }
 
     /*
