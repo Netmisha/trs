@@ -24,10 +24,9 @@ int main(int argc, char *argv[])
 
 
 /*
-    DataBase O;
+          DataBase O;
           ExportHTML H;
           O.setEngi(engine);
-
           QObject::connect(&O,SIGNAL(PassHTMLdata(QVector<QVector<QStringList*>>,QStringList,int,QString)),&H,SLOT(ReceiveHTMLdata(QVector<QVector<QStringList*>>,QStringList,int,QString)));
           engine->rootContext()->setContextProperty("DD",&O);
           engine->load(QUrl(QLatin1String("qrc:/report_window.qml")));
