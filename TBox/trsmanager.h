@@ -23,11 +23,8 @@ class TRSManager : public QObject
 public:
     explicit TRSManager(QObject *parent = 0);
 signals:
-    void RunNext();
     void writeMSG(QString);
 public slots:
-    static void Run(QString, QString, QString);
-    static void RunInThread(QString, QString, QString);
 private:
 };
 

@@ -1,11 +1,7 @@
 <?xml version='1.0'?>
 <suite description="Main suite description" name="Main suite">
- <tag>Release</tag>
  <repeat pause="100">120</repeat>
- <maxTime>2s</maxTime>
  <disable>false</disable>
- <application>C:\Windows\SYSTEM32\mspaint.exe</application>
- <windowName>Untitled - Paint</windowName>
  <metadata>
   <author>Mykhailo</author>
   <date>05.20.2016</date>
@@ -19,22 +15,12 @@
   <tag>Release</tag>
   <disable>false</disable>
   <execution>test.js</execution>
-  <result>0</result>
-  <repeat pause="1000">1</repeat>
-  <maxTime>80</maxTime>
-  <data>
-   <printscreen>D:/1.jpg</printscreen>
-  </data>
+  <repeat>1</repeat>
  </test>
  <test description="Test description" name="Test2">
   <tag>Debug</tag>
   <disable>false</disable>
   <execution>test.js</execution>
-  <result>0</result>
-  <repeat pause="1000">2</repeat>
-  <maxTime>80</maxTime>
-  <data>
-   <printscreen>D:/1.jpg</printscreen>
-  </data>
+  <repeat>2</repeat>
  </test>
 </suite>

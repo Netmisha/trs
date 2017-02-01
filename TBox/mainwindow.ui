@@ -69,6 +69,10 @@
    </property>
   </action>
   <action name="actionClose">
+   <property name="icon">
+    <iconset resource="qml.qrc">
+     <normaloff>:/icons/icons/tbox.png</normaloff>:/icons/icons/tbox.png</iconset>
+   </property>
    <property name="text">
     <string>Close</string>
    </property>

@@ -17,7 +17,6 @@ int main(int argc, char *argv[])
          QQmlApplicationEngine *engine = new QQmlApplicationEngine ;
 /*
          MainWindow w;
-         w.show();
           return a.exec();
 */
           // ExportHTML d_html;

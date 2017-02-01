@@ -1,11 +1,7 @@
 <?xml version="1.0"?>
 <suite name="Suite 2" description="Test description">
-	<tag>Release</tag>
-	<repeat pause = "100">120</repeat>
-	<maxTime>2s</maxTime>
+	<repeat>120</repeat>
 	<disable>true</disable>
-	<application>C:\Windows\SYSTEM32\mspaint.exe</application>
-	<windowName>Untitled - Paint</windowName>
 	<metadata>
 		<author>Mykhailo</author>
 		<date>05.20.2016</date>
@@ -15,37 +11,28 @@
 		<license></license>
 		<info></info>
 	</metadata>
-
 	<test name="Test1" description="Test description">
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.js</execution>
-		<result>666</result>
-		<repeat pause="500">5</repeat>
-        <maxTime>80</maxTime>
+		<repeat>5</repeat>
 	</test>
 	<test name="Test2" description="Test description">
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.js</execution>
-		<result>0</result>
 		<repeat pause="500">5</repeat>
-        <maxTime>80</maxTime>
 	</test>
 	<test name="Test3" description="Test description">
 		<tag>Release</tag>
-		<disable>true</disable>
+		<disable>false</disable>
 		<execution>test.js</execution>
-		<result>0</result>
-		<repeat pause="500">5</repeat>
-        <maxTime>80</maxTime>
+		<repeat>5</repeat>
 	</test>
 	<test name="Test4" description="Test description">
 		<tag>Release</tag>
 		<disable>false</disable>
 		<execution>test.js</execution>
-		<result>0</result>
-		<repeat pause="500">5</repeat>
-        <maxTime>80</maxTime>
+		<repeat>5</repeat>
 	</test>
 </suite>
