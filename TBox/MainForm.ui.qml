@@ -1086,6 +1086,7 @@ Item {
                             rootDir.text=settingFile.getRootDir();
                             if(rootDir.text!="") {
                                 var res=theModel.Load(rootDir.text);
+                                mainTree.expand(theModel.getCurrentIndex());
                                 runTags.model=theModel.GetTags();
                                 if(res!="") {
                                     messageDialog.text=res;
