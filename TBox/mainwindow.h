@@ -6,6 +6,7 @@
 #include <QQmlEngine>
 #include <QWebInspector>
 #include <QUrl>
+#include <QObject>
 #include <QVariant>
 #include <QQuickView>
 #include <QQuickItem>
@@ -19,7 +20,6 @@
 #include "datamanager.h"
 #include "testinfo.h"
 #include "filesave.h"
-
 namespace Ui {
 class MainWindow;
 }

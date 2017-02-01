@@ -1,38 +1,38 @@
-<?xml version="1.0"?>
-<suite name="Suite 1" description="Test description">
-	<repeat>120</repeat>
-	<disable>true</disable>
-	<metadata>
-		<author>Mykhailo</author>
-		<date>05.20.2016</date>
-		<version>1.0.0</version>
-		<mail>netmisha@gmail.com</mail>
-		<copyright></copyright>
-		<license></license>
-		<info></info>
-	</metadata>
-	<test name="Test1" description="Test description">
-		<tag>Tag1,Tag2</tag>
-		<disable>false</disable>
-		<execution>test.js</execution>
-		<repeat>5</repeat>
-	</test>
-	<test name="Test2" description="Test description">
-		<tag>Release</tag>
-		<disable>false</disable>
-		<execution>test.js</execution>
-		<repeat>5</repeat>
-	</test>
-	<test name="Test3" description="Test description">
-		<tag>Tag1,Tag2</tag>
-		<disable>false</disable>
-		<execution>test.js</execution>
-		<repeat>5</repeat>
-	</test>
-	<test name="Test4" description="Test description">
-		<tag>Release</tag>
-		<disable>false</disable>
-		<execution>test.js</execution>
-		<repeat>5</repeat>
-	</test>
+<?xml version='1.0'?>
+<suite description="Test description" name="Suite 1">
+ <repeat>120</repeat>
+ <disable>true</disable>
+ <metadata>
+  <author>Mykhailo</author>
+  <date>05.20.2016</date>
+  <version>1.0.0</version>
+  <mail>netmisha@gmail.com</mail>
+  <copyright/>
+  <license/>
+  <info/>
+ </metadata>
+ <test description="Test description" name="Test1">
+  <tag>Tag1,Tag2</tag>
+  <disable>false</disable>
+  <execution>test.js</execution>
+  <repeat>5</repeat>
+ </test>
+ <test description="Test description" name="Test2">
+  <tag>Release</tag>
+  <disable>false</disable>
+  <execution>test.js</execution>
+  <repeat>5</repeat>
+ </test>
+ <test description="Test description" name="Test3">
+  <tag>Tag1,Tag2</tag>
+  <disable>false</disable>
+  <execution>test.js</execution>
+  <repeat>5</repeat>
+ </test>
+ <test description="Test description" name="Test4">
+  <tag>Release</tag>
+  <disable>false</disable>
+  <execution>test.js</execution>
+  <repeat>5</repeat>
+ </test>
 </suite>

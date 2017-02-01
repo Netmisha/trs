@@ -8,20 +8,25 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QStringList>
-class DataBaseManager
+#include <mainwindow.h>
+#include <QSqlRecord>
+class DataBaseManager: public QObject
 {
+Q_OBJECT
 private:
     void InitDB();
     void calcTime(int msecs);
     void createTest();
+    void ClearData();
+    void setSessionNum();
     QTime start_;
     QTime start_time;
     QTime end_time;
 
-    QString test_name;
-    QString session_num;
-    QString test_passed;
-    QString test_suite;
+    QString test_name_;
+    int session_num_;
+    QString test_passed_;
+    QString test_suite_;
 
     QString session_execution;
     QString start_time_;
@@ -36,8 +41,8 @@ private:
     QSqlDatabase db;
     QSqlQuery *query_;
 public slots:
-    void getSuiteName();
-    void getTestName();
+void getSuiteName(QString);
+void getTestName(QString);
 public:
     DataBaseManager();
     void sessionStart();

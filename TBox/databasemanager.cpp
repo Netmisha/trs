@@ -19,6 +19,7 @@ void DataBaseManager::sessionEnd(){
     end_date_.append(QDate::currentDate().toString("yyyy"));
     calcTime(msecs);
     createTest();
+    ClearData();
 }
 
 void  DataBaseManager::calcTime(int msecs){
@@ -39,7 +40,6 @@ void DataBaseManager::InitDB(){ // creates db if one does not exist
                  qDebug()<<db.lastError().text();
                  return;
              }
-
 }
 void DataBaseManager::createTest(){
      // QString Test_Day,QString Test_Month,QString Test_Year,QString Session_start_time
@@ -48,13 +48,47 @@ void DataBaseManager::createTest(){
         qDebug()<<"db is not open";
         return;
     }
- query_ = new QSqlQuery(db);
- query_->exec("insert into Info (Test_Name,Test_Day,Test_Month,Test_Year,Test_Passed,Session_num,Test_Suite,S_Start_time,Test_day_e,Test_month_e,Test_year_e,S_session_end,Session_duration) values ('Test_name','"+current_date_.at(0)+"' , '"+current_date_.at(1)+"' , '"+current_date_.at(2)+"' , 'yes' "+","+"'5'"+" , "+"'4'"+",'"+start_time_+"','"+end_date_.at(0)+"','"+end_date_.at(1)+"','"+end_date_.at(2)+"','"+end_time_+"','"+session_execution+"');");
+    setSessionNum();
+    query_ = new QSqlQuery(db);
+    qDebug()<<query_->exec("insert into Info (Test_Name,Test_Day,Test_Month,Test_Year,Test_Passed,Session_num,Test_Suite,S_Start_time,Test_day_e,Test_month_e,Test_year_e,S_session_end,Session_duration) values ( '"+test_name_+"',"+current_date_.at(0)+" , "+current_date_.at(1)+", "+current_date_.at(2)+" , 'yes' "+", '"+QString::number(session_num_)+"' , '"+test_suite_+"' ,'"+start_time_+"',"+end_date_.at(0)+","+end_date_.at(1)+","+end_date_.at(2)+",'"+end_time_+"','"+session_execution+"');");
 }
-void DataBaseManager::getSuiteName(){
-  qDebug()<<"suite name";
-}
-void DataBaseManager::getTestName(){
-    qDebug()<<"test name";
-}
+void DataBaseManager::getSuiteName(QString suite_name){
+     QRegExp exp(":|/");
+    QStringList t = suite_name.split(exp);
+    test_suite_ = t.at(t.size()-2);
 
+}
+void DataBaseManager::getTestName(QString test_name){
+    test_name_ = test_name;
+}
+void DataBaseManager::setSessionNum(){
+    if(!db.open()){
+        qDebug()<<"Cannot connect to database";
+        return;
+    }
+    QSqlQuery *qu = new QSqlQuery(db);
+    qu->exec("select max(Session_num) from Info");
+    //if(session_num_ !=1){
+    while(qu->next()){
+       session_num_ = qu->value(0).toInt();
+    }
+    session_num_++; // next session
+    delete qu;
+   // }
+}
+void DataBaseManager::ClearData(){
+test_name_.clear();
+test_passed_.clear();
+test_suite_.clear();
+session_execution.clear();
+start_time_.clear();
+end_time_.clear();
+current_date_.clear();
+end_date_.clear();
+msecs=0;
+hours = 0;
+minutes =0;
+seconds = 0;
+milliseconds =0;
+delete query_;
+}
