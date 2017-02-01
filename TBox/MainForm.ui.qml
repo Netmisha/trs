@@ -20,8 +20,12 @@ Item {
     }
     function showItem (index) {
         jsCodeEdit.text = theModel.FindTest(index);
+        lineRect.visible=false;
+        lineRect.width=0;
         if(theModel.GetType()=="test") {
             showMenu.menuForTest();
+            lineRect.visible=true;
+            lineRect.width=jsCodeEdit.lineCount.toString().length*jsCodeEdit.font.pixelSize;
         }
         else if(theModel.GetType()=="suite") {
             showMenu.menuForSuite();
@@ -534,16 +538,69 @@ Item {
                                     id: jsCodeRect
                                     anchors.fill: parent
                                     color: "#f6f6f6"
-                                }
-                                TextArea {
-                                    id: jsCodeEdit
-                                    readOnly: true
-                                    selectByMouse: true
-                                    font.pixelSize: 12
-                                    textFormat: Qt.PlainText
-                                    tabChangesFocus: false
-                                    anchors.fill: parent
-                                    backgroundVisible: false
+                                    Rectangle {
+                                        id: lineRect
+                                        width: 0
+                                        visible: false
+                                        height: jsCodeRect.height
+                                        ScrollView {
+                                            id:lineScroll
+                                            anchors.fill: parent
+                                            width: lineRect.width
+                                            horizontalScrollBarPolicy: Qt.ScrollBarAlwaysOff
+                                            verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
+                                            contentItem: Rectangle {
+                                                id: lineColumn
+                                                property int rowHeight: jsCodeEdit.font.pixelSize + 3
+                                                color: "#f2f2f2"
+                                                width: lineRect.width
+                                                height: lineRect.height
+                                                Rectangle {
+                                                    height: parent.height
+                                                    anchors.right: parent.right
+                                                    width: 1
+                                                    color: "#ddd"
+                                                }
+                                                Column {
+                                                    y: -jsCodeEdit.flickableItem.contentY + 4
+                                                    width: lineRect.width
+                                                    Repeater {
+                                                        model: Math.max(jsCodeEdit.lineCount + 2, (lineColumn.height/lineColumn.rowHeight) )
+                                                        delegate: Text {
+                                                            id: text
+                                                            color: "#666"
+                                                            font: jsCodeEdit.font
+                                                            width: lineColumn.width
+                                                            horizontalAlignment: Text.AlignHCenter
+                                                            verticalAlignment: Text.AlignVCenter
+                                                            height: lineColumn.rowHeight
+                                                            renderType: Text.NativeRendering
+                                                            text: index
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Rectangle {
+                                        x:lineRect.width
+                                        width: jsCodeRect.width-lineRect.width
+                                        height: jsCodeRect.height
+                                        TextArea {
+                                            id: jsCodeEdit
+                                            readOnly: true
+                                            selectByMouse: true
+                                            font.pixelSize: 12
+                                            textFormat: Qt.PlainText
+                                            anchors.fill: parent
+                                            wrapMode: TextEdit.NoWrap
+                                            frameVisible: false
+                                            backgroundVisible: false
+                                            onLineCountChanged: {
+                                                lineRect.width=jsCodeEdit.lineCount.toString().length*jsCodeEdit.font.pixelSize;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             Rectangle {
