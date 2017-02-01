@@ -30,10 +30,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 public slots:
-    void RunNext();
     void writeMSG(QString);
 private slots:
-
 private:
     void CreateHtml();
     Ui::MainWindow *ui;

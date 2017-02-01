@@ -1,5 +1,10 @@
-function RunTest() {
-	alert("Hello from siute2/siute1!");
-	trs.writeMSG('Hello from siute2/siute1!');
-}
-RunTest();
+alert("Hello from siute1!");
+core.StartApp("C:/Windows/SYSTEM32/mspaint.exe");
+core.SetOnTop("Untitled - Paint");
+core.SetMousePos(300,300);
+core.MouseDown(0);
+core.MouseMove(600,600, 5);
+core.MouseUp(0);
+core.CloseApp();
+core.PrintScreen("D:/1.jpg");
+trs.writeMSG('Hello from main siute!');

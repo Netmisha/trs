@@ -5,6 +5,7 @@
 #include "datamanager.h"
 #include "testinfo.h"
 #include "filesave.h"
+#include <QQmlApplicationEngine>
 QWebView * view;
 
 class MainTree : public QStandardItemModel
@@ -23,12 +24,10 @@ public:
         return m_roleNameMapping;
     }
     public slots:
-    Q_INVOKABLE void RunNext();
     Q_INVOKABLE QString Load(QString path);
     Q_INVOKABLE QString getFile(QModelIndex);
     Q_INVOKABLE QString FindTest(QModelIndex);
     Q_INVOKABLE void FindJSFile(QString);
-
     Q_INVOKABLE static QStringList getTestsName(QString);
     Q_INVOKABLE static QString getSuiteName(QString);
     Q_INVOKABLE static QString getJS(QString, QString);
@@ -66,10 +65,8 @@ private:
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    view = ui->webView;
+    view = new QWebView(this);
     CreateHtml();
-    view->setContextMenuPolicy(Qt::NoContextMenu);
-    QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     TRSManager *trs=new TRSManager();
     view->page()->mainFrame()->addToJavaScriptWindowObject("trs", trs);
     TRSCore *trscore=new TRSCore();
@@ -81,13 +78,13 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
     qmlRegisterType<MainSetting>("MainSetting", 1, 0, "Setting" );
     qmlRegisterType<FileSaveDialog>("FileSave", 1, 0, "FileSaveDialog");
-    QQuickView* qmlView = new QQuickView();
-    QWidget* container = QWidget::createWindowContainer(qmlView, ui->centralWidget);
-    QObject::connect(trs, SIGNAL(RunNext()),this, SLOT(RunNext()));
     QObject::connect(trs, SIGNAL(writeMSG(QString)),this, SLOT(writeMSG(QString)));
+    QQuickView* qmlView = new QQuickView();
+    qmlView->setGeometry(QRect(200,200,800,600));
+    qmlView->setResizeMode(QQuickView::SizeRootObjectToView);
+    qmlView->setIcon(QIcon(QPixmap(":/icons/icons/tbox.png")));
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
     object = qmlView->rootObject();
-    ui->verticalLayout->addWidget(container);
     QWebSettings* settings = QWebSettings::globalSettings();
     settings->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     settings->setAttribute(QWebSettings::AcceleratedCompositingEnabled, true);
@@ -95,12 +92,10 @@ MainWindow::MainWindow(QWidget *parent) :
     settings->setAttribute(QWebSettings::LocalContentCanAccessFileUrls, true);
     settings->setAttribute(QWebSettings::LocalStorageEnabled, true);
     settings->setAttribute(QWebSettings::JavascriptEnabled, true);
+    qmlView->show();
 }
 MainWindow::~MainWindow(){
     delete ui;
-}
-void MainWindow::RunNext(){
-    QMetaObject::invokeMethod(object, "runNext");
 }
 void MainWindow::writeMSG(QString msg){
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, msg));
@@ -112,28 +107,6 @@ void MainWindow::CreateHtml() {
         QString page="<html>\n\t<head>\n\t</head>\n\t<body>\n\t</body>\n</html>";
         file.write(page.toLatin1());
         file.close();
-    }
-}
-void MainTree::RunNext(){
-    while (treeData.size()>0 && run) {
-        TreeInfo* ti = treeData.begin();
-        if(ti->repeat<=0) {
-            treeData.removeFirst();
-            ti = treeData.begin();
-        }
-        if (ti->type == "test" && CheckTest(*ti)) {
-            ti->repeat--;
-            TRSManager::Run(getJS(ti->file, ti->name), ti->file, ti->name);
-            break;
-        }
-        else {
-            treeData.removeFirst();
-            ti = treeData.begin();
-        }
-    }
-    if (treeData.size()==0 || !run) {
-        Load(rootDir);
-        run = false;
     }
 }
 QString MainTree::Load(QString path) {
@@ -323,9 +296,9 @@ void MainTree::Run() {
     run=true;
     while (treeData.size()>0) {
         TreeInfo * ti = treeData.begin();
-        if (ti->type == "test" && CheckTest(*ti)) {
+        if (ti->type == "test" && CheckTest(*ti) && ti->repeat>0) {
             ti->repeat--;
-             view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+ti->file+"'); Test.setName('"+ti->name+"');"+getJS(ti->file, ti->name) + "trs.RunNext();");
+             view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+ti->file+"'); Test.setName('"+ti->name+"');"+getJS(ti->file, ti->name));
         }
         else {
             treeData.removeFirst();
@@ -430,6 +403,7 @@ QString MainTree::ParseFolder(QString path)
 {
     QStandardItem * root = new QStandardItem(QString("Tests"));
     this->appendRow(root);
+    currentIndex = this->indexFromItem(root);
     tags.clear();
     tags.push_back("All");
     QString res=Parse(path, root);

@@ -1,4 +1,4 @@
-import QtQuick 2.4
+import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
 import QtQuick.Window 2.2
@@ -38,7 +38,7 @@ Item {
     }
     ColumnLayout{
         anchors.fill: parent
-        spacing: 2
+        spacing: 0
         Rectangle{
             id: mainToolBar
             height: 33
@@ -57,8 +57,7 @@ Item {
                             id: runTags
                             width: 200
                             activeFocusOnPress: true
-                            validator: IntValidator {bottom: 0; top: 10;}
-                            onCurrentIndexChanged: theModel.setCurrentTag(currentText);
+                            onCurrentIndexChanged: theModel.setCurrentTag(runTags.currentText);
                         }
                         ToolButton {
                             id: startButton
@@ -1134,6 +1133,7 @@ Item {
                     text: qsTr("Save")
                     onClicked: {
                         theModel.setRootDir(rootDir.text);
+                        settingFile.setRootDir(rootDir.text);
                         var res=theModel.Load(rootDir.text);
                         runTags.model=theModel.GetTags();
                         if(res!="") {
@@ -1147,7 +1147,10 @@ Item {
 
                 Button {
                     id: cancelSetting
-                    onClicked: mainsetting.close()
+                    onClicked: {
+                        mainsetting.close();
+                        rootDir.text=settingFile.getRootDir();
+                    }
                     text: qsTr("Cancel")
                 }
             }
