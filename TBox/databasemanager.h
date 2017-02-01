@@ -35,6 +35,9 @@ private:
     int milliseconds =0;
     QSqlDatabase db;
     QSqlQuery *query_;
+public slots:
+    void getSuiteName();
+    void getTestName();
 public:
     DataBaseManager();
     void sessionStart();

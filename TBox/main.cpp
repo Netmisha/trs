@@ -1,8 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <reporter.h>
-#include <export_txt.h>
-#include <export_data.h>
 #include <QQmlApplicationEngine>
 #include <treemodel.h>
 #include <QDir>
@@ -22,12 +20,9 @@ int main(int argc, char *argv[])
 
           // ExportHTML d_html;
 
-/*
-    DataBaseManager M;
-    M.sessionStart();
-    Sleep(100);
-    M.sessionEnd();
-    */
+
+
+
 /*
     DataBase O;
           ExportHTML H;
