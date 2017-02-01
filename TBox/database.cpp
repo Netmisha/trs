@@ -39,7 +39,6 @@ void DataBase::getDataFromDB(){
     }
 FilterData();
 }
-
 QString DataBase::ParseDateS(QString data){
     QRegExp ex("(-|T|:)");
     Date_  = data.split(ex);
@@ -83,7 +82,7 @@ else{
                  return it ;
              }
               query = new QSqlQuery(db);
-
+            datalist.clear();
             start_dates = start.split("/");
            // QStringList month;
             //month<<"January"<<"February"<<"March"<<"April"<<"May"<<"June"<<"July"<<"August"<<"September"<<"October"<<"November"<<"December";
@@ -97,18 +96,73 @@ else{
            query->exec("SELECT distinct Session_num FROM Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "
                        +start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+")");
            qDebug()<<query->executedQuery();
+
            while(query->next()){
               qDebug()<<query->value(query->record().indexOf("Session_num")).toString();
-              it.append(query->value(query->record().indexOf("Session_num")).toString());
+              it.append(query->value(query->record().indexOf("Session_num")).toString()); // it contains session num
            }
+           QStringList Time_S;
+           QStringList Time_E;
+           QString duration_s;
+           QString Start_date_S;
+           QString End_date_S;
+           QStringList temp_pass;
+           QStringList pass_session;
+           int yes=0,no=0;
+           QSqlQuery *query_ = new QSqlQuery(db);
+           for(int i=0;i<it.size();i++){
+           query_->exec("select Test_Passed from Info where Session_num =  "+it.at(i)+"");
+           while(query_->next()){
+               temp_pass.append(query_->value(query_->record().indexOf("Test_Passed")).toString());
+           }
+           for(int j=0;j<temp_pass.size();j++){
+               (temp_pass.at(j) =="yes")?yes++:no++;
+
+           }
+           (yes>no)?pass_session.append("yes"):pass_session.append("no");
+           yes = 0; no =0; temp_pass.clear();
+           delete query_; query_ = new QSqlQuery(db);
+           }
+           delete query_;
+           query_ = new QSqlQuery(db);
+           for(int i=0;i<it.size();i++){
+              query_->exec("select distinct Test_Day,Test_Month,Test_Year,S_Start_time,Test_day_e,Test_month_e,Test_year_e,S_Session_end,Session_duration from Info where Session_num = "+it.at(i)+"");
+            qDebug()<<  query_->executedQuery();
+            while(query_->next()){
+                Time_S.append( query_->value(  query_->record().indexOf("Test_Day")).toString());
+                Time_S.append( query_->value(  query_->record().indexOf("Test_Month")).toString());
+                Time_S.append( query_->value(  query_->record().indexOf("Test_Year")).toString());
+                Time_S.append( query_->value(  query_->record().indexOf("S_Start_time")).toString());
+                Time_E.append( query_->value(  query_->record().indexOf("Test_day_e")).toString());
+                Time_E.append( query_->value(  query_->record().indexOf("Test_month_e")).toString());
+                Time_E.append( query_->value(  query_->record().indexOf("Test_year_e")).toString());
+                Time_E.append( query_->value(  query_->record().indexOf("S_Session_end")).toString());
+                duration_s.append(  query_->value(  query_->record().indexOf("Session_duration")).toString());
+                for(int j=0,k=0;j<Time_S.size();j++,k++){
+                    Start_date_S.append(Time_S.at(j)+"/");
+                    End_date_S.append(Time_E.at(k)+"/");
+                }
+                datalist.append( new LisModel(it.at(i),Start_date_S,duration_s,End_date_S,pass_session.at(i)));
+                Start_date_S.clear(); End_date_S.clear(); duration_s.clear();
+                Time_S.clear(); Time_E.clear();
+            }
+            delete query_; query_= new QSqlQuery(db);
+           } delete query_;
+
            //QStringList l;
           // l.append("4");
             //LisModel M;
             //QVariant::fromValue(it)
            //pass database to data list
 
-           datalist.append(new LisModel("4","12","33","3","Passed"));
-           datalist.append(new LisModel("5","13","23","3","!Passed"));
+           /*
+           for(int i=0;i<it.size();i++){
+               datalist.append( new LisModel(it.at(i),it.at(i),it.at(i),it.at(i),it.at(i)));
+
+           }
+           */
+           //datalist.append(new LisModel("4","12","33","3","Passed"));
+           //datalist.append(new LisModel("5","13","23","3","!Passed"));
         // &session_n, const QString &session_s,const QString session_d,const QString session_e,QString session_p,
            engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(datalist)); // list model
            list_from_ui = it;
@@ -161,9 +215,6 @@ QString DataBase::row_selected(QString row){
     WindowTable.setIndex(row.toInt());
     WindowTable.setTableNames(tn);
     WindowTable.CreateTable("D:/TRS/TBox/T.html",pass);
-
-
-
     //release data
      return row;
 

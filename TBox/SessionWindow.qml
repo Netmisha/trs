@@ -20,14 +20,12 @@ ApplicationWindow{
     title: qsTr("Session window")
     property variant win_C;
     property  string st;
-
     ColumnLayout{
         x: 0
         y: 0
         width: parent.width
         height: parent.height
         spacing: 2
-
     Rectangle {
         id: content
         width: 800
@@ -42,7 +40,6 @@ ApplicationWindow{
             url: "file:///D:/TRS/TBox/T.html"
         }
     }
-
     Rectangle {
         id: rectangle1
         Button{
@@ -54,7 +51,6 @@ ApplicationWindow{
         y: 445
         text: "Export"
         onClicked: {
-
            DD.test();
         }
         }

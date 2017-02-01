@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
           engine->rootContext()->setContextProperty("DD",&O);
           engine->load(QUrl(QLatin1String("qrc:/report_window.qml")));
           return a.exec();
-*/
 
+*/
 }
 
     /*
