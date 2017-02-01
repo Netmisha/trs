@@ -9,6 +9,7 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls.Private 1.0
 import QtQuick.Dialogs 1.2
 import FileSave 1.0
+import Highlighter 1.0
 Item {
     id: root
     anchors.fill: parent
@@ -586,6 +587,9 @@ Item {
                                         x:lineRect.width
                                         width: jsCodeRect.width-lineRect.width
                                         height: jsCodeRect.height
+                                        HighL {
+                                            id: highlight1
+                                        }
                                         TextArea {
                                             id: jsCodeEdit
                                             readOnly: true
@@ -598,6 +602,9 @@ Item {
                                             backgroundVisible: false
                                             onLineCountChanged: {
                                                 lineRect.width=jsCodeEdit.lineCount.toString().length*jsCodeEdit.font.pixelSize;
+                                            }
+                                            Component.onCompleted: {
+                                                highlight1.setQuickDocument(jsCodeEdit.textDocument)
                                             }
                                         }
                                     }

@@ -5,7 +5,8 @@
 #include "datamanager.h"
 #include "testinfo.h"
 #include "filesave.h"
-#include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include "highlighter.h"
 QWebView * view;
 
 class MainTree : public QStandardItemModel
@@ -82,6 +83,9 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlView->setGeometry(QRect(200,200,800,600));
     qmlView->setResizeMode(QQuickView::SizeRootObjectToView);
     qmlView->setIcon(QIcon(QPixmap(":/icons/icons/tbox.png")));
+    //Highlighter highl1;
+    //qmlView->rootContext()->setContextProperty("highlight1", &highl1);
+    qmlRegisterType<Highlighter>("Highlighter", 1, 0, "HighL" );
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
     object = qmlView->rootObject();
     QWebSettings* settings = QWebSettings::globalSettings();
