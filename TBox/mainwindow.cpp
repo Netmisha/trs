@@ -45,6 +45,7 @@ public:
     Q_INVOKABLE QString Get(QString);
     Q_INVOKABLE QString GetType();
     Q_INVOKABLE QString Remove();
+    Q_INVOKABLE QModelIndex getRootIndex();
     Q_INVOKABLE QModelIndex getCurrentIndex();
     Q_INVOKABLE QStringList List(QString);
     Q_INVOKABLE bool IsFolderEmpty(QString);
@@ -74,7 +75,6 @@ MainWindow::MainWindow(QWidget *parent) :
     TestInfo *testinfo=new TestInfo();
     view->page()->mainFrame()->addToJavaScriptWindowObject("Test", testinfo);
     view->load(QUrl("file:///"+QDir::currentPath()+"/"+"test.html"));
-    //view->setVisible(false);
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
     qmlRegisterType<MainSetting>("MainSetting", 1, 0, "Setting" );
     qmlRegisterType<FileSaveDialog>("FileSave", 1, 0, "FileSaveDialog");
@@ -234,6 +234,9 @@ QString MainTree::Remove() {
     memset((void*)&currentIndex, 0, sizeof(currentIndex));
     return res;
 }
+QModelIndex MainTree::getRootIndex() {
+
+}
 QModelIndex MainTree::getCurrentIndex() {
     return currentIndex;
 }
@@ -294,7 +297,15 @@ void MainTree::RunOne() {
 }
 void MainTree::Run() {
     run=true;
-    while (treeData.size()>0) {
+    for(auto&it:treeData) {
+        if (it.type == "test" && CheckTest(it) && it.repeat>0) {
+            for(int i=0; i<it.repeat;i++) {
+                view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
+            }
+        }
+    }
+    run = false;
+    /*while (treeData.size()>0) {
         TreeInfo * ti = treeData.begin();
         if (ti->type == "test" && CheckTest(*ti) && ti->repeat>0) {
             ti->repeat--;
@@ -308,7 +319,7 @@ void MainTree::Run() {
     if (treeData.size()==0 || !run) {
         Load(rootDir);
         run = false;
-    }
+    }*/
 }
 QStringList MainTree::GetTags() {
     return tags;
