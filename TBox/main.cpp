@@ -15,17 +15,19 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
          QQmlApplicationEngine *engine = new QQmlApplicationEngine ;
-/*
+
          MainWindow w;
+
           return a.exec();
-*/
+
           // ExportHTML d_html;
 
-
+/*
     DataBaseManager M;
     M.sessionStart();
     Sleep(100);
     M.sessionEnd();
+    */
 /*
     DataBase O;
           ExportHTML H;
