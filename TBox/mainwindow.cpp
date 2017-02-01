@@ -45,7 +45,6 @@ public:
     Q_INVOKABLE QString Get(QString);
     Q_INVOKABLE QString GetType();
     Q_INVOKABLE QString Remove();
-    Q_INVOKABLE QModelIndex getRootIndex();
     Q_INVOKABLE QModelIndex getCurrentIndex();
     Q_INVOKABLE QStringList List(QString);
     Q_INVOKABLE bool IsFolderEmpty(QString);
@@ -234,9 +233,6 @@ QString MainTree::Remove() {
     memset((void*)&currentIndex, 0, sizeof(currentIndex));
     return res;
 }
-QModelIndex MainTree::getRootIndex() {
-
-}
 QModelIndex MainTree::getCurrentIndex() {
     return currentIndex;
 }
@@ -305,21 +301,6 @@ void MainTree::Run() {
         }
     }
     run = false;
-    /*while (treeData.size()>0) {
-        TreeInfo * ti = treeData.begin();
-        if (ti->type == "test" && CheckTest(*ti) && ti->repeat>0) {
-            ti->repeat--;
-             view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+ti->file+"'); Test.setName('"+ti->name+"');"+getJS(ti->file, ti->name));
-        }
-        else {
-            treeData.removeFirst();
-            ti = treeData.begin();
-        }
-    }
-    if (treeData.size()==0 || !run) {
-        Load(rootDir);
-        run = false;
-    }*/
 }
 QStringList MainTree::GetTags() {
     return tags;
@@ -410,11 +391,9 @@ QStandardItem * MainTree::AddItemToTree(QString name) {
         }
     return item;
 }
-QString MainTree::ParseFolder(QString path)
-{
+QString MainTree::ParseFolder(QString path) {
     QStandardItem * root = new QStandardItem(QString("Tests"));
     this->appendRow(root);
-    currentIndex = this->indexFromItem(root);
     tags.clear();
     tags.push_back("All");
     QString res=Parse(path, root);

@@ -1,4 +1,4 @@
-import QtQuick 2.5
+import QtQuick 2.4
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
 import QtQuick.Window 2.2
@@ -17,6 +17,25 @@ Item {
     }
     function writeLog(msg) {
         consoleText.text=consoleText.text+msg+"\n";
+    }
+    function showItem (index) {
+        jsCodeEdit.text = theModel.FindTest(index);
+        if(theModel.GetType()=="test") {
+            showMenu.menuForTest();
+        }
+        else if(theModel.GetType()=="suite") {
+            showMenu.menuForSuite();
+        }
+        else {
+          showMenu.hideAll();
+        }
+        testName.text=theModel.Get("name");
+        if(theModel.Get("disable")=="false"){
+            testStatus.iconSource="icons/icons/turnon.png";
+        }
+        else {
+            testStatus.iconSource="icons/icons/turnoff.png";
+        }
     }
     Item {
         id: showMenu
@@ -67,11 +86,11 @@ Item {
                             }
                             iconSource: "icons/icons/Run.png"
                         }
-                        ToolButton {
+                        /*ToolButton {
                             id: stopButton
                             iconSource: "icons/icons/Stop.png"
                             onClicked: theModel.Stop();
-                        }
+                        }*/
                         ToolButton {
                             id: reportsButton
                             iconSource: "icons/icons/report.png"
@@ -110,34 +129,24 @@ Item {
                        headerVisible: false
                        itemDelegate: Rectangle {
                           id : recid
-                          color: ( styleData.row % 2 == 0 ) ? "white" : "#f6f6f6"
+                          color: "transparent"
                           height: 20
                           Text {
                               anchors.verticalCenter: parent.verticalCenter
                               text: styleData.value
                           }
-                          MouseArea{
-                              anchors.fill: parent
-                              onClicked: {
-                                  jsCodeEdit.text = theModel.FindTest(styleData.index);
-                                  if(theModel.GetType()=="test") {
-                                      showMenu.menuForTest();
-                                  }
-                                  else if(theModel.GetType()=="suite") {
-                                      showMenu.menuForSuite();
-                                  }
-                                  else {
-                                    showMenu.hideAll();
-                                  }
-                                  testName.text=theModel.Get("name");
-                                  if(theModel.Get("disable")=="false"){
-                                      testStatus.iconSource="icons/icons/turnon.png";
-                                  }
-                                  else {
-                                      testStatus.iconSource="icons/icons/turnoff.png";
-                                  }
-                              }
-                          }
+                       }
+                       onClicked: {
+                           root.showItem(index);
+                       }
+                       onDoubleClicked: {
+                           root.showItem(index);
+                           if(mainTree.isExpanded(index)) {
+                                mainTree.collapse(index);
+                           }
+                           else {
+                                mainTree.expand(index);
+                           }
                        }
                    }
                 }
@@ -1086,7 +1095,6 @@ Item {
                             rootDir.text=settingFile.getRootDir();
                             if(rootDir.text!="") {
                                 var res=theModel.Load(rootDir.text);
-                                mainTree.expand(theModel.getCurrentIndex());
                                 runTags.model=theModel.GetTags();
                                 if(res!="") {
                                     messageDialog.text=res;
@@ -1170,7 +1178,7 @@ Item {
             theModel.setRootDir(rootDir.text);
             if(theModel.IsFolderEmpty(rootDir.text)) {
                 showMenu.menuForSuite();
-                jsCodeScroll.visible=false;
+                jsCodeRect.visible=false;
                 addSuiteLayout.visible=true;
                 testName.text="New Suite";
                 textEditSName.text="Main suite";
