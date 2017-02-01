@@ -39,8 +39,15 @@ void SessionWindowTable::CreateHTMLTable(QVector<QVector<QStringList*>> table_da
         file.open(QIODevice::ReadWrite);
      }
      file.resize(0);
+
      QTextStream output(&file);
      output<<"<!DOCTYPE html>\n<html>\n<head>\n</head>\n<body>\n<table style='width:100%;border: 1px solid black'; 'border-collapse: collapse'>\n";
+     /*
+     output<<"<details> ";
+     output<<"<summary>Copyright 1999-2014.</summary> ";
+     output<<" <p> - by Refsnes Data. All Rights Reserved.</p> ";
+     output<<" </details>";
+     */
      output<<"<tr style='border: 1px solid black'>\n";
      output<<"<th style='border: 1px solid black'>";
      output<<table_n.at(1);

@@ -51,4 +51,10 @@ void DataBaseManager::createTest(){
  query_ = new QSqlQuery(db);
  query_->exec("insert into Info (Test_Name,Test_Day,Test_Month,Test_Year,Test_Passed,Session_num,Test_Suite,S_Start_time,Test_day_e,Test_month_e,Test_year_e,S_session_end,Session_duration) values ('Test_name','"+current_date_.at(0)+"' , '"+current_date_.at(1)+"' , '"+current_date_.at(2)+"' , 'yes' "+","+"'5'"+" , "+"'4'"+",'"+start_time_+"','"+end_date_.at(0)+"','"+end_date_.at(1)+"','"+end_date_.at(2)+"','"+end_time_+"','"+session_execution+"');");
 }
+void DataBaseManager::getSuiteName(){
+  qDebug()<<"suite name";
+}
+void DataBaseManager::getTestName(){
+    qDebug()<<"test name";
+}
 

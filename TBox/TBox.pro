@@ -15,8 +15,6 @@ SOURCES+= main.cpp\
     maintree.cpp \
     trscore.cpp \
     database.cpp \
-    export_data.cpp \
-    export_txt.cpp \
     reporter.cpp \
     treemodel.cpp \
     mainsetting.cpp \
@@ -34,8 +32,6 @@ HEADERS+= mainwindow.h \
     maintree.h \
     trscore.h \
     database.h \
-    export_data.h \
-    export_txt.h \
     reporter.h \
     treemodel.h \
     mainsetting.h \
