@@ -10,12 +10,13 @@ class TestInfo : public QObject
     Q_OBJECT
 public:
     explicit TestInfo(QObject *parent = 0);
-
 signals:
 
 public slots:
     void setPath(QString);
     void setName(QString);
+    Q_INVOKABLE QString getPath();
+    Q_INVOKABLE QString getName();
     Q_INVOKABLE void SetData(QString, QString);
     Q_INVOKABLE QString GetData(QString);
 private:

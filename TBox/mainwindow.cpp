@@ -78,7 +78,6 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
     qmlRegisterType<MainSetting>("MainSetting", 1, 0, "Setting" );
     qmlRegisterType<FileSaveDialog>("FileSave", 1, 0, "FileSaveDialog");
-    qmlRegisterType<SelectFolderDialog>("FolderDialog", 1, 0, "SelectFolderDialog");
     QObject::connect(trs, SIGNAL(writeMSG(QString)),this, SLOT(writeMSG(QString)));
     QQuickView* qmlView = new QQuickView();
     qmlView->setGeometry(QRect(200,200,800,600));
@@ -87,7 +86,9 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlRegisterType<Highlighter>("Highlighter", 1, 0, "HighL" );
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
     object = qmlView->rootObject();
-    QMetaObject::invokeMethod(object, "checkRootDir");
+    SelectFolderDialog *selectFolder=new SelectFolderDialog();
+    selectFolder->setObject(object);
+    qmlView->rootContext()->setContextProperty("selectFolderDialog", selectFolder);
     QWebSettings* settings = QWebSettings::globalSettings();
     settings->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     settings->setAttribute(QWebSettings::AcceleratedCompositingEnabled, true);
@@ -96,6 +97,7 @@ MainWindow::MainWindow(QWidget *parent) :
     settings->setAttribute(QWebSettings::LocalStorageEnabled, true);
     settings->setAttribute(QWebSettings::JavascriptEnabled, true);
     qmlView->show();
+    QMetaObject::invokeMethod(object, "checkRootDir");
 }
 MainWindow::~MainWindow(){
     delete ui;
@@ -138,6 +140,7 @@ void MainTree::setRootDir(QString path) {
 QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag, QString rep, QString disable) {
     for (auto&it : treeData) {
         if (it.item == currentIndex) {
+            rep=rep==""?"1":rep;
             QString res= dm.AddTest(it.file, name, dis, tag, exe, rep, disable);
             if(res=="") {
                 TreeInfo info;
@@ -162,6 +165,7 @@ QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag
 QString MainTree::AddNewSuite(QString name, QString dis, QString rep, QString disable) {
     for (auto&it : treeData) {
         if (it.item == currentIndex) {
+            rep=rep==""?"1":rep;
             QString res=dm.AddSuite(it.file, name, dis, rep, disable);
             if(res=="") {
                 TreeInfo info;
@@ -347,7 +351,7 @@ QString MainTree::Parse(QString path, QStandardItem * root) {
                     info.repeat = dm.Get(info.file+"/suite/test/"+iter+"/repeat").toInt();
                     QStringList t=dm.Get(info.file+"/suite/test/"+iter+"/tag").split(",");
                     for(auto&i:t) {
-                        if(!tags.contains(i)) {
+                        if(!tags.contains(i) && !i.isEmpty()) {
                             tags.push_back(i);
                         }
                     }

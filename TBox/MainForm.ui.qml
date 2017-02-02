@@ -10,13 +10,51 @@ import QtQuick.Controls.Private 1.0
 import QtQuick.Dialogs 1.2
 import FileSave 1.0
 import Highlighter 1.0
-import FolderDialog 1.0
+//import FolderDialog 1.0
 Item {
     id: root
     anchors.fill: parent
     function checkRootDir() {
         if(rootDir.text==""){
-            selectFolder.open();
+            selectFolderDialog.setFromSetting(false);
+            selectFolderDialog.show();
+        }
+    }
+    function setSelectedFolder(folder) {
+        if(selectFolderDialog.isFromSetting()){
+            rootDir.text=folder;
+        }
+        else {
+            rootDir.text=folder;
+            theModel.setRootDir(rootDir.text);
+            settingFile.setRootDir(rootDir.text);
+            if(theModel.IsFolderEmpty(folder)) {
+                showMenu.menuForSuite();
+                centerRect.visible=false;
+                addSuiteLayout.visible=true;
+                testName.text="New Suite";
+                textEditSName.text="Main suite";
+                testRun.visible=false;
+                newTest.visible=false;
+                newSuite.visible=false;
+                testDelete.visible=false;
+                testSetting.visible=false;
+                restoreNew.visible=false;
+                saveNew.visible=false;
+                createNew.visible=true;
+                mainTree.enabled=false;
+                mainToolBar.enabled=false;
+            }
+            else {
+                var res=theModel.Load(folder);
+                runTags.model=theModel.GetTags();
+                theModel.setCurrentTag(runTags.currentText);
+                if(res!="") {
+                    messageDialog.text=res;
+                    messageDialog.open()
+                    return;
+                }
+            }
         }
     }
     function writeLog(msg) {
@@ -51,13 +89,13 @@ Item {
             testToolBar.visible=true;
             newTest.visible=true;
             newSuite.visible=true;
-            testEdit.visible=false;
+            centerRect.visible=false;
         }
         function menuForTest() {
             testToolBar.visible=true;
             newTest.visible=false;
             newSuite.visible=false;
-            testEdit.visible=true;
+            centerRect.visible=true;
         }
         function hideAll() {
             testToolBar.visible=false;
@@ -85,7 +123,6 @@ Item {
                             width: 200
                             activeFocusOnPress: true
                             onCurrentIndexChanged: theModel.setCurrentTag(runTags.currentText);
-                            model: ["All"]
                         }
                         ToolButton {
                             id: startButton
@@ -186,6 +223,16 @@ Item {
                                             anchors.fill: parent
                                             Text {
                                                 id:testName
+                                            }
+                                            ComboBox{
+                                                id: fontComboBox
+                                                width: 50
+                                                currentIndex: 12
+                                                visible: false
+                                                model: ListModel {
+                                                    id: fontsList
+
+                                                }
                                             }
                                             ToolButton {
                                                 id: testStatus
@@ -368,7 +415,7 @@ Item {
                                                         textEditTDiscr.text="";
                                                         textEditTExe.text="";
                                                         textEditTTag.text="";
-                                                        textEditTRepeat.text="";
+                                                        textEditTRepeat.text="1";
                                                         addTestLayout.visible=false;
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
@@ -376,7 +423,7 @@ Item {
                                                     else if(testName.text== "New Suite") {
                                                         textEditSName.text="";
                                                         textEditSDiscr.text="";
-                                                        textEditSRepeat.text="";
+                                                        textEditSRepeat.text="1";
                                                         addSuiteLayout.visible=false;
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
@@ -387,14 +434,14 @@ Item {
                                                             textEditTDiscr.text="";
                                                             textEditTExe.text="";
                                                             textEditTTag.text="";
-                                                            textEditTRepeat.text="";
+                                                            textEditTRepeat.text="1";
                                                             addTestLayout.visible=false;
                                                             testEdit.visible=true;
                                                         }
                                                         else {
                                                             textEditSName.text="";
                                                             textEditSDiscr.text="";
-                                                            textEditSRepeat.text="";
+                                                            textEditSRepeat.text="1";
                                                             addSuiteLayout.visible=false;
                                                             newTest.visible=true;
                                                             newSuite.visible=true;
@@ -429,7 +476,7 @@ Item {
                                                         textEditTDiscr.text="";
                                                         textEditTExe.text="";
                                                         textEditTTag.text="";
-                                                        textEditTRepeat.text="";
+                                                        textEditTRepeat.text="1";
                                                         addTestLayout.visible=false;
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
@@ -444,7 +491,7 @@ Item {
                                                         }
                                                         textEditSName.text="";
                                                         textEditSDiscr.text="";
-                                                        textEditSRepeat.text="";
+                                                        textEditSRepeat.text="1";
                                                         addSuiteLayout.visible=false;
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
@@ -476,6 +523,7 @@ Item {
                                                                 theModel.Set("disable", dis);
                                                                 newTest.visible=true;
                                                                 newSuite.visible=true;
+                                                                addSuiteLayout.visible=false;
                                                             }
                                                             else {
                                                                 messageDialog.text="Fill all fields correctly!";
@@ -510,16 +558,16 @@ Item {
                                                     }
                                                     textEditSName.text="";
                                                     textEditSDiscr.text="";
-                                                    textEditSRepeat.text="";
+                                                    textEditSRepeat.text="1";
                                                     addSuiteLayout.visible=false;
                                                     newTest.visible=true;
                                                     newSuite.visible=true;
                                                     res=theModel.Load(settingFile.getRootDir());
+                                                    runTags.model=theModel.GetTags();
                                                     if(res!="") {
                                                         messageDialog.text=res;
                                                         messageDialog.open()
                                                     }
-                                                    runTags.model=theModel.GetTags();
                                                     centerRect.visible=true;
                                                     testRun.visible=true;
                                                     testDelete.visible=true;
@@ -559,7 +607,7 @@ Item {
                                             verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
                                             contentItem: Rectangle {
                                                 id: lineColumn
-                                                property int rowHeight: jsCodeEdit.font.pixelSize + 3
+                                                property int rowHeight: jsCodeEdit.font.pixelSize+2
                                                 color: "#f2f2f2"
                                                 width: lineRect.width
                                                 height: lineRect.height
@@ -580,10 +628,10 @@ Item {
                                                             font: jsCodeEdit.font
                                                             width: lineColumn.width
                                                             horizontalAlignment: Text.AlignHCenter
-                                                            verticalAlignment: Text.AlignVCenter
+                                                            verticalAlignment: Text.AlignBottom
                                                             height: lineColumn.rowHeight
                                                             renderType: Text.NativeRendering
-                                                            text: index
+                                                            text: index+1
                                                         }
                                                     }
                                                 }
@@ -737,7 +785,7 @@ Item {
                                             border.width: 1
                                             TextEdit {
                                                 id: textEditSRepeat
-                                                text: qsTr("")
+                                                text: "1"
                                                 anchors.fill: parent
                                                 font.pixelSize: 12
                                                 Layout.fillWidth: true
@@ -979,7 +1027,7 @@ Item {
                                             border.width: 1
                                             TextEdit {
                                                 id: textEditTRepeat
-                                                text: qsTr("")
+                                                text: "1"
                                                 anchors.fill: parent
                                                 font.pixelSize: 12
                                                 Layout.fillWidth: true
@@ -1170,6 +1218,7 @@ Item {
                             if(rootDir.text!="") {
                                 var res=theModel.Load(rootDir.text);
                                 runTags.model=theModel.GetTags();
+                                theModel.setCurrentTag(runTags.currentText);
                                 if(res!="") {
                                     messageDialog.text=res;
                                     messageDialog.open()
@@ -1193,7 +1242,8 @@ Item {
                     text: "..."
                     Layout.maximumWidth: 30
                     onClicked:{
-                        chooseFolder.open();
+                        selectFolderDialog.setFromSetting(true);
+                        selectFolderDialog.show();
                     }
                 }
             }
@@ -1215,6 +1265,7 @@ Item {
                         settingFile.setRootDir(rootDir.text);
                         var res=theModel.Load(rootDir.text);
                         runTags.model=theModel.GetTags();
+                        theModel.setCurrentTag(runTags.currentText);
                         if(res!="") {
                             messageDialog.text=res;
                             messageDialog.open()
@@ -1233,60 +1284,6 @@ Item {
                     text: qsTr("Cancel")
                 }
             }
-        }
-    }
-    SelectFolderDialog {
-        id:selectFolder
-        title: "Select tests folder"
-        onAccepted: {
-            var folder=selectFolder.fileUrl.toString().split("///")[1];
-            if(folder=="") {
-                messageDialog.text="Please, select folder";
-                messageDialog.open();
-                return;
-            }
-            rootDir.text=folder
-            settingFile.setRootDir(folder);
-            theModel.setRootDir(folder);
-            if(theModel.IsFolderEmpty(folder)) {
-                showMenu.menuForSuite();
-                centerRect.visible=false;
-                addSuiteLayout.visible=true;
-                testName.text="New Suite";
-                textEditSName.text="Main suite";
-                testRun.visible=false;
-                newTest.visible=false;
-                newSuite.visible=false;
-                testDelete.visible=false;
-                testSetting.visible=false;
-                restoreNew.visible=false;
-                saveNew.visible=false;
-                createNew.visible=true;
-                mainTree.enabled=false;
-                mainToolBar.enabled=false;
-            }
-            else {
-                var res=theModel.Load(folder);
-                if(res!="") {
-                    messageDialog.text=res;
-                    messageDialog.open()
-                    return;
-                }
-                runTags.model=theModel.GetTags();
-            }
-        }
-    }
-    SelectFolderDialog {
-        id:chooseFolder
-        title: "Select tests folder"
-        onAccepted: {
-            var folder=chooseFolder.fileUrl.toString().split("///")[1];
-            if(folder=="") {
-                messageDialog.text="Please, select folder";
-                messageDialog.open();
-                return;
-            }
-            rootDir.text=folder
         }
     }
     MessageDialog {
@@ -1315,6 +1312,8 @@ Item {
                 return;
             }
             res=theModel.Load(settingFile.getRootDir());
+            runTags.model=theModel.GetTags();
+            theModel.setCurrentTag(runTags.currentText);
             if(res!="") {
                 messageDialog.text=res;
                 messageDialog.open()
