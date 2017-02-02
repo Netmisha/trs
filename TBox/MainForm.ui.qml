@@ -118,6 +118,9 @@ Item {
                         id: layout
                         spacing: 5
                         anchors.fill: parent;
+                        Text {
+                            text: "Tags:  "
+                        }
                         ComboBox {
                             id: runTags
                             width: 200
