@@ -123,6 +123,7 @@ Item {
                             width: 200
                             activeFocusOnPress: true
                             onCurrentIndexChanged: theModel.setCurrentTag(runTags.currentText);
+                            model: []
                         }
                         ToolButton {
                             id: startButton
@@ -227,11 +228,12 @@ Item {
                                             ComboBox{
                                                 id: fontComboBox
                                                 width: 50
-                                                currentIndex: 12
+                                                currentIndex: 4
                                                 visible: false
-                                                model: ListModel {
-                                                    id: fontsList
-
+                                                model: ["8","9","10","11","12","14","16","18","20","22","24","26","28","36","48","72"]
+                                                onCurrentIndexChanged: {
+                                                    jsCodeEdit.font.pixelSize=parseInt(fontComboBox.currentText);
+                                                    lineRect.width=Math.max(jsCodeEdit.lineCount.toString().length, (lineColumn.height/lineColumn.rowHeight).toFixed(0).toString().length)*jsCodeEdit.font.pixelSize;
                                                 }
                                             }
                                             ToolButton {
@@ -312,6 +314,7 @@ Item {
                                                     cancelJS.visible=true;
                                                     mainTree.enabled=false;
                                                     mainToolBar.enabled=false;
+                                                    fontComboBox.visible=true;
                                                 }
                                             }
                                             ToolButton {
@@ -330,6 +333,7 @@ Item {
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
                                                     mainToolBar.enabled=true;
+                                                    fontComboBox.visible=false;
 
                                                 }
                                                 iconSource: "icons/icons/restore.png"
@@ -350,6 +354,7 @@ Item {
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
                                                     mainToolBar.enabled=true;
+                                                    fontComboBox.visible=false;
                                                 }
                                                 iconSource: "icons/icons/jssave.png"
                                             }
@@ -499,12 +504,12 @@ Item {
                                                     else {
                                                         var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
                                                         if(theModel.GetType()=="test") {
-                                                            if(textEditTName.text!="" && textEditTDiscr.text!="" && textEditTExe.text!="" && textEditTTag.text!="" && textEditTRepeat.text) {
+                                                            if(textEditTName.text!="" && textEditTExe.text!="") {
                                                                 theModel.Set("name", textEditTName.text);
                                                                 theModel.Set("description", textEditTDiscr.text);
                                                                 theModel.Set("tag", textEditTTag.text);
                                                                 theModel.Set("execution", textEditTExe.text);
-                                                                theModel.Set("repeat", textEditTRepeat.text);
+                                                                theModel.Set("repeat", textEditTRepeat.text==""?"1":textEditTRepeat.text);
                                                                 theModel.Set("disable", dis);
                                                                 addTestLayout.visible=false;
                                                                 testEdit.visible=true;
@@ -516,10 +521,10 @@ Item {
                                                             }
                                                         }
                                                         else {
-                                                            if(textEditSName.text!="" && textEditSDiscr.text!="" && textEditSRepeat.text!="") {
+                                                            if(textEditSName.text!="") {
                                                                 theModel.Set("name", textEditSName.text);
                                                                 theModel.Set("description", textEditSDiscr.text);
-                                                                theModel.Set("repeat", textEditSRepeat.text);
+                                                                theModel.Set("repeat", textEditSRepeat.text==""?"1":textEditSRepeat.text);
                                                                 theModel.Set("disable", dis);
                                                                 newTest.visible=true;
                                                                 newSuite.visible=true;
@@ -589,11 +594,11 @@ Item {
                                 Layout.minimumHeight: 200
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                color: "transparent"
+                                color: "#f6f6f6"
                                 Rectangle {
                                     id: jsCodeRect
                                     anchors.fill: parent
-                                    color: "#f6f6f6"
+                                    color: "transparent"
                                     Rectangle {
                                         id: lineRect
                                         width: 0
@@ -642,6 +647,7 @@ Item {
                                         x:lineRect.width
                                         width: jsCodeRect.width-lineRect.width
                                         height: jsCodeRect.height
+                                        color: "transparent"
                                         HighL {
                                             id: highlight1
                                         }

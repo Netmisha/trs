@@ -197,9 +197,17 @@ void MainTree::Set(QString path, QString data) {
         if (it.item == currentIndex) {
             if (it.type == "test") {
                 dm.Set(it.file+"/suite/test/"+it.name+"/"+path, data);
+                if(path==tags_name::kName) {
+                    it.name=data;
+                    this->itemFromIndex(currentIndex)->setText(data);
+                }
             }
             else if(it.type == "suite") {
                 dm.Set(it.file+"/suite/"+path, data);
+                if(path==tags_name::kName) {
+                    it.name=data;
+                    this->itemFromIndex(currentIndex)->setText(data);
+                }
             }
         }
     }
