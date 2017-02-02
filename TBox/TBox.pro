@@ -26,7 +26,8 @@ SOURCES+= main.cpp\
     sessionwindowtable.cpp \
     exporthtml.cpp \
     databasemanager.cpp \
-    highlighter.cpp
+    highlighter.cpp \
+    selectfolderdialog.cpp
 
 HEADERS+= mainwindow.h \
     trsmanager.h \
@@ -44,7 +45,8 @@ HEADERS+= mainwindow.h \
     sessionwindowtable.h \
     exporthtml.h \
     databasemanager.h \
-    highlighter.h
+    highlighter.h \
+    selectfolderdialog.h
 
 FORMS+= mainwindow.ui \
     reportform.ui

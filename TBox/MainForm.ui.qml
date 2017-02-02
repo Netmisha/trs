@@ -10,50 +10,17 @@ import QtQuick.Controls.Private 1.0
 import QtQuick.Dialogs 1.2
 import FileSave 1.0
 import Highlighter 1.0
+import FolderDialog 1.0
 Item {
     id: root
     anchors.fill: parent
-    function runNext() {
-        theModel.RunNext();
+    function checkRootDir() {
+        if(rootDir.text==""){
+            selectFolder.open();
+        }
     }
     function writeLog(msg) {
         consoleText.text=consoleText.text+msg+"\n";
-    }
-    function setSelectedFolder(folder) {
-        if(selectFolderDialog.isFromSetting){
-            rootDir.text=folder;
-        }
-        else {
-            rootDir.text=folder
-            settingFile.setRootDir(folder);
-            theModel.setRootDir(folder);
-            if(theModel.IsFolderEmpty(folder)) {
-                showMenu.menuForSuite();
-                centerRect.visible=false;
-                addSuiteLayout.visible=true;
-                testName.text="New Suite";
-                textEditSName.text="Main suite";
-                testRun.visible=false;
-                newTest.visible=false;
-                newSuite.visible=false;
-                testDelete.visible=false;
-                testSetting.visible=false;
-                restoreNew.visible=false;
-                saveNew.visible=false;
-                createNew.visible=true;
-                mainTree.enabled=false;
-                mainToolBar.enabled=false;
-            }
-            else {
-                var res=theModel.Load(folder);
-                if(res!="") {
-                    messageDialog.text=res;
-                    messageDialog.open()
-                    return;
-                }
-                runTags.model=theModel.GetTags();
-            }
-        }
     }
     function showItem (index) {
         jsCodeEdit.text = theModel.FindTest(index);
@@ -1142,22 +1109,22 @@ Item {
         }
     }
     FileSaveDialog {
-            id: saveFile
-            title: "Save file"
-            filename: "log.txt"
-            nameFilters: ["Text file (*.txt)", "All files (*)"]
-            onAccepted: {
-                if(saveFile.fileUrl.toString().split("///")[1]=="") {
-                    messageDialog.text="Please, select file";
-                    messageDialog.open();
-                    return;
-                }
-                var request = new XMLHttpRequest();
-                request.open("PUT", saveFile.fileUrl, false);
-                request.send(consoleText.text);
-                return request.status;
+        id: saveFile
+        title: "Save file"
+        filename: "log.txt"
+        nameFilters: ["Text file (*.txt)", "All files (*)"]
+        onAccepted: {
+            if(saveFile.fileUrl.toString().split("///")[1]=="") {
+                messageDialog.text="Please, select file";
+                messageDialog.open();
+                return;
             }
+            var request = new XMLHttpRequest();
+            request.open("PUT", saveFile.fileUrl, false);
+            request.send(consoleText.text);
+            return request.status;
         }
+    }
     Setting {
         id:settingFile
     }
@@ -1209,10 +1176,6 @@ Item {
                                     return;
                                 }
                             }
-                            else {
-                                selectFolderDialog.setFromSetting(false);
-                                selectFolderDialog.show();
-                            }
                         }
                         layer.enabled: true
                         font.pixelSize: 12
@@ -1230,8 +1193,7 @@ Item {
                     text: "..."
                     Layout.maximumWidth: 30
                     onClicked:{
-                        selectFolderDialog.setFromSetting(true);
-                        selectFolderDialog.show();
+                        chooseFolder.open();
                     }
                 }
             }
@@ -1271,6 +1233,60 @@ Item {
                     text: qsTr("Cancel")
                 }
             }
+        }
+    }
+    SelectFolderDialog {
+        id:selectFolder
+        title: "Select tests folder"
+        onAccepted: {
+            var folder=selectFolder.fileUrl.toString().split("///")[1];
+            if(folder=="") {
+                messageDialog.text="Please, select folder";
+                messageDialog.open();
+                return;
+            }
+            rootDir.text=folder
+            settingFile.setRootDir(folder);
+            theModel.setRootDir(folder);
+            if(theModel.IsFolderEmpty(folder)) {
+                showMenu.menuForSuite();
+                centerRect.visible=false;
+                addSuiteLayout.visible=true;
+                testName.text="New Suite";
+                textEditSName.text="Main suite";
+                testRun.visible=false;
+                newTest.visible=false;
+                newSuite.visible=false;
+                testDelete.visible=false;
+                testSetting.visible=false;
+                restoreNew.visible=false;
+                saveNew.visible=false;
+                createNew.visible=true;
+                mainTree.enabled=false;
+                mainToolBar.enabled=false;
+            }
+            else {
+                var res=theModel.Load(folder);
+                if(res!="") {
+                    messageDialog.text=res;
+                    messageDialog.open()
+                    return;
+                }
+                runTags.model=theModel.GetTags();
+            }
+        }
+    }
+    SelectFolderDialog {
+        id:chooseFolder
+        title: "Select tests folder"
+        onAccepted: {
+            var folder=chooseFolder.fileUrl.toString().split("///")[1];
+            if(folder=="") {
+                messageDialog.text="Please, select folder";
+                messageDialog.open();
+                return;
+            }
+            rootDir.text=folder
         }
     }
     MessageDialog {

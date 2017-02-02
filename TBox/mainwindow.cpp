@@ -6,43 +6,8 @@
 #include "testinfo.h"
 #include "filesave.h"
 #include "highlighter.h"
+#include "selectfolderdialog.h"
 QWebView * view;
-
-
-
-class SelectFolderDialog: public QFileDialog {
-    Q_OBJECT
-public:
-    explicit SelectFolderDialog() {
-        this->setModal(true);
-        this->setFileMode(QFileDialog::Directory);
-        this->setOption(QFileDialog::ShowDirsOnly);
-        this->setWindowTitle("Please choose a folder");
-        connect(this, SIGNAL(fileSelected(QString)), this, SLOT(OnFolderSelected(QString)));
-    }
-    virtual ~SelectFolderDialog(){}
-public slots:
-    Q_INVOKABLE QString getFolder() {
-        return this->getOpenFileName();
-    }
-    void OnFolderSelected(QString folder) {
-        QMetaObject::invokeMethod(obj, "setSelectedFolder", Q_ARG(QVariant, folder));
-    }
-    void setObject(QObject * o) {
-        obj=o;
-    }
-    Q_INVOKABLE void setFromSetting(bool status) {
-        fromSetting=status;
-    }
-    Q_INVOKABLE bool isFromSetting() {
-        return fromSetting;
-    }
-private:
-    QObject *obj;
-    bool fromSetting=false;
-};
-
-
 
 class MainTree : public QStandardItemModel
 {
@@ -113,6 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
     qmlRegisterType<MainSetting>("MainSetting", 1, 0, "Setting" );
     qmlRegisterType<FileSaveDialog>("FileSave", 1, 0, "FileSaveDialog");
+    qmlRegisterType<SelectFolderDialog>("FolderDialog", 1, 0, "SelectFolderDialog");
     QObject::connect(trs, SIGNAL(writeMSG(QString)),this, SLOT(writeMSG(QString)));
     QQuickView* qmlView = new QQuickView();
     qmlView->setGeometry(QRect(200,200,800,600));
@@ -121,9 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlRegisterType<Highlighter>("Highlighter", 1, 0, "HighL" );
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
     object = qmlView->rootObject();
-    SelectFolderDialog *selectFolder=new SelectFolderDialog();
-    selectFolder->setObject(object);
-    qmlView->rootContext()->setContextProperty("selectFolderDialog", selectFolder);
+    QMetaObject::invokeMethod(object, "checkRootDir");
     QWebSettings* settings = QWebSettings::globalSettings();
     settings->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     settings->setAttribute(QWebSettings::AcceleratedCompositingEnabled, true);
