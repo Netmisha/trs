@@ -119,7 +119,7 @@ Item {
                         spacing: 5
                         anchors.fill: parent;
                         Text {
-                            text: "Tags:  "
+                            text: "Tags: "
                         }
                         ComboBox {
                             id: runTags
@@ -149,6 +149,20 @@ Item {
                             id: settingButton
                             onClicked: mainsetting.show();
                             iconSource: "icons/icons/Settings.png"
+                        }
+                        Item {
+                            id: aasda
+                            Layout.fillWidth: true
+                        }
+                        Rectangle {
+                            id: dgsdr
+                            color: "red"
+                            Layout.fillHeight: true
+                            Item {
+                                id: sdsf
+                                anchors.fill: parent;
+
+                            }
                         }
                     }
                 }
@@ -1253,6 +1267,39 @@ Item {
                     onClicked:{
                         selectFolderDialog.setFromSetting(true);
                         selectFolderDialog.show();
+                    }
+                }
+            }
+            RowLayout {
+                id: rowLayout3
+                width: 100
+                height: 100
+                Layout.preferredWidth: -1
+                Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                Layout.fillHeight: false
+                Layout.maximumHeight: 65535
+                Layout.rowSpan: 1
+                Layout.fillWidth: true
+                Text {
+                    id: nameaa
+                    text: qsTr("Web view")
+                }
+                Item {
+                    id: sadsdsfsf
+                    Layout.fillWidth: true
+                }
+                Button {
+                    id: webViewS
+                    text: qsTr("Show")
+                    onClicked: {
+                        if(webViewS.text!="Show") {
+                            webViewS.text="Show";
+                            theModel.setViewStatus(false);
+                        }
+                        else {
+                            webViewS.text="Hide";
+                            theModel.setViewStatus(true);
+                        }
                     }
                 }
             }

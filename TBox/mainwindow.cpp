@@ -49,6 +49,7 @@ public:
     Q_INVOKABLE QModelIndex getCurrentIndex();
     Q_INVOKABLE QStringList List(QString);
     Q_INVOKABLE bool IsFolderEmpty(QString);
+    Q_INVOKABLE void setViewStatus(bool);
 private:
     QString Parse(QString, QStandardItem *);
     QStandardItem * AddItemToTree(QString);
@@ -66,7 +67,8 @@ private:
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    view = new QWebView(this);
+    view = new QWebView();
+    view->setGeometry(QRect(100,200,20,20));
     CreateHtml();
     TRSManager *trs=new TRSManager();
     view->page()->mainFrame()->addToJavaScriptWindowObject("trs", trs);
@@ -89,6 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
     SelectFolderDialog *selectFolder=new SelectFolderDialog();
     selectFolder->setObject(object);
     qmlView->rootContext()->setContextProperty("selectFolderDialog", selectFolder);
+    //qmlView->rootContext()->setContextProperty("webView", view);
     QWebSettings* settings = QWebSettings::globalSettings();
     settings->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     settings->setAttribute(QWebSettings::AcceleratedCompositingEnabled, true);
@@ -275,6 +278,14 @@ bool MainTree::IsFolderEmpty(QString path) {
         }
     }
     return true;
+}
+void MainTree::setViewStatus(bool status) {
+    if(status) {
+        view->show();
+    }
+    else {
+        view->close();
+    }
 }
 QString MainTree::getFile(QModelIndex item) {
     for (auto&it : treeData) {
