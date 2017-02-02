@@ -20,10 +20,10 @@ Console/Debug/
 Console/logs.txt
 .gitattributes
 tatus
-
+build-TBox-Desktop_Qt_5_5_1_MinGW_32bit3-Debug/
 Report.html
 *.log
-
+*.user
 *.aps
 MFCTRSui/MFCTRSui.aps
 MFCTRSui/Last Project.xml

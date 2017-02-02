@@ -55,7 +55,6 @@
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 #include <QQuickTextDocument>
-#include <QDebug>
 
 QT_BEGIN_NAMESPACE
 class QTextDocument;
@@ -68,7 +67,6 @@ class Highlighter : public QSyntaxHighlighter {
 public:
   // This is the function to handle from QML
   Q_INVOKABLE void setQuickDocument(QQuickTextDocument *doc) {
-        qDebug() << doc->textDocument()->toPlainText();
     setDocument(doc->textDocument());
   }
 

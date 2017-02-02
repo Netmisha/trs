@@ -19,6 +19,42 @@ Item {
     function writeLog(msg) {
         consoleText.text=consoleText.text+msg+"\n";
     }
+    function setSelectedFolder(folder) {
+        if(selectFolderDialog.isFromSetting){
+            rootDir.text=folder;
+        }
+        else {
+            rootDir.text=folder
+            settingFile.setRootDir(folder);
+            theModel.setRootDir(folder);
+            if(theModel.IsFolderEmpty(folder)) {
+                showMenu.menuForSuite();
+                centerRect.visible=false;
+                addSuiteLayout.visible=true;
+                testName.text="New Suite";
+                textEditSName.text="Main suite";
+                testRun.visible=false;
+                newTest.visible=false;
+                newSuite.visible=false;
+                testDelete.visible=false;
+                testSetting.visible=false;
+                restoreNew.visible=false;
+                saveNew.visible=false;
+                createNew.visible=true;
+                mainTree.enabled=false;
+                mainToolBar.enabled=false;
+            }
+            else {
+                var res=theModel.Load(folder);
+                if(res!="") {
+                    messageDialog.text=res;
+                    messageDialog.open()
+                    return;
+                }
+                runTags.model=theModel.GetTags();
+            }
+        }
+    }
     function showItem (index) {
         jsCodeEdit.text = theModel.FindTest(index);
         lineRect.visible=false;
@@ -26,7 +62,7 @@ Item {
         if(theModel.GetType()=="test") {
             showMenu.menuForTest();
             lineRect.visible=true;
-            lineRect.width=jsCodeEdit.lineCount.toString().length*jsCodeEdit.font.pixelSize;
+            lineRect.width=Math.max(jsCodeEdit.lineCount.toString().length, (lineColumn.height/lineColumn.rowHeight).toFixed(0).toString().length)*jsCodeEdit.font.pixelSize;
         }
         else if(theModel.GetType()=="suite") {
             showMenu.menuForSuite();
@@ -82,6 +118,7 @@ Item {
                             width: 200
                             activeFocusOnPress: true
                             onCurrentIndexChanged: theModel.setCurrentTag(runTags.currentText);
+                            model: ["All"]
                         }
                         ToolButton {
                             id: startButton
@@ -217,6 +254,8 @@ Item {
                                                     testSetting.visible=false;
                                                     restoreNew.visible=true;
                                                     saveNew.visible=true;
+                                                    mainTree.enabled=false;
+                                                    mainToolBar.enabled=false;
                                                 }
                                             }
                                             ToolButton {
@@ -233,6 +272,8 @@ Item {
                                                     testSetting.visible=false;
                                                     restoreNew.visible=true;
                                                     saveNew.visible=true;
+                                                    mainTree.enabled=false;
+                                                    mainToolBar.enabled=false;
                                                 }
                                             }
                                             ToolButton {
@@ -257,7 +298,6 @@ Item {
                                                     cancelJS.visible=true;
                                                     mainTree.enabled=false;
                                                     mainToolBar.enabled=false;
-                                                    jsCodeEdit.selectByMouse = true
                                                 }
                                             }
                                             ToolButton {
@@ -601,7 +641,7 @@ Item {
                                             frameVisible: false
                                             backgroundVisible: false
                                             onLineCountChanged: {
-                                                lineRect.width=jsCodeEdit.lineCount.toString().length*jsCodeEdit.font.pixelSize;
+                                                lineRect.width=Math.max(jsCodeEdit.lineCount.toString().length, (lineColumn.height/lineColumn.rowHeight).toFixed(0).toString().length)*jsCodeEdit.font.pixelSize;
                                             }
                                             Component.onCompleted: {
                                                 highlight1.setQuickDocument(jsCodeEdit.textDocument)
@@ -1106,14 +1146,17 @@ Item {
             title: "Save file"
             filename: "log.txt"
             nameFilters: ["Text file (*.txt)", "All files (*)"]
-
             onAccepted: {
+                if(saveFile.fileUrl.toString().split("///")[1]=="") {
+                    messageDialog.text="Please, select file";
+                    messageDialog.open();
+                    return;
+                }
                 var request = new XMLHttpRequest();
                 request.open("PUT", saveFile.fileUrl, false);
                 request.send(consoleText.text);
                 return request.status;
             }
-            onRejected: outputSaveFile.text = "File selected: –"
         }
     Setting {
         id:settingFile
@@ -1167,7 +1210,8 @@ Item {
                                 }
                             }
                             else {
-                                selectFolder.open();
+                                selectFolderDialog.setFromSetting(false);
+                                selectFolderDialog.show();
                             }
                         }
                         layer.enabled: true
@@ -1186,7 +1230,8 @@ Item {
                     text: "..."
                     Layout.maximumWidth: 30
                     onClicked:{
-                        chooseFolder.open();
+                        selectFolderDialog.setFromSetting(true);
+                        selectFolderDialog.show();
                     }
                 }
             }
@@ -1200,7 +1245,6 @@ Item {
                 Layout.maximumHeight: 65535
                 Layout.rowSpan: 1
                 Layout.fillWidth: true
-
                 Button {
                     id: saveSetting
                     text: qsTr("Save")
@@ -1227,61 +1271,6 @@ Item {
                     text: qsTr("Cancel")
                 }
             }
-        }
-    }
-    FileDialog {
-        id: selectFolder
-        title: "Please choose a folder"
-        folder: shortcuts.home
-        selectFolder : true
-        modality: Qt.WindowModal
-        onAccepted: {
-            rootDir.text=selectFolder.fileUrl.toString().split("///")[1];
-            settingFile.setRootDir(rootDir.text);
-            rootDir.text=settingFile.getRootDir();
-            theModel.setRootDir(rootDir.text);
-            if(theModel.IsFolderEmpty(rootDir.text)) {
-                showMenu.menuForSuite();
-                jsCodeRect.visible=false;
-                addSuiteLayout.visible=true;
-                testName.text="New Suite";
-                textEditSName.text="Main suite";
-                testRun.visible=false;
-                newTest.visible=false;
-                newSuite.visible=false;
-                testDelete.visible=false;
-                testSetting.visible=false;
-                restoreNew.visible=false;
-                saveNew.visible=false;
-                createNew.visible=true;
-            }
-            else {
-                var res=theModel.Load(rootDir.text);
-                if(res!="") {
-                    messageDialog.text=res;
-                    messageDialog.open()
-                    return;
-                }
-                runTags.model=theModel.GetTags();
-            }
-            Qt.quit()
-        }
-        onRejected: {
-            Qt.quit();
-        }
-    }
-    FileDialog {
-        id: chooseFolder
-        title: "Please choose a folder"
-        folder: shortcuts.home
-        selectFolder : true
-        modality: Qt.WindowModal
-        onAccepted: {
-            rootDir.text=chooseFolder.fileUrl.toString().split("///")[1];
-            Qt.quit()
-        }
-        onRejected: {
-            Qt.quit();
         }
     }
     MessageDialog {
