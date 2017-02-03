@@ -7,6 +7,8 @@
 #include "filesave.h"
 #include "highlighter.h"
 #include "selectfolderdialog.h"
+#include <QWebInspector>
+#include <QDesktopServices>
 QWebView * view;
 
 class MainTree : public QStandardItemModel
@@ -50,6 +52,7 @@ public:
     Q_INVOKABLE QStringList List(QString);
     Q_INVOKABLE bool IsFolderEmpty(QString);
     Q_INVOKABLE void setViewStatus(bool);
+    Q_INVOKABLE void showInspector();
 private:
     QString Parse(QString, QStandardItem *);
     QStandardItem * AddItemToTree(QString);
@@ -68,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     view = new QWebView();
-    view->setGeometry(QRect(100,200,20,20));
+    view->setGeometry(QRect(180,200,100,100));
     CreateHtml();
     TRSManager *trs=new TRSManager();
     view->page()->mainFrame()->addToJavaScriptWindowObject("trs", trs);
@@ -91,7 +94,6 @@ MainWindow::MainWindow(QWidget *parent) :
     SelectFolderDialog *selectFolder=new SelectFolderDialog();
     selectFolder->setObject(object);
     qmlView->rootContext()->setContextProperty("selectFolderDialog", selectFolder);
-    //qmlView->rootContext()->setContextProperty("webView", view);
     QWebSettings* settings = QWebSettings::globalSettings();
     settings->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     settings->setAttribute(QWebSettings::AcceleratedCompositingEnabled, true);
@@ -100,6 +102,7 @@ MainWindow::MainWindow(QWidget *parent) :
     settings->setAttribute(QWebSettings::LocalStorageEnabled, true);
     settings->setAttribute(QWebSettings::JavascriptEnabled, true);
     qmlView->show();
+    view->page()->setProperty("_q_webInspectorServerPort",9876);
     QMetaObject::invokeMethod(object, "checkRootDir");
 }
 MainWindow::~MainWindow(){
@@ -286,6 +289,10 @@ void MainTree::setViewStatus(bool status) {
     else {
         view->close();
     }
+}
+void MainTree::showInspector() {
+    QString link = "http://127.0.0.1:9876/webkit/inspector/inspector.html?page=1";
+    QDesktopServices::openUrl(QUrl(link));
 }
 QString MainTree::getFile(QModelIndex item) {
     for (auto&it : treeData) {

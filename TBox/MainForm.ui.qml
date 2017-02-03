@@ -10,7 +10,6 @@ import QtQuick.Controls.Private 1.0
 import QtQuick.Dialogs 1.2
 import FileSave 1.0
 import Highlighter 1.0
-//import FolderDialog 1.0
 Item {
     id: root
     anchors.fill: parent
@@ -43,7 +42,7 @@ Item {
                 saveNew.visible=false;
                 createNew.visible=true;
                 mainTree.enabled=false;
-                mainToolBar.enabled=false;
+                navigationBar.enabled=false;
             }
             else {
                 var res=theModel.Load(folder);
@@ -104,67 +103,47 @@ Item {
     ColumnLayout{
         anchors.fill: parent
         spacing: 0
-        Rectangle{
-            id: mainToolBar
-            height: 33
+        ToolBar {
+            id: navigationBar
             Layout.fillWidth: true
-            ToolBar {
-                id: navigationBar
-                x: 0
-                y: 0
-                Layout.fillHeight: true
-                Rectangle {
-                    RowLayout {
-                        id: layout
-                        spacing: 5
-                        anchors.fill: parent;
-                        Text {
-                            text: "Tags: "
-                        }
-                        ComboBox {
-                            id: runTags
-                            width: 200
-                            activeFocusOnPress: true
-                            onCurrentIndexChanged: theModel.setCurrentTag(runTags.currentText);
-                            model: []
-                        }
-                        ToolButton {
-                            id: startButton
-                            onClicked: {
-                                consoleText.text="";
-                                theModel.Run();
-                            }
-                            iconSource: "icons/icons/Run.png"
-                        }
-                        /*ToolButton {
-                            id: stopButton
-                            iconSource: "icons/icons/Stop.png"
-                            onClicked: theModel.Stop();
-                        }*/
-                        ToolButton {
-                            id: reportsButton
-                            iconSource: "icons/icons/report.png"
-                        }
-                        ToolButton {
-                            id: settingButton
-                            onClicked: mainsetting.show();
-                            iconSource: "icons/icons/Settings.png"
-                        }
-                        Item {
-                            id: aasda
-                            Layout.fillWidth: true
-                        }
-                        Rectangle {
-                            id: dgsdr
-                            color: "red"
-                            Layout.fillHeight: true
-                            Item {
-                                id: sdsf
-                                anchors.fill: parent;
-
-                            }
-                        }
+            RowLayout {
+                id: layout
+                spacing: 5
+                anchors.fill: parent;
+                Text {
+                    text: "Tags: "
+                }
+                ComboBox {
+                    id: runTags
+                    width: 200
+                    activeFocusOnPress: true
+                    onCurrentIndexChanged: theModel.setCurrentTag(runTags.currentText);
+                    model: []
+                }
+                ToolButton {
+                    id: startButton
+                    onClicked: {
+                        consoleText.text="";
+                        theModel.Run();
                     }
+                    iconSource: "icons/icons/Run.png"
+                }
+                ToolButton {
+                    id: reportsButton
+                    iconSource: "icons/icons/report.png"
+                }
+                ToolButton {
+                    id: settingButton
+                    onClicked: mainsetting.show();
+                    iconSource: "icons/icons/Settings.png"
+                }
+                Item {
+                    Layout.fillWidth: true;
+                }
+                ToolButton {
+                    id: inspectorButton
+                    onClicked: theModel.showInspector();
+                    iconSource: "icons/icons/inspector.png"
                 }
             }
         }
@@ -242,7 +221,7 @@ Item {
                                             Text {
                                                 id:testName
                                             }
-                                            ComboBox{
+                                            /*ComboBox{
                                                 id: fontComboBox
                                                 width: 50
                                                 currentIndex: 4
@@ -252,7 +231,7 @@ Item {
                                                     jsCodeEdit.font.pixelSize=parseInt(fontComboBox.currentText);
                                                     lineRect.width=Math.max(jsCodeEdit.lineCount.toString().length, (lineColumn.height/lineColumn.rowHeight).toFixed(0).toString().length)*jsCodeEdit.font.pixelSize;
                                                 }
-                                            }
+                                            }*/
                                             ToolButton {
                                                 id: testStatus
                                                 onClicked: {
@@ -288,7 +267,7 @@ Item {
                                                     restoreNew.visible=true;
                                                     saveNew.visible=true;
                                                     mainTree.enabled=false;
-                                                    mainToolBar.enabled=false;
+                                                    navigationBar.enabled=false;
                                                 }
                                             }
                                             ToolButton {
@@ -306,7 +285,7 @@ Item {
                                                     restoreNew.visible=true;
                                                     saveNew.visible=true;
                                                     mainTree.enabled=false;
-                                                    mainToolBar.enabled=false;
+                                                    navigationBar.enabled=false;
                                                 }
                                             }
                                             ToolButton {
@@ -330,7 +309,7 @@ Item {
                                                     saveJS.visible=true;
                                                     cancelJS.visible=true;
                                                     mainTree.enabled=false;
-                                                    mainToolBar.enabled=false;
+                                                    navigationBar.enabled=false;
                                                     fontComboBox.visible=true;
                                                 }
                                             }
@@ -349,7 +328,7 @@ Item {
                                                     jsCodeRect.color="#f6f6f6";
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
-                                                    mainToolBar.enabled=true;
+                                                    navigationBar.enabled=true;
                                                     fontComboBox.visible=false;
 
                                                 }
@@ -370,7 +349,7 @@ Item {
                                                     saveJS.visible=false;
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
-                                                    mainToolBar.enabled=true;
+                                                    navigationBar.enabled=true;
                                                     fontComboBox.visible=false;
                                                 }
                                                 iconSource: "icons/icons/jssave.png"
@@ -402,7 +381,7 @@ Item {
                                                         saveNew.visible=true;
                                                         testEdit.visible=false;
                                                         mainTree.enabled=false;
-                                                        mainToolBar.enabled=false;
+                                                        navigationBar.enabled=false;
                                                     }
                                                     else if(theModel.GetType()=="suite") {
                                                         textEditSName.text=theModel.Get("name");
@@ -418,7 +397,7 @@ Item {
                                                         restoreNew.visible=true;
                                                         saveNew.visible=true;
                                                         mainTree.enabled=false;
-                                                        mainToolBar.enabled=false;
+                                                        navigationBar.enabled=false;
                                                         if(theModel.Get("disable")=="false"){
                                                             testStatus.iconSource="icons/icons/turnon.png";
                                                         }
@@ -477,7 +456,7 @@ Item {
                                                     restoreNew.visible=false;
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
-                                                    mainToolBar.enabled=true;
+                                                    navigationBar.enabled=true;
                                                 }
                                                 iconSource: "icons/icons/restore.png"
                                             }
@@ -563,7 +542,7 @@ Item {
                                                     restoreNew.visible=false;
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
-                                                    mainToolBar.enabled=true;
+                                                    navigationBar.enabled=true;
                                                 }
                                             }
                                             ToolButton {
@@ -597,7 +576,7 @@ Item {
                                                     restoreNew.visible=false;
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
-                                                    mainToolBar.enabled=true;
+                                                    navigationBar.enabled=true;
                                                     createNew.visible=false
                                                 }
                                             }

@@ -22,5 +22,6 @@
         <file>icons/newsuite.png</file>
         <file>icons/newtest.png</file>
         <file>icons/restore.png</file>
+        <file>icons/inspector.png</file>
     </qresource>
 </RCC>
