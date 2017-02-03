@@ -1,4 +1,3 @@
-#include <databasemanager.h>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "trsmanager.h"
@@ -8,7 +7,11 @@
 #include "filesave.h"
 #include <QQmlApplicationEngine>
 #include <QObject>
-
+#include "highlighter.h"
+#include "selectfolderdialog.h"
+#include <QWebInspector>
+#include <QDesktopServices>
+#include <databasemanager.h>
 QWebView * view;
 
 class MainTree : public QStandardItemModel
@@ -21,6 +24,7 @@ public:
          QObject::connect(this,SIGNAL(sendTestName(QString)),&data_base_man,SLOT(getTestName(QString)));
          QObject::connect(this,SIGNAL(sendSuiteName(QString)),&data_base_man,SLOT(getSuiteName(QString)));
          QObject::connect(this,SIGNAL(sessionN()),&data_base_man,SLOT(sessionNum()));
+
     }
     virtual ~MainTree() = default;
     enum MainTree_Roles{
@@ -29,7 +33,7 @@ public:
     QHash<int, QByteArray> roleNames() const override{
         return m_roleNameMapping;
     }
-     DataBaseManager data_base_man;
+    DataBaseManager data_base_man;
     public slots:
     Q_INVOKABLE QString Load(QString path);
     Q_INVOKABLE QString getFile(QModelIndex);
@@ -55,6 +59,8 @@ public:
     Q_INVOKABLE QModelIndex getCurrentIndex();
     Q_INVOKABLE QStringList List(QString);
     Q_INVOKABLE bool IsFolderEmpty(QString);
+    Q_INVOKABLE void setViewStatus(bool);
+    Q_INVOKABLE void showInspector();
 private:
     QString Parse(QString, QStandardItem *);
     QStandardItem * AddItemToTree(QString);
@@ -68,15 +74,18 @@ private:
     QStringList tags;
     QString currentTag="All";
     DataManager dm;
+
 signals:
     void sendTestName(QString);
     void sendSuiteName(QString);
     void sessionN();
+
 };
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
-    ui->setupUi(this);    
-    view = new QWebView(this);
+    ui->setupUi(this);
+    view = new QWebView();
+    view->setGeometry(QRect(180,200,100,100));
     CreateHtml();
     TRSManager *trs=new TRSManager();
     view->page()->mainFrame()->addToJavaScriptWindowObject("trs", trs);
@@ -96,8 +105,12 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlView->setGeometry(QRect(200,200,800,600));
     qmlView->setResizeMode(QQuickView::SizeRootObjectToView);
     qmlView->setIcon(QIcon(QPixmap(":/icons/icons/tbox.png")));
+    qmlRegisterType<Highlighter>("Highlighter", 1, 0, "HighL" );
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
     object = qmlView->rootObject();
+    SelectFolderDialog *selectFolder=new SelectFolderDialog();
+    selectFolder->setObject(object);
+    qmlView->rootContext()->setContextProperty("selectFolderDialog", selectFolder);
     QWebSettings* settings = QWebSettings::globalSettings();
     settings->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     settings->setAttribute(QWebSettings::AcceleratedCompositingEnabled, true);
@@ -106,6 +119,8 @@ MainWindow::MainWindow(QWidget *parent) :
     settings->setAttribute(QWebSettings::LocalStorageEnabled, true);
     settings->setAttribute(QWebSettings::JavascriptEnabled, true);
     qmlView->show();
+    view->page()->setProperty("_q_webInspectorServerPort",9876);
+    QMetaObject::invokeMethod(object, "checkRootDir");
 }
 MainWindow::~MainWindow(){
     delete ui;
@@ -149,6 +164,7 @@ void MainTree::setRootDir(QString path) {
 QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag, QString rep, QString disable) {
     for (auto&it : treeData) {
         if (it.item == currentIndex) {
+            rep=rep==""?"1":rep;
             QString res= dm.AddTest(it.file, name, dis, tag, exe, rep, disable);
             if(res=="") {
                 TreeInfo info;
@@ -173,6 +189,7 @@ QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag
 QString MainTree::AddNewSuite(QString name, QString dis, QString rep, QString disable) {
     for (auto&it : treeData) {
         if (it.item == currentIndex) {
+            rep=rep==""?"1":rep;
             QString res=dm.AddSuite(it.file, name, dis, rep, disable);
             if(res=="") {
                 TreeInfo info;
@@ -204,9 +221,17 @@ void MainTree::Set(QString path, QString data) {
         if (it.item == currentIndex) {
             if (it.type == "test") {
                 dm.Set(it.file+"/suite/test/"+it.name+"/"+path, data);
+                if(path==tags_name::kName) {
+                    it.name=data;
+                    this->itemFromIndex(currentIndex)->setText(data);
+                }
             }
             else if(it.type == "suite") {
                 dm.Set(it.file+"/suite/"+path, data);
+                if(path==tags_name::kName) {
+                    it.name=data;
+                    this->itemFromIndex(currentIndex)->setText(data);
+                }
             }
         }
     }
@@ -275,6 +300,18 @@ bool MainTree::IsFolderEmpty(QString path) {
     }
     return true;
 }
+void MainTree::setViewStatus(bool status) {
+    if(status) {
+        view->show();
+    }
+    else {
+        view->close();
+    }
+}
+void MainTree::showInspector() {
+    QString link = "http://127.0.0.1:9876/webkit/inspector/inspector.html?page=1";
+    QDesktopServices::openUrl(QUrl(link));
+}
 QString MainTree::getFile(QModelIndex item) {
     for (auto&it : treeData) {
         if (it.item == item) {
@@ -303,16 +340,12 @@ void MainTree::RunOne() {
     emit sessionN();
     for (auto&it : treeData) {
         if (it.item == currentIndex && it.type == "test") {
-            emit sendTestName(it.name);
-            emit sendSuiteName(it.file);
-            data_base_man.sessionStart();
             view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
-            data_base_man.sessionEnd();
         }
     }
 }
 void MainTree::Run() {
-    run=true;
+     run=true;
     emit sessionN();
     for(auto&it:treeData){
         if (it.type == "test" && CheckTest(it) && it.repeat>0) {
@@ -369,7 +402,7 @@ QString MainTree::Parse(QString path, QStandardItem * root) {
                     info.repeat = dm.Get(info.file+"/suite/test/"+iter+"/repeat").toInt();
                     QStringList t=dm.Get(info.file+"/suite/test/"+iter+"/tag").split(",");
                     for(auto&i:t) {
-                        if(!tags.contains(i)) {
+                        if(!tags.contains(i) && !i.isEmpty()) {
                             tags.push_back(i);
                         }
                     }

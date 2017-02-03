@@ -11,6 +11,12 @@ void TestInfo::setPath(QString path) {
 void TestInfo::setName(QString name) {
     testName=name;
 }
+QString TestInfo::getPath() {
+    return currentPath;
+}
+QString TestInfo::getName() {
+    return testName;
+}
 void TestInfo::SetData(QString tag, QString data) {
     QDomDocument doc;
     QFile file(currentPath);

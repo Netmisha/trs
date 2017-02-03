@@ -12,6 +12,8 @@ import QtQuick.Dialogs 1.2
 import FileSave 1.0
 import QtQuick.Window 2.1
 import QtWebKit 3.0
+import Highlighter 1.0
+
 Item {
     property variant win;
     property  variant list_;
@@ -166,8 +168,48 @@ Item {
     }
     id: root
     anchors.fill: parent
-    function runNext() {
-        theModel.RunNext();
+    function checkRootDir() {
+        if(rootDir.text==""){
+            selectFolderDialog.setFromSetting(false);
+            selectFolderDialog.show();
+        }
+    }
+    function setSelectedFolder(folder) {
+        if(selectFolderDialog.isFromSetting()){
+            rootDir.text=folder;
+        }
+        else {
+            rootDir.text=folder;
+            theModel.setRootDir(rootDir.text);
+            settingFile.setRootDir(rootDir.text);
+            if(theModel.IsFolderEmpty(folder)) {
+                showMenu.menuForSuite();
+                centerRect.visible=false;
+                addSuiteLayout.visible=true;
+                testName.text="New Suite";
+                textEditSName.text="Main suite";
+                testRun.visible=false;
+                newTest.visible=false;
+                newSuite.visible=false;
+                testDelete.visible=false;
+                testSetting.visible=false;
+                restoreNew.visible=false;
+                saveNew.visible=false;
+                createNew.visible=true;
+                mainTree.enabled=false;
+                navigationBar.enabled=false;
+            }
+            else {
+                var res=theModel.Load(folder);
+                runTags.model=theModel.GetTags();
+                theModel.setCurrentTag(runTags.currentText);
+                if(res!="") {
+                    messageDialog.text=res;
+                    messageDialog.open()
+                    return;
+                }
+            }
+        }
     }
     function writeLog(msg) {
         consoleText.text=consoleText.text+msg+"\n";
@@ -179,7 +221,7 @@ Item {
         if(theModel.GetType()=="test") {
             showMenu.menuForTest();
             lineRect.visible=true;
-            lineRect.width=jsCodeEdit.lineCount.toString().length*jsCodeEdit.font.pixelSize;
+            lineRect.width=Math.max(jsCodeEdit.lineCount.toString().length, (lineColumn.height/lineColumn.rowHeight).toFixed(0).toString().length)*jsCodeEdit.font.pixelSize;
         }
         else if(theModel.GetType()=="suite") {
             showMenu.menuForSuite();
@@ -201,65 +243,63 @@ Item {
             testToolBar.visible=true;
             newTest.visible=true;
             newSuite.visible=true;
-            testEdit.visible=false;
+            centerRect.visible=false;
         }
         function menuForTest() {
             testToolBar.visible=true;
             newTest.visible=false;
             newSuite.visible=false;
-            testEdit.visible=true;
+            centerRect.visible=true;
         }
         function hideAll() {
             testToolBar.visible=false;
         }
     }
-    ColumnLayout{
+     ColumnLayout{
         anchors.fill: parent
         spacing: 0
-        Rectangle{
-            id: mainToolBar
-            height: 33
+        ToolBar {
+            id: navigationBar
             Layout.fillWidth: true
-            ToolBar {
-                id: navigationBar
-                x: 0
-                y: 0
-                Layout.fillHeight: true
-                Rectangle {
-                    RowLayout {
-                        id: layout
-                        spacing: 5
-                        anchors.fill: parent;
-                        ComboBox {
-                            id: runTags
-                            width: 200
-                            activeFocusOnPress: true
-                            onCurrentIndexChanged: theModel.setCurrentTag(runTags.currentText);
-                        }
-                        ToolButton {
-                            id: startButton
-                            onClicked: {
-                                consoleText.text="";
-                                theModel.Run();
-                            }
-                            iconSource: "icons/icons/Run.png"
-                        }
-                        /*ToolButton {
-                            id: stopButton
-                            iconSource: "icons/icons/Stop.png"
-                            onClicked: theModel.Stop();
-                        }*/
-                        ToolButton {
-                            id: reportsButton
-                            iconSource: "icons/icons/report.png"
-                            onClicked: report_window_.show();
-                        }
-                        ToolButton {
-                            id: settingButton
-                            onClicked: mainsetting.show();
-                            iconSource: "icons/icons/Settings.png"
-                        }
+            RowLayout {
+                id: layout
+                spacing: 5
+                anchors.fill: parent;
+                Text {
+                    text: "Tags: "
+                }
+                ComboBox {
+                    id: runTags
+                    width: 200
+                    activeFocusOnPress: true
+                    onCurrentIndexChanged: theModel.setCurrentTag(runTags.currentText);
+                    model: []
+                }
+                ToolButton {
+                    id: startButton
+                    onClicked: {
+                        consoleText.text="";
+                        theModel.Run();
                     }
+                    iconSource: "icons/icons/Run.png"
+                }
+                ToolButton {
+                    id: reportsButton
+                    iconSource: "icons/icons/report.png"
+                    onClicked: report_window_.show();
+                }
+                ToolButton {
+                    id: settingButton
+                    onClicked: mainsetting.show();
+                    iconSource: "icons/icons/Settings.png"
+                }
+                Item {
+                    Layout.fillWidth: true;
+                }
+                ToolButton {
+                    id: inspectorButton
+                    onClicked: theModel.showInspector();
+                    iconSource: "icons/icons/inspector.png"
                 }
             }
         }
@@ -337,6 +377,17 @@ Item {
                                             Text {
                                                 id:testName
                                             }
+                                            /*ComboBox{
+                                                id: fontComboBox
+                                                width: 50
+                                                currentIndex: 4
+                                                visible: false
+                                                model: ["8","9","10","11","12","14","16","18","20","22","24","26","28","36","48","72"]
+                                                onCurrentIndexChanged: {
+                                                    jsCodeEdit.font.pixelSize=parseInt(fontComboBox.currentText);
+                                                    lineRect.width=Math.max(jsCodeEdit.lineCount.toString().length, (lineColumn.height/lineColumn.rowHeight).toFixed(0).toString().length)*jsCodeEdit.font.pixelSize;
+                                                }
+                                            }*/
                                             ToolButton {
                                                 id: testStatus
                                                 onClicked: {
@@ -371,6 +422,8 @@ Item {
                                                     testSetting.visible=false;
                                                     restoreNew.visible=true;
                                                     saveNew.visible=true;
+                                                    mainTree.enabled=false;
+                                                    navigationBar.enabled=false;
                                                 }
                                             }
                                             ToolButton {
@@ -387,6 +440,8 @@ Item {
                                                     testSetting.visible=false;
                                                     restoreNew.visible=true;
                                                     saveNew.visible=true;
+                                                    mainTree.enabled=false;
+                                                    navigationBar.enabled=false;
                                                 }
                                             }
                                             ToolButton {
@@ -410,8 +465,8 @@ Item {
                                                     saveJS.visible=true;
                                                     cancelJS.visible=true;
                                                     mainTree.enabled=false;
-                                                    mainToolBar.enabled=false;
-                                                    jsCodeEdit.selectByMouse = true
+                                                    navigationBar.enabled=false;
+                                                    fontComboBox.visible=true;
                                                 }
                                             }
                                             ToolButton {
@@ -429,7 +484,8 @@ Item {
                                                     jsCodeRect.color="#f6f6f6";
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
-                                                    mainToolBar.enabled=true;
+                                                    navigationBar.enabled=true;
+                                                    fontComboBox.visible=false;
 
                                                 }
                                                 iconSource: "icons/icons/restore.png"
@@ -449,7 +505,8 @@ Item {
                                                     saveJS.visible=false;
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
-                                                    mainToolBar.enabled=true;
+                                                    navigationBar.enabled=true;
+                                                    fontComboBox.visible=false;
                                                 }
                                                 iconSource: "icons/icons/jssave.png"
                                             }
@@ -480,7 +537,7 @@ Item {
                                                         saveNew.visible=true;
                                                         testEdit.visible=false;
                                                         mainTree.enabled=false;
-                                                        mainToolBar.enabled=false;
+                                                        navigationBar.enabled=false;
                                                     }
                                                     else if(theModel.GetType()=="suite") {
                                                         textEditSName.text=theModel.Get("name");
@@ -496,7 +553,7 @@ Item {
                                                         restoreNew.visible=true;
                                                         saveNew.visible=true;
                                                         mainTree.enabled=false;
-                                                        mainToolBar.enabled=false;
+                                                        navigationBar.enabled=false;
                                                         if(theModel.Get("disable")=="false"){
                                                             testStatus.iconSource="icons/icons/turnon.png";
                                                         }
@@ -515,7 +572,7 @@ Item {
                                                         textEditTDiscr.text="";
                                                         textEditTExe.text="";
                                                         textEditTTag.text="";
-                                                        textEditTRepeat.text="";
+                                                        textEditTRepeat.text="1";
                                                         addTestLayout.visible=false;
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
@@ -523,7 +580,7 @@ Item {
                                                     else if(testName.text== "New Suite") {
                                                         textEditSName.text="";
                                                         textEditSDiscr.text="";
-                                                        textEditSRepeat.text="";
+                                                        textEditSRepeat.text="1";
                                                         addSuiteLayout.visible=false;
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
@@ -534,14 +591,14 @@ Item {
                                                             textEditTDiscr.text="";
                                                             textEditTExe.text="";
                                                             textEditTTag.text="";
-                                                            textEditTRepeat.text="";
+                                                            textEditTRepeat.text="1";
                                                             addTestLayout.visible=false;
                                                             testEdit.visible=true;
                                                         }
                                                         else {
                                                             textEditSName.text="";
                                                             textEditSDiscr.text="";
-                                                            textEditSRepeat.text="";
+                                                            textEditSRepeat.text="1";
                                                             addSuiteLayout.visible=false;
                                                             newTest.visible=true;
                                                             newSuite.visible=true;
@@ -555,7 +612,7 @@ Item {
                                                     restoreNew.visible=false;
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
-                                                    mainToolBar.enabled=true;
+                                                    navigationBar.enabled=true;
                                                 }
                                                 iconSource: "icons/icons/restore.png"
                                             }
@@ -576,7 +633,7 @@ Item {
                                                         textEditTDiscr.text="";
                                                         textEditTExe.text="";
                                                         textEditTTag.text="";
-                                                        textEditTRepeat.text="";
+                                                        textEditTRepeat.text="1";
                                                         addTestLayout.visible=false;
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
@@ -591,7 +648,7 @@ Item {
                                                         }
                                                         textEditSName.text="";
                                                         textEditSDiscr.text="";
-                                                        textEditSRepeat.text="";
+                                                        textEditSRepeat.text="1";
                                                         addSuiteLayout.visible=false;
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
@@ -599,12 +656,12 @@ Item {
                                                     else {
                                                         var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
                                                         if(theModel.GetType()=="test") {
-                                                            if(textEditTName.text!="" && textEditTDiscr.text!="" && textEditTExe.text!="" && textEditTTag.text!="" && textEditTRepeat.text) {
+                                                            if(textEditTName.text!="" && textEditTExe.text!="") {
                                                                 theModel.Set("name", textEditTName.text);
                                                                 theModel.Set("description", textEditTDiscr.text);
                                                                 theModel.Set("tag", textEditTTag.text);
                                                                 theModel.Set("execution", textEditTExe.text);
-                                                                theModel.Set("repeat", textEditTRepeat.text);
+                                                                theModel.Set("repeat", textEditTRepeat.text==""?"1":textEditTRepeat.text);
                                                                 theModel.Set("disable", dis);
                                                                 addTestLayout.visible=false;
                                                                 testEdit.visible=true;
@@ -616,13 +673,14 @@ Item {
                                                             }
                                                         }
                                                         else {
-                                                            if(textEditSName.text!="" && textEditSDiscr.text!="" && textEditSRepeat.text!="") {
+                                                            if(textEditSName.text!="") {
                                                                 theModel.Set("name", textEditSName.text);
                                                                 theModel.Set("description", textEditSDiscr.text);
-                                                                theModel.Set("repeat", textEditSRepeat.text);
+                                                                theModel.Set("repeat", textEditSRepeat.text==""?"1":textEditSRepeat.text);
                                                                 theModel.Set("disable", dis);
                                                                 newTest.visible=true;
                                                                 newSuite.visible=true;
+                                                                addSuiteLayout.visible=false;
                                                             }
                                                             else {
                                                                 messageDialog.text="Fill all fields correctly!";
@@ -640,7 +698,7 @@ Item {
                                                     restoreNew.visible=false;
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
-                                                    mainToolBar.enabled=true;
+                                                    navigationBar.enabled=true;
                                                 }
                                             }
                                             ToolButton {
@@ -657,16 +715,16 @@ Item {
                                                     }
                                                     textEditSName.text="";
                                                     textEditSDiscr.text="";
-                                                    textEditSRepeat.text="";
+                                                    textEditSRepeat.text="1";
                                                     addSuiteLayout.visible=false;
                                                     newTest.visible=true;
                                                     newSuite.visible=true;
                                                     res=theModel.Load(settingFile.getRootDir());
+                                                    runTags.model=theModel.GetTags();
                                                     if(res!="") {
                                                         messageDialog.text=res;
                                                         messageDialog.open()
                                                     }
-                                                    runTags.model=theModel.GetTags();
                                                     centerRect.visible=true;
                                                     testRun.visible=true;
                                                     testDelete.visible=true;
@@ -674,7 +732,7 @@ Item {
                                                     restoreNew.visible=false;
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
-                                                    mainToolBar.enabled=true;
+                                                    navigationBar.enabled=true;
                                                     createNew.visible=false
                                                 }
                                             }
@@ -688,11 +746,11 @@ Item {
                                 Layout.minimumHeight: 200
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                color: "transparent"
+                                color: "#f6f6f6"
                                 Rectangle {
                                     id: jsCodeRect
                                     anchors.fill: parent
-                                    color: "#f6f6f6"
+                                    color: "transparent"
                                     Rectangle {
                                         id: lineRect
                                         width: 0
@@ -706,7 +764,7 @@ Item {
                                             verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
                                             contentItem: Rectangle {
                                                 id: lineColumn
-                                                property int rowHeight: jsCodeEdit.font.pixelSize + 3
+                                                property int rowHeight: jsCodeEdit.font.pixelSize+2
                                                 color: "#f2f2f2"
                                                 width: lineRect.width
                                                 height: lineRect.height
@@ -727,10 +785,10 @@ Item {
                                                             font: jsCodeEdit.font
                                                             width: lineColumn.width
                                                             horizontalAlignment: Text.AlignHCenter
-                                                            verticalAlignment: Text.AlignVCenter
+                                                            verticalAlignment: Text.AlignBottom
                                                             height: lineColumn.rowHeight
                                                             renderType: Text.NativeRendering
-                                                            text: index
+                                                            text: index+1
                                                         }
                                                     }
                                                 }
@@ -741,6 +799,10 @@ Item {
                                         x:lineRect.width
                                         width: jsCodeRect.width-lineRect.width
                                         height: jsCodeRect.height
+                                        color: "transparent"
+                                        HighL {
+                                            id: highlight1
+                                        }
                                         TextArea {
                                             id: jsCodeEdit
                                             readOnly: true
@@ -752,7 +814,10 @@ Item {
                                             frameVisible: false
                                             backgroundVisible: false
                                             onLineCountChanged: {
-                                                lineRect.width=jsCodeEdit.lineCount.toString().length*jsCodeEdit.font.pixelSize;
+                                                lineRect.width=Math.max(jsCodeEdit.lineCount.toString().length, (lineColumn.height/lineColumn.rowHeight).toFixed(0).toString().length)*jsCodeEdit.font.pixelSize;
+                                            }
+                                            Component.onCompleted: {
+                                                highlight1.setQuickDocument(jsCodeEdit.textDocument)
                                             }
                                         }
                                     }
@@ -878,7 +943,7 @@ Item {
                                             border.width: 1
                                             TextEdit {
                                                 id: textEditSRepeat
-                                                text: qsTr("")
+                                                text: "1"
                                                 anchors.fill: parent
                                                 font.pixelSize: 12
                                                 Layout.fillWidth: true
@@ -1120,7 +1185,7 @@ Item {
                                             border.width: 1
                                             TextEdit {
                                                 id: textEditTRepeat
-                                                text: qsTr("")
+                                                text: "1"
                                                 anchors.fill: parent
                                                 font.pixelSize: 12
                                                 Layout.fillWidth: true
@@ -1250,19 +1315,22 @@ Item {
         }
     }
     FileSaveDialog {
-            id: saveFile
-            title: "Save file"
-            filename: "log.txt"
-            nameFilters: ["Text file (*.txt)", "All files (*)"]
-
-            onAccepted: {
-                var request = new XMLHttpRequest();
-                request.open("PUT", saveFile.fileUrl, false);
-                request.send(consoleText.text);
-                return request.status;
+        id: saveFile
+        title: "Save file"
+        filename: "log.txt"
+        nameFilters: ["Text file (*.txt)", "All files (*)"]
+        onAccepted: {
+            if(saveFile.fileUrl.toString().split("///")[1]=="") {
+                messageDialog.text="Please, select file";
+                messageDialog.open();
+                return;
             }
-            onRejected: outputSaveFile.text = "File selected: –"
+            var request = new XMLHttpRequest();
+            request.open("PUT", saveFile.fileUrl, false);
+            request.send(consoleText.text);
+            return request.status;
         }
+    }
     Setting {
         id:settingFile
     }
@@ -1308,14 +1376,12 @@ Item {
                             if(rootDir.text!="") {
                                 var res=theModel.Load(rootDir.text);
                                 runTags.model=theModel.GetTags();
+                                theModel.setCurrentTag(runTags.currentText);
                                 if(res!="") {
                                     messageDialog.text=res;
                                     messageDialog.open()
                                     return;
                                 }
-                            }
-                            else {
-                                selectFolder.open();
                             }
                         }
                         layer.enabled: true
@@ -1334,7 +1400,41 @@ Item {
                     text: "..."
                     Layout.maximumWidth: 30
                     onClicked:{
-                        chooseFolder.open();
+                        selectFolderDialog.setFromSetting(true);
+                        selectFolderDialog.show();
+                    }
+                }
+            }
+            RowLayout {
+                id: rowLayout3
+                width: 100
+                height: 100
+                Layout.preferredWidth: -1
+                Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                Layout.fillHeight: false
+                Layout.maximumHeight: 65535
+                Layout.rowSpan: 1
+                Layout.fillWidth: true
+                Text {
+                    id: nameaa
+                    text: qsTr("Web view")
+                }
+                Item {
+                    id: sadsdsfsf
+                    Layout.fillWidth: true
+                }
+                Button {
+                    id: webViewS
+                    text: qsTr("Show")
+                    onClicked: {
+                        if(webViewS.text!="Show") {
+                            webViewS.text="Show";
+                            theModel.setViewStatus(false);
+                        }
+                        else {
+                            webViewS.text="Hide";
+                            theModel.setViewStatus(true);
+                        }
                     }
                 }
             }
@@ -1348,7 +1448,6 @@ Item {
                 Layout.maximumHeight: 65535
                 Layout.rowSpan: 1
                 Layout.fillWidth: true
-
                 Button {
                     id: saveSetting
                     text: qsTr("Save")
@@ -1357,6 +1456,7 @@ Item {
                         settingFile.setRootDir(rootDir.text);
                         var res=theModel.Load(rootDir.text);
                         runTags.model=theModel.GetTags();
+                        theModel.setCurrentTag(runTags.currentText);
                         if(res!="") {
                             messageDialog.text=res;
                             messageDialog.open()
@@ -1375,61 +1475,6 @@ Item {
                     text: qsTr("Cancel")
                 }
             }
-        }
-    }
-    FileDialog {
-        id: selectFolder
-        title: "Please choose a folder"
-        folder: shortcuts.home
-        selectFolder : true
-        modality: Qt.WindowModal
-        onAccepted: {
-            rootDir.text=selectFolder.fileUrl.toString().split("///")[1];
-            settingFile.setRootDir(rootDir.text);
-            rootDir.text=settingFile.getRootDir();
-            theModel.setRootDir(rootDir.text);
-            if(theModel.IsFolderEmpty(rootDir.text)) {
-                showMenu.menuForSuite();
-                jsCodeRect.visible=false;
-                addSuiteLayout.visible=true;
-                testName.text="New Suite";
-                textEditSName.text="Main suite";
-                testRun.visible=false;
-                newTest.visible=false;
-                newSuite.visible=false;
-                testDelete.visible=false;
-                testSetting.visible=false;
-                restoreNew.visible=false;
-                saveNew.visible=false;
-                createNew.visible=true;
-            }
-            else {
-                var res=theModel.Load(rootDir.text);
-                if(res!="") {
-                    messageDialog.text=res;
-                    messageDialog.open()
-                    return;
-                }
-                runTags.model=theModel.GetTags();
-            }
-            Qt.quit()
-        }
-        onRejected: {
-            Qt.quit();
-        }
-    }
-    FileDialog {
-        id: chooseFolder
-        title: "Please choose a folder"
-        folder: shortcuts.home
-        selectFolder : true
-        modality: Qt.WindowModal
-        onAccepted: {
-            rootDir.text=chooseFolder.fileUrl.toString().split("///")[1];
-            Qt.quit()
-        }
-        onRejected: {
-            Qt.quit();
         }
     }
     MessageDialog {
@@ -1458,6 +1503,8 @@ Item {
                 return;
             }
             res=theModel.Load(settingFile.getRootDir());
+            runTags.model=theModel.GetTags();
+            theModel.setCurrentTag(runTags.currentText);
             if(res!="") {
                 messageDialog.text=res;
                 messageDialog.open()

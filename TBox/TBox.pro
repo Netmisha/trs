@@ -25,7 +25,9 @@ SOURCES+= main.cpp\
     lismodel.cpp \
     sessionwindowtable.cpp \
     exporthtml.cpp \
-    databasemanager.cpp
+    databasemanager.cpp \
+    highlighter.cpp \
+    selectfolderdialog.cpp
 
 HEADERS+= mainwindow.h \
     trsmanager.h \
@@ -42,7 +44,9 @@ HEADERS+= mainwindow.h \
     lismodel.h \
     sessionwindowtable.h \
     exporthtml.h \
-    databasemanager.h
+    databasemanager.h \
+    highlighter.h \
+    selectfolderdialog.h
 
 FORMS+= mainwindow.ui \
     reportform.ui
