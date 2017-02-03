@@ -754,10 +754,9 @@ Item {
                                 Layout.minimumHeight: 200
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                color: "transparent"
                                 Rectangle {
                                     id: jsCodeRect
-                                    y: 3
+                                    y: 1
                                     width: centerRect.width
                                     height: centerRect.height
                                     color: "#f6f6f6"
@@ -1384,14 +1383,34 @@ Item {
                         smooth: true
                         text: {
                             rootDir.text=settingFile.getRootDir();
+                            theModel.setRootDir(rootDir.text);
                             if(rootDir.text!="") {
-                                var res=theModel.Load(rootDir.text);
-                                runTags.model=theModel.GetTags();
-                                theModel.setCurrentTag(runTags.currentText);
-                                if(res!="") {
-                                    messageDialog.text=res;
-                                    messageDialog.open()
-                                    return;
+                                if(theModel.IsFolderEmpty(rootDir.text)) {
+                                    showMenu.menuForSuite();
+                                    centerRect.visible=false;
+                                    addSuiteLayout.visible=true;
+                                    testName.text="New Suite";
+                                    textEditSName.text="Main suite";
+                                    testRun.visible=false;
+                                    newTest.visible=false;
+                                    newSuite.visible=false;
+                                    testDelete.visible=false;
+                                    testSetting.visible=false;
+                                    restoreNew.visible=false;
+                                    saveNew.visible=false;
+                                    createNew.visible=true;
+                                    mainTree.enabled=false;
+                                    navigationBar.enabled=false;
+                                }
+                                else {
+                                    var res=theModel.Load(rootDir.text);
+                                    runTags.model=theModel.GetTags();
+                                    theModel.setCurrentTag(runTags.currentText);
+                                    if(res!="") {
+                                        messageDialog.text=res;
+                                        messageDialog.open()
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -1450,7 +1469,7 @@ Item {
                             navigationBar.enabled=false;
                         }
                         else {
-                            var res=theModel.Load(folder);
+                            var res=theModel.Load(rootDir.text);
                             runTags.model=theModel.GetTags();
                             theModel.setCurrentTag(runTags.currentText);
                             if(res!="") {
