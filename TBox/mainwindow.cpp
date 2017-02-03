@@ -8,6 +8,7 @@
 #include "filesave.h"
 #include <QQmlApplicationEngine>
 #include <QObject>
+
 QWebView * view;
 
 class MainTree : public QStandardItemModel
@@ -19,6 +20,7 @@ public:
         m_roleNameMapping[MainTree_Role_Name] = "name_role";
          QObject::connect(this,SIGNAL(sendTestName(QString)),&data_base_man,SLOT(getTestName(QString)));
          QObject::connect(this,SIGNAL(sendSuiteName(QString)),&data_base_man,SLOT(getSuiteName(QString)));
+         QObject::connect(this,SIGNAL(sessionN()),&data_base_man,SLOT(sessionNum()));
     }
     virtual ~MainTree() = default;
     enum MainTree_Roles{
@@ -69,6 +71,7 @@ private:
 signals:
     void sendTestName(QString);
     void sendSuiteName(QString);
+    void sessionN();
 };
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -86,7 +89,10 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlRegisterType<MainSetting>("MainSetting", 1, 0, "Setting" );
     qmlRegisterType<FileSaveDialog>("FileSave", 1, 0, "FileSaveDialog");
     QObject::connect(trs, SIGNAL(writeMSG(QString)),this, SLOT(writeMSG(QString)));
-    QQuickView* qmlView = new QQuickView();
+    QQuickView* qmlView = new QQuickView;
+    O.setEngi(qmlView);
+    qmlView->rootContext()->setContextProperty("DD",&O);
+    QObject::connect(&O,SIGNAL(PassHTMLdata(QVector<QStringList*>,QStringList,int,QString)),&H,SLOT(ReceiveHTMLdata(QVector<QStringList*>,QStringList,int,QString)));
     qmlView->setGeometry(QRect(200,200,800,600));
     qmlView->setResizeMode(QQuickView::SizeRootObjectToView);
     qmlView->setIcon(QIcon(QPixmap(":/icons/icons/tbox.png")));
@@ -107,6 +113,7 @@ MainWindow::~MainWindow(){
 void MainWindow::writeMSG(QString msg){
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, msg));
 }
+
 void MainWindow::CreateHtml() {
     QFile file(QDir::currentPath()+"/"+"test.html");
     if(!file.exists()) {
@@ -293,6 +300,7 @@ void MainTree::FindJSFile(QString data) {
     }
 }
 void MainTree::RunOne() {
+    emit sessionN();
     for (auto&it : treeData) {
         if (it.item == currentIndex && it.type == "test") {
             emit sendTestName(it.name);
@@ -305,13 +313,17 @@ void MainTree::RunOne() {
 }
 void MainTree::Run() {
     run=true;
+    emit sessionN();
     for(auto&it:treeData){
         if (it.type == "test" && CheckTest(it) && it.repeat>0) {
             for(int i=0; i<it.repeat;i++) {
+                emit sendTestName(it.name);
                 data_base_man.sessionStart();
                 view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
                 data_base_man.sessionEnd();
             }
+        }else{
+            emit sendSuiteName(it.name);
         }
     }
     run = false;

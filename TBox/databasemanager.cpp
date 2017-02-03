@@ -2,7 +2,6 @@
 DataBaseManager::DataBaseManager()
 {
 InitDB(); // test passed not yet implemented
-//test name,session num,test suite
 }
 void DataBaseManager::sessionStart(){
     start_time_ = QTime::currentTime().toString();
@@ -31,7 +30,11 @@ void  DataBaseManager::calcTime(int msecs){
 }
 void DataBaseManager::InitDB(){ // creates db if one does not exist
    db = QSqlDatabase::addDatabase("QSQLITE");
-   db.setDatabaseName("D:\\TRS\\TBox\\TestInfo.db");
+   QDir obj;
+
+   QStringList path = obj.absolutePath().split("/");
+   qDebug()<<path;
+   //db.setDatabaseName();
    db.setHostName("127.0.0.1");
              if(db.open()){
                  qDebug()<<"Database: connection ok";
@@ -48,38 +51,33 @@ void DataBaseManager::createTest(){
         qDebug()<<"db is not open";
         return;
     }
-    setSessionNum();
     query_ = new QSqlQuery(db);
     qDebug()<<query_->exec("insert into Info (Test_Name,Test_Day,Test_Month,Test_Year,Test_Passed,Session_num,Test_Suite,S_Start_time,Test_day_e,Test_month_e,Test_year_e,S_session_end,Session_duration) values ( '"+test_name_+"',"+current_date_.at(0)+" , "+current_date_.at(1)+", "+current_date_.at(2)+" , 'yes' "+", '"+QString::number(session_num_)+"' , '"+test_suite_+"' ,'"+start_time_+"',"+end_date_.at(0)+","+end_date_.at(1)+","+end_date_.at(2)+",'"+end_time_+"','"+session_execution+"');");
 }
 void DataBaseManager::getSuiteName(QString suite_name){
-     QRegExp exp(":|/");
-    QStringList t = suite_name.split(exp);
-    test_suite_ = t.at(t.size()-2);
+    test_suite_ = suite_name;
 
 }
 void DataBaseManager::getTestName(QString test_name){
     test_name_ = test_name;
 }
-void DataBaseManager::setSessionNum(){
+
+void DataBaseManager::sessionNum(){
+    qDebug()<<"session_started";
     if(!db.open()){
-        qDebug()<<"Cannot connect to database";
+        qDebug()<<"cannot open db";
         return;
     }
     QSqlQuery *qu = new QSqlQuery(db);
     qu->exec("select max(Session_num) from Info");
-    //if(session_num_ !=1){
     while(qu->next()){
-       session_num_ = qu->value(0).toInt();
+        session_num_ = qu->value(0).toInt();
     }
-    session_num_++; // next session
+    session_num_++;
     delete qu;
-   // }
 }
 void DataBaseManager::ClearData(){
-test_name_.clear();
 test_passed_.clear();
-test_suite_.clear();
 session_execution.clear();
 start_time_.clear();
 end_time_.clear();

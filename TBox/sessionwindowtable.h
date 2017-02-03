@@ -17,15 +17,16 @@ public:
     int index;
     QStringList table_n;
     SessionWindowTable();
+    int elements_;
     void setTableNames(QStringList table_name);
     QStringList getTableNames();
-    void CreateTable(QString html_url,QVector<QVector<QStringList*>> table_data);
+    void CreateTable(QString html_url,QVector<QStringList*> table_data,int elements);
     int getIndex();
     void setIndex(int i);
     void setHTMLPath(QString html_url);
     QString getHTMLPath();
-    void CreateHTMLTable( QVector<QVector<QStringList*>> table_data);
-    void setTableData( QVector<QVector<QStringList*>> table_data);
+    void CreateHTMLTable( QVector<QStringList*> table_data,int elements);
+    void setTableData( QVector<QStringList*> table_data);
 
 
 };

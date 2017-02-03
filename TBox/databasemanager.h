@@ -18,7 +18,6 @@ private:
     void calcTime(int msecs);
     void createTest();
     void ClearData();
-    void setSessionNum();
     QTime start_;
     QTime start_time;
     QTime end_time;
@@ -43,6 +42,7 @@ private:
 public slots:
 void getSuiteName(QString);
 void getTestName(QString);
+void sessionNum();
 public:
     DataBaseManager();
     void sessionStart();

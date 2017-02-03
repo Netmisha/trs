@@ -20,6 +20,10 @@
 #include "datamanager.h"
 #include "testinfo.h"
 #include "filesave.h"
+#include <QQmlApplicationEngine>
+#include <database.h>
+#include <reportform.h>
+#include <databasemanager.h>
 namespace Ui {
 class MainWindow;
 }
@@ -31,9 +35,11 @@ public:
     ~MainWindow();
 public slots:
     void writeMSG(QString);
-private slots:
+
 private:
     void CreateHtml();
+    DataBase O;
+    ExportHTML H;
     Ui::MainWindow *ui;
     QObject *object;
     TRSCore a;

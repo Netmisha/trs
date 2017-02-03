@@ -26,7 +26,7 @@ ApplicationWindow {
         y: 42
         width: 182; height: 438
         TableView{
-            model: MLM
+            //model: MLM
             id: t_view
             x: 0
             y: -8
@@ -39,6 +39,7 @@ ApplicationWindow {
                 var component = Qt.createComponent("SessionWindow.qml")
                 win = component.createObject(root);
                 win.show();
+
             }
         TableViewColumn {
                             role: "session_n"
