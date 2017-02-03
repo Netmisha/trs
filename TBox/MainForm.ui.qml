@@ -148,6 +148,7 @@ Item {
             visible: false
             frameVisible: true
             onClicked: {
+                end_date.visible = false;
                 DD.get_EndDate = end_date.selectedDate
                 textField2.text = DD.get_EndDate
             }
@@ -161,6 +162,7 @@ Item {
             visible: false
             frameVisible: true
             onClicked: {
+            calenda.visible = false
             DD.getDateQML = calenda.selectedDate
             textField1.text = DD.getDateQML
             }

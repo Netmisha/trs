@@ -11,7 +11,7 @@ import QtQml 2.0 as QML
 import QtQml 2.2
 import QtQuick.Window 2.1
 import QtWebKit 3.0
-
+import QtQuick.Dialogs 1.0
 ApplicationWindow{
     id: se
     visible: true
@@ -20,7 +20,18 @@ ApplicationWindow{
     title: qsTr("Session window")
     property variant win_C;
     property  string st;
+    FileDialog {
+        id:fileDialog
+        visible: false
+        title: "Please select folder which contains positive training data";
+        folder: shortcuts.home;
+        selectFolder: true
+        onAccepted: {
+           DD.getExportPath(fileDialog.folder);
+        }
+    }
     ColumnLayout{
+
         x: 0
         y: 0
         width: parent.width
@@ -37,7 +48,7 @@ ApplicationWindow{
         WebView {
             id: webView
             anchors.fill: parent
-            url: "file:///D:/TRS/TBox/T.html"
+            url: "file:///"+DD.getTableSessionPath();
         }
     }
     Rectangle {
@@ -51,7 +62,8 @@ ApplicationWindow{
         y: 445
         text: "Export"
         onClicked: {
-           DD.test();
+            fileDialog.visible = true;
+            DD.test();
         }
         }
     }

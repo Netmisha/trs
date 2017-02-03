@@ -4,7 +4,7 @@
 #include <QUrl>
 #include <QQmlContext>
 #include <QQmlEngine>
-
+#include <QDebug>
 class SelectFolderDialog: public QFileDialog {
     Q_OBJECT
 public:
@@ -14,12 +14,14 @@ public:
         this->setOption(QFileDialog::ShowDirsOnly);
         this->setWindowTitle("Please choose a folder");
         connect(this, SIGNAL(fileSelected(QString)), this, SLOT(OnFolderSelected(QString)));
+
     }
     virtual ~SelectFolderDialog(){}
 public slots:
     Q_INVOKABLE QString getFolder() {
         return this->getOpenFileName();
     }
+
     void OnFolderSelected(QString folder) {
         QMetaObject::invokeMethod(obj, "setSelectedFolder", Q_ARG(QVariant, folder));
     }

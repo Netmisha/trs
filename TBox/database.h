@@ -35,10 +35,14 @@ public slots:
    Q_INVOKABLE void Export_Clicked();
 
 public:
-
+    Q_INVOKABLE QString getTableSessionPath();
+   Q_INVOKABLE void getExportPath(QString path);
+   Q_INVOKABLE QString exportFilePath;
+   Q_INVOKABLE QString TableSessionPath;
    Q_INVOKABLE QList<QObject*> datalist;
    Q_INVOKABLE QString current_session;
    Q_INVOKABLE int index;
+    Q_INVOKABLE QString path_for_db;
    Q_INVOKABLE void test(){
        qDebug()<<"Inside";
       emit PassHTMLdata(session_data,tn,index,current_session);

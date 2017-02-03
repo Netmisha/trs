@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <databasemanager.h>
+#include <QObject>
 QWebView * view;
 
 class MainTree : public QStandardItemModel
@@ -9,6 +11,9 @@ public:
     explicit MainTree(QObject *parent = 0) :
         QStandardItemModel(parent){
         m_roleNameMapping[MainTree_Role_Name] = "name_role";
+        QObject::connect(this,SIGNAL(sendTestName(QString)),&data_base_man,SLOT(getTestName(QString)));
+        QObject::connect(this,SIGNAL(sendSuiteName(QString)),&data_base_man,SLOT(getSuiteName(QString)));
+        QObject::connect(this,SIGNAL(sessionN()),&data_base_man,SLOT(sessionNum()));
     }
     virtual ~MainTree() = default;
     enum MainTree_Roles{
@@ -17,6 +22,7 @@ public:
     QHash<int, QByteArray> roleNames() const override{
         return m_roleNameMapping;
     }
+    DataBaseManager data_base_man;
     public slots:
     Q_INVOKABLE QString Load(QString path);
     Q_INVOKABLE QString getFile(QModelIndex);
@@ -58,6 +64,10 @@ private:
     QStringList tags;
     QString currentTag="All";
     DataManager dm;
+signals:
+void sendTestName(QString);
+void sendSuiteName(QString);
+void sessionN();
 };
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -310,20 +320,31 @@ void MainTree::FindJSFile(QString data) {
         }
     }
 }
-void MainTree::RunOne() {
+void MainTree::RunOne(){
+    emit sessionN();
     for (auto&it : treeData) {
         if (it.item == currentIndex && it.type == "test") {
+            emit sendTestName(it.name);
+            emit sendSuiteName(it.file);
+            data_base_man.sessionStart();
             view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
+            data_base_man.sessionEnd();
         }
     }
 }
 void MainTree::Run() {
     run=true;
+    emit sessionN();
     for(auto&it:treeData) {
         if (it.type == "test" && CheckTest(it) && it.repeat>0) {
             for(int i=0; i<it.repeat;i++) {
+                emit sendTestName(it.name);
+                data_base_man.sessionStart();
                 view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
+                data_base_man.sessionEnd();
             }
+        }else{
+            emit sendSuiteName(it.name);
         }
     }
     run = false;
