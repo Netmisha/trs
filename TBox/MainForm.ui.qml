@@ -167,6 +167,52 @@ Item {
     }
     id: root
     anchors.fill: parent
+    Action {
+        id: saveJSAction
+        shortcut: "Ctrl+S"
+        onTriggered: {
+            theModel.FindJSFile(jsCodeEdit.text);
+            testStatus.visible=true;
+            testRun.visible=true;
+            testDelete.visible=true;
+            testSetting.visible=true;
+            jsCodeEdit.readOnly=true;
+            jsCodeRect.color="#f6f6f6";
+            testEdit.visible=true;
+            saveJS.visible=false;
+            cancelJS.visible=false;
+            mainTree.enabled=true;
+            navigationBar.enabled=true;
+            //fontComboBox.visible=false;
+        }
+    }
+    Action {
+        id: runJSAction
+        shortcut: "Ctrl+R"
+        onTriggered: theModel.RunOne()
+    }
+    Action {
+        id: runAllAction
+        shortcut: "Ctrl+Shift+R"
+        onTriggered: {
+            consoleText.text="";
+            theModel.Run();
+        }
+    }
+    Action {
+        id: refreshTreeAction
+        shortcut: "F5"
+        onTriggered: {
+            var res=theModel.Load(settingFile.getRootDir());
+            runTags.model=theModel.GetTags();
+            theModel.setCurrentTag(runTags.currentText);
+            if(res!="") {
+                messageDialog.text=res;
+                messageDialog.open()
+                return;
+            }
+        }
+    }
     function checkRootDir() {
         if(rootDir.text==""){
             selectFolderDialog.setFromSetting(false);
@@ -266,6 +312,11 @@ Item {
                 id: layout
                 spacing: 5
                 anchors.fill: parent;
+                ToolButton {
+                    id: refreshTree
+                    action: refreshTreeAction
+                    iconSource: "icons/icons/refresh.png"
+                }
                 Text {
                     text: "Tags: "
                 }
@@ -278,10 +329,7 @@ Item {
                 }
                 ToolButton {
                     id: startButton
-                    onClicked: {
-                        consoleText.text="";
-                        theModel.Run();
-                    }
+                    action: runAllAction
                     iconSource: "icons/icons/Run.png"
                 }
                 ToolButton {
@@ -412,7 +460,7 @@ Item {
                                             ToolButton {
                                                 id: testRun
                                                 iconSource: "icons/icons/Run.png"
-                                                onClicked: theModel.RunOne()
+                                                action: runJSAction
                                             }
                                             ToolButton {
                                                 id: openFolder
@@ -506,21 +554,7 @@ Item {
                                             ToolButton {
                                                 id: saveJS
                                                 visible: false;
-                                                onClicked: {
-                                                    theModel.FindJSFile(jsCodeEdit.text);
-                                                    testStatus.visible=true;
-                                                    testRun.visible=true;
-                                                    testDelete.visible=true;
-                                                    testSetting.visible=true;
-                                                    jsCodeEdit.readOnly=true;
-                                                    jsCodeRect.color="#f6f6f6";
-                                                    testEdit.visible=true;
-                                                    saveJS.visible=false;
-                                                    cancelJS.visible=false;
-                                                    mainTree.enabled=true;
-                                                    navigationBar.enabled=true;
-                                                    //fontComboBox.visible=false;
-                                                }
+                                                action: saveJSAction
                                                 iconSource: "icons/icons/jssave.png"
                                             }
                                             ToolButton {

@@ -24,5 +24,6 @@
         <file>icons/restore.png</file>
         <file>icons/inspector.png</file>
         <file>icons/openfolder.png</file>
+        <file>icons/refresh.png</file>
     </qresource>
 </RCC>
