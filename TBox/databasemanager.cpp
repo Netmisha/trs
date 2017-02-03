@@ -1,4 +1,6 @@
 #include "databasemanager.h"
+#define FOLDER_DB_NAME "DataBase\\\\"
+#define DATABASE_NAME "TBoxData.db"
 DataBaseManager::DataBaseManager()
 {
 InitDB(); // test passed not yet implemented
@@ -33,8 +35,18 @@ void DataBaseManager::InitDB(){ // creates db if one does not exist
    QDir obj;
 
    QStringList path = obj.absolutePath().split("/");
-   qDebug()<<path;
-   //db.setDatabaseName();
+   path.removeLast();
+   path.append("TBox");
+   QString path_for_db;
+   for(int i=0;i<path.size();i++){
+       path_for_db.append(path.at(i)+"\\\\");
+   }
+   path_for_db.append(FOLDER_DB_NAME);
+   if(!QDir().exists(path_for_db)){
+       QDir().mkdir(path_for_db);
+   }
+   path_for_db.append(DATABASE_NAME);
+   db.setDatabaseName(path_for_db);
    db.setHostName("127.0.0.1");
              if(db.open()){
                  qDebug()<<"Database: connection ok";
@@ -43,6 +55,15 @@ void DataBaseManager::InitDB(){ // creates db if one does not exist
                  qDebug()<<db.lastError().text();
                  return;
              }
+   QSqlQuery *qu = new QSqlQuery(db);
+   qu->exec("select * from Info LIMIT 0,0 ");
+   if( qu->record().count() <=0){
+       delete qu; qu = new QSqlQuery(db);
+       qDebug()<<qu->exec("create table Info ( ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, Test_Name TEXT NOT NULL, Test_Day INTEGER NOT NULL, Test_Month INTEGER NOT NULL, Test_Year INTEGER NOT NULL,"
+                "Test_Passed INTEGER NOT NULL, Session_num INTEGER, Test_Suite TEXT, S_Start_time TEXT,Test_day_e INTEGER, Test_month_e INTEGER, Test_year_e INTEGER, S_session_end TEXT, Session_duration TEXT)");
+   }
+
+
 }
 void DataBaseManager::createTest(){
      // QString Test_Day,QString Test_Month,QString Test_Year,QString Session_start_time
