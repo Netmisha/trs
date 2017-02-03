@@ -26,7 +26,8 @@ QStringList SessionWindowTable::getTableNames(){
     return table_n;
 
 }
-void SessionWindowTable::CreateHTMLTable(QVector<QVector<QStringList*>> table_data){
+void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int elements){
+    elements_ = elements;
     QFile file(getHTMLPath());
     QFileInfo *file_info = new QFileInfo(file);
     if(!file.exists()){
@@ -39,7 +40,6 @@ void SessionWindowTable::CreateHTMLTable(QVector<QVector<QStringList*>> table_da
         file.open(QIODevice::ReadWrite);
      }
      file.resize(0);
-
      QTextStream output(&file);
      output<<"<!DOCTYPE html>\n<html>\n<head>\n</head>\n<body>\n<table style='width:100%;border: 1px solid black'; 'border-collapse: collapse'>\n";
      /*
@@ -59,28 +59,24 @@ void SessionWindowTable::CreateHTMLTable(QVector<QVector<QStringList*>> table_da
      output<<table_n.at(5);
      output<<"</th>\n";
      output<<"</tr>\n";
-     for(int i=0;i<table_data.at(index).size();i++){
+     int t = 0;
+     for(int i=0;i<table_data.size();i++){
          output<<"<tr style='border: 1px solid black'>\n";
+         for(;t<elements_;t++){
          output<<"<td style='border: 1px solid black'>";
-         output<<table_data.at(index).at(index)->at(0);
+         output<<table_data.at(i)->at(t);
          output<<"</td>\n";
-         output<<"<td style='border: 1px solid black'>";
-         output<<table_data.at(index).at(index)->at(1);
-         output<<"</td>\n";
-         output<<"<td style='border: 1px solid black'>";
-         output<<table_data.at(index).at(index)->at(2);
-         output<<"</td>\n";
+         }
          output<<"</tr>\n";
+         (t == elements_)?t=0:0;
      }
     output<<"</table>\n";
     output<<"</body>\n";
     output<<"</html>\n";
-
-
 }
 
-void SessionWindowTable::CreateTable(QString html_url,QVector<QVector<QStringList*>> table_data){
+void SessionWindowTable::CreateTable(QString html_url,QVector<QStringList*> table_data,int elements){
     setHTMLPath(html_url);
-    CreateHTMLTable(table_data);
+    CreateHTMLTable(table_data,elements);
 }
 

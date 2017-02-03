@@ -19,6 +19,7 @@
 #include <sessionwindowtable.h>
 #include <exporthtml.h>
 #include <lismodel.h>
+#include <QQuickView>
 class DataBase: public QObject // class for reading data from DB
 {
 
@@ -28,7 +29,7 @@ Q_OBJECT
 signals:
    void DateChanged();
    void EndDateChanged();
-   void PassHTMLdata(QVector<QVector<QStringList*>> data,QStringList tn,int index,QString current_session);
+   void PassHTMLdata(QVector<QStringList*> data,QStringList tn,int index,QString current_session);
 public slots:
     Q_INVOKABLE QStringList get_seesion_db( QString start, QString end);
    Q_INVOKABLE void Export_Clicked();
@@ -39,13 +40,15 @@ public:
    Q_INVOKABLE QString current_session;
    Q_INVOKABLE int index;
    Q_INVOKABLE void test(){
-      emit PassHTMLdata(pass,tn,index,current_session);
+       qDebug()<<"Inside";
+      emit PassHTMLdata(session_data,tn,index,current_session);
    }
    Q_INVOKABLE QString datad(int i){
        if(i==0){
    return "Hello from func";
        }else{return "new";}
    }
+
     explicit DataBase(QObject *parent = 0);
      QString date;
      Q_INVOKABLE QString DateQML;
@@ -66,8 +69,8 @@ public:
      Q_INVOKABLE QVector <QStringList*> session_data;
      Q_INVOKABLE QVector<QVector<QStringList*>> pass;
 
-     QQmlApplicationEngine *engine;
-     Q_INVOKABLE void setEngi(QQmlApplicationEngine *e){
+     QQuickView *engine;
+     Q_INVOKABLE void setEngi(QQuickView *e){
              engine = e;
      }
      //

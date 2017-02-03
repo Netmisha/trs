@@ -24,6 +24,9 @@
 #include "selectfolderdialog.h"
 #include <QWebInspector>
 #include <QDesktopServices>
+#include <database.h>
+#include <reportform.h>
+#include <databasemanager.h>
 namespace Ui {
 class MainWindow;
 }
@@ -37,6 +40,8 @@ public slots:
     void writeMSG(QString);
 private slots:
 private:
+    DataBase O;
+    ExportHTML H;
     Ui::MainWindow *ui;
     QObject *object;
     TRSManager *trs;

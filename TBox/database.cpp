@@ -69,7 +69,6 @@ if(start.isEmpty() || end.isEmpty()){
    return it;
 }
 else{
-
             db = QSqlDatabase::addDatabase("QSQLITE");
             db.setDatabaseName("D:\\TRS\\TBox\\TestInfo.db");
             db.setHostName("127.0.0.1");
@@ -81,7 +80,7 @@ else{
                  qDebug()<<db.lastError().text();
                  return it ;
              }
-              query = new QSqlQuery(db);
+            query = new QSqlQuery(db);
             datalist.clear();
             start_dates = start.split("/");
            // QStringList month;
@@ -93,77 +92,37 @@ else{
             //query->exec("select Session_num from Info where (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") OR "
              //           +"( Test_Month BETWEEN "+start_dates.at(1)+" AND "+end_dates.at(1)+") OR "
               //          +"(Test_Year BETWEEEN "+start_dates.at(2)+" AND "+end_dates.at(2)+")");
-           query->exec("SELECT distinct Session_num FROM Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "
-                       +start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+")");
-           qDebug()<<query->executedQuery();
 
-           while(query->next()){
-              qDebug()<<query->value(query->record().indexOf("Session_num")).toString();
-              it.append(query->value(query->record().indexOf("Session_num")).toString()); // it contains session num
-           }
-           QStringList Time_S;
+          qDebug()<< query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num" );
+           qDebug()<<query->executedQuery();
+          QStringList Time_S;
            QStringList Time_E;
            QString duration_s;
            QString Start_date_S;
            QString End_date_S;
-           QStringList temp_pass;
            QStringList pass_session;
-           int yes=0,no=0;
-           QSqlQuery *query_ = new QSqlQuery(db);
-           for(int i=0;i<it.size();i++){
-           query_->exec("select Test_Passed from Info where Session_num =  "+it.at(i)+"");
-           while(query_->next()){
-               temp_pass.append(query_->value(query_->record().indexOf("Test_Passed")).toString());
+           int i=0;
+           while(query->next()){    
+              it.append(query->value(query->record().indexOf("Session_num")).toString());
+              pass_session.append(query->value(query->record().indexOf("Test_Passed")).toString());
+              Time_S.append( query->value(  query->record().indexOf("Test_Day")).toString());
+              Time_S.append( query->value(  query->record().indexOf("Test_Month")).toString());
+              Time_S.append( query->value(  query->record().indexOf("Test_Year")).toString());
+              Time_S.append( query->value(  query->record().indexOf("min(S_Start_time)")).toString());
+              Time_E.append( query->value(  query->record().indexOf("Test_day_e")).toString());
+              Time_E.append( query->value(  query->record().indexOf("Test_month_e")).toString());
+              Time_E.append( query->value(  query->record().indexOf("Test_year_e")).toString());
+              Time_E.append( query->value(  query->record().indexOf("max(S_Session_end)")).toString());
+              duration_s.append(  query->value(  query->record().indexOf("Session_duration")).toString());
+              for(int j=0,k=0;j<Time_S.size();j++,k++){
+                  Start_date_S.append(Time_S.at(j)+"/");
+                  End_date_S.append(Time_E.at(k)+"/");
+              }
+              datalist.append( new LisModel(it.at(i),Start_date_S,duration_s,End_date_S,pass_session.at(i)));
+              Start_date_S.clear(); End_date_S.clear(); duration_s.clear();
+              Time_S.clear(); Time_E.clear();
+              i++;
            }
-           for(int j=0;j<temp_pass.size();j++){
-               (temp_pass.at(j) =="yes")?yes++:no++;
-
-           }
-           (yes>no)?pass_session.append("yes"):pass_session.append("no");
-           yes = 0; no =0; temp_pass.clear();
-           delete query_; query_ = new QSqlQuery(db);
-           }
-           delete query_;
-           query_ = new QSqlQuery(db);
-           for(int i=0;i<it.size();i++){
-              query_->exec("select distinct Test_Day,Test_Month,Test_Year,S_Start_time,Test_day_e,Test_month_e,Test_year_e,S_Session_end,Session_duration from Info where Session_num = "+it.at(i)+"");
-            qDebug()<<  query_->executedQuery();
-            while(query_->next()){
-                Time_S.append( query_->value(  query_->record().indexOf("Test_Day")).toString());
-                Time_S.append( query_->value(  query_->record().indexOf("Test_Month")).toString());
-                Time_S.append( query_->value(  query_->record().indexOf("Test_Year")).toString());
-                Time_S.append( query_->value(  query_->record().indexOf("S_Start_time")).toString());
-                Time_E.append( query_->value(  query_->record().indexOf("Test_day_e")).toString());
-                Time_E.append( query_->value(  query_->record().indexOf("Test_month_e")).toString());
-                Time_E.append( query_->value(  query_->record().indexOf("Test_year_e")).toString());
-                Time_E.append( query_->value(  query_->record().indexOf("S_Session_end")).toString());
-                duration_s.append(  query_->value(  query_->record().indexOf("Session_duration")).toString());
-                for(int j=0,k=0;j<Time_S.size();j++,k++){
-                    Start_date_S.append(Time_S.at(j)+"/");
-                    End_date_S.append(Time_E.at(k)+"/");
-                }
-                datalist.append( new LisModel(it.at(i),Start_date_S,duration_s,End_date_S,pass_session.at(i)));
-                Start_date_S.clear(); End_date_S.clear(); duration_s.clear();
-                Time_S.clear(); Time_E.clear();
-            }
-            delete query_; query_= new QSqlQuery(db);
-           } delete query_;
-
-           //QStringList l;
-          // l.append("4");
-            //LisModel M;
-            //QVariant::fromValue(it)
-           //pass database to data list
-
-           /*
-           for(int i=0;i<it.size();i++){
-               datalist.append( new LisModel(it.at(i),it.at(i),it.at(i),it.at(i),it.at(i)));
-
-           }
-           */
-           //datalist.append(new LisModel("4","12","33","3","Passed"));
-           //datalist.append(new LisModel("5","13","23","3","!Passed"));
-        // &session_n, const QString &session_s,const QString session_d,const QString session_e,QString session_p,
            engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(datalist)); // list model
            list_from_ui = it;
            it.clear();
@@ -173,13 +132,11 @@ return it;
 }
 QString DataBase::row_selected(QString row){
     // qDebug()<<list_from_ui.at(row.toInt());
-
      QSqlQuery *qu;
      if(!db.isOpen()){
          qDebug()<<"Database is not open";
          return row;
      }
-
          qu = new QSqlQuery(db);
          qu->exec("select * from Info LIMIT 0,0 ");
          QSqlRecord rec = qu->record();
@@ -191,32 +148,40 @@ QString DataBase::row_selected(QString row){
              qDebug()<<db_col.at(i);
          }
          */
-         qu->exec("SELECT Test_Name,Test_Suite,Test_Passed FROM Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "
-                     +start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") and "+" ( Session_num = 4) ");//+list_from_ui.at(row.toInt())+")");
+         qDebug()<<list_from_ui;
+         qDebug()<<qu->exec("SELECT Test_Name,Test_Suite,Test_Passed FROM Info WHERE Session_num = "+list_from_ui.at(row.toInt()));
          row_fields rf;
-
-
           //fix!
+         /*
           for(int i=0;i<list_from_ui.size();i++){
-             e = new QStringList;
              session_data.push_back(e);
              pass.push_back(session_data);
          }
+         */
          while(qu->next()){
-             pass.at(row.toInt()).at(row.toInt())->append(qu->value(qu->record().indexOf(rf.Test_name)).toString());
-             pass.at(row.toInt()).at(row.toInt())->append(qu->value(qu->record().indexOf(rf.Test_Suite)).toString());
-             pass.at(row.toInt()).at(row.toInt())->append(qu->value(qu->record().indexOf(rf.Test_Passed)).toString());
+            e = new QStringList;
+            e->append(qu->value(qu->record().indexOf(rf.Test_name)).toString());
+            e->append(qu->value(qu->record().indexOf(rf.Test_Suite)).toString());
+            e->append(qu->value(qu->record().indexOf(rf.Test_Passed)).toString());
+            session_data.push_back(e);
          }
-      qDebug()<<pass.at(row.toInt()).at(row.toInt())->at(0);
-     //qDebug()<<S.at(row.toInt())->data;
-      index = row.toInt();
-      current_session = list_from_ui.at(row.toInt());
+         /*
+     int t=0;
+     for(int i=0;i<session_data.size();i++){
+         for(;t<e->size();t++){
+         qDebug()<<session_data.at(i)->at(t);
+         }
+         if(t==e->size()){t=0;}
+     }*/
+
+
+    current_session = list_from_ui.at(row.toInt());
+    index = e->size();
     SessionWindowTable WindowTable;
     WindowTable.setIndex(row.toInt());
     WindowTable.setTableNames(tn);
-    WindowTable.CreateTable("D:/TRS/TBox/T.html",pass);
-    //release data
-     return row;
+    WindowTable.CreateTable("D:/TRS/TBox/T.html",session_data,e->size());
+    return row;
 
  }
 void DataBase::Export_Clicked(){
