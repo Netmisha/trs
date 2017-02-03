@@ -23,7 +23,7 @@ ApplicationWindow{
     FileDialog {
         id:fileDialog
         visible: false
-        title: "Please select folder which contains positive training data";
+        title: "Select folder";
         folder: shortcuts.home;
         selectFolder: true
         onAccepted: {

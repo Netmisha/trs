@@ -42,6 +42,7 @@ void DataBase::getExportPath(QString path){
    for(int i=0;i<l.size();i++){
        exportFilePath.append(l.at(i)+"/");
    }
+   emit sendExportPath(exportFilePath);
 }
 QString DataBase::getTableSessionPath(){
    return TableSessionPath;

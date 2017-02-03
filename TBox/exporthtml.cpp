@@ -20,10 +20,13 @@ ExportHTML::ExportHTML()
        qDebug()<<dir->absolutePath();
 
  }
+ void ExportHTML::ReceiveHTMLpath(QString exportPath){
+     export_path_ = exportPath;
+     CreateHTMLReportFile(table_data,table_n,elements_,current_session);
+ }
 void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,QStringList table_n,int elements_,QString current_session){
-qDebug()<<dir->absolutePath();
 bool file_open = 0;
-QFile file(dir->absolutePath()+"/Session"+current_session+"_"+QDate::currentDate().toString("dd_MM_yyyy_")+QTime::currentTime().toString("(HH_mm_ss)")+".html");
+QFile file(export_path_+"Session"+current_session+"_"+QDate::currentDate().toString("dd_MM_yyyy_")+QTime::currentTime().toString("(HH_mm_ss)")+".html");
 QFileInfo *file_info = new QFileInfo(file);
 if(!file.exists()){
     qDebug()<<"file does not exist";
@@ -68,11 +71,10 @@ if(!file.exists()){
 output<<"</table>\n";
 output<<"</body>\n";
 output<<"</html>\n";
-
 }
- void ExportHTML::ReceiveHTMLdata(QVector<QStringList*> r_data,QStringList tn,int index,QString current_session){
-CreateDirIfNotExists();
-CreateHTMLReportFile(r_data,tn,index,current_session);
+void ExportHTML::ReceiveHTMLdata(QVector<QStringList*> r_data,QStringList tn,int index,QString current_session){
+//CreateDirIfNotExists();
+table_data = r_data;table_n=tn;elements_ = index;this->current_session = current_session;
  }
 
 
