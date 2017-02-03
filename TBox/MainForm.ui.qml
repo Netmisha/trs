@@ -358,6 +358,7 @@ Item {
                     id: centerItem
                     Layout.minimumWidth: 200
                     Layout.fillWidth: true
+                    Layout.fillHeight: true
                     SplitView {
                         anchors.fill: parent
                         orientation: Qt.Vertical
