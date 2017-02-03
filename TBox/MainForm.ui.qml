@@ -414,6 +414,11 @@ Item {
                                                 iconSource: "icons/icons/Run.png"
                                                 onClicked: theModel.RunOne()
                                             }
+                                            ToolButton {
+                                                id: openFolder
+                                                iconSource: "icons/icons/openfolder.png"
+                                                onClicked: theModel.openFolder()
+                                            }
                                             Item { Layout.fillWidth: true }
                                             ToolButton {
                                                 id: newTest
