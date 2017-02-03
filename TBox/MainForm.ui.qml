@@ -10,7 +10,6 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls.Private 1.0
 import QtQuick.Dialogs 1.2
 import FileSave 1.0
-import QtQuick.Window 2.1
 import QtWebKit 3.0
 import Highlighter 1.0
 
@@ -754,9 +753,10 @@ Item {
                                 Layout.minimumHeight: 200
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
+                                color: "transparent"
                                 Rectangle {
                                     id: jsCodeRect
-                                    y: 1
+                                    y: 3
                                     width: centerRect.width
                                     height: centerRect.height
                                     color: "#f6f6f6"
