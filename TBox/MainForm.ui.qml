@@ -244,12 +244,14 @@ Item {
             newTest.visible=true;
             newSuite.visible=true;
             centerRect.visible=false;
+            testEdit.visible=false;
         }
         function menuForTest() {
             testToolBar.visible=true;
             newTest.visible=false;
             newSuite.visible=false;
             centerRect.visible=true;
+            testEdit.visible=true;
         }
         function hideAll() {
             testToolBar.visible=false;
@@ -459,6 +461,7 @@ Item {
                                             ToolButton {
                                                 id: testEdit
                                                 iconSource: "icons/icons/testedit.png"
+                                                visible: false
                                                 onClicked:{
                                                     testStatus.visible=false;
                                                     testRun.visible=false;
