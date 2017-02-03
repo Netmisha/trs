@@ -1,17 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "trsmanager.h"
-#include "mainsetting.h"
-#include "datamanager.h"
-#include "testinfo.h"
-#include "filesave.h"
-#include <QQmlApplicationEngine>
-#include <QObject>
-#include "highlighter.h"
-#include "selectfolderdialog.h"
-#include <QWebInspector>
-#include <QDesktopServices>
-#include <databasemanager.h>
 QWebView * view;
 
 class MainTree : public QStandardItemModel
@@ -21,10 +9,6 @@ public:
     explicit MainTree(QObject *parent = 0) :
         QStandardItemModel(parent){
         m_roleNameMapping[MainTree_Role_Name] = "name_role";
-         QObject::connect(this,SIGNAL(sendTestName(QString)),&data_base_man,SLOT(getTestName(QString)));
-         QObject::connect(this,SIGNAL(sendSuiteName(QString)),&data_base_man,SLOT(getSuiteName(QString)));
-         QObject::connect(this,SIGNAL(sessionN()),&data_base_man,SLOT(sessionNum()));
-
     }
     virtual ~MainTree() = default;
     enum MainTree_Roles{
@@ -33,7 +17,6 @@ public:
     QHash<int, QByteArray> roleNames() const override{
         return m_roleNameMapping;
     }
-    DataBaseManager data_base_man;
     public slots:
     Q_INVOKABLE QString Load(QString path);
     Q_INVOKABLE QString getFile(QModelIndex);
@@ -62,6 +45,7 @@ public:
     Q_INVOKABLE void setViewStatus(bool);
     Q_INVOKABLE void showInspector();
 private:
+    void CreateHtml();
     QString Parse(QString, QStandardItem *);
     QStandardItem * AddItemToTree(QString);
     QString ParseFolder(QString);
@@ -74,31 +58,23 @@ private:
     QStringList tags;
     QString currentTag="All";
     DataManager dm;
-
-signals:
-    void sendTestName(QString);
-    void sendSuiteName(QString);
-    void sessionN();
-
 };
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     view = new QWebView();
     view->setGeometry(QRect(180,200,100,100));
-    CreateHtml();
-    TRSManager *trs=new TRSManager();
+    trs=new TRSManager();
     view->page()->mainFrame()->addToJavaScriptWindowObject("trs", trs);
-    TRSCore *trscore=new TRSCore();
+    trscore=new TRSCore();
     view->page()->mainFrame()->addToJavaScriptWindowObject("core", trscore);
-    TestInfo *testinfo=new TestInfo();
+    testinfo=new TestInfo();
     view->page()->mainFrame()->addToJavaScriptWindowObject("Test", testinfo);
-    view->load(QUrl("file:///"+QDir::currentPath()+"/"+"test.html"));
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
     qmlRegisterType<MainSetting>("MainSetting", 1, 0, "Setting" );
     qmlRegisterType<FileSaveDialog>("FileSave", 1, 0, "FileSaveDialog");
     QObject::connect(trs, SIGNAL(writeMSG(QString)),this, SLOT(writeMSG(QString)));
-    QQuickView* qmlView = new QQuickView;
+    qmlView = new QQuickView();
     O.setEngi(qmlView);
     qmlView->rootContext()->setContextProperty("DD",&O);
     QObject::connect(&O,SIGNAL(PassHTMLdata(QVector<QStringList*>,QStringList,int,QString)),&H,SLOT(ReceiveHTMLdata(QVector<QStringList*>,QStringList,int,QString)));
@@ -108,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlRegisterType<Highlighter>("Highlighter", 1, 0, "HighL" );
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
     object = qmlView->rootObject();
-    SelectFolderDialog *selectFolder=new SelectFolderDialog();
+    selectFolder=new SelectFolderDialog();
     selectFolder->setObject(object);
     qmlView->rootContext()->setContextProperty("selectFolderDialog", selectFolder);
     QWebSettings* settings = QWebSettings::globalSettings();
@@ -124,19 +100,15 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 MainWindow::~MainWindow(){
     delete ui;
+    view->deleteLater();
+    trs->deleteLater();
+    trscore->deleteLater();
+    testinfo->deleteLater();
+    qmlView->deleteLater();
+    selectFolder->deleteLater();
 }
 void MainWindow::writeMSG(QString msg){
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, msg));
-}
-
-void MainWindow::CreateHtml() {
-    QFile file(QDir::currentPath()+"/"+"test.html");
-    if(!file.exists()) {
-        file.open(QIODevice::WriteOnly);
-        QString page="<html>\n\t<head>\n\t</head>\n\t<body>\n\t</body>\n</html>";
-        file.write(page.toLatin1());
-        file.close();
-    }
 }
 QString MainTree::Load(QString path) {
     if(path=="") {
@@ -156,6 +128,8 @@ QString MainTree::Load(QString path) {
             return res;
         }
     }
+    CreateHtml();
+    view->load(QUrl("file:///"+rootDir+"/"+"test.html"));
     return res;
 }
 void MainTree::setRootDir(QString path) {
@@ -337,7 +311,6 @@ void MainTree::FindJSFile(QString data) {
     }
 }
 void MainTree::RunOne() {
-    emit sessionN();
     for (auto&it : treeData) {
         if (it.item == currentIndex && it.type == "test") {
             view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
@@ -345,18 +318,12 @@ void MainTree::RunOne() {
     }
 }
 void MainTree::Run() {
-     run=true;
-    emit sessionN();
-    for(auto&it:treeData){
+    run=true;
+    for(auto&it:treeData) {
         if (it.type == "test" && CheckTest(it) && it.repeat>0) {
             for(int i=0; i<it.repeat;i++) {
-                emit sendTestName(it.name);
-                data_base_man.sessionStart();
                 view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
-                data_base_man.sessionEnd();
             }
-        }else{
-            emit sendSuiteName(it.name);
         }
     }
     run = false;
@@ -570,5 +537,15 @@ void MainTree::setJS(QString file_name, QString test_name, QString data) {
     file.open(QIODevice::WriteOnly);
     file.write(data.toLatin1());
     file.close();
+}
+
+void MainTree::CreateHtml() {
+    QFile file(rootDir+"/"+"test.html");
+    if(!file.exists()) {
+        file.open(QIODevice::WriteOnly);
+        QString page="<html>\n\t<head>\n\t</head>\n\t<body>\n\t</body>\n</html>";
+        file.write(page.toLatin1());
+        file.close();
+    }
 }
 #include "mainwindow.moc"

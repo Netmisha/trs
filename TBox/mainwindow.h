@@ -20,7 +20,10 @@
 #include "datamanager.h"
 #include "testinfo.h"
 #include "filesave.h"
-#include <QQmlApplicationEngine>
+#include "highlighter.h"
+#include "selectfolderdialog.h"
+#include <QWebInspector>
+#include <QDesktopServices>
 #include <database.h>
 #include <reportform.h>
 #include <databasemanager.h>
@@ -35,14 +38,17 @@ public:
     ~MainWindow();
 public slots:
     void writeMSG(QString);
-
+private slots:
 private:
-    void CreateHtml();
     DataBase O;
     ExportHTML H;
     Ui::MainWindow *ui;
     QObject *object;
-    TRSCore a;
+    TRSManager *trs;
+    TRSCore *trscore;
+    TestInfo *testinfo;
+    QQuickView* qmlView;
+    SelectFolderDialog *selectFolder;
 };
 
 #endif // MAINWINDOW_H
