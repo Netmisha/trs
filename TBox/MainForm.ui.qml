@@ -179,6 +179,10 @@ Item {
                               text: styleData.value
                           }
                        }
+                       rowDelegate: Rectangle {
+                           color: styleData.selected?"#3399ff":"transparent"
+                           height: 20
+                       }
                        onClicked: {
                            root.showItem(index);
                        }
@@ -207,6 +211,7 @@ Item {
                             Layout.fillHeight: true
                             spacing: 0
                             Rectangle {
+                                id: subToolBar
                                 height: 30
                                 Layout.fillWidth: true
                                 ColumnLayout {
@@ -310,7 +315,7 @@ Item {
                                                     cancelJS.visible=true;
                                                     mainTree.enabled=false;
                                                     navigationBar.enabled=false;
-                                                    fontComboBox.visible=true;
+                                                    //fontComboBox.visible=true;
                                                 }
                                             }
                                             ToolButton {
@@ -329,7 +334,7 @@ Item {
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
                                                     navigationBar.enabled=true;
-                                                    fontComboBox.visible=false;
+                                                    //fontComboBox.visible=false;
 
                                                 }
                                                 iconSource: "icons/icons/restore.png"
@@ -350,7 +355,7 @@ Item {
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
                                                     navigationBar.enabled=true;
-                                                    fontComboBox.visible=false;
+                                                    //fontComboBox.visible=false;
                                                 }
                                                 iconSource: "icons/icons/jssave.png"
                                             }
@@ -590,11 +595,13 @@ Item {
                                 Layout.minimumHeight: 200
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                color: "#f6f6f6"
+                                color: "transparent"
                                 Rectangle {
                                     id: jsCodeRect
-                                    anchors.fill: parent
-                                    color: "transparent"
+                                    y: 3
+                                    width: centerRect.width
+                                    height: centerRect.height
+                                    color: "#f6f6f6"
                                     Rectangle {
                                         id: lineRect
                                         width: 0
@@ -651,7 +658,8 @@ Item {
                                             id: jsCodeEdit
                                             readOnly: true
                                             selectByMouse: true
-                                            font.pixelSize: 12
+                                            font.pixelSize: 14
+                                            font.family: "Courier New"
                                             textFormat: Qt.PlainText
                                             anchors.fill: parent
                                             wrapMode: TextEdit.NoWrap
@@ -1250,39 +1258,6 @@ Item {
                 }
             }
             RowLayout {
-                id: rowLayout3
-                width: 100
-                height: 100
-                Layout.preferredWidth: -1
-                Layout.alignment: Qt.AlignRight | Qt.AlignBottom
-                Layout.fillHeight: false
-                Layout.maximumHeight: 65535
-                Layout.rowSpan: 1
-                Layout.fillWidth: true
-                Text {
-                    id: nameaa
-                    text: qsTr("Web view")
-                }
-                Item {
-                    id: sadsdsfsf
-                    Layout.fillWidth: true
-                }
-                Button {
-                    id: webViewS
-                    text: qsTr("Show")
-                    onClicked: {
-                        if(webViewS.text!="Show") {
-                            webViewS.text="Show";
-                            theModel.setViewStatus(false);
-                        }
-                        else {
-                            webViewS.text="Hide";
-                            theModel.setViewStatus(true);
-                        }
-                    }
-                }
-            }
-            RowLayout {
                 id: rowLayout2
                 width: 100
                 height: 100
@@ -1298,13 +1273,32 @@ Item {
                     onClicked: {
                         theModel.setRootDir(rootDir.text);
                         settingFile.setRootDir(rootDir.text);
-                        var res=theModel.Load(rootDir.text);
-                        runTags.model=theModel.GetTags();
-                        theModel.setCurrentTag(runTags.currentText);
-                        if(res!="") {
-                            messageDialog.text=res;
-                            messageDialog.open()
-                            return;
+                        if(theModel.IsFolderEmpty(rootDir.text)) {
+                            showMenu.menuForSuite();
+                            centerRect.visible=false;
+                            addSuiteLayout.visible=true;
+                            testName.text="New Suite";
+                            textEditSName.text="Main suite";
+                            testRun.visible=false;
+                            newTest.visible=false;
+                            newSuite.visible=false;
+                            testDelete.visible=false;
+                            testSetting.visible=false;
+                            restoreNew.visible=false;
+                            saveNew.visible=false;
+                            createNew.visible=true;
+                            mainTree.enabled=false;
+                            navigationBar.enabled=false;
+                        }
+                        else {
+                            var res=theModel.Load(folder);
+                            runTags.model=theModel.GetTags();
+                            theModel.setCurrentTag(runTags.currentText);
+                            if(res!="") {
+                                messageDialog.text=res;
+                                messageDialog.open()
+                                return;
+                            }
                         }
                         mainsetting.close();
                     }

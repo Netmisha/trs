@@ -17,6 +17,9 @@ QString TestInfo::getPath() {
 QString TestInfo::getName() {
     return testName;
 }
+QString TestInfo::getCurrentDir() {
+    return QString(currentPath).replace("/suite.xml","");
+}
 void TestInfo::SetData(QString tag, QString data) {
     QDomDocument doc;
     QFile file(currentPath);

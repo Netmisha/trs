@@ -20,6 +20,10 @@
 #include "datamanager.h"
 #include "testinfo.h"
 #include "filesave.h"
+#include "highlighter.h"
+#include "selectfolderdialog.h"
+#include <QWebInspector>
+#include <QDesktopServices>
 namespace Ui {
 class MainWindow;
 }
@@ -33,10 +37,13 @@ public slots:
     void writeMSG(QString);
 private slots:
 private:
-    void CreateHtml();
     Ui::MainWindow *ui;
     QObject *object;
-    TRSCore a;
+    TRSManager *trs;
+    TRSCore *trscore;
+    TestInfo *testinfo;
+    QQuickView* qmlView;
+    SelectFolderDialog *selectFolder;
 };
 
 #endif // MAINWINDOW_H

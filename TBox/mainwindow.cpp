@@ -1,14 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "trsmanager.h"
-#include "mainsetting.h"
-#include "datamanager.h"
-#include "testinfo.h"
-#include "filesave.h"
-#include "highlighter.h"
-#include "selectfolderdialog.h"
-#include <QWebInspector>
-#include <QDesktopServices>
 QWebView * view;
 
 class MainTree : public QStandardItemModel
@@ -54,6 +45,7 @@ public:
     Q_INVOKABLE void setViewStatus(bool);
     Q_INVOKABLE void showInspector();
 private:
+    void CreateHtml();
     QString Parse(QString, QStandardItem *);
     QStandardItem * AddItemToTree(QString);
     QString ParseFolder(QString);
@@ -72,26 +64,24 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     view = new QWebView();
     view->setGeometry(QRect(180,200,100,100));
-    CreateHtml();
-    TRSManager *trs=new TRSManager();
+    trs=new TRSManager();
     view->page()->mainFrame()->addToJavaScriptWindowObject("trs", trs);
-    TRSCore *trscore=new TRSCore();
+    trscore=new TRSCore();
     view->page()->mainFrame()->addToJavaScriptWindowObject("core", trscore);
-    TestInfo *testinfo=new TestInfo();
+    testinfo=new TestInfo();
     view->page()->mainFrame()->addToJavaScriptWindowObject("Test", testinfo);
-    view->load(QUrl("file:///"+QDir::currentPath()+"/"+"test.html"));
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
     qmlRegisterType<MainSetting>("MainSetting", 1, 0, "Setting" );
     qmlRegisterType<FileSaveDialog>("FileSave", 1, 0, "FileSaveDialog");
     QObject::connect(trs, SIGNAL(writeMSG(QString)),this, SLOT(writeMSG(QString)));
-    QQuickView* qmlView = new QQuickView();
+    qmlView = new QQuickView();
     qmlView->setGeometry(QRect(200,200,800,600));
     qmlView->setResizeMode(QQuickView::SizeRootObjectToView);
     qmlView->setIcon(QIcon(QPixmap(":/icons/icons/tbox.png")));
     qmlRegisterType<Highlighter>("Highlighter", 1, 0, "HighL" );
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
     object = qmlView->rootObject();
-    SelectFolderDialog *selectFolder=new SelectFolderDialog();
+    selectFolder=new SelectFolderDialog();
     selectFolder->setObject(object);
     qmlView->rootContext()->setContextProperty("selectFolderDialog", selectFolder);
     QWebSettings* settings = QWebSettings::globalSettings();
@@ -107,18 +97,15 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 MainWindow::~MainWindow(){
     delete ui;
+    view->deleteLater();
+    trs->deleteLater();
+    trscore->deleteLater();
+    testinfo->deleteLater();
+    qmlView->deleteLater();
+    selectFolder->deleteLater();
 }
 void MainWindow::writeMSG(QString msg){
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, msg));
-}
-void MainWindow::CreateHtml() {
-    QFile file(QDir::currentPath()+"/"+"test.html");
-    if(!file.exists()) {
-        file.open(QIODevice::WriteOnly);
-        QString page="<html>\n\t<head>\n\t</head>\n\t<body>\n\t</body>\n</html>";
-        file.write(page.toLatin1());
-        file.close();
-    }
 }
 QString MainTree::Load(QString path) {
     if(path=="") {
@@ -138,6 +125,8 @@ QString MainTree::Load(QString path) {
             return res;
         }
     }
+    CreateHtml();
+    view->load(QUrl("file:///"+rootDir+"/"+"test.html"));
     return res;
 }
 void MainTree::setRootDir(QString path) {
@@ -545,5 +534,15 @@ void MainTree::setJS(QString file_name, QString test_name, QString data) {
     file.open(QIODevice::WriteOnly);
     file.write(data.toLatin1());
     file.close();
+}
+
+void MainTree::CreateHtml() {
+    QFile file(rootDir+"/"+"test.html");
+    if(!file.exists()) {
+        file.open(QIODevice::WriteOnly);
+        QString page="<html>\n\t<head>\n\t</head>\n\t<body>\n\t</body>\n</html>";
+        file.write(page.toLatin1());
+        file.close();
+    }
 }
 #include "mainwindow.moc"
