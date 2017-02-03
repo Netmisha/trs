@@ -50,9 +50,10 @@ public:
     Q_INVOKABLE bool IsFolderEmpty(QString);
     Q_INVOKABLE void setViewStatus(bool);
     Q_INVOKABLE void showInspector();
+    Q_INVOKABLE void openFolder();
 private:
     void CreateHtml();
-    QString Parse(QString, QStandardItem *);
+    void Parse(QString, QStandardItem *);
     QStandardItem * AddItemToTree(QString);
     QString ParseFolder(QString);
     bool CheckTest(TreeInfo);
@@ -296,6 +297,13 @@ void MainTree::showInspector() {
     QString link = "http://127.0.0.1:9876/webkit/inspector/inspector.html?page=1";
     QDesktopServices::openUrl(QUrl(link));
 }
+void MainTree::openFolder() {
+    for (auto&it : treeData) {
+        if (it.item == currentIndex && it.type == "suite") {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(QString(it.file).replace("/suite.xml","")));
+        }
+    }
+}
 QString MainTree::getFile(QModelIndex item) {
     for (auto&it : treeData) {
         if (it.item == item) {
@@ -355,7 +363,7 @@ QStringList MainTree::GetTags() {
 void MainTree::Stop() {
     run=false;
 }
-QString MainTree::Parse(QString path, QStandardItem * root) {
+void MainTree::Parse(QString path, QStandardItem * root) {
     QDirIterator it(path, QDirIterator::NoIteratorFlags);
     QStandardItem * suite;
     QStringList chilSuite;
@@ -404,14 +412,9 @@ QString MainTree::Parse(QString path, QStandardItem * root) {
     }
     if(isValid) {
         for(auto&ind:chilSuite) {
-            QString res=Parse(ind, suite);
-            if(res!="") {
-                return "Invalid folder";
-            }
+           Parse(ind, suite);
         }
-        return "";
     }
-    return "Invalid folder";
 }
 QStandardItem * MainTree::AddItemToTree(QString name) {
     QStandardItem * item = new QStandardItem(name);
@@ -443,13 +446,13 @@ QString MainTree::ParseFolder(QString path) {
     this->appendRow(root);
     tags.clear();
     tags.push_back("All");
-    QString res=Parse(path, root);
-    if(res!="") {
+    Parse(path, root);
+    if(treeData.isEmpty()) {
         tags.clear();
         tags.push_back("All");
         return "Invalid folder";
     }
-    return res;
+    return "";
 }
 bool MainTree::CheckTest(TreeInfo info) {
     if(dm.Get(info.file+"/suite/disable")=="false") {

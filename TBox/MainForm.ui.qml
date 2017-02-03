@@ -10,7 +10,6 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls.Private 1.0
 import QtQuick.Dialogs 1.2
 import FileSave 1.0
-import QtQuick.Window 2.1
 import QtWebKit 3.0
 import Highlighter 1.0
 
@@ -170,6 +169,52 @@ Item {
     }
     id: root
     anchors.fill: parent
+    Action {
+        id: saveJSAction
+        shortcut: "Ctrl+S"
+        onTriggered: {
+            theModel.FindJSFile(jsCodeEdit.text);
+            testStatus.visible=true;
+            testRun.visible=true;
+            testDelete.visible=true;
+            testSetting.visible=true;
+            jsCodeEdit.readOnly=true;
+            jsCodeRect.color="#f6f6f6";
+            testEdit.visible=true;
+            saveJS.visible=false;
+            cancelJS.visible=false;
+            mainTree.enabled=true;
+            navigationBar.enabled=true;
+            //fontComboBox.visible=false;
+        }
+    }
+    Action {
+        id: runJSAction
+        shortcut: "Ctrl+R"
+        onTriggered: theModel.RunOne()
+    }
+    Action {
+        id: runAllAction
+        shortcut: "Ctrl+Shift+R"
+        onTriggered: {
+            consoleText.text="";
+            theModel.Run();
+        }
+    }
+    Action {
+        id: refreshTreeAction
+        shortcut: "F5"
+        onTriggered: {
+            var res=theModel.Load(settingFile.getRootDir());
+            runTags.model=theModel.GetTags();
+            theModel.setCurrentTag(runTags.currentText);
+            if(res!="") {
+                messageDialog.text=res;
+                messageDialog.open()
+                return;
+            }
+        }
+    }
     function checkRootDir() {
         if(rootDir.text==""){
             selectFolderDialog.setFromSetting(false);
@@ -269,6 +314,11 @@ Item {
                 id: layout
                 spacing: 5
                 anchors.fill: parent;
+                ToolButton {
+                    id: refreshTree
+                    action: refreshTreeAction
+                    iconSource: "icons/icons/refresh.png"
+                }
                 Text {
                     text: "Tags: "
                 }
@@ -281,10 +331,7 @@ Item {
                 }
                 ToolButton {
                     id: startButton
-                    onClicked: {
-                        consoleText.text="";
-                        theModel.Run();
-                    }
+                    action: runAllAction
                     iconSource: "icons/icons/Run.png"
                 }
                 ToolButton {
@@ -361,6 +408,7 @@ Item {
                     id: centerItem
                     Layout.minimumWidth: 200
                     Layout.fillWidth: true
+                    Layout.fillHeight: true
                     SplitView {
                         anchors.fill: parent
                         orientation: Qt.Vertical
@@ -414,7 +462,12 @@ Item {
                                             ToolButton {
                                                 id: testRun
                                                 iconSource: "icons/icons/Run.png"
-                                                onClicked: theModel.RunOne()
+                                                action: runJSAction
+                                            }
+                                            ToolButton {
+                                                id: openFolder
+                                                iconSource: "icons/icons/openfolder.png"
+                                                onClicked: theModel.openFolder()
                                             }
                                             Item { Layout.fillWidth: true }
                                             ToolButton {
@@ -503,21 +556,7 @@ Item {
                                             ToolButton {
                                                 id: saveJS
                                                 visible: false;
-                                                onClicked: {
-                                                    theModel.FindJSFile(jsCodeEdit.text);
-                                                    testStatus.visible=true;
-                                                    testRun.visible=true;
-                                                    testDelete.visible=true;
-                                                    testSetting.visible=true;
-                                                    jsCodeEdit.readOnly=true;
-                                                    jsCodeRect.color="#f6f6f6";
-                                                    testEdit.visible=true;
-                                                    saveJS.visible=false;
-                                                    cancelJS.visible=false;
-                                                    mainTree.enabled=true;
-                                                    navigationBar.enabled=true;
-                                                    //fontComboBox.visible=false;
-                                                }
+                                                action: saveJSAction
                                                 iconSource: "icons/icons/jssave.png"
                                             }
                                             ToolButton {
@@ -756,9 +795,10 @@ Item {
                                 Layout.minimumHeight: 200
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
+                                color: "transparent"
                                 Rectangle {
                                     id: jsCodeRect
-                                    y: 1
+                                    y: 3
                                     width: centerRect.width
                                     height: centerRect.height
                                     color: "#f6f6f6"

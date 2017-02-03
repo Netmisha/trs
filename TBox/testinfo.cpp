@@ -20,7 +20,7 @@ QString TestInfo::getName() {
 QString TestInfo::getCurrentDir() {
     return QString(currentPath).replace("/suite.xml","");
 }
-void TestInfo::SetData(QString tag, QString data) {
+void TestInfo::setData(QString tag, QString data) {
     QDomDocument doc;
     QFile file(currentPath);
     file.open(QIODevice::ReadOnly);
@@ -49,7 +49,7 @@ void TestInfo::SetData(QString tag, QString data) {
     file.write(doc.toString().toLatin1());
     file.close();
 }
-QString TestInfo::GetData(QString tag) {
+QString TestInfo::getData(QString tag) {
     QDomDocument doc;
     QFile file(currentPath);
     file.open(QIODevice::ReadOnly);
@@ -64,4 +64,20 @@ QString TestInfo::GetData(QString tag) {
     }
     file.close();
     return "";
+}
+bool TestInfo::isData(QString tag) {
+    QDomDocument doc;
+    QFile file(currentPath);
+    file.open(QIODevice::ReadOnly);
+    if (doc.setContent(&file, false)) {
+        QDomElement root = doc.documentElement();
+        root = root.firstChildElement(tags_name::kTest);
+        while (root.attribute(tags_name::kName)!=testName) {
+            root = root.nextSiblingElement(tags_name::kTest);
+        }
+        root = root.firstChildElement(tags_name::kData);
+        return !root.firstChildElement(tag).isNull();
+    }
+    file.close();
+    return false;
 }
