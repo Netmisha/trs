@@ -19,8 +19,9 @@ public slots:
     Q_INVOKABLE QString getPath();
     Q_INVOKABLE QString getName();
     Q_INVOKABLE QString getCurrentDir();
-    Q_INVOKABLE void SetData(QString, QString);
-    Q_INVOKABLE QString GetData(QString);
+    Q_INVOKABLE void setData(QString, QString);
+    Q_INVOKABLE QString getData(QString);
+    Q_INVOKABLE bool isData(QString);
 private:
     QString currentPath;
     QString testName;
