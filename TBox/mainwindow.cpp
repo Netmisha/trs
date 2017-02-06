@@ -3,7 +3,7 @@
 #include <databasemanager.h>
 #include <QObject>
 QWebView * view;
-
+QObject * contextObject;
 class MainTree : public QStandardItemModel
 {
     Q_OBJECT
@@ -81,6 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
     view->page()->mainFrame()->addToJavaScriptWindowObject("Report", report);
     trscore=new TRSCore();
     view->page()->mainFrame()->addToJavaScriptWindowObject("Box", trscore);
+    QObject::connect(trscore, SIGNAL(Log(QString)), this, SLOT(writeLog(QString)));
     testinfo=new TestInfo();
     view->page()->mainFrame()->addToJavaScriptWindowObject("Test", testinfo);
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
@@ -97,6 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlRegisterType<Highlighter>("Highlighter", 1, 0, "HighL" );
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
     object = qmlView->rootObject();
+    contextObject=object;
     selectFolder=new SelectFolderDialog();
     selectFolder->setObject(object);
     qmlView->rootContext()->setContextProperty("selectFolderDialog", selectFolder);
@@ -120,7 +122,7 @@ MainWindow::~MainWindow(){
     qmlView->deleteLater();
     selectFolder->deleteLater();
 }
-void MainWindow::writeMSG(QString msg){
+void MainWindow::writeLog(QString msg){
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, msg));
 }
 QString MainTree::Load(QString path) {
@@ -350,6 +352,27 @@ void MainTree::RunOne(){
             view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
             WriteLog("Test "+it.name+" finished.");
             data_base_man.sessionEnd();
+            break;
+        }
+        else if (it.item == currentIndex && it.type == "suite"){
+            view->load(QUrl("file:///"+rootDir+"/"+"test.html"));
+            emit sendSuiteName(it.name);
+            for(int i=0; i<this->itemFromIndex(currentIndex)->rowCount(); i++) {
+                for (auto&it2 : treeData) {
+                    if (it2.item == currentIndex.child(i,0) && it2.type == "test" && CheckTest(it2) && it2.repeat>0) {
+                        for(int i=0; i<it2.repeat;i++) {
+                            emit sendTestName(it2.name);
+                            data_base_man.sessionStart();
+                            view->load(QUrl("file:///"+rootDir+"/"+"test.html"));
+                            WriteLog("Test "+it2.name+" started.");
+                            view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it2.file+"'); Test.setName('"+it2.name+"');"+getJS(it2.file, it2.name));
+                            WriteLog("Test "+it2.name+" finished.");
+                            data_base_man.sessionEnd();
+                        }
+                        break;
+                    }
+                }
+            }
         }
     }
 }
@@ -593,6 +616,6 @@ void MainTree::CreateHtml() {
     }
 }
 void MainTree::WriteLog(QString msg) {
-
+    QMetaObject::invokeMethod(contextObject, "writeLog", Q_ARG(QVariant, msg));
 }
 #include "mainwindow.moc"

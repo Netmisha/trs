@@ -37,7 +37,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 public slots:
-    void writeMSG(QString);
+    void writeLog(QString);
 private slots:
 private:
     DataBase O;
