@@ -72,7 +72,7 @@ Item {
             width: 127
             height: 33
             text:"Show"
-            onClicked: {
+            onClicked: { 
             list_ = DD.get_seesion_db(textField1.text,textField2.text);
             }
         }
@@ -340,7 +340,9 @@ Item {
                 ToolButton {
                     id: reportsButton
                     iconSource: "icons/icons/report.png"
-                    onClicked: report_window_.show();
+                    onClicked:{
+                        DD.defaultTableValue()
+                        report_window_.show();}
                 }
                 ToolButton {
                     id: settingButton

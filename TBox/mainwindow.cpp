@@ -90,7 +90,6 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlRegisterType<FileSaveDialog>("FileSave", 1, 0, "FileSaveDialog");
     qmlView = new QQuickView();
     O.setEngi(qmlView);
-    O.defaultTableValue();
     qmlView->rootContext()->setContextProperty("DD",&O);
     QObject::connect(&O,SIGNAL(PassHTMLdata(QVector<QStringList*>,QStringList,int,QString)),&H,SLOT(ReceiveHTMLdata(QVector<QStringList*>,QStringList,int,QString)));
     QObject::connect(&O,SIGNAL(sendExportPath(QString)),&H,SLOT(ReceiveHTMLpath(QString)));

@@ -69,7 +69,6 @@ void DataBase::defaultTableValue(){
     engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(datalist)); // list model
     list_from_ui = it;
     it.clear();
-
 }
 void DataBase::InitDB(){
     QDir DIR;
