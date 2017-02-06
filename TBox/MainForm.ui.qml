@@ -376,7 +376,6 @@ Item {
                        }
                        model: theModel
                        selectionMode: SelectionMode.SingleSelection
-                       headerVisible: false
                        itemDelegate: Rectangle {
                           id : recid
                           color: "transparent"

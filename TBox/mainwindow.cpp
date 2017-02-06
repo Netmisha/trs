@@ -370,9 +370,8 @@ QStringList MainTree::GetTags() {
 void MainTree::Stop() {
     run=false;
 }
-void MainTree::Parse(QString path, QStandardItem * root) {
+void MainTree::Parse(QString path, QStandardItem * suite) {
     QDirIterator it(path, QDirIterator::NoIteratorFlags);
-    QStandardItem * suite;
     QStringList chilSuite;
     bool isValid=false;
     while (it.hasNext()) {
@@ -384,8 +383,7 @@ void MainTree::Parse(QString path, QStandardItem * root) {
             if (it.filePath().contains(".xml")) {
                 isValid=true;
                 QString name = getSuiteName(it.filePath());
-                suite = new QStandardItem(name);
-                root->appendRow(suite);
+                suite->setText(name);
                 TreeInfo info;
                 info.file = it.filePath();
                 info.item = this->indexFromItem(suite);
@@ -419,7 +417,9 @@ void MainTree::Parse(QString path, QStandardItem * root) {
     }
     if(isValid) {
         for(auto&ind:chilSuite) {
-           Parse(ind, suite);
+           QStandardItem * child = new QStandardItem("");
+           suite->appendRow(child);
+           Parse(ind, child);
         }
     }
 }
@@ -449,16 +449,18 @@ QStandardItem * MainTree::AddItemToTree(QString name) {
     return item;
 }
 QString MainTree::ParseFolder(QString path) {
-    QStandardItem * root = new QStandardItem(QString("Tests"));
-    this->appendRow(root);
+    QStandardItem * suite = new QStandardItem("");
+    this->appendRow(suite);
     tags.clear();
     tags.push_back("All");
-    Parse(path, root);
+    Parse(path, suite);
     if(treeData.isEmpty()) {
         tags.clear();
+        this->clear();
         tags.push_back("All");
         return "Invalid folder";
     }
+
     return "";
 }
 bool MainTree::CheckTest(TreeInfo info) {
