@@ -48,6 +48,7 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
      output<<" <p> - by Refsnes Data. All Rights Reserved.</p> ";
      output<<" </details>";
      */
+
      output<<"<tr style='border: 1px solid black'>\n";
      output<<"<th style='border: 1px solid black'>";
      output<<table_n.at(1);
@@ -61,7 +62,23 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
      output<<"</tr>\n";
      int t=0;
      QString cur; QString next_; bool init_=false;
-
+     for(int i=0;i<table_data.size();i++){
+        output<<"<tr style='border: 1px solid black'>\n";
+        output<<"<td style='border: 1px solid black'>";
+        output<<"<details>";
+        output<<"<summary>";
+        output<<table_data.at(i)->at(0);
+        output<<"</summary>";
+        output<<"</td>";
+        output<<"<td style='border: 1px solid black'>";
+        output<<table_data.at(i)->at(1);
+        output<<"</td>";
+        output<<"<td style='border: 1px solid black'>";
+        output<<table_data.at(i)->at(2);
+        output<<"</td>";
+        output<<"</tr>";
+        output<<"</details>";
+     }
      /*
      int t = 0;
      for(int i=0;i<table_data.size();i++){

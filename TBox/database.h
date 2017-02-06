@@ -36,6 +36,7 @@ public slots:
 signals:
    void sendExportPath(QString exp);
 public:
+   Q_INVOKABLE void defaultTableValue();
    Q_INVOKABLE QString getTableSessionPath();
    Q_INVOKABLE void getExportPath(QString path);
    Q_INVOKABLE QString exportFilePath;

@@ -7,6 +7,69 @@ DataBase::DataBase(QObject *parent) :
 {
 
 }
+void DataBase::defaultTableValue(){
+    QDir DIR;
+    QStringList path = DIR.absolutePath().split("/");
+    path.removeLast();
+    path.append("TBox");
+    QString path_for_db;
+    for(int i=0;i<path.size();i++){
+        path_for_db.append(path.at(i)+"\\\\");
+    }
+    path_for_db.append(FOLDER_DB_NAME);
+    if(!QDir().exists(path_for_db)){
+        QDir().mkdir(path_for_db);
+    }
+    path_for_db.append(DATABASE_NAME);
+
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(path_for_db);
+    db.setHostName(LOCALHOST);
+    if(db.open()){
+        qDebug()<<"Database: connection ok";
+    }
+    else{
+        qDebug()<<db.lastError().text();
+        return;
+    }
+    QSqlQuery *query = new QSqlQuery(db);
+   QStringList cd_;
+   QStringList Time_S;
+   QStringList Time_E;
+   QString duration_s;
+   QString Start_date_S;
+   QString End_date_S;
+   QStringList pass_session;
+   cd_.append(QDate::currentDate().toString("dd"));
+   cd_.append(QDate::currentDate().toString("MM"));
+   cd_.append(QDate::currentDate().toString("yyyy"));
+   int i=0;
+   qDebug()<<query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day ="+cd_.at(0)+") and ( Test_Month = "+cd_.at(1)+") and (Test_Year = "+cd_.at(2)+") group by Session_num");
+   while(query->next()){
+       it.append(query->value(query->record().indexOf("Session_num")).toString());
+       pass_session.append(query->value(query->record().indexOf("Test_Passed")).toString());
+       Time_S.append( query->value(  query->record().indexOf("Test_Day")).toString());
+       Time_S.append( query->value(  query->record().indexOf("Test_Month")).toString());
+       Time_S.append( query->value(  query->record().indexOf("Test_Year")).toString());
+       Time_S.append( query->value(  query->record().indexOf("min(S_Start_time)")).toString());
+       Time_E.append( query->value(  query->record().indexOf("Test_day_e")).toString());
+       Time_E.append( query->value(  query->record().indexOf("Test_month_e")).toString());
+       Time_E.append( query->value(  query->record().indexOf("Test_year_e")).toString());
+       Time_E.append( query->value(  query->record().indexOf("max(S_Session_end)")).toString());
+       duration_s.append(  query->value(  query->record().indexOf("Session_duration")).toString());
+       for(int j=0,k=0;j<Time_S.size();j++,k++){
+           Start_date_S.append(Time_S.at(j)+"/");
+           End_date_S.append(Time_E.at(k)+"/");
+       }
+       datalist.append( new LisModel(it.at(i),Start_date_S,duration_s,End_date_S,pass_session.at(i)));
+       Start_date_S.clear(); End_date_S.clear(); duration_s.clear();
+       Time_S.clear(); Time_E.clear();
+       i++;
+    }
+    engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(datalist)); // list model
+    list_from_ui = it;
+    it.clear();
+}
 void DataBase::InitDB(){
     QDir DIR;
     QStringList path = DIR.absolutePath().split("/");

@@ -1,0 +1,13 @@
+<suite description="d" name="Main suite">
+ <repeat>1</repeat>
+ <disable>false</disable>
+ <metadata>
+  <author/>
+  <date/>
+  <version/>
+  <mail/>
+  <copyright/>
+  <license/>
+  <info/>
+ </metadata>
+</suite>

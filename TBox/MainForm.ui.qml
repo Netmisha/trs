@@ -17,6 +17,7 @@ Item {
     property variant win;
     property  variant list_;
     property  variant db_list;
+
     Window{
         id: report_window_
         visible: false
@@ -72,7 +73,7 @@ Item {
             width: 127
             height: 33
             text:"Show"
-            onClicked: {
+            onClicked: { 
             list_ = DD.get_seesion_db(textField1.text,textField2.text);
             }
         }
@@ -98,7 +99,7 @@ Item {
             readOnly: true
             width: 130
             height: 33
-             placeholderText: "Set start date"
+            placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
         }
         Button{
             x: 168
@@ -136,8 +137,9 @@ Item {
             readOnly: true
             width: 130
             height: 33
-            placeholderText: "Set end date"
+            placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
         }
+
         Calendar{
             id:end_date
             x: 278
@@ -339,7 +341,10 @@ Item {
                 ToolButton {
                     id: reportsButton
                     iconSource: "icons/icons/report.png"
-                    onClicked: report_window_.show();
+                    onClicked:{
+
+                        DD.defaultTableValue()
+                        report_window_.show();}
                 }
                 ToolButton {
                     id: settingButton
