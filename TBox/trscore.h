@@ -22,7 +22,7 @@ public:
     explicit TRSCore(QObject *parent = 0);
 
 signals:
-
+    void Log(QString);
 public slots:
     void StartApp(QString);
     void CloseApp();

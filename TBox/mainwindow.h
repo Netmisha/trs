@@ -15,7 +15,7 @@
 #include <QVector>
 #include "maintree.h"
 #include "trscore.h"
-#include "trsmanager.h"
+#include "report.h"
 #include "mainsetting.h"
 #include "datamanager.h"
 #include "testinfo.h"
@@ -44,7 +44,7 @@ private:
     ExportHTML H;
     Ui::MainWindow *ui;
     QObject *object;
-    TRSManager *trs;
+    Report *report;
     TRSCore *trscore;
     TestInfo *testinfo;
     QQuickView* qmlView;

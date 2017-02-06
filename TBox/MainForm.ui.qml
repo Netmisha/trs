@@ -185,6 +185,7 @@ Item {
             cancelJS.visible=false;
             mainTree.enabled=true;
             navigationBar.enabled=true;
+            consoleRect.enabled=true;
             //fontComboBox.visible=false;
         }
     }
@@ -244,6 +245,7 @@ Item {
                 saveNew.visible=false;
                 createNew.visible=true;
                 mainTree.enabled=false;
+                consoleRect.enabled=false;
                 navigationBar.enabled=false;
             }
             else {
@@ -484,6 +486,7 @@ Item {
                                                     restoreNew.visible=true;
                                                     saveNew.visible=true;
                                                     mainTree.enabled=false;
+                                                    consoleRect.enabled=false;
                                                     navigationBar.enabled=false;
                                                 }
                                             }
@@ -502,6 +505,7 @@ Item {
                                                     restoreNew.visible=true;
                                                     saveNew.visible=true;
                                                     mainTree.enabled=false;
+                                                    consoleRect.enabled=false;
                                                     navigationBar.enabled=false;
                                                 }
                                             }
@@ -527,6 +531,7 @@ Item {
                                                     saveJS.visible=true;
                                                     cancelJS.visible=true;
                                                     mainTree.enabled=false;
+                                                    consoleRect.enabled=false;
                                                     navigationBar.enabled=false;
                                                     //fontComboBox.visible=true;
                                                 }
@@ -546,6 +551,7 @@ Item {
                                                     jsCodeRect.color="#f6f6f6";
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
+                                                    consoleRect.enabled=true;
                                                     navigationBar.enabled=true;
                                                     //fontComboBox.visible=false;
 
@@ -585,6 +591,7 @@ Item {
                                                         saveNew.visible=true;
                                                         testEdit.visible=false;
                                                         mainTree.enabled=false;
+                                                        consoleRect.enabled=false;
                                                         navigationBar.enabled=false;
                                                     }
                                                     else if(theModel.GetType()=="suite") {
@@ -601,6 +608,7 @@ Item {
                                                         restoreNew.visible=true;
                                                         saveNew.visible=true;
                                                         mainTree.enabled=false;
+                                                        consoleRect.enabled=false;
                                                         navigationBar.enabled=false;
                                                         if(theModel.Get("disable")=="false"){
                                                             testStatus.iconSource="icons/icons/turnon.png";
@@ -660,6 +668,7 @@ Item {
                                                     restoreNew.visible=false;
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
+                                                    consoleRect.enabled=true;
                                                     navigationBar.enabled=true;
                                                 }
                                                 iconSource: "icons/icons/restore.png"
@@ -746,6 +755,7 @@ Item {
                                                     restoreNew.visible=false;
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
+                                                    consoleRect.enabled=true;
                                                     navigationBar.enabled=true;
                                                 }
                                             }
@@ -780,6 +790,7 @@ Item {
                                                     restoreNew.visible=false;
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
+                                                    consoleRect.enabled=true;
                                                     navigationBar.enabled=true;
                                                     createNew.visible=false
                                                 }
