@@ -27,6 +27,7 @@ public:
     Q_INVOKABLE QString Load(QString path);
     Q_INVOKABLE QString getFile(QModelIndex);
     Q_INVOKABLE QString FindTest(QModelIndex);
+    Q_INVOKABLE void setCurrentItem(QModelIndex);
     Q_INVOKABLE void FindJSFile(QString);
     Q_INVOKABLE static QStringList getTestsName(QString);
     Q_INVOKABLE static QString getSuiteName(QString);
@@ -92,6 +93,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlView->rootContext()->setContextProperty("DD",&O);
     QObject::connect(&O,SIGNAL(PassHTMLdata(QVector<QStringList*>,QStringList,int,QString)),&H,SLOT(ReceiveHTMLdata(QVector<QStringList*>,QStringList,int,QString)));
     QObject::connect(&O,SIGNAL(sendExportPath(QString)),&H,SLOT(ReceiveHTMLpath(QString)));
+    QObject::connect(view, SIGNAL(loadFinished(bool)),this, SLOT(onLoad(bool)));
     qmlView->setGeometry(QRect(200,200,800,600));
     qmlView->setResizeMode(QQuickView::SizeRootObjectToView);
     qmlView->setIcon(QIcon(QPixmap(":/icons/icons/tbox.png")));
@@ -333,6 +335,9 @@ QString MainTree::FindTest(QModelIndex item) {
     }
     return "";
 }
+void MainTree::setCurrentItem(QModelIndex idx) {
+    currentIndex=idx;
+}
 void MainTree::FindJSFile(QString data) {
     for (auto&it : treeData) {
         if (it.item == currentIndex && it.type == "test") {
@@ -348,6 +353,7 @@ void MainTree::RunOne(){
             emit sendSuiteName(it.file);
             data_base_man.sessionStart();
             view->load(QUrl("file:///"+rootDir+"/"+"test.html"));
+            qDebug()<<"load...";
             WriteLog("Test "+it.name+" started.");
             view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
             WriteLog("Test "+it.name+" finished.");
@@ -355,7 +361,6 @@ void MainTree::RunOne(){
             break;
         }
         else if (it.item == currentIndex && it.type == "suite"){
-            view->load(QUrl("file:///"+rootDir+"/"+"test.html"));
             emit sendSuiteName(it.name);
             for(int i=0; i<this->itemFromIndex(currentIndex)->rowCount(); i++) {
                 for (auto&it2 : treeData) {

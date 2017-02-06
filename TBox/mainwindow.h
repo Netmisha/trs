@@ -39,6 +39,9 @@ public:
 public slots:
     void writeLog(QString);
 private slots:
+    void onLoad(bool) {
+        qDebug() << "Load done";
+    }
 private:
     DataBase O;
     ExportHTML H;

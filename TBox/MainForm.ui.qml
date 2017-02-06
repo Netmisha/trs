@@ -382,7 +382,28 @@ Item {
                           id : recid
                           color: "transparent"
                           height: 20
+                          Rectangle {
+                              color: "transparent"
+                              height: 20
+                              width: 20
+                              Image {
+                                  height: 15
+                                  width: 15
+                                  verticalAlignment: Image.AlignVCenter
+                                  horizontalAlignment: Image.AlignHCenter
+                                  source: {
+                                      theModel.setCurrentItem(styleData.index);
+                                      if(theModel.GetType()=="test") {
+                                          return "icons/icons/test.png"
+                                      }
+                                      else {
+                                          return "icons/icons/suite.png"
+                                      }
+                                  }
+                              }
+                          }
                           Text {
+                              x:20
                               anchors.verticalCenter: parent.verticalCenter
                               text: styleData.value
                           }
