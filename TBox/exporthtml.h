@@ -16,8 +16,12 @@ public:
     Q_INVOKABLE void CreateDirIfNotExists();
     Q_INVOKABLE void CreateHTMLReportFile(QVector<QStringList*> table_n,QStringList tn,int index,QString current_session);
     Q_INVOKABLE ExportHTML();
+    Q_INVOKABLE QString export_path_;
+    QVector<QStringList*> table_data;QStringList table_n;int elements_;QString current_session;
+
  public slots:
-   Q_INVOKABLE void ReceiveHTMLdata(QVector<QStringList*> r_data,QStringList tn,int index,QString current_session);
+   void ReceiveHTMLdata(QVector<QStringList*> r_data,QStringList tn,int index,QString current_session);
+   void ReceiveHTMLpath(QString exportPath);
 };
 
 #endif // EXPORTHTML_H

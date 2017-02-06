@@ -59,6 +59,10 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
      output<<table_n.at(5);
      output<<"</th>\n";
      output<<"</tr>\n";
+     int t=0;
+     QString cur; QString next_; bool init_=false;
+
+     /*
      int t = 0;
      for(int i=0;i<table_data.size();i++){
          output<<"<tr style='border: 1px solid black'>\n";
@@ -69,7 +73,7 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
          }
          output<<"</tr>\n";
          (t == elements_)?t=0:0;
-     }
+     }*/
     output<<"</table>\n";
     output<<"</body>\n";
     output<<"</html>\n";

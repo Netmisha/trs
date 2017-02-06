@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <databasemanager.h>
+#include <QObject>
 QWebView * view;
 TRSManager * manager;
 
@@ -10,6 +12,9 @@ public:
     explicit MainTree(QObject *parent = 0) :
         QStandardItemModel(parent){
         m_roleNameMapping[MainTree_Role_Name] = "name_role";
+        QObject::connect(this,SIGNAL(sendTestName(QString)),&data_base_man,SLOT(getTestName(QString)));
+        QObject::connect(this,SIGNAL(sendSuiteName(QString)),&data_base_man,SLOT(getSuiteName(QString)));
+        QObject::connect(this,SIGNAL(sessionN()),&data_base_man,SLOT(sessionNum()));
     }
     virtual ~MainTree() = default;
     enum MainTree_Roles{
@@ -18,6 +23,7 @@ public:
     QHash<int, QByteArray> roleNames() const override{
         return m_roleNameMapping;
     }
+    DataBaseManager data_base_man;
     public slots:
     Q_INVOKABLE QString Load(QString path);
     Q_INVOKABLE QString getFile(QModelIndex);
@@ -60,6 +66,10 @@ private:
     QStringList tags;
     QString currentTag="All";
     DataManager dm;
+signals:
+void sendTestName(QString);
+void sendSuiteName(QString);
+void sessionN();
 };
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -80,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
     O.setEngi(qmlView);
     qmlView->rootContext()->setContextProperty("DD",&O);
     QObject::connect(&O,SIGNAL(PassHTMLdata(QVector<QStringList*>,QStringList,int,QString)),&H,SLOT(ReceiveHTMLdata(QVector<QStringList*>,QStringList,int,QString)));
+    QObject::connect(&O,SIGNAL(sendExportPath(QString)),&H,SLOT(ReceiveHTMLpath(QString)));
     qmlView->setGeometry(QRect(200,200,800,600));
     qmlView->setResizeMode(QQuickView::SizeRootObjectToView);
     qmlView->setIcon(QIcon(QPixmap(":/icons/icons/tbox.png")));
@@ -87,8 +98,8 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
     object = qmlView->rootObject();
     selectFolder=new SelectFolderDialog();
-    manager=new TRSManager(object);
     selectFolder->setObject(object);
+    manager = new TRSManager(object);
     qmlView->rootContext()->setContextProperty("selectFolderDialog", selectFolder);
     QWebSettings* settings = QWebSettings::globalSettings();
     settings->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -320,25 +331,35 @@ void MainTree::FindJSFile(QString data) {
         }
     }
 }
-void MainTree::RunOne() {
+void MainTree::RunOne(){
+    emit sessionN();
     for (auto&it : treeData) {
         if (it.item == currentIndex && it.type == "test") {
+            emit sendTestName(it.name);
+            emit sendSuiteName(it.file);
+            data_base_man.sessionStart();
             manager->WriteLog("Test "+it.name+" started.");
             view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
             manager->WriteLog("Test "+it.name+" finished.");
+            data_base_man.sessionEnd();
         }
     }
 }
 void MainTree::Run() {
     run=true;
-    manager->WriteLog("Run all tests.");
+    emit sessionN();
     for(auto&it:treeData) {
         if (it.type == "test" && CheckTest(it) && it.repeat>0) {
             for(int i=0; i<it.repeat;i++) {
+                emit sendTestName(it.name);
+                data_base_man.sessionStart();
                 manager->WriteLog("Test "+it.name+" started.");
                 view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
                 manager->WriteLog("Test "+it.name+" finished.");
+                data_base_man.sessionEnd();
             }
+        }else{
+            emit sendSuiteName(it.name);
         }
     }
     run = false;
@@ -452,10 +473,7 @@ bool MainTree::CheckTest(TreeInfo info) {
                 }
             }
         }
-        manager->WriteLog(info.name+" is disabled.");
-        return false;
     }
-    manager->WriteLog(info.name+" :Parent suite is disabled.");
     return false;
 }
 QStringList MainTree::getTestsName(QString file_name) {
