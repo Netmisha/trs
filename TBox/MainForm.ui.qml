@@ -98,7 +98,7 @@ Item {
             readOnly: true
             width: 130
             height: 33
-             placeholderText: "Set start date"
+            placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
         }
         Button{
             x: 168
@@ -136,8 +136,9 @@ Item {
             readOnly: true
             width: 130
             height: 33
-            placeholderText: "Set end date"
+            placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
         }
+
         Calendar{
             id:end_date
             x: 278
