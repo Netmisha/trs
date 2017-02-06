@@ -23,6 +23,8 @@ namespace tags_name {
     const QString kCopyright = "copyright";
     const QString kLicense = "license";
     const QString kInfo = "info";
+    const QString kHeaders = "headers";
+    const QString kScr = "src";
 }
 class DataManager : public QObject
 {
@@ -39,6 +41,7 @@ public slots:
     QString RemoveTest(QString, QString);
     QString RemoveSuite(QString);
     QString Get(QString);
+    QStringList getHeaders(QString, QString);
 private:
 };
 

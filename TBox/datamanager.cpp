@@ -77,6 +77,8 @@ QString DataManager::AddTest(QString path, QString name, QString dis, QString ta
         snode = doc.createElement(tags_name::kRepeat);
         snode.appendChild( doc.createTextNode(rep));
         node.appendChild(snode);
+        snode = doc.createElement(tags_name::kHeaders);
+        node.appendChild(snode);
     }
     file.close();
     file.open(QIODevice::WriteOnly);
@@ -231,4 +233,25 @@ QString DataManager::Get(QString path) {
     }
     file.close();
     return "";
+}
+QStringList DataManager::getHeaders(QString paht, QString test) {
+    QDomDocument doc;
+    QFile file(paht);
+    QStringList headers;
+    file.open(QIODevice::ReadOnly);
+    if (doc.setContent(&file, false)) {
+        QDomElement root = doc.documentElement();
+        root = root.firstChildElement(tags_name::kTest);
+        while (root.attribute(tags_name::kName)!=test) {
+            root = root.nextSiblingElement(tags_name::kTest);
+        }
+        root = root.firstChildElement(tags_name::kHeaders);
+        root = root.firstChildElement(tags_name::kScr);
+        while (!root.isNull()) {
+            headers.push_back(root.firstChild().nodeValue());
+            root = root.nextSiblingElement(tags_name::kScr);
+        }
+    }
+    file.close();
+    return headers;
 }
