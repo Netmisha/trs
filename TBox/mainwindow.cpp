@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 QWebView * view;
+TRSManager * manager;
 
 class MainTree : public QStandardItemModel
 {
@@ -86,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlView->setSource(QUrl("qrc:/MainForm.ui.qml"));
     object = qmlView->rootObject();
     selectFolder=new SelectFolderDialog();
+    manager=new TRSManager(object);
     selectFolder->setObject(object);
     qmlView->rootContext()->setContextProperty("selectFolderDialog", selectFolder);
     QWebSettings* settings = QWebSettings::globalSettings();
@@ -321,16 +323,21 @@ void MainTree::FindJSFile(QString data) {
 void MainTree::RunOne() {
     for (auto&it : treeData) {
         if (it.item == currentIndex && it.type == "test") {
+            manager->WriteLog("Test "+it.name+" started.");
             view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
+            manager->WriteLog("Test "+it.name+" finished.");
         }
     }
 }
 void MainTree::Run() {
     run=true;
+    manager->WriteLog("Run all tests.");
     for(auto&it:treeData) {
         if (it.type == "test" && CheckTest(it) && it.repeat>0) {
             for(int i=0; i<it.repeat;i++) {
+                manager->WriteLog("Test "+it.name+" started.");
                 view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
+                manager->WriteLog("Test "+it.name+" finished.");
             }
         }
     }
@@ -445,7 +452,10 @@ bool MainTree::CheckTest(TreeInfo info) {
                 }
             }
         }
+        manager->WriteLog(info.name+" is disabled.");
+        return false;
     }
+    manager->WriteLog(info.name+" :Parent suite is disabled.");
     return false;
 }
 QStringList MainTree::getTestsName(QString file_name) {

@@ -25,7 +25,9 @@ public:
 signals:
     void writeMSG(QString);
 public slots:
+    void WriteLog(QString);
 private:
+    QObject * object;
 };
 
 #endif // TRSMANAGER_H
