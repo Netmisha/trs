@@ -17,6 +17,7 @@ Item {
     property variant win;
     property  variant list_;
     property  variant db_list;
+
     Window{
         id: report_window_
         visible: false
@@ -341,6 +342,7 @@ Item {
                     id: reportsButton
                     iconSource: "icons/icons/report.png"
                     onClicked:{
+
                         DD.defaultTableValue()
                         report_window_.show();}
                 }
