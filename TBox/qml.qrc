@@ -25,5 +25,7 @@
         <file>icons/inspector.png</file>
         <file>icons/openfolder.png</file>
         <file>icons/refresh.png</file>
+        <file>icons/suite.png</file>
+        <file>icons/test.png</file>
     </qresource>
 </RCC>

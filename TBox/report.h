@@ -17,15 +17,15 @@ namespace tags {
     const QString kName="name";
     const QString kExecution="execution";
 }
-class TRSManager : public QObject
+class Report : public QObject
 {
     Q_OBJECT
 public:
-    explicit TRSManager(QObject *parent = 0);
+    explicit Report(QObject *parent = 0);
 signals:
-    void writeMSG(QString);
 public slots:
 private:
+    QObject * object;
 };
 
 #endif // TRSMANAGER_H

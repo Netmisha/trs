@@ -186,6 +186,7 @@ Item {
             cancelJS.visible=false;
             mainTree.enabled=true;
             navigationBar.enabled=true;
+            consoleRect.enabled=true;
             //fontComboBox.visible=false;
         }
     }
@@ -245,6 +246,7 @@ Item {
                 saveNew.visible=false;
                 createNew.visible=true;
                 mainTree.enabled=false;
+                consoleRect.enabled=false;
                 navigationBar.enabled=false;
             }
             else {
@@ -377,12 +379,32 @@ Item {
                        }
                        model: theModel
                        selectionMode: SelectionMode.SingleSelection
-                       headerVisible: false
                        itemDelegate: Rectangle {
                           id : recid
                           color: "transparent"
                           height: 20
+                          Rectangle {
+                              color: "transparent"
+                              height: 20
+                              width: 20
+                              Image {
+                                  height: 15
+                                  width: 15
+                                  verticalAlignment: Image.AlignVCenter
+                                  horizontalAlignment: Image.AlignHCenter
+                                  source: {
+                                      theModel.setCurrentItem(styleData.index);
+                                      if(theModel.GetType()=="test") {
+                                          return "icons/icons/test.png"
+                                      }
+                                      else {
+                                          return "icons/icons/suite.png"
+                                      }
+                                  }
+                              }
+                          }
                           Text {
+                              x:20
                               anchors.verticalCenter: parent.verticalCenter
                               text: styleData.value
                           }
@@ -486,6 +508,7 @@ Item {
                                                     restoreNew.visible=true;
                                                     saveNew.visible=true;
                                                     mainTree.enabled=false;
+                                                    consoleRect.enabled=false;
                                                     navigationBar.enabled=false;
                                                 }
                                             }
@@ -504,6 +527,7 @@ Item {
                                                     restoreNew.visible=true;
                                                     saveNew.visible=true;
                                                     mainTree.enabled=false;
+                                                    consoleRect.enabled=false;
                                                     navigationBar.enabled=false;
                                                 }
                                             }
@@ -529,6 +553,7 @@ Item {
                                                     saveJS.visible=true;
                                                     cancelJS.visible=true;
                                                     mainTree.enabled=false;
+                                                    consoleRect.enabled=false;
                                                     navigationBar.enabled=false;
                                                     //fontComboBox.visible=true;
                                                 }
@@ -548,6 +573,7 @@ Item {
                                                     jsCodeRect.color="#f6f6f6";
                                                     cancelJS.visible=false;
                                                     mainTree.enabled=true;
+                                                    consoleRect.enabled=true;
                                                     navigationBar.enabled=true;
                                                     //fontComboBox.visible=false;
 
@@ -587,6 +613,7 @@ Item {
                                                         saveNew.visible=true;
                                                         testEdit.visible=false;
                                                         mainTree.enabled=false;
+                                                        consoleRect.enabled=false;
                                                         navigationBar.enabled=false;
                                                     }
                                                     else if(theModel.GetType()=="suite") {
@@ -603,6 +630,7 @@ Item {
                                                         restoreNew.visible=true;
                                                         saveNew.visible=true;
                                                         mainTree.enabled=false;
+                                                        consoleRect.enabled=false;
                                                         navigationBar.enabled=false;
                                                         if(theModel.Get("disable")=="false"){
                                                             testStatus.iconSource="icons/icons/turnon.png";
@@ -662,6 +690,7 @@ Item {
                                                     restoreNew.visible=false;
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
+                                                    consoleRect.enabled=true;
                                                     navigationBar.enabled=true;
                                                 }
                                                 iconSource: "icons/icons/restore.png"
@@ -748,6 +777,7 @@ Item {
                                                     restoreNew.visible=false;
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
+                                                    consoleRect.enabled=true;
                                                     navigationBar.enabled=true;
                                                 }
                                             }
@@ -782,6 +812,7 @@ Item {
                                                     restoreNew.visible=false;
                                                     saveNew.visible=false;
                                                     mainTree.enabled=true;
+                                                    consoleRect.enabled=true;
                                                     navigationBar.enabled=true;
                                                     createNew.visible=false
                                                 }

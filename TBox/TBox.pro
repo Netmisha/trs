@@ -11,7 +11,6 @@ TARGET = TBox
 TEMPLATE = app
 SOURCES+= main.cpp\
     mainwindow.cpp \
-    trsmanager.cpp \
     maintree.cpp \
     trscore.cpp \
     database.cpp \
@@ -27,10 +26,10 @@ SOURCES+= main.cpp\
     exporthtml.cpp \
     databasemanager.cpp \
     highlighter.cpp \
-    selectfolderdialog.cpp
+    selectfolderdialog.cpp \
+    report.cpp
 
 HEADERS+= mainwindow.h \
-    trsmanager.h \
     maintree.h \
     trscore.h \
     database.h \
@@ -46,7 +45,8 @@ HEADERS+= mainwindow.h \
     exporthtml.h \
     databasemanager.h \
     highlighter.h \
-    selectfolderdialog.h
+    selectfolderdialog.h \
+    report.h
 
 FORMS+= mainwindow.ui \
     reportform.ui

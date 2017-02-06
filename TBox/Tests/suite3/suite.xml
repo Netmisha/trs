@@ -17,12 +17,6 @@
   <execution>test.js</execution>
   <repeat>5</repeat>
  </test>
- <test description="Test description" name="Test2">
-  <tag>Release,Debug</tag>
-  <disable>true</disable>
-  <execution>test.js</execution>
-  <repeat>5</repeat>
- </test>
  <test description="Test description" name="Test3">
   <tag>Release</tag>
   <disable>true</disable>
@@ -34,5 +28,11 @@
   <disable>true</disable>
   <execution>test.js</execution>
   <repeat>5</repeat>
+ </test>
+ <test description="Test description" name="Test2">
+  <tag>Debug</tag>
+  <disable>false</disable>
+  <execution>test.js</execution>
+  <repeat>2</repeat>
  </test>
 </suite>

@@ -1,7 +1,7 @@
 #ifndef MAINTREE_H
 #define MAINTREE_H
 #include <QStandardItemModel>
-#include "trsmanager.h"
+#include "report.h"
 struct TreeInfo {
     QString file;
     QString name;

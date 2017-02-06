@@ -15,7 +15,7 @@
 #include <QVector>
 #include "maintree.h"
 #include "trscore.h"
-#include "trsmanager.h"
+#include "report.h"
 #include "mainsetting.h"
 #include "datamanager.h"
 #include "testinfo.h"
@@ -37,14 +37,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 public slots:
-    void writeMSG(QString);
+    void writeLog(QString);
 private slots:
+    void onLoad(bool) {
+        qDebug() << "Load done";
+    }
 private:
     DataBase O;
     ExportHTML H;
     Ui::MainWindow *ui;
     QObject *object;
-    TRSManager *trs;
+    Report *report;
     TRSCore *trscore;
     TestInfo *testinfo;
     QQuickView* qmlView;
