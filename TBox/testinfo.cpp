@@ -95,7 +95,7 @@ void TestInfo::FINISH() {
     }
 }
 void TestInfo::BEGIN() {
-    emit testBegin("\nTest \""+testName+"\" started.");
+    emit testBegin("Test \""+testName+"\" started.");
 }
 void TestInfo::ExitOnFinish(bool val) {
     defaultExit=val;

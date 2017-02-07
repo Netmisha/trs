@@ -32,3 +32,4 @@ public:
 };
 
 #endif // SESSIONWINDOWTABLE_H
+

@@ -30,9 +30,9 @@ public slots:
     void Sleep(int);
     int GetScreenWidth();
     int GetScreenHeight();
-    void WindowMinimize();
-    void WindowMaximize();
-    void WindowRestore();
+    void WindowMinimize(QString);
+    void WindowMaximize(QString);
+    void WindowRestore(QString);
     void KeyDown(int dkey);
     void KeyUp(int dkey);
     void KeyPress(int dkey);

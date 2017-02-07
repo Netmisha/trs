@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <databasemanager.h>
 #include <QObject>
+#include <QTime>
 QWebView * view;
 QObject * contextObject;
 class MainTree : public QStandardItemModel
@@ -120,7 +121,8 @@ MainWindow::~MainWindow(){
     selectFolder->deleteLater();
 }
 void MainWindow::writeLog(QString msg){
-    QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, msg));
+    QTime time=QTime::currentTime();
+    QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
 }
 void MainTree::testFinished(QString msg) {
     WriteLog(msg);
@@ -667,6 +669,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
     view->load(QUrl("file:///"+it.getPath()+"/"+"test.html"));
 }
 void MainTree::WriteLog(QString msg) {
-    QMetaObject::invokeMethod(contextObject, "writeLog", Q_ARG(QVariant, msg));
+    QTime time=QTime::currentTime();
+    QMetaObject::invokeMethod(contextObject, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
 }
 #include "mainwindow.moc"
