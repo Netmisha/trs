@@ -40,60 +40,98 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
         file.open(QIODevice::ReadWrite);
      }
      file.resize(0);
-     QTextStream output(&file);
-     output<<"<!DOCTYPE html>\n<html>\n<head>\n</head>\n<body>\n<table style='width:100%;border: 1px solid black'; 'border-collapse: collapse'>\n";
-     /*
-     output<<"<details> ";
-     output<<"<summary>Copyright 1999-2014.</summary> ";
-     output<<" <p> - by Refsnes Data. All Rights Reserved.</p> ";
-     output<<" </details>";
-     */
+         QTextStream output(&file);
+         output<<"<!DOCTYPE html>\n<html>\n<head>\n</head>\n<body>\n<table style='width:100%';'border-collapse: collapse'>\n";
 
-     output<<"<tr style='border: 1px solid black'>\n";
-     output<<"<th style='border: 1px solid black'>";
-     output<<table_n.at(1);
-     output<<"</th >\n";
-     output<<"<th style='border: 1px solid black'>";
-     output<<table_n.at(7);
-     output<<"</th>\n";
-     output<<"<th style='border: 1px solid black'>";
-     output<<table_n.at(5);
-     output<<"</th>\n";
-     output<<"</tr>\n";
-     int t=0;
-     QString cur; QString next_; bool init_=false;
-     for(int i=0;i<table_data.size();i++){
-        output<<"<tr style='border: 1px solid black'>\n";
-        output<<"<td style='border: 1px solid black'>";
-        output<<"<details>";
-        output<<"<summary>";
-        output<<table_data.at(i)->at(0);
-        output<<"</summary>";
-        output<<"</td>";
-        output<<"<td style='border: 1px solid black'>";
-        output<<table_data.at(i)->at(1);
-        output<<"</td>";
-        output<<"<td style='border: 1px solid black'>";
-        output<<table_data.at(i)->at(2);
-        output<<"</td>";
-        output<<"</tr>";
-        output<<"</details>";
-     }
-     /*
-     int t = 0;
-     for(int i=0;i<table_data.size();i++){
          output<<"<tr style='border: 1px solid black'>\n";
-         for(;t<elements_;t++){
-         output<<"<td style='border: 1px solid black'>";
-         output<<table_data.at(i)->at(t);
-         output<<"</td>\n";
-         }
+         output<<"<th style='border: 1px solid black'>";
+         output<<table_n.at(1);
+         output<<"</th >\n";
+         output<<"<th style='border: 1px solid black'>";
+         output<<table_n.at(7);
+         output<<"</th>\n";
+         output<<"<th style='border: 1px solid black'>";
+         output<<table_n.at(5);
+         output<<"</th>\n";
          output<<"</tr>\n";
-         (t == elements_)?t=0:0;
-     }*/
-    output<<"</table>\n";
-    output<<"</body>\n";
-    output<<"</html>\n";
+         output<<"</table>\n";
+         int t=0;
+         bool init_ = true;
+         bool cu = true;
+         QString cur;
+         QString next;
+         for(int i=0;i<table_data.size();i++){
+             if(init_){
+                 init_=false;
+                 cur = table_data.at(i)->at(1);
+                 output<<" <table style='width:100%';'border-collapse: collapse'>\n";
+                 output<<"<tr style='border: 1px solid black'>\n";
+                 output<<"<td style='border: 1px solid black';'border-collapse: collapse'>\n";
+                 output<<"<details>\n";
+                 output<<"<summary>";
+                 output<<cur;
+                 output<<"</summary>\n";
+                 output<<"<table style='width:100%'; 'border-collapse: collapse'>\n";
+                 output<<"<tr style='border: 1px solid black'>\n";
+                 output<<"<td style='border: 1px solid black'>";
+                 output<<table_data.at(i)->at(0);
+                 output<<"</td >\n";
+                 output<<"<td style='border: 1px solid black'>";
+                 output<<table_data.at(i)->at(1);
+                 output<<"</td>\n";
+                 output<<"<td style='border: 1px solid black'>";
+                 output<<table_data.at(i)->at(2);
+                 output<<"</td>\n";
+                 output<<"</tr>\n";
+                 output<<"</td>\n";
+                 output<<"</tr>\n";
+                 (i+1 >=table_data.size())?next=" ": next = table_data.at(i+1)->at(1);
+                 continue;
+
+             }
+                 if(cur == next){
+                     cu = true;
+                     output<<"<tr style='border: 1px solid black'>\n";
+                     output<<"<td style='border: 1px solid black'>";
+                     output<<table_data.at(i)->at(0);
+                     output<<"</td >\n";
+                     output<<"<td style='border: 1px solid black'>";
+                     output<<table_data.at(i)->at(1);
+                     output<<"</td>\n";
+                     output<<"<td style='border: 1px solid black'>";
+                     output<<table_data.at(i)->at(2);
+                     output<<"</td>\n";
+                     output<<"</tr>\n";
+                     output<<"</td>\n";
+                     output<<"</tr>\n";
+                     cur = table_data.at(i)->at(1);
+                     (i+1 >=table_data.size())?next=" ": next = table_data.at(i+1)->at(1);
+                 }else{
+                     if(cu){
+                         output<<"</table>";
+                          output<<"</table>\n";
+                         output<<"</details>\n";
+                     }
+                     cu = false;
+                     cur = table_data.at(i)->at(1);
+                     (i+1 >=table_data.size())?next=" ": next = table_data.at(i+1)->at(1);
+                     output<<" <table style='width:100%';'border-collapse: collapse'>\n";
+                     output<<"<tr style='border: 1px solid black'>\n";
+                     output<<"<td style='border: 1px solid black';'border-collapse: collapse'>\n";
+                     output<<"<details>\n";
+                     output<<"<summary>";
+                     output<<cur;
+                     output<<"</summary>\n";
+                     output<<"<table style='width:100%'; 'border-collapse: collapse'>\n";
+
+                 }
+
+
+           }
+
+
+         output<<"</body>\n";
+         output<<"</html>";
 }
 
 void SessionWindowTable::CreateTable(QString html_url,QVector<QStringList*> table_data,int elements){
