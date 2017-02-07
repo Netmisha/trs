@@ -87,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
     O.setEngi(qmlView);
     qmlView->rootContext()->setContextProperty("DD",&O);
     QObject::connect(&O,SIGNAL(PassHTMLdata(QVector<QStringList*>,QStringList,int,QString)),&H,SLOT(ReceiveHTMLdata(QVector<QStringList*>,QStringList,int,QString)));
+    QObject::connect(&O,SIGNAL(sendSummaryData(QStringList)),&H,SLOT(ReceiveSummaryData(QStringList)));
     QObject::connect(&O,SIGNAL(sendExportPath(QString)),&H,SLOT(ReceiveHTMLpath(QString)));
     qmlView->setGeometry(QRect(200,200,800,600));
     qmlView->setResizeMode(QQuickView::SizeRootObjectToView);

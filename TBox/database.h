@@ -35,7 +35,9 @@ public slots:
    Q_INVOKABLE void Export_Clicked();
 signals:
    void sendExportPath(QString exp);
+   void sendSummaryData(QStringList sum_data);
 public:
+   Q_INVOKABLE QStringList Sumary_data;
    Q_INVOKABLE void defaultTableValue();
    Q_INVOKABLE QString getTableSessionPath();
    Q_INVOKABLE void getExportPath(QString path);
