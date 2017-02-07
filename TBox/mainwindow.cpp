@@ -465,7 +465,7 @@ void MainTree::Parse(QString path, QStandardItem * suite) {
                     treeData.push_back(info);
                 }
             }
-            if (it.fileInfo().isDir()) {
+            if (it.fileInfo().isDir() && !IsFolderEmpty(it.filePath())) {
                 chilSuite.push_back(it.filePath());
             }
         }
