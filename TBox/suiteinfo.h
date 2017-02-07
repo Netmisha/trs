@@ -1,20 +1,16 @@
-#ifndef TEST_H
-#define TEST_H
+#ifndef SUITEINFO_H
+#define SUITEINFO_H
 
 #include <QObject>
 #include <QFile>
 #include <QDir>
 #include <QDomDocument>
 
-class TestInfo : public QObject
+class SuiteInfo : public QObject
 {
     Q_OBJECT
 public:
-    explicit TestInfo(QObject *parent = 0);
-signals:
-    void testFinish(QString);
-    void testBegin(QString);
-    void sendMessage(QString);
+    explicit SuiteInfo(QObject *parent = 0);
 public slots:
     void setPath(QString);
     void setName(QString);
@@ -24,13 +20,10 @@ public slots:
     Q_INVOKABLE void setData(QString, QString);
     Q_INVOKABLE QString getData(QString);
     Q_INVOKABLE bool isData(QString);
-    Q_INVOKABLE void FINISH();
-    Q_INVOKABLE void BEGIN();
-    Q_INVOKABLE void ExitOnFinish(bool);
 protected:
     QString currentPath;
     QString testName;
     bool defaultExit=true;
 };
 
-#endif // TEST_H
+#endif // SUITEINFO_H

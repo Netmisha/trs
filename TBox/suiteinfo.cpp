@@ -1,37 +1,33 @@
-#include "testinfo.h"
+#include "suiteinfo.h"
 #include "datamanager.h"
-TestInfo::TestInfo(QObject *parent) : QObject(parent)
+SuiteInfo::SuiteInfo(QObject *parent) : QObject(parent)
 {
 
 }
-void TestInfo::setPath(QString path) {
+void SuiteInfo::setPath(QString path) {
     currentPath=path;
 }
-void TestInfo::setName(QString name) {
+void SuiteInfo::setName(QString name) {
     testName=name;
 }
-QString TestInfo::getPath() {
+QString SuiteInfo::getPath() {
     return currentPath;
 }
-QString TestInfo::getName() {
+QString SuiteInfo::getName() {
     return testName;
 }
-QString TestInfo::getCurrentDir() {
+QString SuiteInfo::getCurrentDir() {
     return QString(currentPath).replace("/suite.xml","");
 }
-void TestInfo::setData(QString tag, QString data) {
+void SuiteInfo::setData(QString tag, QString data) {
     QDomDocument doc;
     QFile file(currentPath);
     file.open(QIODevice::ReadOnly);
     if (doc.setContent(&file, false)) {
         QDomElement root = doc.documentElement();
-        root = root.firstChildElement(tags_name::kTest);
-        while (root.attribute(tags_name::kName)!=testName) {
-            root = root.nextSiblingElement(tags_name::kTest);
-        }
         if(root.firstChildElement(tags_name::kData).isNull()) {
             QDomElement node = doc.createElement(tags_name::kData);
-            root.appendChild(node);
+            root.insertAfter(node,root.firstChildElement(tags_name::kMetadata));
         }
         root = root.firstChildElement(tags_name::kData);
         if(!root.firstChildElement(tag).isNull()) {
@@ -48,16 +44,12 @@ void TestInfo::setData(QString tag, QString data) {
     file.write(doc.toString().toLatin1());
     file.close();
 }
-QString TestInfo::getData(QString tag) {
+QString SuiteInfo::getData(QString tag) {
     QDomDocument doc;
     QFile file(currentPath);
     file.open(QIODevice::ReadOnly);
     if (doc.setContent(&file, false)) {
         QDomElement root = doc.documentElement();
-        root = root.firstChildElement(tags_name::kTest);
-        while (root.attribute(tags_name::kName)!=testName) {
-            root = root.nextSiblingElement(tags_name::kTest);
-        }
         root = root.firstChildElement(tags_name::kData);
         if(!root.firstChildElement(tag).firstChild().isNull()) {
             return root.firstChildElement(tag).firstChild().nodeValue();
@@ -69,34 +61,15 @@ QString TestInfo::getData(QString tag) {
     file.close();
     return "";
 }
-bool TestInfo::isData(QString tag) {
+bool SuiteInfo::isData(QString tag) {
     QDomDocument doc;
     QFile file(currentPath);
     file.open(QIODevice::ReadOnly);
     if (doc.setContent(&file, false)) {
         QDomElement root = doc.documentElement();
-        root = root.firstChildElement(tags_name::kTest);
-        while (root.attribute(tags_name::kName)!=testName) {
-            root = root.nextSiblingElement(tags_name::kTest);
-        }
         root = root.firstChildElement(tags_name::kData);
         return !root.firstChildElement(tag).isNull();
     }
     file.close();
     return false;
-}
-void TestInfo::FINISH() {
-    if(defaultExit) {
-        emit testFinish("Test \""+testName+"\" finished.\n");
-    }
-    else {
-        defaultExit=true;
-        emit sendMessage("Waiting...");
-    }
-}
-void TestInfo::BEGIN() {
-    emit testBegin("Test \""+testName+"\" started.");
-}
-void TestInfo::ExitOnFinish(bool val) {
-    defaultExit=val;
 }

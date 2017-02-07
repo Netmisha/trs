@@ -2,7 +2,7 @@
 #include <QDesktopWidget>
 #include <QObject>
 TRSCore::TRSCore(QObject *parent) : QObject(parent) {
-    process=new QProcess(this);
+    process=new QProcess();
 }
 void TRSCore::StartApp(QString appName) {
     process->start(appName);
@@ -39,18 +39,21 @@ int TRSCore::GetScreenHeight()
     return desktop.geometry().height();
 }
 
-void TRSCore::WindowMinimize()
+void TRSCore::WindowMinimize(QString windowName)
 {
+    HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     ShowWindow(windowHandle, SW_MINIMIZE);
 }
 
-void TRSCore::WindowMaximize()
+void TRSCore::WindowMaximize(QString windowName)
 {
+    HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     ShowWindow(windowHandle, SW_MAXIMIZE);
 }
 
-void TRSCore::WindowRestore()
+void TRSCore::WindowRestore(QString windowName)
 {
+    HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     ShowWindow(windowHandle, SW_RESTORE);
 }
 void TRSCore::KeyDown(int dkey){
