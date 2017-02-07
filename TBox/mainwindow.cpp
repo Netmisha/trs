@@ -482,12 +482,16 @@ void MainTree::Parse(QString path, QStandardItem * suite) {
     }
 }
 QStandardItem * MainTree::AddItemToTree(QString name) {
+    qDebug()<<"Root!!!  "+this->itemFromIndex(currentIndex)->text();
     QStandardItem * item = new QStandardItem(name);
     int i=0;
     while(this->itemFromIndex(currentIndex)->child(i)!=0) {
         if(this->itemFromIndex(currentIndex)->child(i)->hasChildren()){
+
+            qDebug()<<"FOUND!!!  "+this->itemFromIndex(currentIndex)->child(i)->text();
             break;
         }
+        qDebug()<<this->itemFromIndex(currentIndex)->child(i)->text();
         i++;
     }
     this->itemFromIndex(currentIndex)->insertRow(i,item);
@@ -497,6 +501,9 @@ QStandardItem * MainTree::AddItemToTree(QString name) {
             QStandardItem * itt=this->itemFromIndex(currentIndex)->child(k-1);
             while (it!=treeData.end()) {
                 if(it->item==itt->index()) {
+
+                    qDebug()<<this->itemFromIndex(currentIndex)->child(k)->text();
+                    qDebug()<<it->name;
                     it->item=this->itemFromIndex(currentIndex)->child(k)->index();
                     break;
                 }

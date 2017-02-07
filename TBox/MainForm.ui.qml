@@ -306,6 +306,7 @@ Item {
         consoleText.text=consoleText.text+msg+"\n";
     }
     function showItem (index) {
+        theModel.setCurrentItem(index);
         jsCodeEdit.text = theModel.FindTest(index);
         lineRect.visible=false;
         lineRect.width=0;
@@ -336,6 +337,11 @@ Item {
             newSuite.visible=true;
             centerRect.visible=false;
             testEdit.visible=false;
+            textEditSName.text=theModel.Get("name");
+            textEditSDiscr.text=theModel.Get("description");
+            textEditSRepeat.text=theModel.Get("repeat");
+            addSuiteLayout.visible=true;
+            addSuiteLayout.enabled=false;
         }
         function menuForTest() {
             testToolBar.visible=true;
@@ -343,6 +349,8 @@ Item {
             newSuite.visible=false;
             centerRect.visible=true;
             testEdit.visible=true;
+            addSuiteLayout.visible=false;
+            addSuiteLayout.enabled=true;
         }
         function hideAll() {
             testToolBar.visible=false;
@@ -461,13 +469,13 @@ Item {
                            root.showItem(index);
                        }
                        onDoubleClicked: {
-                           root.showItem(index);
                            if(mainTree.isExpanded(index)) {
                                 mainTree.collapse(index);
                            }
                            else {
                                 mainTree.expand(index);
                            }
+                           root.showItem(index);
                        }
                    }
                 }
@@ -534,7 +542,9 @@ Item {
                                                 onClicked: {
                                                     centerRect.visible=false;
                                                     addTestLayout.visible=true;
+                                                    addSuiteLayout.visible=false;
                                                     testName.text="New Test";
+                                                    theModel.setCurrentItem(mainTree.currentIndex);
                                                     testRun.visible=false;
                                                     newTest.visible=false;
                                                     newSuite.visible=false;
@@ -552,8 +562,11 @@ Item {
                                                 iconSource: "icons/icons/newsuite.png"
                                                 onClicked: {
                                                     centerRect.visible=false;
-                                                    addSuiteLayout.visible=true;
                                                     testName.text="New Suite";
+                                                    theModel.setCurrentItem(mainTree.currentIndex);
+                                                    textEditSName.text="";
+                                                    textEditSDiscr.text="";
+                                                    textEditSRepeat.text="1";
                                                     testRun.visible=false;
                                                     newTest.visible=false;
                                                     newSuite.visible=false;
@@ -564,6 +577,7 @@ Item {
                                                     mainTree.enabled=false;
                                                     consoleRect.enabled=false;
                                                     navigationBar.enabled=false;
+                                                    addSuiteLayout.enabled=true;
                                                 }
                                             }
                                             ToolButton {
@@ -653,6 +667,7 @@ Item {
                                                         mainTree.enabled=false;
                                                         consoleRect.enabled=false;
                                                         navigationBar.enabled=false;
+                                                        addSuiteLayout.enabled=true;
                                                         if(theModel.Get("disable")=="false"){
                                                             testStatus.iconSource="icons/icons/turnon.png";
                                                         }
@@ -673,14 +688,15 @@ Item {
                                                         textEditTTag.text="";
                                                         textEditTRepeat.text="1";
                                                         addTestLayout.visible=false;
+                                                        addSuiteLayout.visible=true;
+                                                        addSuiteLayout.enabled=false;
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
                                                     }
                                                     else if(testName.text== "New Suite") {
-                                                        textEditSName.text="";
-                                                        textEditSDiscr.text="";
-                                                        textEditSRepeat.text="1";
-                                                        addSuiteLayout.visible=false;
+                                                        addSuiteLayout.enabled=false;
+                                                        theModel.setCurrentItem(mainTree.currentIndex);
+                                                        showMenu.menuForSuite();
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
                                                     }
@@ -692,18 +708,18 @@ Item {
                                                             textEditTTag.text="";
                                                             textEditTRepeat.text="1";
                                                             addTestLayout.visible=false;
+                                                            addSuiteLayout.visible=true;
+                                                            addSuiteLayout.enabled=false;
                                                             testEdit.visible=true;
                                                         }
                                                         else {
-                                                            textEditSName.text="";
-                                                            textEditSDiscr.text="";
-                                                            textEditSRepeat.text="1";
-                                                            addSuiteLayout.visible=false;
+                                                            addSuiteLayout.enabled=false;
+                                                            theModel.setCurrentItem(mainTree.currentIndex);
+                                                            showMenu.menuForSuite();
                                                             newTest.visible=true;
                                                             newSuite.visible=true;
                                                         }
                                                     }
-                                                    centerRect.visible=true;
                                                     testName.text=theModel.Get("name");
                                                     testRun.visible=true;
                                                     testDelete.visible=true;
@@ -735,8 +751,11 @@ Item {
                                                         textEditTTag.text="";
                                                         textEditTRepeat.text="1";
                                                         addTestLayout.visible=false;
+                                                        addSuiteLayout.visible=true;
+                                                        addSuiteLayout.enabled=false;
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
+                                                        centerRect.visible=true;
                                                     }
                                                     else if(testName.text== "New Suite") {
                                                         var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
@@ -746,10 +765,9 @@ Item {
                                                             messageDialog.open()
                                                             return;
                                                         }
-                                                        textEditSName.text="";
-                                                        textEditSDiscr.text="";
-                                                        textEditSRepeat.text="1";
-                                                        addSuiteLayout.visible=false;
+                                                        addSuiteLayout.enabled=false;
+                                                        theModel.setCurrentItem(mainTree.currentIndex);
+                                                        showMenu.menuForSuite();
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
                                                     }
@@ -764,7 +782,10 @@ Item {
                                                                 theModel.Set("repeat", textEditTRepeat.text==""?"1":textEditTRepeat.text);
                                                                 theModel.Set("disable", dis);
                                                                 addTestLayout.visible=false;
+                                                                addSuiteLayout.visible=true;
+                                                                addSuiteLayout.enabled=false;
                                                                 testEdit.visible=true;
+                                                                centerRect.visible=true;
                                                             }
                                                             else {
                                                                 messageDialog.text="Fill all fields correctly!";
@@ -774,13 +795,14 @@ Item {
                                                         }
                                                         else {
                                                             if(textEditSName.text!="") {
+                                                                theModel.setCurrentItem(mainTree.currentIndex);
                                                                 theModel.Set("name", textEditSName.text);
                                                                 theModel.Set("description", textEditSDiscr.text);
                                                                 theModel.Set("repeat", textEditSRepeat.text==""?"1":textEditSRepeat.text);
                                                                 theModel.Set("disable", dis);
                                                                 newTest.visible=true;
                                                                 newSuite.visible=true;
-                                                                addSuiteLayout.visible=false;
+                                                                addSuiteLayout.enabled=false;
                                                             }
                                                             else {
                                                                 messageDialog.text="Fill all fields correctly!";
@@ -790,7 +812,6 @@ Item {
                                                         }
                                                     }
                                                     runTags.model=theModel.GetTags();
-                                                    centerRect.visible=true;
                                                     testName.text=theModel.Get("name");
                                                     testRun.visible=true;
                                                     testDelete.visible=true;
@@ -818,6 +839,7 @@ Item {
                                                     textEditSDiscr.text="";
                                                     textEditSRepeat.text="1";
                                                     addSuiteLayout.visible=false;
+                                                    addSuiteLayout.enabled=true;
                                                     newTest.visible=true;
                                                     newSuite.visible=true;
                                                     res=theModel.Load(settingFile.getRootDir());
@@ -1615,6 +1637,7 @@ Item {
             }
             res=theModel.Load(settingFile.getRootDir());
             runTags.model=theModel.GetTags();
+            addSuiteLayout.visible=false;
             theModel.setCurrentTag(runTags.currentText);
             if(res!="") {
                 messageDialog.text=res;
