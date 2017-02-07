@@ -196,10 +196,12 @@ if(!file.exists()){
 
 
         }
-
-
       output<<"</body>\n";
       output<<"</html>";
+      QMessageBox msgBox;
+      msgBox.setText("File has been saved at:"+export_path_);
+      msgBox.exec();
+
 }
 void ExportHTML::ReceiveHTMLdata(QVector<QStringList*> r_data,QStringList tn,int index,QString current_session){
 //CreateDirIfNotExists();

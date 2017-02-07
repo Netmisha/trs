@@ -6,7 +6,7 @@
 #include <QObject>
 #include <qDebug>
 #include <QDir>
-
+#include <QMessageBox>
 class ExportHTML: public QObject
 {
     Q_OBJECT
