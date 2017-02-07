@@ -26,8 +26,10 @@ public:
     public slots:
     void testFinished(QString msg) {
         WriteLog(msg);
+        delete view->page();
+        view->setPage(new QWebPage());
+        view->page()->setProperty("_q_webInspectorServerPort",9876);
         QFile file(testForRun.first().getPath()+"/"+"test.html");
-        qDebug() << file.fileName();
         file.remove();
         if(testForRun.isEmpty()) {
             return;
@@ -369,8 +371,10 @@ void MainTree::RunOne(){
     emit sessionN();
     for (auto& it:treeData) {
         if (it.item == currentIndex && it.type == "test") {
-           CreateHtml(it);
-            break;
+           testForRun.push_back(it);
+           testForRun.first().repeat=0;
+           CreateHtml(testForRun.first());
+           break;
         }
         else if (it.item == currentIndex && it.type == "suite"){
             emit sendSuiteName(it.name);
@@ -383,8 +387,10 @@ void MainTree::RunOne(){
                     }
                 }
             }
-            testForRun.first().repeat--;
-            CreateHtml(testForRun.first());
+            if(!testForRun.isEmpty()) {
+                testForRun.first().repeat--;
+                CreateHtml(testForRun.first());
+            }
         }
     }
 }
@@ -399,8 +405,10 @@ void MainTree::Run() {
             emit sendSuiteName(it.name);
         }
     }
-    testForRun.first().repeat--;
-    CreateHtml(testForRun.first());
+    if(!testForRun.isEmpty()) {
+        testForRun.first().repeat--;
+        CreateHtml(testForRun.first());
+    }
 }
 QStringList MainTree::GetTags() {
     return tags;
@@ -621,9 +629,6 @@ void MainTree::CreateHtml(TreeInfo &it) {
         delete testinfo;
         delete trscore;
     }
-    delete view->page();
-    view->setPage(new QWebPage());
-    view->page()->setProperty("_q_webInspectorServerPort",9876);
     report=new Report();
     view->page()->mainFrame()->addToJavaScriptWindowObject("Report", report);
     trscore=new TRSCore();

@@ -175,20 +175,43 @@ Item {
         id: saveJSAction
         shortcut: "Ctrl+S"
         onTriggered: {
-            theModel.FindJSFile(jsCodeEdit.text);
-            testStatus.visible=true;
-            testRun.visible=true;
-            testDelete.visible=true;
-            testSetting.visible=true;
-            jsCodeEdit.readOnly=true;
-            jsCodeRect.color="#f6f6f6";
-            testEdit.visible=true;
-            saveJS.visible=false;
-            cancelJS.visible=false;
-            mainTree.enabled=true;
-            navigationBar.enabled=true;
-            consoleRect.enabled=true;
-            //fontComboBox.visible=false;
+            if(saveJS.visible){
+                theModel.FindJSFile(jsCodeEdit.text);
+                testStatus.visible=true;
+                testRun.visible=true;
+                testDelete.visible=true;
+                testSetting.visible=true;
+                jsCodeEdit.readOnly=true;
+                jsCodeRect.color="#f6f6f6";
+                testEdit.visible=true;
+                saveJS.visible=false;
+                cancelJS.visible=false;
+                mainTree.enabled=true;
+                navigationBar.enabled=true;
+                consoleRect.enabled=true;
+                //fontComboBox.visible=false;
+            }
+        }
+    }
+    Action {
+        id: editJSAction
+        shortcut: "Ctrl+E"
+        onTriggered: {
+            if(testEdit.visible){
+                testStatus.visible=false;
+                testRun.visible=false;
+                testDelete.visible=false;
+                testSetting.visible=false;
+                testEdit.visible=false;
+                jsCodeEdit.readOnly=false;
+                jsCodeRect.color="white";
+                saveJS.visible=true;
+                cancelJS.visible=true;
+                mainTree.enabled=false;
+                consoleRect.enabled=false;
+                navigationBar.enabled=false;
+                //fontComboBox.visible=true;
+            }
         }
     }
     Action {
@@ -205,16 +228,32 @@ Item {
         }
     }
     Action {
+        id: disableAction
+        shortcut: "Ctrl+D"
+        onTriggered: {
+            if(theModel.Get("disable")=="true"){
+                testStatus.iconSource="icons/icons/turnon.png";
+                theModel.Set("disable","false");
+            }
+            else if(theModel.Get("disable")=="false"){
+                testStatus.iconSource="icons/icons/turnoff.png";
+                theModel.Set("disable","true");
+            }
+        }
+    }
+    Action {
         id: refreshTreeAction
         shortcut: "F5"
         onTriggered: {
-            var res=theModel.Load(settingFile.getRootDir());
-            runTags.model=theModel.GetTags();
-            theModel.setCurrentTag(runTags.currentText);
-            if(res!="") {
-                messageDialog.text=res;
-                messageDialog.open()
-                return;
+            if(navigationBar.enabled) {
+                var res=theModel.Load(settingFile.getRootDir());
+                runTags.model=theModel.GetTags();
+                theModel.setCurrentTag(runTags.currentText);
+                if(res!="") {
+                    messageDialog.text=res;
+                    messageDialog.open()
+                    return;
+                }
             }
         }
     }
@@ -474,16 +513,7 @@ Item {
                                             }*/
                                             ToolButton {
                                                 id: testStatus
-                                                onClicked: {
-                                                    if(theModel.Get("disable")=="true"){
-                                                        testStatus.iconSource="icons/icons/turnon.png";
-                                                        theModel.Set("disable","false");
-                                                    }
-                                                    else if(theModel.Get("disable")=="false"){
-                                                        testStatus.iconSource="icons/icons/turnoff.png";
-                                                        theModel.Set("disable","true");
-                                                    }
-                                                }
+                                                action: disableAction
                                                 iconSource: "icons/icons/turnon.png"
                                             }
                                             ToolButton {
@@ -546,21 +576,7 @@ Item {
                                                 id: testEdit
                                                 iconSource: "icons/icons/testedit.png"
                                                 visible: false
-                                                onClicked:{
-                                                    testStatus.visible=false;
-                                                    testRun.visible=false;
-                                                    testDelete.visible=false;
-                                                    testSetting.visible=false;
-                                                    testEdit.visible=false;
-                                                    jsCodeEdit.readOnly=false;
-                                                    jsCodeRect.color="white";
-                                                    saveJS.visible=true;
-                                                    cancelJS.visible=true;
-                                                    mainTree.enabled=false;
-                                                    consoleRect.enabled=false;
-                                                    navigationBar.enabled=false;
-                                                    //fontComboBox.visible=true;
-                                                }
+                                                action: editJSAction
                                             }
                                             ToolButton {
                                                 id: cancelJS
