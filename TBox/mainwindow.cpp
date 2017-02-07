@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <databasemanager.h>
 #include <QObject>
+#include <QTimer>
 QWebView * view;
 QObject * contextObject;
 class MainTree : public QStandardItemModel
@@ -53,9 +54,10 @@ public:
     Q_INVOKABLE void showInspector();
     Q_INVOKABLE void openFolder();
     Q_INVOKABLE QStringList GetSuiteList();
+    Q_INVOKABLE QStringList getHeaders(QString, QString);
+    Q_INVOKABLE void WriteLog(QString);
 private:
-    void CreateHtml();
-    void WriteLog(QString);
+    void RunScript(TreeInfo &, int);
     void Parse(QString, QStandardItem *);
     QStandardItem * AddItemToTree(QString);
     QString ParseFolder(QString);
@@ -76,15 +78,8 @@ signals:
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
-    view = new QWebView();
+    view = new QWebView(this);
     view->setGeometry(QRect(180,200,100,100));
-    report=new Report();
-    view->page()->mainFrame()->addToJavaScriptWindowObject("Report", report);
-    trscore=new TRSCore();
-    view->page()->mainFrame()->addToJavaScriptWindowObject("Box", trscore);
-    QObject::connect(trscore, SIGNAL(Log(QString)), this, SLOT(writeLog(QString)));
-    testinfo=new TestInfo();
-    view->page()->mainFrame()->addToJavaScriptWindowObject("Test", testinfo);
     qmlRegisterType<MainTree>("cMainTree", 1, 0, "MainTree" );
     qmlRegisterType<MainSetting>("MainSetting", 1, 0, "Setting" );
     qmlRegisterType<FileSaveDialog>("FileSave", 1, 0, "FileSaveDialog");
@@ -93,7 +88,6 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlView->rootContext()->setContextProperty("DD",&O);
     QObject::connect(&O,SIGNAL(PassHTMLdata(QVector<QStringList*>,QStringList,int,QString)),&H,SLOT(ReceiveHTMLdata(QVector<QStringList*>,QStringList,int,QString)));
     QObject::connect(&O,SIGNAL(sendExportPath(QString)),&H,SLOT(ReceiveHTMLpath(QString)));
-    QObject::connect(view, SIGNAL(loadFinished(bool)),this, SLOT(onLoad(bool)));
     qmlView->setGeometry(QRect(200,200,800,600));
     qmlView->setResizeMode(QQuickView::SizeRootObjectToView);
     qmlView->setIcon(QIcon(QPixmap(":/icons/icons/tbox.png")));
@@ -118,9 +112,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow(){
     delete ui;
     view->deleteLater();
-    report->deleteLater();
-    trscore->deleteLater();
-    testinfo->deleteLater();
     qmlView->deleteLater();
     selectFolder->deleteLater();
 }
@@ -145,7 +136,6 @@ QString MainTree::Load(QString path) {
             return res;
         }
     }
-    CreateHtml();
     return res;
 }
 void MainTree::setRootDir(QString path) {
@@ -318,6 +308,9 @@ QStringList MainTree::GetSuiteList() {
     }
     return suites;
 }
+QStringList MainTree::getHeaders(QString file, QString test) {
+    return dm.getHeaders(file, test);
+}
 QString MainTree::getFile(QModelIndex item) {
     for (auto&it : treeData) {
         if (it.item == item) {
@@ -347,17 +340,9 @@ void MainTree::FindJSFile(QString data) {
 }
 void MainTree::RunOne(){
     emit sessionN();
-    for (auto&it : treeData) {
+    for (auto& it:treeData) {
         if (it.item == currentIndex && it.type == "test") {
-            emit sendTestName(it.name);
-            emit sendSuiteName(it.file);
-            data_base_man.sessionStart();
-            view->load(QUrl("file:///"+rootDir+"/"+"test.html"));
-            qDebug()<<"load...";
-            WriteLog("Test "+it.name+" started.");
-            view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
-            WriteLog("Test "+it.name+" finished.");
-            data_base_man.sessionEnd();
+            RunScript(it, 0);
             break;
         }
         else if (it.item == currentIndex && it.type == "suite"){
@@ -366,13 +351,7 @@ void MainTree::RunOne(){
                 for (auto&it2 : treeData) {
                     if (it2.item == currentIndex.child(i,0) && it2.type == "test" && CheckTest(it2) && it2.repeat>0) {
                         for(int i=0; i<it2.repeat;i++) {
-                            emit sendTestName(it2.name);
-                            data_base_man.sessionStart();
-                            view->load(QUrl("file:///"+rootDir+"/"+"test.html"));
-                            WriteLog("Test "+it2.name+" started.");
-                            view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it2.file+"'); Test.setName('"+it2.name+"');"+getJS(it2.file, it2.name));
-                            WriteLog("Test "+it2.name+" finished.");
-                            data_base_man.sessionEnd();
+                             RunScript(it2, i+1);
                         }
                         break;
                     }
@@ -387,13 +366,7 @@ void MainTree::Run() {
     for(auto&it:treeData) {
         if (it.type == "test" && CheckTest(it) && it.repeat>0) {
             for(int i=0; i<it.repeat;i++) {
-                emit sendTestName(it.name);
-                data_base_man.sessionStart();
-                view->load(QUrl("file:///"+rootDir+"/"+"test.html"));
-                WriteLog("Test "+it.name+" started.");
-                view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"'); Test.setName('"+it.name+"');"+getJS(it.file, it.name));
-                WriteLog("Test "+it.name+" finished.");
-                data_base_man.sessionEnd();
+                RunScript(it, i+1);
             }
         }else{
             emit sendSuiteName(it.name);
@@ -511,10 +484,10 @@ bool MainTree::CheckTest(TreeInfo info) {
                 }
             }
         }
-        WriteLog(info.name+" is disabled.");
+        WriteLog("\""+info.name+"\" is disabled.");
         return false;
     }
-    WriteLog(info.name+" :Parent suite is disabled.");
+    WriteLog("\""+info.name+"\" :Parent suite is disabled.");
     return false;
 }
 QStringList MainTree::getTestsName(QString file_name) {
@@ -610,15 +583,34 @@ void MainTree::setJS(QString file_name, QString test_name, QString data) {
     file.write(data.toLatin1());
     file.close();
 }
-
-void MainTree::CreateHtml() {
-    QFile file(rootDir+"/"+"test.html");
-    if(!file.exists()) {
-        file.open(QIODevice::WriteOnly);
-        QString page="<html>\n\t<head>\n\t</head>\n\t<body>\n\t</body>\n</html>";
-        file.write(page.toLatin1());
+void MainTree::RunScript(TreeInfo &it, int rep) {
+    QStringList headers = getHeaders(it.file, it.name);
+    delete view->page();
+    view->setPage(new QWebPage());
+    view->page()->setProperty("_q_webInspectorServerPort",9876);
+    Report *report=new Report();
+    view->page()->mainFrame()->addToJavaScriptWindowObject("Report", report);
+    TRSCore* trscore=new TRSCore();
+    view->page()->mainFrame()->addToJavaScriptWindowObject("Box", trscore);
+    QObject::connect(trscore, SIGNAL(Log(QString)), this, SLOT(WriteLog(QString)));
+    TestInfo *testinfo=new TestInfo();
+    view->page()->mainFrame()->addToJavaScriptWindowObject("Test", testinfo);
+    emit sendTestName(it.name);
+    emit sendSuiteName(it.file);
+    data_base_man.sessionStart();
+    WriteLog("Test \""+it.name+"\" started. (repeat="+QString::number(rep)+")");
+    for(auto& h:headers) {
+        QFile file(h);
+        file.open(QIODevice::ReadOnly);
+        view->page()->mainFrame()->evaluateJavaScript(QString(file.readAll()));
         file.close();
     }
+    view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"');\nTest.setName('"+it.name+"');\n"+getJS(it.file, it.name));
+    WriteLog("Test \""+it.name+"\" finished. (repeat="+QString::number(rep)+")");
+    data_base_man.sessionEnd();
+    delete report;
+    delete trscore;
+    delete testinfo;
 }
 void MainTree::WriteLog(QString msg) {
     QMetaObject::invokeMethod(contextObject, "writeLog", Q_ARG(QVariant, msg));

@@ -24,6 +24,9 @@ public:
     explicit Report(QObject *parent = 0);
 signals:
 public slots:
+    Q_INVOKABLE void FAIL(QString);
+    Q_INVOKABLE void SUCCESS(QString);
+    Q_INVOKABLE void MESSAGE(QString);
 private:
     QObject * object;
 };
