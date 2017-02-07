@@ -14,6 +14,7 @@ public:
 signals:
     void testFinish(QString);
     void testBegin(QString);
+    void sendMessage(QString);
 public slots:
     void setPath(QString);
     void setName(QString);

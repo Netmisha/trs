@@ -223,8 +223,9 @@ Item {
         id: runAllAction
         shortcut: "Ctrl+Shift+R"
         onTriggered: {
-            consoleText.text="";
-            theModel.Run();
+            if(theModel.Run()) {
+                consoleText.text="";
+            }
         }
     }
     Action {

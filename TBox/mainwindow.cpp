@@ -24,25 +24,8 @@ public:
     }
     DataBaseManager data_base_man;
     public slots:
-    void testFinished(QString msg) {
-        WriteLog(msg);
-        if(testForRun.isEmpty()) {
-            return;
-        }
-        if(testForRun.first().repeat>0) {
-            testForRun.first().repeat--;
-            CreateHtml(testForRun.first());
-        }
-        else {
-            testForRun.removeFirst();
-            if(!testForRun.isEmpty()) {
-                CreateHtml(testForRun.first());
-            }
-            else {
-                WriteLog("All tests finished.");
-            }
-        }
-    }
+    void testFinished(QString);
+    void acceptMessage(QString);
     Q_INVOKABLE QString Load(QString path);
     Q_INVOKABLE QString getFile(QModelIndex);
     Q_INVOKABLE QString FindTest(QModelIndex);
@@ -52,7 +35,7 @@ public:
     Q_INVOKABLE static QString getSuiteName(QString);
     Q_INVOKABLE static QString getJS(QString, QString);
     Q_INVOKABLE static void setJS(QString, QString, QString);
-    Q_INVOKABLE void Run();
+    Q_INVOKABLE bool Run();
     Q_INVOKABLE void RunOne();
     Q_INVOKABLE QStringList GetTags();
     Q_INVOKABLE void Stop();
@@ -138,6 +121,29 @@ MainWindow::~MainWindow(){
 }
 void MainWindow::writeLog(QString msg){
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, msg));
+}
+void MainTree::testFinished(QString msg) {
+    WriteLog(msg);
+    run=false;
+    if(testForRun.isEmpty()) {
+        return;
+    }
+    if(testForRun.first().repeat>0) {
+        testForRun.first().repeat--;
+        CreateHtml(testForRun.first());
+    }
+    else {
+        testForRun.removeFirst();
+        if(!testForRun.isEmpty()) {
+            CreateHtml(testForRun.first());
+        }
+        else {
+            WriteLog("All tests finished.");
+        }
+    }
+}
+void MainTree::acceptMessage(QString msg) {
+    WriteLog(msg);
 }
 QString MainTree::Load(QString path) {
     if(path=="") {
@@ -363,6 +369,9 @@ void MainTree::FindJSFile(QString data) {
     }
 }
 void MainTree::RunOne(){
+    if(run) {
+        return;
+    }
     emit sessionN();
     for (auto& it:treeData) {
         if (it.item == currentIndex && it.type == "test") {
@@ -389,8 +398,10 @@ void MainTree::RunOne(){
         }
     }
 }
-void MainTree::Run() {
-    run=true;
+bool MainTree::Run() {
+    if(run) {
+        return false;
+    }
     emit sessionN();
     testForRun.clear();
     for(auto&it:treeData) {
@@ -404,6 +415,7 @@ void MainTree::Run() {
         testForRun.first().repeat--;
         CreateHtml(testForRun.first());
     }
+    return true;
 }
 QStringList MainTree::GetTags() {
     return tags;
@@ -614,6 +626,7 @@ void MainTree::setJS(QString file_name, QString test_name, QString data) {
     file.close();
 }
 void MainTree::CreateHtml(TreeInfo &it) {
+    run=true;
     emit sendTestName(it.name);
     emit sendSuiteName(it.file);
     data_base_man.sessionStart();
@@ -639,6 +652,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
     testinfo->setPath(it.file);
     QObject::connect(testinfo, SIGNAL(testBegin(QString)), this, SLOT(WriteLog(QString)));
     QObject::connect(testinfo, SIGNAL(testFinish(QString)), this, SLOT(testFinished(QString)));
+    QObject::connect(testinfo, SIGNAL(sendMessage(QString)), this, SLOT(acceptMessage(QString)));
     view->page()->mainFrame()->addToJavaScriptWindowObject("Test", testinfo);
     file.open(QIODevice::WriteOnly);
     QString page="<html>\n\t<head>";

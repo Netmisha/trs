@@ -91,6 +91,7 @@ void TestInfo::FINISH() {
     }
     else {
         defaultExit=true;
+        emit sendMessage("Waiting...");
     }
 }
 void TestInfo::BEGIN() {
