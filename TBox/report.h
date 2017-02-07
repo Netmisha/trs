@@ -23,10 +23,11 @@ class Report : public QObject
 public:
     explicit Report(QObject *parent = 0);
 signals:
+    void sendMessage(QString);
 public slots:
-    Q_INVOKABLE void FAIL(QString);
-    Q_INVOKABLE void SUCCESS(QString);
-    Q_INVOKABLE void MESSAGE(QString);
+    Q_INVOKABLE void FAIL(QString msg="");
+    Q_INVOKABLE void SUCCESS(QString msg="");
+    Q_INVOKABLE void MESSAGE(QString msg="");
 private:
     QObject * object;
 };

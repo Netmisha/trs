@@ -653,6 +653,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
     QObject::connect(testinfo, SIGNAL(testBegin(QString)), this, SLOT(WriteLog(QString)));
     QObject::connect(testinfo, SIGNAL(testFinish(QString)), this, SLOT(testFinished(QString)));
     QObject::connect(testinfo, SIGNAL(sendMessage(QString)), this, SLOT(acceptMessage(QString)));
+    QObject::connect(report, SIGNAL(sendMessage(QString)), this, SLOT(acceptMessage(QString)));
     view->page()->mainFrame()->addToJavaScriptWindowObject("Test", testinfo);
     file.open(QIODevice::WriteOnly);
     QString page="<html>\n\t<head>";
