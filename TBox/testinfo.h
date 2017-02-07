@@ -27,7 +27,7 @@ public slots:
     Q_INVOKABLE void FINISH();
     Q_INVOKABLE void BEGIN();
     Q_INVOKABLE void ExitOnFinish(bool);
-private:
+protected:
     QString currentPath;
     QString testName;
     bool defaultExit=true;

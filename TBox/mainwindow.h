@@ -27,6 +27,7 @@
 #include <database.h>
 #include <reportform.h>
 #include <databasemanager.h>
+#include <suiteinfo.h>
 namespace Ui {
 class MainWindow;
 }

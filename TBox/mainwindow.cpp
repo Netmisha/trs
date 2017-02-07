@@ -75,6 +75,7 @@ private:
     QVector<TreeInfo> testForRun;
     Report *report=nullptr;
     TestInfo *testinfo=nullptr;
+    SuiteInfo *suiteinfo=nullptr;
     TRSCore* trscore=nullptr;
 signals:
     void sendTestName(QString);
@@ -141,6 +142,8 @@ void MainTree::testFinished(QString msg) {
         }
         else {
             WriteLog("All tests finished.");
+            delete view->page();
+            view->setPage(new QWebPage());
         }
     }
 }
@@ -637,6 +640,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
     if(report!=nullptr) {
         delete report;
         delete testinfo;
+        delete suiteinfo;
         delete trscore;
     }
     delete view->page();
@@ -655,8 +659,12 @@ void MainTree::CreateHtml(TreeInfo &it) {
     QObject::connect(testinfo, SIGNAL(testBegin(QString)), this, SLOT(WriteLog(QString)));
     QObject::connect(testinfo, SIGNAL(testFinish(QString)), this, SLOT(testFinished(QString)));
     QObject::connect(testinfo, SIGNAL(sendMessage(QString)), this, SLOT(acceptMessage(QString)));
-    QObject::connect(report, SIGNAL(sendMessage(QString)), this, SLOT(acceptMessage(QString)));
     view->page()->mainFrame()->addToJavaScriptWindowObject("Test", testinfo);
+    suiteinfo=new SuiteInfo();
+    suiteinfo->setName(this->itemFromIndex(it.item)->parent()->text());
+    suiteinfo->setPath(it.file);
+    view->page()->mainFrame()->addToJavaScriptWindowObject("Suite", suiteinfo);
+    QObject::connect(report, SIGNAL(sendMessage(QString)), this, SLOT(acceptMessage(QString)));
     file.open(QIODevice::WriteOnly);
     QString page="<html>\n\t<head>";
     for(auto& h:headers) {
