@@ -60,7 +60,12 @@ QString TestInfo::getData(QString tag) {
             root = root.nextSiblingElement(tags_name::kTest);
         }
         root = root.firstChildElement(tags_name::kData);
-        return root.firstChildElement(tag).firstChild().nodeValue();
+        if(!root.firstChildElement(tag).firstChild().isNull()) {
+            return root.firstChildElement(tag).firstChild().nodeValue();
+        }
+        else {
+            return "";
+        }
     }
     file.close();
     return "";

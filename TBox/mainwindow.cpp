@@ -57,7 +57,7 @@ public:
     Q_INVOKABLE QStringList getHeaders(QString, QString);
     Q_INVOKABLE void WriteLog(QString);
 private:
-    void RunScript(TreeInfo &);
+    void RunScript(TreeInfo &, int);
     void Parse(QString, QStandardItem *);
     QStandardItem * AddItemToTree(QString);
     QString ParseFolder(QString);
@@ -342,7 +342,7 @@ void MainTree::RunOne(){
     emit sessionN();
     for (auto& it:treeData) {
         if (it.item == currentIndex && it.type == "test") {
-            RunScript(it);
+            RunScript(it, 0);
             break;
         }
         else if (it.item == currentIndex && it.type == "suite"){
@@ -351,7 +351,7 @@ void MainTree::RunOne(){
                 for (auto&it2 : treeData) {
                     if (it2.item == currentIndex.child(i,0) && it2.type == "test" && CheckTest(it2) && it2.repeat>0) {
                         for(int i=0; i<it2.repeat;i++) {
-                             RunScript(it2);
+                             RunScript(it2, i+1);
                         }
                         break;
                     }
@@ -366,7 +366,7 @@ void MainTree::Run() {
     for(auto&it:treeData) {
         if (it.type == "test" && CheckTest(it) && it.repeat>0) {
             for(int i=0; i<it.repeat;i++) {
-                RunScript(it);
+                RunScript(it, i+1);
             }
         }else{
             emit sendSuiteName(it.name);
@@ -484,10 +484,10 @@ bool MainTree::CheckTest(TreeInfo info) {
                 }
             }
         }
-        WriteLog(info.name+" is disabled.");
+        WriteLog("\""+info.name+"\" is disabled.");
         return false;
     }
-    WriteLog(info.name+" :Parent suite is disabled.");
+    WriteLog("\""+info.name+"\" :Parent suite is disabled.");
     return false;
 }
 QStringList MainTree::getTestsName(QString file_name) {
@@ -583,7 +583,7 @@ void MainTree::setJS(QString file_name, QString test_name, QString data) {
     file.write(data.toLatin1());
     file.close();
 }
-void MainTree::RunScript(TreeInfo &it) {
+void MainTree::RunScript(TreeInfo &it, int rep) {
     QStringList headers = getHeaders(it.file, it.name);
     delete view->page();
     view->setPage(new QWebPage());
@@ -598,7 +598,7 @@ void MainTree::RunScript(TreeInfo &it) {
     emit sendTestName(it.name);
     emit sendSuiteName(it.file);
     data_base_man.sessionStart();
-    WriteLog("Test "+it.name+" started.");
+    WriteLog("Test \""+it.name+"\" started. (repeat="+QString::number(rep)+")");
     for(auto& h:headers) {
         QFile file(h);
         file.open(QIODevice::ReadOnly);
@@ -606,7 +606,7 @@ void MainTree::RunScript(TreeInfo &it) {
         file.close();
     }
     view->page()->mainFrame()->evaluateJavaScript("Test.setPath('"+it.file+"');\nTest.setName('"+it.name+"');\n"+getJS(it.file, it.name));
-    WriteLog("Test "+it.name+" finished.");
+    WriteLog("Test \""+it.name+"\" finished. (repeat="+QString::number(rep)+")");
     data_base_man.sessionEnd();
     delete report;
     delete trscore;
