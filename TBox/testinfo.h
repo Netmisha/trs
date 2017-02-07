@@ -12,7 +12,8 @@ class TestInfo : public QObject
 public:
     explicit TestInfo(QObject *parent = 0);
 signals:
-
+    void testFinish(QString);
+    void testBegin(QString);
 public slots:
     void setPath(QString);
     void setName(QString);
@@ -22,9 +23,13 @@ public slots:
     Q_INVOKABLE void setData(QString, QString);
     Q_INVOKABLE QString getData(QString);
     Q_INVOKABLE bool isData(QString);
+    Q_INVOKABLE void FINISH();
+    Q_INVOKABLE void BEGIN();
+    Q_INVOKABLE void testExitOnFinish(bool);
 private:
     QString currentPath;
     QString testName;
+    bool defaultExit=true;
 };
 
 #endif // TEST_H

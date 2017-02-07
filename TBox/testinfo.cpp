@@ -1,6 +1,5 @@
 #include "testinfo.h"
 #include "datamanager.h"
-
 TestInfo::TestInfo(QObject *parent) : QObject(parent)
 {
 
@@ -85,4 +84,18 @@ bool TestInfo::isData(QString tag) {
     }
     file.close();
     return false;
+}
+void TestInfo::FINISH() {
+    emit testFinish("Test \""+testName+"\" finished.\n");
+}
+void TestInfo::BEGIN() {
+    if(defaultExit) {
+        emit testBegin("\nTest \""+testName+"\" started.");
+    }
+    else {
+        defaultExit=true;
+    }
+}
+void TestInfo::testExitOnFinish(bool val) {
+    defaultExit=val;
 }
