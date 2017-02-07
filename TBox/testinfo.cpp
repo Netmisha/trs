@@ -86,16 +86,16 @@ bool TestInfo::isData(QString tag) {
     return false;
 }
 void TestInfo::FINISH() {
-    emit testFinish("Test \""+testName+"\" finished.\n");
-}
-void TestInfo::BEGIN() {
     if(defaultExit) {
-        emit testBegin("\nTest \""+testName+"\" started.");
+        emit testFinish("Test \""+testName+"\" finished.\n");
     }
     else {
         defaultExit=true;
     }
 }
-void TestInfo::testExitOnFinish(bool val) {
+void TestInfo::BEGIN() {
+    emit testBegin("\nTest \""+testName+"\" started.");
+}
+void TestInfo::ExitOnFinish(bool val) {
     defaultExit=val;
 }

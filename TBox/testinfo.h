@@ -25,7 +25,7 @@ public slots:
     Q_INVOKABLE bool isData(QString);
     Q_INVOKABLE void FINISH();
     Q_INVOKABLE void BEGIN();
-    Q_INVOKABLE void testExitOnFinish(bool);
+    Q_INVOKABLE void ExitOnFinish(bool);
 private:
     QString currentPath;
     QString testName;

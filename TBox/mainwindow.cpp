@@ -26,11 +26,6 @@ public:
     public slots:
     void testFinished(QString msg) {
         WriteLog(msg);
-        delete view->page();
-        view->setPage(new QWebPage());
-        view->page()->setProperty("_q_webInspectorServerPort",9876);
-        QFile file(testForRun.first().getPath()+"/"+"test.html");
-        file.remove();
         if(testForRun.isEmpty()) {
             return;
         }
@@ -95,8 +90,8 @@ private:
     DataManager dm;
     QVector<TreeInfo> testForRun;
     Report *report=nullptr;
-    TRSCore* trscore=nullptr;
     TestInfo *testinfo=nullptr;
+    TRSCore* trscore=nullptr;
 signals:
     void sendTestName(QString);
     void sendSuiteName(QString);
@@ -629,6 +624,11 @@ void MainTree::CreateHtml(TreeInfo &it) {
         delete testinfo;
         delete trscore;
     }
+    delete view->page();
+    view->setPage(new QWebPage());
+    view->page()->setProperty("_q_webInspectorServerPort",9876);
+    /*QFile file(testForRun.first().getPath()+"/"+"test.html");
+    file.remove();*/
     report=new Report();
     view->page()->mainFrame()->addToJavaScriptWindowObject("Report", report);
     trscore=new TRSCore();
