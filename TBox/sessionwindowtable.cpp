@@ -88,7 +88,7 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
          output<<"<tr>"; output<<"<td>"; output<<"Status: ";output<<summary_data.at(0); output<<"</td>"; output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Start time: ";output<<summary_data.at(1); output<<"</td>";output<<"</tr>";output<<"<tr>"; output<<"<td>"; output<<"End time: ";output<<summary_data.at(2); output<<"</td>";
          output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<summary_data.at(3); output<<"</td>";  output<<"</tr>";
-         output<<"<tr>"; output<<"<td>"; output<<"Tests quantity: ";output<<test_r.size(); output<<"</td>"; output<<"</tr>";
+         output<<"<tr>"; output<<"<td>"; output<<"Tests quantity: ";output<<test_r.size()-1; output<<"</td>"; output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Test Passed: ";output<<test_r.at(0); output<<"</td>"; output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Test Failed: ";output<<test_r.at(1); output<<"</td>"; output<<"</tr>";
          output<<"<tr>";
@@ -96,6 +96,14 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
          output<<"</tr>";
          output<<"</table>";
          output<<"<table style='width:100%';'border-collapse: collapse'>\n";
+         output<<"<col width=100>";
+        output<<"<col width=100>";
+        output<<"<col width=100>";
+        output<<"<col width=100>";
+        output<<"<col width=100>";
+       output<<"<col width=100>";
+       output<<"<col width=100>";
+       output<<"<col width=100>";
          output<<"<tr style='border: 1px solid black'>\n";
          output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
          output<<"Name";
@@ -140,6 +148,14 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
                  output<<cur;
                  output<<"</summary>\n";
                  output<<"<table style='width:100%'; 'border-collapse: collapse'>\n";
+                 output<<"<col width=100>";
+                output<<"<col width=100>";
+                output<<"<col width=100>";
+                output<<"<col width=100>";
+                output<<"<col width=100>";
+               output<<"<col width=100>";
+               output<<"<col width=100>";
+               output<<"<col width=100>";
                  output<<"<tr style='border: 1px solid black'>\n";
                  output<<"<td style='border: 1px solid black'>";
                  output<<table_data.at(i)->at(0);
@@ -181,6 +197,7 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
              }
                  if(cur == next){
                      cu = true;
+
                      output<<"<tr style='border: 1px solid black'>\n";
                      output<<"<td style='border: 1px solid black'>";
                      output<<table_data.at(i)->at(0);
@@ -229,6 +246,11 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
                      cur = table_data.at(i)->at(1);
                      (i+1 >=table_data.size())?next=" ": next = table_data.at(i+1)->at(1);
                      output<<" <table style='width:100%';'border-collapse: collapse'>\n";
+                     output<<"<col width='100'>";
+                    output<<"<col width='100'>"; output<<"<col width='100'>";
+                    output<<"<col width='100'>"; output<<"<col width='100'>";
+                    output<<"<col width='100'>"; output<<"<col width='100'>";
+                    output<<"<col width='100'>";
                      output<<"<tr style='border: 1px solid black'>\n";
                      output<<"<td style='border: 1px solid black';'border-collapse: collapse'>\n";
                      output<<"<details open>\n";
@@ -236,6 +258,14 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
                      output<<cur;
                      output<<"</summary>\n";
                      output<<"<table style='width:100%'; 'border-collapse: collapse'>\n";
+                     output<<"<col width=100>";
+                    output<<"<col width=100>";
+                    output<<"<col width=100>";
+                    output<<"<col width=100>";
+                    output<<"<col width=100>";
+                   output<<"<col width=100>";
+                   output<<"<col width=100>";
+                   output<<"<col width=100>";
 
                  }
            }
