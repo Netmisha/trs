@@ -38,7 +38,7 @@ signals:
    void sendSummaryData(QStringList sum_data);
 public:
    Q_INVOKABLE QStringList Sumary_data;
-   Q_INVOKABLE void defaultTableValue();
+   Q_INVOKABLE void defaultTableValue(QString start, QString end);
    Q_INVOKABLE QString getTableSessionPath();
    Q_INVOKABLE void getExportPath(QString path);
    Q_INVOKABLE QString exportFilePath;

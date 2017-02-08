@@ -46,24 +46,24 @@ Item {
                 }
             TableViewColumn {
                                 role: "session_n"
-                                title: "Session"
+                                title: "ID"
                             }
 
             TableViewColumn {
                                 role: "session_s"
-                                title: "Session start"
+                                title: "Start"
                             }
             TableViewColumn {
                                 role: "session_d"
-                                title: "Session durration"
+                                title: "Durration"
                             }
             TableViewColumn {
                                 role: "session_e"
-                                title: "Session end"
+                                title: "End"
                             }
             TableViewColumn {
                                 role: "session_p"
-                                title: "Session passed"
+                                title: "Passed"
                             }
             }
         }
@@ -390,8 +390,7 @@ Item {
                     id: reportsButton
                     iconSource: "icons/icons/report.png"
                     onClicked:{
-
-                        DD.defaultTableValue()
+                        DD.defaultTableValue(qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/')),qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/')))
                         report_window_.show();}
                 }
                 ToolButton {

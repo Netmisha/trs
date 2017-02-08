@@ -2,12 +2,19 @@
 #define FOLDER_DB_NAME "DataBase\\\\"
 #define DATABASE_NAME "TBoxData.db"
 #define LOCALHOST "127.0.0.1"
+#include <algorithm>
 DataBase::DataBase(QObject *parent) :
     QObject(parent)
 {
 
 }
-void DataBase::defaultTableValue(){
+void DataBase::defaultTableValue(QString start, QString end){
+
+    QRegExp exp("/");
+    start_dates = start.split(exp);
+    std::reverse(start_dates.begin(),start_dates.end());
+    end_dates = end.split(exp);
+    std::reverse(end_dates.begin(),end_dates.end());
     QDir DIR;
     QStringList path = DIR.absolutePath().split("/");
     path.removeLast();
@@ -44,7 +51,7 @@ void DataBase::defaultTableValue(){
    cd_.append(QDate::currentDate().toString("MM"));
    cd_.append(QDate::currentDate().toString("yyyy"));
    int i=0;
-   qDebug()<<query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day ="+cd_.at(0)+") and ( Test_Month = "+cd_.at(1)+") and (Test_Year = "+cd_.at(2)+") group by Session_num");
+   qDebug()<< query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num" );
    while(query->next()){
        it.append(query->value(query->record().indexOf("Session_num")).toString());
        pass_session.append(query->value(query->record().indexOf("Test_Passed")).toString());
@@ -156,14 +163,14 @@ QString DataBase::ParseDateE(QString data){
     T.append("/");
     T.append(Date_.at(0));
     return T;
-
 }
 QStringList DataBase::get_seesion_db( QString start,  QString end){
-if(start.isEmpty() || end.isEmpty()){
-   qDebug()<<"start or end date is empty";
-   return it;
-}
-else{
+    if(!start.isEmpty()){
+        start_dates = start.split("/");
+    }
+    if(!end.isEmpty()){
+        end_dates = end.split("/");
+    }
     QDir DIR;
     QStringList path = DIR.absolutePath().split("/");
     path.removeLast();
@@ -190,8 +197,6 @@ else{
              }
             query = new QSqlQuery(db);
             datalist.clear();
-            start_dates = start.split("/");
-            end_dates = end.split("/");
            qDebug()<< query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num" );
            qDebug()<<query->executedQuery();
            QStringList Time_S;
@@ -226,8 +231,8 @@ else{
            list_from_ui = it;
            it.clear();
            return it;
-}
-return it;
+
+
 }
 QString DataBase::row_selected(QString row){
     // qDebug()<<list_from_ui.at(row.toInt());
@@ -280,7 +285,6 @@ QString DataBase::row_selected(QString row){
         Start_time.append(" ");
         Start_time.append(qu->value(qu->record().indexOf("min(S_Start_time)")).toString());
     }
-
     Sumary_data.append(Start_time);
     delete qu;
     qu = new QSqlQuery(db);
@@ -299,12 +303,12 @@ QString DataBase::row_selected(QString row){
 
     delete qu;
     qu = new QSqlQuery(db);
-    qu->exec("select sum(Session_duration) from Info where Session_num ="+list_from_ui.at(row.toInt()));
-    QString Duration;
+    qDebug()<<qu->exec("select Session_duration from Info where Session_num ="+list_from_ui.at(row.toInt()));
+    QStringList Duration;
     while(qu->next()){
-        Duration.append(qu->value(qu->record().indexOf("sum(Session_duration)")).toString());
+        Duration.append(qu->value(qu->record().indexOf("Session_duration")).toString());
     }
-    // create sum of all Session_duration
+    qDebug()<<Duration;
     Sumary_data.append(Duration);
     emit sendSummaryData(Sumary_data);
     WindowTable.setIndex(row.toInt());
@@ -319,7 +323,8 @@ QString DataBase::row_selected(QString row){
     }
     table_path.append("WebViewSessionTable.html");
     TableSessionPath =table_path;
-    WindowTable.CreateTable(table_path,session_data,e->size(),Sumary_data);
+    QStringList test_r; test_r.append(QString::number(y)); test_r.append(QString::number(n));
+    WindowTable.CreateTable(table_path,session_data,e->size(),Sumary_data,test_r);
     return row;
  }
 void DataBase::Export_Clicked(){

@@ -378,16 +378,23 @@ void MainTree::RunOne(){
     if(run) {
         return;
     }
+    QString suite_name;
     emit sessionN();
     for (auto& it:treeData) {
+        if(it.type == "suite"){
+            suite_name = it.name;
+        }
         if (it.item == currentIndex && it.type == "test") {
            testForRun.push_back(it);
            testForRun.first().repeat=0;
+           emit sendTestName(it.name);
+           emit sendSuiteName(suite_name);
+           data_base_man.sessionStart();
            CreateHtml(testForRun.first());
+           data_base_man.sessionEnd();
            break;
         }
         else if (it.item == currentIndex && it.type == "suite"){
-            emit sendSuiteName(it.name);
             testForRun.clear();
             for(int i=0; i<this->itemFromIndex(currentIndex)->rowCount(); i++) {
                 for (auto&it2 : treeData) {
@@ -409,8 +416,12 @@ bool MainTree::Run() {
         return false;
     }
     emit sessionN();
+    QString suite_name;
     testForRun.clear();
     for(auto&it:treeData) {
+        if(it.type == "suite"){
+            suite_name = it.name;
+        }
         if (it.type == "test" && CheckTest(it) && it.repeat>0) {
             testForRun.push_back(it);
         }else{
@@ -640,9 +651,7 @@ void MainTree::setJS(QString file_name, QString test_name, QString data) {
 }
 void MainTree::CreateHtml(TreeInfo &it) {
     run=true;
-    emit sendTestName(it.name);
-    emit sendSuiteName(it.file);
-    data_base_man.sessionStart();
+
     QStringList headers = getHeaders(it.file, it.name);
     QFile file(it.getPath()+"/"+"test.html");
     if(report!=nullptr) {
