@@ -217,13 +217,17 @@ Item {
     Action {
         id: runJSAction
         shortcut: "Ctrl+R"
-        onTriggered: theModel.RunOne()
+        onTriggered: {
+            stopButton.enabled=true;
+            theModel.RunOne();
+        }
     }
     Action {
         id: runAllAction
         shortcut: "Ctrl+Shift+R"
         onTriggered: {
             if(theModel.Run()) {
+                stopButton.enabled=true;
                 consoleText.text="";
             }
         }
@@ -263,6 +267,9 @@ Item {
             selectFolderDialog.setFromSetting(false);
             selectFolderDialog.show();
         }
+    }
+    function setStopDisable(){
+        stopButton.enabled=false;
     }
     function setSelectedFolder(folder) {
         if(selectFolderDialog.isFromSetting()){
@@ -1387,6 +1394,15 @@ Item {
                                                 spacing: 5
                                                 anchors.fill: parent
                                                 Item { Layout.fillWidth: true }
+                                                ToolButton {
+                                                    id: stopButton
+                                                    iconSource: "icons/icons/Stop.png"
+                                                    enabled: false;
+                                                    onClicked: {
+                                                        theModel.Terminate();
+                                                        stopButton.enabled=false;
+                                                    }
+                                                }
                                                 ToolButton {
                                                     id: consoleSave
                                                     enabled: false
