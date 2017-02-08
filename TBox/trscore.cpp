@@ -56,6 +56,11 @@ void TRSCore::WindowRestore(QString windowName)
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     ShowWindow(windowHandle, SW_RESTORE);
 }
+void TRSCore::CloseWindow(QString windowName)
+{
+    HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    SendMessage(windowHandle, WM_SYSCOMMAND, SC_CLOSE, 0);
+}
 void TRSCore::KeyDown(int dkey){
     keybd_event(dkey, 0, 0, 0);
 }
