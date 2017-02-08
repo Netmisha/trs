@@ -52,6 +52,10 @@ void MainSetting::setEditor(QString data) {
     file.open(QIODevice::ReadOnly);
     doc.setContent(&file, false);
     QDomElement root = doc.documentElement();
+    if(root.firstChildElement("editor").isNull()) {
+        QDomElement node = doc.createElement("editor");
+        root.appendChild(node);
+    }
     root = root.firstChildElement("editor");
     if(root.firstChild().isNull()) {
         root.appendChild(doc.createTextNode(data));
