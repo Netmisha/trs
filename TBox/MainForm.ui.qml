@@ -1472,7 +1472,7 @@ Item {
     }
     FileSaveDialog {
         id: editorFileDialog
-        title: "Save file"
+        title: "Select editor"
         dialogMode: true
         parent: columnLayout1
         nameFilters: ["Programs (*.exe)"]

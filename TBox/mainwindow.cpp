@@ -701,7 +701,7 @@ void MainTree::OpenInEditor(QString editor) {
             break;
         }
     }
-    QString command="\""+editor +"\" "+ file;
+    QString command="\""+editor +"\" \""+ file+"\"";
     system(command.toStdString().c_str());
 }
 #include "mainwindow.moc"
