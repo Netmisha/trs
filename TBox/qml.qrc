@@ -29,4 +29,7 @@
         <file>icons/test.png</file>
         <file>icons/editor.png</file>
     </qresource>
+    <qresource prefix="/js">
+        <file>tools.js</file>
+    </qresource>
 </RCC>

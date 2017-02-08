@@ -59,6 +59,7 @@ public:
     Q_INVOKABLE QStringList getHeaders(QString, QString);
     Q_INVOKABLE void WriteLog(QString);
     Q_INVOKABLE void OpenInEditor(QString);
+    Q_INVOKABLE void Terminate();
 private:
     void CreateHtml(TreeInfo&);
     void Parse(QString, QStandardItem *);
@@ -130,7 +131,7 @@ void MainTree::testFinished(QString msg) {
     WriteLog(msg);
     run=false;
     if(testForRun.isEmpty()) {
-
+        QMetaObject::invokeMethod(contextObject, "setStopDisable");
         return;
     }
     if(testForRun.first().repeat>0) {
@@ -144,8 +145,8 @@ void MainTree::testFinished(QString msg) {
         }
         else {
             WriteLog("All tests finished.");
+            QMetaObject::invokeMethod(contextObject, "setStopDisable");
             delete view->page();
-            view->setPage(new QWebPage());
         }
     }
 }
@@ -651,7 +652,6 @@ void MainTree::setJS(QString file_name, QString test_name, QString data) {
 }
 void MainTree::CreateHtml(TreeInfo &it) {
     run=true;
-
     QStringList headers = getHeaders(it.file, it.name);
     QFile file(it.getPath()+"/"+"test.html");
     if(testinfo!=nullptr) {
@@ -659,7 +659,9 @@ void MainTree::CreateHtml(TreeInfo &it) {
         delete suiteinfo;
         delete trscore;
     }
-    delete view->page();
+    if(view->page()){
+        delete view->page();
+    }
     view->setPage(new QWebPage());
     view->page()->setProperty("_q_webInspectorServerPort",9876);
     /*QFile file(testForRun.first().getPath()+"/"+"test.html");
@@ -683,6 +685,11 @@ void MainTree::CreateHtml(TreeInfo &it) {
     for(auto& h:headers) {
         page+="\n\t\t<script src=\""+h+"\" type=\"text/javascript\" charset=\"utf-8\"></script>";
     }
+    QFile tools(":/js/tools.js");
+    file.open(QIODevice::ReadOnly);
+    /*if(file.isOpen()) {
+
+    }*/
     page+="\n\t\t<script type=\"text/javascript\">\n\t\tTest.BEGIN();"+getJS(it.file, it.name)+"\n\t\tTest.SUCCESS()</script>";
     page+="\n\t</head>\n\t<body>\n\t</body>\n</html>";
     file.write(page.toLatin1());
@@ -705,5 +712,11 @@ void MainTree::OpenInEditor(QString editor) {
         }
     }
     ShellExecute(NULL, NULL, (const wchar_t*) editor.utf16(), (const wchar_t*) file.utf16(), NULL, SW_SHOWNORMAL);
+}
+void MainTree::Terminate() {
+    delete view->page();
+    run=false;
+    WriteLog("\nAll tests stopped.\n\n");
+    testForRun.clear();
 }
 #include "mainwindow.moc"
