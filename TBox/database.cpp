@@ -254,7 +254,59 @@ QString DataBase::row_selected(QString row){
          }
     current_session = list_from_ui.at(row.toInt());
     index = e->size();
+    delete qu;
+    qu = new QSqlQuery(db);
+    QStringList t;
+    qu->exec("select Test_Passed from Info where Session_num = "+list_from_ui.at(row.toInt()));
+    while(qu->next()){
+        t.append(qu->value(qu->record().indexOf(rf.Test_Passed)).toString());
+    }
+    int y=0,n=0;
+    for(int i=0;i<t.size();i++){
+        (t.at(i)=="yes")?y++:n++;
+    }
+    (y > n)? Sumary_data.append("All tests passed"):Sumary_data.append("Some tests didn't make it");
+    delete qu;
     SessionWindowTable WindowTable;
+    qu = new QSqlQuery(db);
+    qDebug()<<qu->exec("select min(Test_Day), min(Test_Month),min(Test_Year),min(S_Start_time) from Info where Session_num ="+list_from_ui.at(row.toInt()));
+    QString Start_time;
+    while(qu->next()){
+        Start_time.append(qu->value(qu->record().indexOf("min(Test_Day)")).toString());
+        Start_time.append("/");
+        Start_time.append(qu->value(qu->record().indexOf("min(Test_Month)")).toString());
+        Start_time.append("/");
+        Start_time.append(qu->value(qu->record().indexOf("min(Test_Year)")).toString());
+        Start_time.append(" ");
+        Start_time.append(qu->value(qu->record().indexOf("min(S_Start_time)")).toString());
+    }
+
+    Sumary_data.append(Start_time);
+    delete qu;
+    qu = new QSqlQuery(db);
+    qu->exec("select max(Test_day_e), max(Test_month_e),max(Test_year_e),max(S_Session_end) from Info where Session_num ="+list_from_ui.at(row.toInt()));
+    QString End_time;
+    while(qu->next()){
+        End_time.append(qu->value(qu->record().indexOf("max(Test_day_e)")).toString());
+        End_time.append("/");
+        End_time.append(qu->value(qu->record().indexOf("max(Test_month_e)")).toString());
+        End_time.append("/");
+        End_time.append(qu->value(qu->record().indexOf("max(Test_year_e)")).toString());
+        End_time.append(" ");
+        End_time.append(qu->value(qu->record().indexOf("max(S_Session_end)")).toString());
+    }
+    Sumary_data.append(End_time);
+
+    delete qu;
+    qu = new QSqlQuery(db);
+    qu->exec("select sum(Session_duration) from Info where Session_num ="+list_from_ui.at(row.toInt()));
+    QString Duration;
+    while(qu->next()){
+        Duration.append(qu->value(qu->record().indexOf("sum(Session_duration)")).toString());
+    }
+    // create sum of all Session_duration
+    Sumary_data.append(Duration);
+    emit sendSummaryData(Sumary_data);
     WindowTable.setIndex(row.toInt());
     WindowTable.setTableNames(tn);
     QDir DIR;
@@ -267,7 +319,7 @@ QString DataBase::row_selected(QString row){
     }
     table_path.append("WebViewSessionTable.html");
     TableSessionPath =table_path;
-    WindowTable.CreateTable(table_path,session_data,e->size());
+    WindowTable.CreateTable(table_path,session_data,e->size(),Sumary_data);
     return row;
  }
 void DataBase::Export_Clicked(){
