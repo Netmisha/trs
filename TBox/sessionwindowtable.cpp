@@ -26,7 +26,7 @@ QStringList SessionWindowTable::getTableNames(){
     return table_n;
 
 }
-void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int elements,QStringList summary_data){
+void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int elements,QStringList summary_data,QStringList test_r){
     elements_ = elements;
     QFile file(getHTMLPath());
     QFileInfo *file_info = new QFileInfo(file);
@@ -88,22 +88,47 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
          output<<"<tr>"; output<<"<td>"; output<<"Status: ";output<<summary_data.at(0); output<<"</td>"; output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Start time: ";output<<summary_data.at(1); output<<"</td>";output<<"</tr>";output<<"<tr>"; output<<"<td>"; output<<"End time: ";output<<summary_data.at(2); output<<"</td>";
          output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<summary_data.at(3); output<<"</td>";  output<<"</tr>";
+         output<<"<tr>"; output<<"<td>"; output<<"Tests quantity: ";output<<test_r.size()-1; output<<"</td>"; output<<"</tr>";
+         output<<"<tr>"; output<<"<td>"; output<<"Test Passed: ";output<<test_r.at(0); output<<"</td>"; output<<"</tr>";
+         output<<"<tr>"; output<<"<td>"; output<<"Test Failed: ";output<<test_r.at(1); output<<"</td>"; output<<"</tr>";
          output<<"<tr>";
          output<<"<td>";output<<"File generated: ";output<<today_;output<<"</td>";
          output<<"</tr>";
          output<<"</table>";
-         output<<"<h1> Statics: </h1>";
          output<<"<table style='width:100%';'border-collapse: collapse'>\n";
+         output<<"<col width=100>";
+        output<<"<col width=100>";
+        output<<"<col width=100>";
+        output<<"<col width=100>";
+        output<<"<col width=100>";
+       output<<"<col width=100>";
+       output<<"<col width=100>";
+       output<<"<col width=100>";
          output<<"<tr style='border: 1px solid black'>\n";
          output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
          output<<"Name";
          output<<"</th >\n";
          output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
+         output<<"Descirption";
+         output<<"</th >\n";
+         output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
          output<<"Suite";
+         output<<"</th >\n";
+         output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
+         output<<"Count";
+         output<<"</th >\n";
+         output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
+         output<<"Total Duration";
+         output<<"</th >\n";
+         output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
+         output<<"Pass";
          output<<"</th>\n";
          output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
-         output<<"Passed";
+         output<<"Fail";
          output<<"</th>\n";
+         output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
+         output<<"Result";
+         output<<"</th >\n";
          output<<"</tr>\n";
          output<<"</table>\n";
          int t=0;
@@ -118,18 +143,35 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
                  output<<" <table style='width:100%';'border-collapse: collapse'>\n";
                  output<<"<tr style='border: 1px solid black'>\n";
                  output<<"<td style='border: 1px solid black';'border-collapse: collapse'>\n";
-                 output<<"<details>\n";
+                 output<<"<details open>\n";
                  output<<"<summary style='background-color:#D0D0D0';>";
                  output<<cur;
                  output<<"</summary>\n";
                  output<<"<table style='width:100%'; 'border-collapse: collapse'>\n";
+                 output<<"<col width=100>";
+                output<<"<col width=100>";
+                output<<"<col width=100>";
+                output<<"<col width=100>";
+                output<<"<col width=100>";
+               output<<"<col width=100>";
+               output<<"<col width=100>";
+               output<<"<col width=100>";
                  output<<"<tr style='border: 1px solid black'>\n";
                  output<<"<td style='border: 1px solid black'>";
                  output<<table_data.at(i)->at(0);
                  output<<"</td >\n";
                  output<<"<td style='border: 1px solid black'>";
+                 output<<"Description";
+                 output<<"</td >\n";
+                 output<<"<td style='border: 1px solid black'>";
                  output<<table_data.at(i)->at(1);
+                 output<<"</td >\n";
+                 output<<"<td style='border: 1px solid black'>";
+                 output<<"Count num";
                  output<<"</td>\n";
+                 output<<"<td style='border: 1px solid black'>";
+                 output<<"Duration";
+                 output<<"</td >\n";
                  if(table_data.at(i)->at(2) == "yes"){
                      output<<"<td style='border: 1px solid black'; bgcolor=#7FFF00>";
                      output<<table_data.at(i)->at(2);
@@ -141,6 +183,12 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
                      output<<table_data.at(i)->at(2);
                  }
                  output<<"</td>\n";
+                 output<<"<td style='border: 1px solid black'>";
+                 output<<"Failed";
+                 output<<"</td >\n";
+                 output<<"<td style='border: 1px solid black'>";
+                 output<<"Result";
+                 output<<"</td >\n";
                  output<<"</tr>\n";
                  output<<"</td>\n";
                  output<<"</tr>\n";
@@ -149,13 +197,23 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
              }
                  if(cur == next){
                      cu = true;
+
                      output<<"<tr style='border: 1px solid black'>\n";
                      output<<"<td style='border: 1px solid black'>";
                      output<<table_data.at(i)->at(0);
                      output<<"</td >\n";
                      output<<"<td style='border: 1px solid black'>";
+                     output<<"Description";
+                     output<<"</td >\n";
+                     output<<"<td style='border: 1px solid black'>";
                      output<<table_data.at(i)->at(1);
+                     output<<"</td >\n";
+                     output<<"<td style='border: 1px solid black'>";
+                     output<<"Count num";
                      output<<"</td>\n";
+                     output<<"<td style='border: 1px solid black'>";
+                     output<<"Duration";
+                     output<<"</td >\n";
                      if(table_data.at(i)->at(2) == "yes"){
                          output<<"<td style='border: 1px solid black'; bgcolor=#7FFF00>";
                          output<<table_data.at(i)->at(2);
@@ -167,6 +225,12 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
                          output<<table_data.at(i)->at(2);
                      }
                      output<<"</td>\n";
+                     output<<"<td style='border: 1px solid black'>";
+                     output<<"Failed";
+                     output<<"</td >\n";
+                     output<<"<td style='border: 1px solid black'>";
+                     output<<"Result";
+                     output<<"</td >\n";
                      output<<"</tr>\n";
                      output<<"</td>\n";
                      output<<"</tr>\n";
@@ -182,13 +246,26 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
                      cur = table_data.at(i)->at(1);
                      (i+1 >=table_data.size())?next=" ": next = table_data.at(i+1)->at(1);
                      output<<" <table style='width:100%';'border-collapse: collapse'>\n";
+                     output<<"<col width='100'>";
+                    output<<"<col width='100'>"; output<<"<col width='100'>";
+                    output<<"<col width='100'>"; output<<"<col width='100'>";
+                    output<<"<col width='100'>"; output<<"<col width='100'>";
+                    output<<"<col width='100'>";
                      output<<"<tr style='border: 1px solid black'>\n";
                      output<<"<td style='border: 1px solid black';'border-collapse: collapse'>\n";
-                     output<<"<details>\n";
+                     output<<"<details open>\n";
                      output<<"<summary style='background-color:#D0D0D0'>";
                      output<<cur;
                      output<<"</summary>\n";
                      output<<"<table style='width:100%'; 'border-collapse: collapse'>\n";
+                     output<<"<col width=100>";
+                    output<<"<col width=100>";
+                    output<<"<col width=100>";
+                    output<<"<col width=100>";
+                    output<<"<col width=100>";
+                   output<<"<col width=100>";
+                   output<<"<col width=100>";
+                   output<<"<col width=100>";
 
                  }
            }
@@ -196,8 +273,8 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
          output<<"</html>";
 }
 
-void SessionWindowTable::CreateTable(QString html_url,QVector<QStringList*> table_data,int elements,QStringList summary_data){
+void SessionWindowTable::CreateTable(QString html_url,QVector<QStringList*> table_data,int elements,QStringList summary_data,QStringList test_r){
     setHTMLPath(html_url);
-    CreateHTMLTable(table_data,elements,summary_data);
+    CreateHTMLTable(table_data,elements,summary_data,test_r);
 }
 

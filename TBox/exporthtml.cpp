@@ -84,7 +84,6 @@ if(!file.exists()){
               "}\n </style>\n";
 
       output<<"</head>\n<body style = 'background-color:#F8F8F8   '>\n";
-      output<<"<h1> Summary Report </h1>";
       output<<"<table>";
       output<<"<tr>"; output<<"<td>"; output<<"Status: ";output<<summary_data.at(0); output<<"</td>"; output<<"</tr>";
       output<<"<tr>"; output<<"<td>"; output<<"Start time: ";output<<summary_data.at(1); output<<"</td>";output<<"</tr>";output<<"<tr>"; output<<"<td>"; output<<"End time: ";output<<summary_data.at(2); output<<"</td>";

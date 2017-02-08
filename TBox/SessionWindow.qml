@@ -58,8 +58,8 @@ ApplicationWindow{
         Layout.preferredWidth: 70
         Layout.preferredHeight: 30
         id:export_button
-        x: 527
-        y: 445
+        x: 528
+        y: 0
         text: "Export"
         onClicked: {
             fileDialog.visible = true;

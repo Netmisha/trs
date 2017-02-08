@@ -20,12 +20,12 @@ public:
     int elements_;
     void setTableNames(QStringList table_name);
     QStringList getTableNames();
-    void CreateTable(QString html_url,QVector<QStringList*> table_data,int elements,QStringList summary_data);
+    void CreateTable(QString html_url,QVector<QStringList*> table_data,int elements,QStringList summary_data,QStringList test_r);
     int getIndex();
     void setIndex(int i);
     void setHTMLPath(QString html_url);
     QString getHTMLPath();
-    void CreateHTMLTable( QVector<QStringList*> table_data,int elements,QStringList summary_data);
+    void CreateHTMLTable( QVector<QStringList*> table_data,int elements,QStringList summary_data,QStringList test_r);
     void setTableData( QVector<QStringList*> table_data);
 
 
