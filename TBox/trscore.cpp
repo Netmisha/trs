@@ -23,6 +23,14 @@ void TRSCore::SetOnTop(QString windowName)
         Sleep(200);
     }
 }
+QString TRSCore::GetTopWnd()
+{
+    HWND wind = GetForegroundWindow();
+    wchar_t buff[2048];
+    GetWindowText(wind, buff, 2048);
+    return QString::fromWCharArray(buff);
+
+}
 void TRSCore::Sleep(int msec) {
     QTest::qSleep(msec);
 }
@@ -37,6 +45,37 @@ int TRSCore::GetScreenHeight()
 {
     QDesktopWidget desktop;
     return desktop.geometry().height();
+}
+
+int TRSCore::GetAppWidth(QString windowName)
+{
+    HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    RECT win_rect;
+    if(GetWindowRect(windowHandle, &win_rect)) {
+        return win_rect.right-win_rect.left;
+    }
+    return -1;
+}
+
+int TRSCore::GetAppHeight(QString windowName)
+{
+    HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    RECT win_rect;
+    if(GetWindowRect(windowHandle, &win_rect)) {
+        return win_rect.bottom-win_rect.top;
+    }
+    return -1;
+}
+QRect TRSCore::GetAppRect(QString windowName)
+{
+    HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    RECT win_rect;
+    QRect qwin_rect(QPoint(-1, -1),QPoint(-1,-1));
+    if(GetWindowRect(windowHandle, &win_rect)) {
+        qwin_rect.setTopLeft(QPoint(win_rect.top, win_rect.left));
+        qwin_rect.setBottomRight(QPoint(win_rect.bottom,win_rect.right));
+    }
+    return qwin_rect;
 }
 
 void TRSCore::WindowMinimize(QString windowName)
@@ -220,4 +259,29 @@ bool TRSCore::delFile(QString path) {
     QFile file(path);
     file.remove();
     return true;
+}
+
+bool TRSCore::isKeyExist(QString key)
+{
+     return regSetting.contains(key);
+}
+
+QVariant TRSCore::getKeyValue(QString key)
+{
+    return regSetting.value(key);
+}
+
+void TRSCore::setKeyValue(QString key, QVariant value)
+{
+    regSetting.setValue(key, value);
+}
+
+QString TRSCore::List()
+{
+    QString data;
+    auto list=regSetting.allKeys();
+    for(auto&it:list) {
+        data+=it+"\n";
+    }
+    return data;
 }

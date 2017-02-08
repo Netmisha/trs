@@ -20,6 +20,7 @@
 #include <QXmlStreamWriter>
 #include <QVector>
 #include <QDebug>
+#include <QSettings>
 extern QWebView * view;
 
 #define MOUSEEVENTF_HWHEEL 4096
@@ -36,9 +37,13 @@ public slots:
     void StartApp(QString);
     void CloseApp();
     void SetOnTop(QString);
+    QString GetTopWnd();
     void Sleep(int);
     int GetScreenWidth();
     int GetScreenHeight();
+    int GetAppWidth(QString);
+    int GetAppHeight(QString);
+    QRect GetAppRect(QString);
     void WindowMinimize(QString);
     void WindowMaximize(QString);
     void WindowRestore(QString);
@@ -67,10 +72,16 @@ public slots:
     qint64 getSize(QString);
     bool delDir(QString);
     bool delFile(QString);
+    bool isKeyExist(QString);
+    QVariant getKeyValue(QString);
+    void setKeyValue(QString, QVariant);
+    QString List();
+
 private:
     QProcess *process;
     POINT current_pos;
     HWND windowHandle;
+    QSettings regSetting;
 };
 
 #endif // TRSCORE_H
