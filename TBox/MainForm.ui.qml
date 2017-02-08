@@ -329,10 +329,14 @@ Item {
             testStatus.iconSource="icons/icons/turnoff.png";
         }
     }
+    function selectItem (idx) {
+         mainTree.selection.setCurrentIndex(idx, ItemSelectionModel.ClearAndSelect)
+    }
     Item {
         id: showMenu
         function menuForSuite() {
             testToolBar.visible=true;
+            subToolBar.visible=true;
             newTest.visible=true;
             newSuite.visible=true;
             centerRect.visible=false;
@@ -346,6 +350,7 @@ Item {
         }
         function menuForTest() {
             testToolBar.visible=true;
+            subToolBar.visible=true;
             newTest.visible=false;
             newSuite.visible=false;
             centerRect.visible=true;
@@ -433,6 +438,9 @@ Item {
                        }
                        model: theModel
                        selectionMode: SelectionMode.SingleSelection
+                       selection: ItemSelectionModel {
+                            model: mainTree.model
+                       }
                        itemDelegate: Rectangle {
                           id : recid
                           color: "transparent"
@@ -767,6 +775,7 @@ Item {
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
                                                         centerRect.visible=true;
+                                                        showItem(theModel.getCurrentIndex());
                                                     }
                                                     else if(testName.text== "New Suite") {
                                                         var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
@@ -781,6 +790,7 @@ Item {
                                                         showMenu.menuForSuite();
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
+                                                        showItem(theModel.getCurrentIndex());
                                                     }
                                                     else {
                                                         var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
@@ -1735,7 +1745,10 @@ Item {
             }
             res=theModel.Load(settingFile.getRootDir());
             runTags.model=theModel.GetTags();
+            selectItem(theModel.getCurrentIndex());
             addSuiteLayout.visible=false;
+            centerRect.visible=false;
+            subToolBar.visible=false;
             theModel.setCurrentTag(runTags.currentText);
             if(res!="") {
                 messageDialog.text=res;

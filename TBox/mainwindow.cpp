@@ -194,6 +194,8 @@ QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag
                         tags.push_back(i);
                     }
                 }
+                currentIndex=info.item;
+                QMetaObject::invokeMethod(contextObject, "selectItem", Q_ARG(QVariant, info.item));
             }
             return res;
         }
@@ -217,6 +219,8 @@ QString MainTree::AddNewSuite(QString name, QString dis, QString rep, QString di
                 info.type = "suite";
                 info.repeat = rep.toInt();
                 treeData.push_back(info);
+                currentIndex=info.item;
+                QMetaObject::invokeMethod(contextObject, "selectItem", Q_ARG(QVariant, info.item));
             }
             return res;
         }
@@ -491,29 +495,23 @@ QStandardItem * MainTree::AddItemToTree(QString name) {
     while(this->itemFromIndex(currentIndex)->child(i)!=0) {
         if(this->itemFromIndex(currentIndex)->child(i)->hasChildren() && row==-1){
             row=i;
-            qDebug()<<"Found!!!  "+this->itemFromIndex(currentIndex)->child(i)->text();
         }
         i++;
     }
     this->itemFromIndex(currentIndex)->insertRow(row,item);
     int k=root->rowCount()-1;
-    qDebug()<<root->text();
-    qDebug()<<root->rowCount();
     while (k!=row) {
-            auto it =treeData.begin();
-            QStandardItem * itt=root->child(k-1);
-            while (it!=treeData.end()) {
-                if(it->item==itt->index()) {
-
-                    qDebug()<<root->child(k)->text();
-                    qDebug()<<it->name;
-                    it->item=root->child(k)->index();
-                    break;
-                }
-               it++;
+        auto it =treeData.begin();
+        QStandardItem * itt=root->child(k-1);
+        while (it!=treeData.end()) {
+            if(it->item==itt->index()) {
+                it->item=root->child(k)->index();
+                break;
             }
-            k--;
+           it++;
         }
+        k--;
+    }
     return item;
 }
 QString MainTree::ParseFolder(QString path) {
@@ -697,11 +695,10 @@ void MainTree::OpenInEditor(QString editor) {
             file = it.file;
             file.data()[file.lastIndexOf('/')+1]='\0';
             file=QString(file.data());
-            file+=Get(tags_name::kExecution);
+            file+="\""+Get(tags_name::kExecution)+"\"";
             break;
         }
     }
-    QString command="\""+editor +"\" "+ file;
-    system(command.toStdString().c_str());
+    ShellExecute(NULL, NULL, (const wchar_t*) editor.utf16(), (const wchar_t*) file.utf16(), NULL, SW_SHOWNORMAL);
 }
 #include "mainwindow.moc"
