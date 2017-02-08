@@ -132,7 +132,7 @@ void TRSCore::PrintScreenA(int x, int y, int w, int h, QString file){
     cropped.save(file);
 }
 int TRSCore::exec(QString command) {
-    return system(command.toStdString().c_str());;
+    return system(command.toStdString().c_str());
 }
 QStringList TRSCore::getList(QString path) {
     QStringList files;

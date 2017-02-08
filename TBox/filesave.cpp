@@ -80,6 +80,16 @@ void FileSaveDialog::setTitle(QString title)
     }
 }
 
+bool FileSaveDialog::dialogMode() const
+{
+    return dialogMode_;
+}
+
+void FileSaveDialog::setDialogMode(bool mode)
+{
+    dialogMode_=mode;
+}
+
 QStringList FileSaveDialog::nameFilters() const
 {
     return nameFilters_;
@@ -114,7 +124,12 @@ void FileSaveDialog::open()
     m_parentWindow = window;
 
     m_options->setFileMode(QFileDialogOptions::AnyFile);
-    m_options->setAcceptMode(QFileDialogOptions::AcceptSave);
+    if(dialogMode_) {
+        m_options->setAcceptMode(QFileDialogOptions::AcceptOpen);
+    }
+    else {
+        m_options->setAcceptMode(QFileDialogOptions::AcceptSave);
+    }
     m_options->setWindowTitle(title());
     m_options->setNameFilters(nameFilters());
 

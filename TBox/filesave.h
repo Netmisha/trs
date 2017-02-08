@@ -29,6 +29,10 @@ public:
     QString title() const;
     void setTitle(QString title);
 
+    Q_PROPERTY(bool dialogMode READ dialogMode WRITE setDialogMode NOTIFY dialogModeChanged)
+    bool dialogMode() const;
+    void setDialogMode(bool mode);
+
     Q_PROPERTY(QStringList nameFilters READ nameFilters WRITE setNameFilters NOTIFY nameFiltersChanged)
     QStringList nameFilters() const;
     void setNameFilters(QStringList nameFilters);
@@ -43,6 +47,7 @@ signals:
     void nameFiltersChanged();
     void accepted();
     void rejected();
+    void dialogModeChanged();
 
     // unused
     void validChanged();
@@ -68,6 +73,7 @@ private:
     QString filename_;
     QString title_;
     QStringList nameFilters_;
+    bool dialogMode_=false;
 
     Q_DISABLE_COPY(FileSaveDialog)
 };

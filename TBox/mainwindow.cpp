@@ -58,6 +58,7 @@ public:
     Q_INVOKABLE QStringList GetSuiteList();
     Q_INVOKABLE QStringList getHeaders(QString, QString);
     Q_INVOKABLE void WriteLog(QString);
+    Q_INVOKABLE void OpenInEditor(QString);
 private:
     void CreateHtml(TreeInfo&);
     void Parse(QString, QStandardItem *);
@@ -482,29 +483,30 @@ void MainTree::Parse(QString path, QStandardItem * suite) {
     }
 }
 QStandardItem * MainTree::AddItemToTree(QString name) {
-    qDebug()<<"Root!!!  "+this->itemFromIndex(currentIndex)->text();
     QStandardItem * item = new QStandardItem(name);
+    QStandardItem * root=this->itemFromIndex(currentIndex);
     int i=0;
+    int row=-1;
     while(this->itemFromIndex(currentIndex)->child(i)!=0) {
-        if(this->itemFromIndex(currentIndex)->child(i)->hasChildren()){
-
-            qDebug()<<"FOUND!!!  "+this->itemFromIndex(currentIndex)->child(i)->text();
-            break;
+        if(this->itemFromIndex(currentIndex)->child(i)->hasChildren() && row==-1){
+            row=i;
+            qDebug()<<"Found!!!  "+this->itemFromIndex(currentIndex)->child(i)->text();
         }
-        qDebug()<<this->itemFromIndex(currentIndex)->child(i)->text();
         i++;
     }
-    this->itemFromIndex(currentIndex)->insertRow(i,item);
-    int k=this->itemFromIndex(currentIndex)->rowCount()-1;
-    while (k!=i) {
+    this->itemFromIndex(currentIndex)->insertRow(row,item);
+    int k=root->rowCount()-1;
+    qDebug()<<root->text();
+    qDebug()<<root->rowCount();
+    while (k!=row) {
             auto it =treeData.begin();
-            QStandardItem * itt=this->itemFromIndex(currentIndex)->child(k-1);
+            QStandardItem * itt=root->child(k-1);
             while (it!=treeData.end()) {
                 if(it->item==itt->index()) {
 
-                    qDebug()<<this->itemFromIndex(currentIndex)->child(k)->text();
+                    qDebug()<<root->child(k)->text();
                     qDebug()<<it->name;
-                    it->item=this->itemFromIndex(currentIndex)->child(k)->index();
+                    it->item=root->child(k)->index();
                     break;
                 }
                it++;
@@ -686,5 +688,19 @@ void MainTree::CreateHtml(TreeInfo &it) {
 void MainTree::WriteLog(QString msg) {
     QTime time=QTime::currentTime();
     QMetaObject::invokeMethod(contextObject, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
+}
+void MainTree::OpenInEditor(QString editor) {
+    QString file;
+    for (auto&it : treeData) {
+        if (it.item == currentIndex && it.type == "test") {
+            file = it.file;
+            file.data()[file.lastIndexOf('/')+1]='\0';
+            file=QString(file.data());
+            file+=Get(tags_name::kExecution);
+            break;
+        }
+    }
+    QString command="\""+editor +"\" "+ file;
+    system(command.toStdString().c_str());
 }
 #include "mainwindow.moc"

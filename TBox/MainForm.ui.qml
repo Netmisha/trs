@@ -337,6 +337,7 @@ Item {
             newSuite.visible=true;
             centerRect.visible=false;
             testEdit.visible=false;
+            externalEditor.visible=false;
             textEditSName.text=theModel.Get("name");
             textEditSDiscr.text=theModel.Get("description");
             textEditSRepeat.text=theModel.Get("repeat");
@@ -349,6 +350,7 @@ Item {
             newSuite.visible=false;
             centerRect.visible=true;
             testEdit.visible=true;
+            externalEditor.visible=true;
             addSuiteLayout.visible=false;
             addSuiteLayout.enabled=true;
         }
@@ -535,6 +537,13 @@ Item {
                                                 iconSource: "icons/icons/openfolder.png"
                                                 onClicked: theModel.openFolder()
                                             }
+                                            ToolButton {
+                                                id: externalEditor
+                                                iconSource: "icons/icons/editor.png"
+                                                onClicked: theModel.OpenInEditor(settingFile.getEditor());
+                                                visible: false;
+                                                enabled: false;
+                                            }
                                             Item { Layout.fillWidth: true }
                                             ToolButton {
                                                 id: newTest
@@ -604,6 +613,7 @@ Item {
                                                     testSetting.visible=true;
                                                     jsCodeEdit.readOnly=true;
                                                     testEdit.visible=true;
+                                                    externalEditor.visible=true;
                                                     saveJS.visible=false;
                                                     jsCodeRect.color="#f6f6f6";
                                                     cancelJS.visible=false;
@@ -647,6 +657,7 @@ Item {
                                                         restoreNew.visible=true;
                                                         saveNew.visible=true;
                                                         testEdit.visible=false;
+                                                        externalEditor.visible=false;
                                                         mainTree.enabled=false;
                                                         consoleRect.enabled=false;
                                                         navigationBar.enabled=false;
@@ -708,9 +719,9 @@ Item {
                                                             textEditTTag.text="";
                                                             textEditTRepeat.text="1";
                                                             addTestLayout.visible=false;
-                                                            addSuiteLayout.visible=true;
-                                                            addSuiteLayout.enabled=false;
+                                                            centerRect.visible=true;
                                                             testEdit.visible=true;
+                                                            externalEditor.visible=true;
                                                         }
                                                         else {
                                                             addSuiteLayout.enabled=false;
@@ -782,9 +793,9 @@ Item {
                                                                 theModel.Set("repeat", textEditTRepeat.text==""?"1":textEditTRepeat.text);
                                                                 theModel.Set("disable", dis);
                                                                 addTestLayout.visible=false;
-                                                                addSuiteLayout.visible=true;
-                                                                addSuiteLayout.enabled=false;
+                                                                centerRect.visible=true;
                                                                 testEdit.visible=true;
+                                                                externalEditor.visible=true;
                                                                 centerRect.visible=true;
                                                             }
                                                             else {
@@ -1446,6 +1457,7 @@ Item {
         title: "Save file"
         filename: "log.txt"
         nameFilters: ["Text file (*.txt)", "All files (*)"]
+        parent: consoleRect
         onAccepted: {
             if(saveFile.fileUrl.toString().split("///")[1]=="") {
                 messageDialog.text="Please, select file";
@@ -1456,6 +1468,16 @@ Item {
             request.open("PUT", saveFile.fileUrl, false);
             request.send(consoleText.text);
             return request.status;
+        }
+    }
+    FileSaveDialog {
+        id: editorFileDialog
+        title: "Save file"
+        dialogMode: true
+        parent: columnLayout1
+        nameFilters: ["Programs (*.exe)"]
+        onAccepted: {
+            editorTextInput.text=editorFileDialog.fileUrl.toString().split("///")[1];
         }
     }
     Setting {
@@ -1469,6 +1491,10 @@ Item {
         ColumnLayout {
             id: columnLayout1
             anchors.fill: parent
+            anchors.rightMargin: 5
+            anchors.bottomMargin: 5
+            anchors.leftMargin: 5
+            anchors.topMargin: 5
             RowLayout {
                 id: rowLayout1
                 width: 100
@@ -1556,6 +1582,64 @@ Item {
                 id: rowLayout2
                 width: 100
                 height: 100
+                clip: false
+                spacing: 10
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Text {
+                    id: text2
+                    text: qsTr("External Editor")
+                    font.pixelSize: 12
+                }
+                Rectangle {
+                    id: editorRectInput
+                    width: 82
+                    height: 22
+                    border.color: "lightgray"
+                    border.width: 1
+                    Layout.fillWidth: true
+                    TextInput {
+                        id: editorTextInput
+                        verticalAlignment: TextInput.AlignVCenter
+                        selectByMouse: true
+                        anchors.fill: parent
+                        anchors.rightMargin: 3
+                        anchors.leftMargin: 3
+                        smooth: true
+                        text: {
+                            editorTextInput.text=settingFile.getEditor();
+                            if(editorTextInput.text!="") {
+                                externalEditor.enabled=true;
+                            }
+                            else {
+                                externalEditor.enabled=false;
+                            }
+                        }
+                        layer.enabled: true
+                        font.pixelSize: 12
+                        onFocusChanged: {
+                                    if(focus){
+                                        editorRectInput.border.color = "#569ffd"
+                                    }else{
+                                        editorRectInput.border.color = "lightgray"
+                                    }
+                                }
+                    }
+                }
+                Button {
+                    id: selectEditor
+                    text: "..."
+                    Layout.maximumWidth: 30
+                    onClicked:{
+                        editorFileDialog.open();
+                    }
+                }
+            }
+            RowLayout {
+                id: rowLayout3
+                width: 100
+                height: 100
                 Layout.preferredWidth: -1
                 Layout.alignment: Qt.AlignRight | Qt.AlignBottom
                 Layout.fillHeight: false
@@ -1566,6 +1650,13 @@ Item {
                     id: saveSetting
                     text: qsTr("Save")
                     onClicked: {
+                        settingFile.setEditor(editorTextInput.text);
+                        if(editorTextInput.text!="") {
+                            externalEditor.enabled=true;
+                        }
+                        else {
+                            externalEditor.enabled=false;
+                        }
                         theModel.setRootDir(rootDir.text);
                         settingFile.setRootDir(rootDir.text);
                         if(theModel.IsFolderEmpty(rootDir.text)) {
@@ -1604,6 +1695,13 @@ Item {
                     onClicked: {
                         mainsetting.close();
                         rootDir.text=settingFile.getRootDir();
+                        editorTextInput.text=settingFile.getEditor();
+                        if(editorTextInput.text!="") {
+                            externalEditor.enabled=true;
+                        }
+                        else {
+                            externalEditor.enabled=false;
+                        }
                     }
                     text: qsTr("Cancel")
                 }
