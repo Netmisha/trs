@@ -37,6 +37,38 @@ void MainSetting::setRootDir(QString data) {
     stream << doc.toString();
     file.close();
 }
+QString MainSetting::getEditor() {
+    QDomDocument doc;
+    file.open(QIODevice::ReadOnly);
+    QString res="";
+    doc.setContent(&file, false);
+    QDomElement root = doc.documentElement();
+    res=root.firstChildElement("editor").firstChild().nodeValue();
+    file.close();
+    return res;
+}
+void MainSetting::setEditor(QString data) {
+    QDomDocument doc;
+    file.open(QIODevice::ReadOnly);
+    doc.setContent(&file, false);
+    QDomElement root = doc.documentElement();
+    if(root.firstChildElement("editor").isNull()) {
+        QDomElement node = doc.createElement("editor");
+        root.appendChild(node);
+    }
+    root = root.firstChildElement("editor");
+    if(root.firstChild().isNull()) {
+        root.appendChild(doc.createTextNode(data));
+    }
+    else {
+        root.firstChild().setNodeValue(data);
+    }
+    file.close();
+    file.open(QIODevice::WriteOnly);
+    QTextStream stream( &file );
+    stream << doc.toString();
+    file.close();
+}
 void MainSetting::CreateSetting() {
     QDomDocument doc;
     file.open(QIODevice::ReadOnly);
@@ -50,6 +82,8 @@ void MainSetting::CreateSetting() {
         node.appendChild(snode);
         snode = doc.createElement("info");
         snode.appendChild( doc.createTextNode("Info"));
+        node.appendChild(snode);
+        snode = doc.createElement("editor");
         node.appendChild(snode);
         snode = doc.createElement("dir");
         node.appendChild(snode);

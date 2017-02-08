@@ -58,6 +58,7 @@ public:
     Q_INVOKABLE QStringList GetSuiteList();
     Q_INVOKABLE QStringList getHeaders(QString, QString);
     Q_INVOKABLE void WriteLog(QString);
+    Q_INVOKABLE void OpenInEditor(QString);
 private:
     void CreateHtml(TreeInfo&);
     void Parse(QString, QStandardItem *);
@@ -193,6 +194,8 @@ QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag
                         tags.push_back(i);
                     }
                 }
+                currentIndex=info.item;
+                QMetaObject::invokeMethod(contextObject, "selectItem", Q_ARG(QVariant, info.item));
             }
             return res;
         }
@@ -216,6 +219,8 @@ QString MainTree::AddNewSuite(QString name, QString dis, QString rep, QString di
                 info.type = "suite";
                 info.repeat = rep.toInt();
                 treeData.push_back(info);
+                currentIndex=info.item;
+                QMetaObject::invokeMethod(contextObject, "selectItem", Q_ARG(QVariant, info.item));
             }
             return res;
         }
@@ -494,35 +499,30 @@ void MainTree::Parse(QString path, QStandardItem * suite) {
     }
 }
 QStandardItem * MainTree::AddItemToTree(QString name) {
-    qDebug()<<"Root!!!  "+this->itemFromIndex(currentIndex)->text();
     QStandardItem * item = new QStandardItem(name);
+    QStandardItem * root=this->itemFromIndex(currentIndex);
     int i=0;
+    int row=-1;
     while(this->itemFromIndex(currentIndex)->child(i)!=0) {
-        if(this->itemFromIndex(currentIndex)->child(i)->hasChildren()){
-
-            qDebug()<<"FOUND!!!  "+this->itemFromIndex(currentIndex)->child(i)->text();
-            break;
+        if(this->itemFromIndex(currentIndex)->child(i)->hasChildren() && row==-1){
+            row=i;
         }
-        qDebug()<<this->itemFromIndex(currentIndex)->child(i)->text();
         i++;
     }
-    this->itemFromIndex(currentIndex)->insertRow(i,item);
-    int k=this->itemFromIndex(currentIndex)->rowCount()-1;
-    while (k!=i) {
-            auto it =treeData.begin();
-            QStandardItem * itt=this->itemFromIndex(currentIndex)->child(k-1);
-            while (it!=treeData.end()) {
-                if(it->item==itt->index()) {
-
-                    qDebug()<<this->itemFromIndex(currentIndex)->child(k)->text();
-                    qDebug()<<it->name;
-                    it->item=this->itemFromIndex(currentIndex)->child(k)->index();
-                    break;
-                }
-               it++;
+    this->itemFromIndex(currentIndex)->insertRow(row,item);
+    int k=root->rowCount()-1;
+    while (k!=row) {
+        auto it =treeData.begin();
+        QStandardItem * itt=root->child(k-1);
+        while (it!=treeData.end()) {
+            if(it->item==itt->index()) {
+                it->item=root->child(k)->index();
+                break;
             }
-            k--;
+           it++;
         }
+        k--;
+    }
     return item;
 }
 QString MainTree::ParseFolder(QString path) {
@@ -696,5 +696,18 @@ void MainTree::CreateHtml(TreeInfo &it) {
 void MainTree::WriteLog(QString msg) {
     QTime time=QTime::currentTime();
     QMetaObject::invokeMethod(contextObject, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
+}
+void MainTree::OpenInEditor(QString editor) {
+    QString file;
+    for (auto&it : treeData) {
+        if (it.item == currentIndex && it.type == "test") {
+            file = it.file;
+            file.data()[file.lastIndexOf('/')+1]='\0';
+            file=QString(file.data());
+            file+="\""+Get(tags_name::kExecution)+"\"";
+            break;
+        }
+    }
+    ShellExecute(NULL, NULL, (const wchar_t*) editor.utf16(), (const wchar_t*) file.utf16(), NULL, SW_SHOWNORMAL);
 }
 #include "mainwindow.moc"

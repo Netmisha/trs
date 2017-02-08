@@ -33,6 +33,7 @@ public slots:
     void WindowMinimize(QString);
     void WindowMaximize(QString);
     void WindowRestore(QString);
+    void CloseWindow(QString);
     void KeyDown(int dkey);
     void KeyUp(int dkey);
     void KeyPress(int dkey);

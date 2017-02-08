@@ -18,6 +18,8 @@ public slots:
     Q_INVOKABLE void setFileName(QString);
     Q_INVOKABLE QString getRootDir();
     Q_INVOKABLE void setRootDir(QString);
+    Q_INVOKABLE QString getEditor();
+    Q_INVOKABLE void setEditor(QString);
 private:
     void CreateSetting();
     QString file_name="setting.xml";
