@@ -1,7 +1,6 @@
 #ifndef MAINTREE_H
 #define MAINTREE_H
 #include <QStandardItemModel>
-#include "report.h"
 class TreeInfo {
 public:
     TreeInfo (){}

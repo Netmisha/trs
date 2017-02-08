@@ -24,13 +24,15 @@ public slots:
     Q_INVOKABLE void setData(QString, QString);
     Q_INVOKABLE QString getData(QString);
     Q_INVOKABLE bool isData(QString);
-    Q_INVOKABLE void FINISH();
     Q_INVOKABLE void BEGIN();
     Q_INVOKABLE void ExitOnFinish(bool);
+    Q_INVOKABLE void FAIL(QString msg="");
+    Q_INVOKABLE void SUCCESS(QString msg="");
 protected:
     QString currentPath;
     QString testName;
     bool defaultExit=true;
+    bool finished=false;
 };
 
 #endif // TEST_H

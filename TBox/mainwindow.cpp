@@ -74,7 +74,6 @@ private:
     QString currentTag="All";
     DataManager dm;
     QVector<TreeInfo> testForRun;
-    Report *report=nullptr;
     TestInfo *testinfo=nullptr;
     SuiteInfo *suiteinfo=nullptr;
     TRSCore* trscore=nullptr;
@@ -131,6 +130,7 @@ void MainTree::testFinished(QString msg) {
     WriteLog(msg);
     run=false;
     if(testForRun.isEmpty()) {
+
         return;
     }
     if(testForRun.first().repeat>0) {
@@ -555,8 +555,8 @@ QStringList MainTree::getTestsName(QString file_name) {
     Rxml.readNext();
     while(!Rxml.atEnd()) {
         if(Rxml.isStartElement()) {
-            if(Rxml.name() == tags::kTest) {
-                testList.push_back(Rxml.attributes().value(tags::kName).toString());
+            if(Rxml.name() == tags_name::kTest) {
+                testList.push_back(Rxml.attributes().value(tags_name::kName).toString());
             }
         }
         Rxml.readNext();
@@ -573,8 +573,8 @@ QString MainTree::getSuiteName(QString file_name)
     Rxml.readNext();
     while(!Rxml.atEnd()) {
         if(Rxml.isStartElement()) {
-            if(Rxml.name() == tags::kSuite) {
-                return Rxml.attributes().value(tags::kName).toString();
+            if(Rxml.name() == tags_name::kSuite) {
+                return Rxml.attributes().value(tags_name::kName).toString();
             }
         }
         Rxml.readNext();
@@ -592,9 +592,9 @@ QString MainTree::getJS(QString file_name, QString test_name) {
     Rxml.readNext();
     while(!Rxml.atEnd()) {
         if(Rxml.isStartElement()) {
-            if(Rxml.name() == tags::kTest) {
-                if(Rxml.attributes().value(tags::kName).toString()==test_name) {
-                    while(Rxml.name()!=tags::kExecution) {
+            if(Rxml.name() == tags_name::kTest) {
+                if(Rxml.attributes().value(tags_name::kName).toString()==test_name) {
+                    while(Rxml.name()!=tags_name::kExecution) {
                         Rxml.readNext();
                     }
                     exe+= Rxml.readElementText();
@@ -620,9 +620,9 @@ void MainTree::setJS(QString file_name, QString test_name, QString data) {
     Rxml.readNext();
     while(!Rxml.atEnd()) {
         if(Rxml.isStartElement()) {
-            if(Rxml.name() == tags::kTest) {
-                if(Rxml.attributes().value(tags::kName).toString()==test_name) {
-                    while(Rxml.name()!=tags::kExecution) {
+            if(Rxml.name() == tags_name::kTest) {
+                if(Rxml.attributes().value(tags_name::kName).toString()==test_name) {
+                    while(Rxml.name()!=tags_name::kExecution) {
                         Rxml.readNext();
                     }
                     exe+= Rxml.readElementText();
@@ -645,8 +645,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
     data_base_man.sessionStart();
     QStringList headers = getHeaders(it.file, it.name);
     QFile file(it.getPath()+"/"+"test.html");
-    if(report!=nullptr) {
-        delete report;
+    if(testinfo!=nullptr) {
         delete testinfo;
         delete suiteinfo;
         delete trscore;
@@ -656,8 +655,6 @@ void MainTree::CreateHtml(TreeInfo &it) {
     view->page()->setProperty("_q_webInspectorServerPort",9876);
     /*QFile file(testForRun.first().getPath()+"/"+"test.html");
     file.remove();*/
-    report=new Report();
-    view->page()->mainFrame()->addToJavaScriptWindowObject("Report", report);
     trscore=new TRSCore();
     view->page()->mainFrame()->addToJavaScriptWindowObject("Box", trscore);
     QObject::connect(trscore, SIGNAL(log(QString)), this, SLOT(WriteLog(QString)));
@@ -672,13 +669,12 @@ void MainTree::CreateHtml(TreeInfo &it) {
     suiteinfo->setName(this->itemFromIndex(it.item)->parent()->text());
     suiteinfo->setPath(it.file);
     view->page()->mainFrame()->addToJavaScriptWindowObject("Suite", suiteinfo);
-    QObject::connect(report, SIGNAL(sendMessage(QString)), this, SLOT(acceptMessage(QString)));
     file.open(QIODevice::WriteOnly);
     QString page="<html>\n\t<head>";
     for(auto& h:headers) {
         page+="\n\t\t<script src=\""+h+"\" type=\"text/javascript\" charset=\"utf-8\"></script>";
     }
-    page+="\n\t\t<script type=\"text/javascript\">\n\t\tTest.BEGIN();"+getJS(it.file, it.name)+"\n\t\tTest.FINISH()</script>";
+    page+="\n\t\t<script type=\"text/javascript\">\n\t\tTest.BEGIN();"+getJS(it.file, it.name)+"\n\t\tTest.SUCCESS()</script>";
     page+="\n\t</head>\n\t<body>\n\t</body>\n</html>";
     file.write(page.toLatin1());
     file.close();

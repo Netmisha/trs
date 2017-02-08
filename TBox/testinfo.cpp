@@ -1,4 +1,5 @@
 #include "testinfo.h"
+#include <QDebug>
 #include "datamanager.h"
 TestInfo::TestInfo(QObject *parent) : QObject(parent)
 {
@@ -85,18 +86,27 @@ bool TestInfo::isData(QString tag) {
     file.close();
     return false;
 }
-void TestInfo::FINISH() {
-    if(defaultExit) {
-        emit testFinish("Test \""+testName+"\" finished.\n");
-    }
-    else {
-        defaultExit=true;
-        emit sendMessage("Waiting...");
-    }
-}
 void TestInfo::BEGIN() {
     emit testBegin("Test \""+testName+"\" started.");
 }
 void TestInfo::ExitOnFinish(bool val) {
     defaultExit=val;
+}
+void TestInfo::FAIL(QString msg) {
+    if(!finished) {
+        finished=true;
+        emit testFinish("Test \""+testName+"\" fail. "+msg+"\n");
+    }
+}
+void TestInfo::SUCCESS(QString msg) {
+    if(defaultExit) {
+        if(!finished) {
+            finished=true;
+            emit testFinish("Test \""+testName+"\" success. "+msg+"\n");
+        }
+    }
+    else {
+        defaultExit=true;
+        emit sendMessage("Waiting...");
+    }
 }

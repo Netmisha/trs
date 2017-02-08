@@ -12,6 +12,15 @@
 #include <QFile>
 #include <QDirIterator>
 #include <QFileInfo>
+#include <QDirIterator>
+#include <QtWebKitWidgets/QWebPage>
+#include <QtWebKitWidgets/QWebView>
+#include <QtWebKitWidgets/QWebFrame>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
+#include <QVector>
+#include <QDebug>
+extern QWebView * view;
 
 #define MOUSEEVENTF_HWHEEL 4096
 

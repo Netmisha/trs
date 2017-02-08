@@ -15,7 +15,6 @@
 #include <QVector>
 #include "maintree.h"
 #include "trscore.h"
-#include "report.h"
 #include "mainsetting.h"
 #include "datamanager.h"
 #include "testinfo.h"
