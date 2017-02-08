@@ -144,7 +144,12 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
                  output<<"<tr style='border: 1px solid black'>\n";
                  output<<"<td style='border: 1px solid black';'border-collapse: collapse'>\n";
                  output<<"<details open>\n";
-                 output<<"<summary style='background-color:#D0D0D0';>";
+                 if(test_r.at(0).toInt() > test_r.at(1).toInt()){
+                  output<<"<summary style='background-color:#D0D0D0;outline-color: #3CBC3C; outline-style:double ;'>";
+                 }else{
+                      output<<"<summary style='background-color:#D0D0D0;outline-color: red; outline-style:double ;'>";
+                 }
+
                  output<<cur;
                  output<<"</summary>\n";
                  output<<"<table style='width:100%'; 'border-collapse: collapse'>\n";
@@ -174,18 +179,26 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
                  output<<"</td >\n";
                  if(table_data.at(i)->at(2) == "yes"){
                      output<<"<td style='border: 1px solid black'; bgcolor=#7FFF00>";
-                     output<<table_data.at(i)->at(2);
-                 }else if(table_data.at(i)->at(2)=="no"){
-                     output<<"<td style='border: 1px solid black'; bgcolor=	#DC143C>";
-                     output<<table_data.at(i)->at(2);
-                 }else{
-                     output<<"<td style='border: 1px solid black'>";
-                     output<<table_data.at(i)->at(2);
+                     output<<"</td>\n";
+                     //output<<table_data.at(i)->at(2);
                  }
-                 output<<"</td>\n";
-                 output<<"<td style='border: 1px solid black'>";
-                 output<<"Failed";
-                 output<<"</td >\n";
+                 else{
+                     output<<"<td style='border: 1px solid black'>";
+                     output<<"</td>\n";
+                     //output<<table_data.at(i)->at(2);
+                 }
+
+                if(table_data.at(i)->at(2)=="no"){
+                output<<"<td style='border: 1px solid black'; bgcolor=	#DC143C>";
+                output<<"</td>\n";
+
+                }
+                else{
+                     output<<"<td style='border: 1px solid black'>";
+                     output<<"</td>\n";
+
+                 }
+
                  output<<"<td style='border: 1px solid black'>";
                  output<<"Result";
                  output<<"</td >\n";
@@ -197,7 +210,6 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
              }
                  if(cur == next){
                      cu = true;
-
                      output<<"<tr style='border: 1px solid black'>\n";
                      output<<"<td style='border: 1px solid black'>";
                      output<<table_data.at(i)->at(0);
@@ -216,18 +228,25 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
                      output<<"</td >\n";
                      if(table_data.at(i)->at(2) == "yes"){
                          output<<"<td style='border: 1px solid black'; bgcolor=#7FFF00>";
-                         output<<table_data.at(i)->at(2);
-                     }else if(table_data.at(i)->at(2)=="no"){
-                         output<<"<td style='border: 1px solid black'; bgcolor=	#DC143C>";
-                         output<<table_data.at(i)->at(2);
-                     }else{
-                         output<<"<td style='border: 1px solid black'>";
-                         output<<table_data.at(i)->at(2);
+                         output<<"</td>\n";
+                         //output<<table_data.at(i)->at(2);
                      }
-                     output<<"</td>\n";
-                     output<<"<td style='border: 1px solid black'>";
-                     output<<"Failed";
-                     output<<"</td >\n";
+                     else{
+                         output<<"<td style='border: 1px solid black'>";
+                         output<<"</td>\n";
+                         //output<<table_data.at(i)->at(2);
+                     }
+
+                    if(table_data.at(i)->at(2)=="no"){
+                    output<<"<td style='border: 1px solid black'; bgcolor=	#DC143C>";
+                    output<<"</td>\n";
+
+                    }
+                    else{
+                         output<<"<td style='border: 1px solid black'>";
+                         output<<"</td>\n";
+
+                     }
                      output<<"<td style='border: 1px solid black'>";
                      output<<"Result";
                      output<<"</td >\n";
@@ -254,7 +273,11 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
                      output<<"<tr style='border: 1px solid black'>\n";
                      output<<"<td style='border: 1px solid black';'border-collapse: collapse'>\n";
                      output<<"<details open>\n";
-                     output<<"<summary style='background-color:#D0D0D0'>";
+                     if(test_r.at(0).toInt() > test_r.at(1).toInt()){
+                      output<<"<summary style='background-color:#D0D0D0;outline-color: #3CBC3C; outline-style:double ;'>";
+                     }else{
+                          output<<"<summary style='background-color:red;outline-color: red; outline-style:double ;'>";
+                     }
                      output<<cur;
                      output<<"</summary>\n";
                      output<<"<table style='width:100%'; 'border-collapse: collapse'>\n";
