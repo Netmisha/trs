@@ -686,10 +686,12 @@ void MainTree::CreateHtml(TreeInfo &it) {
         page+="\n\t\t<script src=\""+h+"\" type=\"text/javascript\" charset=\"utf-8\"></script>";
     }
     QFile tools(":/js/tools.js");
-    file.open(QIODevice::ReadOnly);
-    /*if(file.isOpen()) {
-
-    }*/
+    tools.open(QIODevice::ReadOnly);
+    if(tools.isOpen()) {
+        QString tooljs(tools.readAll());
+        page+="\n\t\t<script type=\"text/javascript\">\n\t\t"+tooljs+"</script>";
+        tools.close();
+    }
     page+="\n\t\t<script type=\"text/javascript\">\n\t\tTest.BEGIN();"+getJS(it.file, it.name)+"\n\t\tTest.SUCCESS()</script>";
     page+="\n\t</head>\n\t<body>\n\t</body>\n</html>";
     file.write(page.toLatin1());

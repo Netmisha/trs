@@ -1,4 +1,4 @@
-function hash(){
+function md5(){
   var l='length',
   h=[
    '0123456789abcdef',0x0F,0x80,0xFFFF,
@@ -54,6 +54,9 @@ function hash(){
     };return X(v[0])+X(v[1])+X(v[2])+X(v[3]);
 }};
 
+function hash(data) {
+    return md5()(data);
+}
 
 function getHash(obj){
   var strObj = JSON.stringify(obj);
