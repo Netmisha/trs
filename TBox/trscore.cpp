@@ -263,25 +263,37 @@ bool TRSCore::delFile(QString path) {
 
 bool TRSCore::isKeyExist(QString key)
 {
-     return regSetting.contains(key);
+    QString separator=key.contains("/")?"/":"\\";
+    QSettings regSetting(key.left(key.lastIndexOf(separator)), QSettings::NativeFormat);
+    return regSetting.contains(key.right(key.length()-key.lastIndexOf(separator)-1));
 }
 
 QVariant TRSCore::getKeyValue(QString key)
 {
-    return regSetting.value(key);
+    QString separator=key.contains("/")?"/":"\\";
+    QSettings regSetting(key.left(key.lastIndexOf(separator)), QSettings::NativeFormat);
+    return regSetting.value(key.right(key.length()-key.lastIndexOf(separator)-1));
 }
 
 void TRSCore::setKeyValue(QString key, QVariant value)
 {
-    regSetting.setValue(key, value);
+    QString separator=key.contains("/")?"/":"\\";
+    QSettings regSetting(key.left(key.lastIndexOf(separator)), QSettings::NativeFormat);
+    regSetting.setValue(key.right(key.length()-key.lastIndexOf(separator)-1), value);
 }
-
-QString TRSCore::List()
+QString TRSCore::List(QString path)
 {
+    if(path=="") {
+        return "Invalid path.";
+    }
     QString data;
-    auto list=regSetting.allKeys();
-    for(auto&it:list) {
-        data+=it+"\n";
+    QSettings regSetting(path, QSettings::NativeFormat);
+    QStringList list=regSetting.allKeys();
+    for(auto& it:list) {
+        data+=path+it+"\n";
+    }
+    if(data.size()>1000000) {
+        return "A lot of data";
     }
     return data;
 }

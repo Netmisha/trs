@@ -23,6 +23,9 @@
 #include <QSettings>
 extern QWebView * view;
 
+namespace reg_keys {
+    const QStringList kHKey={"HKEY_CLASSES_ROOT","HKEY_CURRENT_USER","HKEY_LOCAL_MACHINE","HKEY_USERS","HKEY_CURRENT_CONFIG"};
+}
 #define MOUSEEVENTF_HWHEEL 4096
 
 class TRSCore : public QObject
@@ -75,13 +78,12 @@ public slots:
     bool isKeyExist(QString);
     QVariant getKeyValue(QString);
     void setKeyValue(QString, QVariant);
-    QString List();
+    QString List(QString);
 
 private:
     QProcess *process;
     POINT current_pos;
     HWND windowHandle;
-    QSettings regSetting;
 };
 
 #endif // TRSCORE_H

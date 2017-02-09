@@ -718,7 +718,7 @@ void MainTree::OpenInEditor(QString editor) {
 void MainTree::Terminate() {
     delete view->page();
     run=false;
-    WriteLog("\nAll tests stopped.\n\n");
+    WriteLog("All tests stopped.\n\n");
     testForRun.clear();
 }
 #include "mainwindow.moc"

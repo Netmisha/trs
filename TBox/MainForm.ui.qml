@@ -218,8 +218,10 @@ Item {
         id: runJSAction
         shortcut: "Ctrl+R"
         onTriggered: {
-            stopButton.enabled=true;
+            stopTestButton.visible=true;
             theModel.RunOne();
+            testRun.visible=false;
+            startButton.enabled=false;
         }
     }
     Action {
@@ -227,8 +229,10 @@ Item {
         shortcut: "Ctrl+Shift+R"
         onTriggered: {
             if(theModel.Run()) {
-                stopButton.enabled=true;
+                stopAllTestsButton.visible=true;
                 consoleText.text="";
+                startButton.visible=false;
+                testRun.enabled=false;
             }
         }
     }
@@ -262,6 +266,16 @@ Item {
             }
         }
     }
+    Action {
+        id: stopTestAction
+        shortcut: "F12"
+        onTriggered: {
+            if(stopTestButton.visible || stopAllTestsButton.visible) {
+                theModel.Terminate();
+                setStopDisable();
+            }
+        }
+    }
     function checkRootDir() {
         if(rootDir.text==""){
             selectFolderDialog.setFromSetting(false);
@@ -269,7 +283,12 @@ Item {
         }
     }
     function setStopDisable(){
-        stopButton.enabled=false;
+        stopAllTestsButton.visible=false;
+        startButton.visible=true;
+        stopTestButton.visible=false;
+        testRun.visible=true;
+        startButton.enabled=true;
+        testRun.enabled=true;
     }
     function setSelectedFolder(folder) {
         if(selectFolderDialog.isFromSetting()){
@@ -399,6 +418,12 @@ Item {
                     id: startButton
                     action: runAllAction
                     iconSource: "icons/icons/Run.png"
+                }
+                ToolButton {
+                    id: stopAllTestsButton
+                    visible: false
+                    iconSource: "icons/icons/Stop.png"
+                    action: stopTestAction
                 }
                 ToolButton {
                     id: reportsButton
@@ -545,6 +570,12 @@ Item {
                                                 id: testRun
                                                 iconSource: "icons/icons/Run.png"
                                                 action: runJSAction
+                                            }
+                                            ToolButton {
+                                                id: stopTestButton
+                                                visible: false
+                                                iconSource: "icons/icons/Stop.png"
+                                                action: stopTestAction
                                             }
                                             ToolButton {
                                                 id: openFolder
@@ -1395,15 +1426,6 @@ Item {
                                                 anchors.fill: parent
                                                 Item { Layout.fillWidth: true }
                                                 ToolButton {
-                                                    id: stopButton
-                                                    iconSource: "icons/icons/Stop.png"
-                                                    enabled: false;
-                                                    onClicked: {
-                                                        theModel.Terminate();
-                                                        stopButton.enabled=false;
-                                                    }
-                                                }
-                                                ToolButton {
                                                     id: consoleSave
                                                     enabled: false
                                                     onClicked: {
@@ -1431,9 +1453,9 @@ Item {
                                         ScrollView {
                                             Layout.fillWidth: true
                                             Layout.fillHeight: true
-                                            TextEdit {
+                                            contentItem: TextEdit {
                                                 id: consoleText
-                                                anchors.horizontalCenter: parent.horizontalCenter
+                                                Layout.fillWidth: true
                                                 selectByMouse: true
                                                 font.pixelSize: 12
                                                 onTextChanged: {
