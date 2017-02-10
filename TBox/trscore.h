@@ -20,8 +20,12 @@
 #include <QXmlStreamWriter>
 #include <QVector>
 #include <QDebug>
+#include <QSettings>
 extern QWebView * view;
 
+namespace reg_keys {
+    const QStringList kHKey={"HKEY_CLASSES_ROOT","HKEY_CURRENT_USER","HKEY_LOCAL_MACHINE","HKEY_USERS","HKEY_CURRENT_CONFIG"};
+}
 #define MOUSEEVENTF_HWHEEL 4096
 
 class TRSCore : public QObject
@@ -36,9 +40,13 @@ public slots:
     void StartApp(QString);
     void CloseApp();
     void SetOnTop(QString);
+    QString GetTopWnd();
     void Sleep(int);
     int GetScreenWidth();
     int GetScreenHeight();
+    int GetAppWidth(QString);
+    int GetAppHeight(QString);
+    QRect GetAppRect(QString);
     void WindowMinimize(QString);
     void WindowMaximize(QString);
     void WindowRestore(QString);
@@ -67,6 +75,11 @@ public slots:
     qint64 getSize(QString);
     bool delDir(QString);
     bool delFile(QString);
+    bool isKeyExist(QString);
+    QVariant getKeyValue(QString);
+    void setKeyValue(QString, QVariant);
+    QString List(QString);
+
 private:
     QProcess *process;
     POINT current_pos;
