@@ -141,7 +141,7 @@ void MainTree::testFinished(QString msg) {
         QMetaObject::invokeMethod(contextObject, "setStopDisable");
         return;
     }
-    if(testForRun.first().repeat>0) {
+    if(testForRun.first().repeat>1) {
         testForRun.first().repeat--;
         CreateHtml(testForRun.first());
     }
@@ -400,28 +400,21 @@ void MainTree::RunOne(){
            testForRun.first().repeat=0;
            emit sendRepeatTest(QString::number(it.repeat));
            CreateHtml(testForRun.first());
-           //data_base_man.sessionEnd();
            break;
         }
         else if (it.item == currentIndex && it.type == "suite"){
             testForRun.clear();
             for(int i=0; i<this->itemFromIndex(currentIndex)->rowCount(); i++) {
                 for (auto&it2 : treeData) {
-                    if (it2.item == currentIndex.child(i,0) && it2.type == "test" && CheckTest(it2) && it2.repeat>0) {
-                        /*
-                        Test_D = new QStringList;
-                        Test_D->append(it2.name); Test_D->append(QString::number(it.repeat));
-                        Test_D->append(getSuiteName(it2.file));Test_D->append(dm.Get(it.file+"/suite/test/"+it.name+"/"+"description"));
-                        Test_Data.push_back(Test_D); */
-                        emit sendRepeatTest(QString::number(it.repeat));
+                    if (it2.item == currentIndex.child(i,0) && it2.type == "test" && CheckTest(it2) && it2.repeat>0) {                       
+                        emit sendRepeatTest(QString::number(it2.repeat));
                         testForRun.push_back(it2);
                         break;
                     }
                 }
             }
             if(!testForRun.isEmpty()) {
-
-                testForRun.first().repeat--;
+                //testForRun.first().repeat--;
                 CreateHtml(testForRun.first());
             }
         }
@@ -435,13 +428,8 @@ bool MainTree::Run() {
     QString suite_name;
     testForRun.clear();
     for(auto&it:treeData) {
-        if(it.type == "suite"){
-            suite_name = it.name;
-        }
         if (it.type == "test" && CheckTest(it) && it.repeat>0) {
             testForRun.push_back(it);
-        }else{
-            emit sendSuiteName(it.name);
         }
     }
     if(!testForRun.isEmpty()) {
@@ -665,7 +653,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
                        dm.Get(it.file+"/file/"+"repeat"));
     emit sendTestName(it.name);
     emit sendSuiteName(getSuiteName(it.file));
-    emit sendDescTest(Get("description"));
+    emit sendDescTest(dm.Get(it.file+"/suite/test/"+it.name+"/"+"description"));
     data_base_man.sessionStart();
     run=true;
     QStringList headers = getHeaders(it.file, it.name);
