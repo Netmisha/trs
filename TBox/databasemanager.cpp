@@ -106,6 +106,7 @@ void DataBaseManager::sessionNum(){
     delete qu;
 }
 void DataBaseManager::ClearData(){
+test_suite_.clear();
 test_passed_.clear();
 session_execution.clear();
 start_time_.clear();

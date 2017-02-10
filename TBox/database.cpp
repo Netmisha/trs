@@ -266,7 +266,9 @@ QString DataBase::row_selected(QString row){
     delete qu; qu = new QSqlQuery(db);
     QVector<QStringList*> Suite_info;
     QStringList *Suite;
-   qDebug()<<qu->exec("select Test_Suite,Suite_repeat, Suite_desc from Info where Session_num = "+list_from_ui.at(row.toInt())+" group by Test_Suite");
+
+
+   qDebug()<<qu->exec("select Test_Suite,Suite_repeat, Suite_desc, count(distinct Test_Name) from Info where Session_num = "+list_from_ui.at(row.toInt())+" group by Test_Suite");
     while(qu->next()){
         Suite = new QStringList;
         Suite->append(qu->value(qu->record().indexOf("Test_Suite")).toString());
@@ -274,9 +276,9 @@ QString DataBase::row_selected(QString row){
         Suite->append(qu->value(qu->record().indexOf("Suite_repeat")).toString());
         Suite->append("Total");
         Suite->append("Pass");
+        Suite->append(qu->value(qu->record().indexOf("count(distinct Test_Name)")).toString());
         Suite_info.append(Suite);
     }
-
     current_session = list_from_ui.at(row.toInt());
     index = e->size();
     delete qu;

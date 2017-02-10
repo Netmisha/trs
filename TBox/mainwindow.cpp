@@ -398,7 +398,7 @@ void MainTree::RunOne(){
         if (it.item == currentIndex && it.type == "test") {
            testForRun.push_back(it);
            testForRun.first().repeat=0;
-           emit sendRepeatTest(QString::number(it.repeat));
+           //emit sendRepeatTest(QString::number(it.repeat));
            CreateHtml(testForRun.first());
            break;
         }
@@ -407,7 +407,7 @@ void MainTree::RunOne(){
             for(int i=0; i<this->itemFromIndex(currentIndex)->rowCount(); i++) {
                 for (auto&it2 : treeData) {
                     if (it2.item == currentIndex.child(i,0) && it2.type == "test" && CheckTest(it2) && it2.repeat>0) {                       
-                        emit sendRepeatTest(QString::number(it2.repeat));
+                        //emit sendRepeatTest(QString::number(it2.repeat));
                         testForRun.push_back(it2);
                         break;
                     }
@@ -433,7 +433,7 @@ bool MainTree::Run() {
         }
     }
     if(!testForRun.isEmpty()) {
-        testForRun.first().repeat--;
+        //testForRun.first().repeat--;
         CreateHtml(testForRun.first());
     }
     return true;
@@ -649,6 +649,8 @@ void MainTree::setJS(QString file_name, QString test_name, QString data) {
     file.close();
 }
 void MainTree::CreateHtml(TreeInfo &it) {
+
+    emit sendRepeatTest (dm.Get(it.file+"/suite/test/"+it.name+"/repeat"));
     emit sendSuiteInfo(dm.Get(it.file+"/suite/"+"description"),
                        dm.Get(it.file+"/file/"+"repeat"));
     emit sendTestName(it.name);
