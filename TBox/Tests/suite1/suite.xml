@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
-<suite name="Suite 1" description="Test description">
+<suite description="Test descriptionwwww" name="Suite 1">
  <repeat>120</repeat>
- <disable>true</disable>
+ <disable>false</disable>
  <metadata>
   <author>Mykhailo</author>
   <date>05.20.2016</date>
@@ -11,25 +11,25 @@
   <license/>
   <info/>
  </metadata>
- <test name="Test1" description="Test description">
+ <test description="Test descriptionnnn" name="Test1">
   <tag>Tag1,Tag2</tag>
   <disable>false</disable>
   <execution>test.js</execution>
   <repeat>5</repeat>
  </test>
- <test name="Test2" description="Test description">
+ <test description="Test description" name="Test2">
   <tag>Release</tag>
   <disable>false</disable>
   <execution>test.js</execution>
   <repeat>5</repeat>
  </test>
- <test name="Test3" description="Test description">
+ <test description="Test description" name="Test3">
   <tag>Tag1,Tag2</tag>
   <disable>false</disable>
   <execution>test.js</execution>
   <repeat>5</repeat>
  </test>
- <test name="Test4" description="Test description">
+ <test description="Test description" name="Test4">
   <tag>Release</tag>
   <disable>false</disable>
   <execution>test.js</execution>

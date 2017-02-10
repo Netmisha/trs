@@ -14,6 +14,9 @@ public:
         m_roleNameMapping[MainTree_Role_Name] = "name_role";
         QObject::connect(this,SIGNAL(sendTestName(QString)),&data_base_man,SLOT(getTestName(QString)));
         QObject::connect(this,SIGNAL(sendSuiteName(QString)),&data_base_man,SLOT(getSuiteName(QString)));
+        QObject::connect(this,SIGNAL(sendRepeatTest(QString)),&data_base_man,SLOT(getRepeatNum(QString)));
+        QObject::connect(this,SIGNAL(sendDescTest(QString)),&data_base_man,SLOT(getDescTest(QString)));
+        QObject::connect(this,SIGNAL(sendSuiteInfo(QString,QString)),&data_base_man,SLOT(getSuiteInfo(QString,QString)));
         QObject::connect(this,SIGNAL(sessionN()),&data_base_man,SLOT(sessionNum()));
     }
     virtual ~MainTree() = default;
@@ -23,6 +26,7 @@ public:
     QHash<int, QByteArray> roleNames() const override{
         return m_roleNameMapping;
     }
+    QStringList SuiteData;
     DataBaseManager data_base_man;
     public slots:
     void testFinished(QString);
@@ -81,6 +85,9 @@ private:
 signals:
     void sendTestName(QString);
     void sendSuiteName(QString);
+    void sendRepeatTest(QString);
+    void sendDescTest(QString);
+    void sendSuiteInfo(QString,QString);
     void sessionN();
 };
 MainWindow::MainWindow(QWidget *parent) :
@@ -384,20 +391,16 @@ void MainTree::RunOne(){
     if(run) {
         return;
     }
-    QString suite_name;
+    QVector<QStringList*> Test_Data;
+    QStringList *Test_D;
     emit sessionN();
     for (auto& it:treeData) {
-        if(it.type == "suite"){
-            suite_name = it.name;
-        }
         if (it.item == currentIndex && it.type == "test") {
            testForRun.push_back(it);
            testForRun.first().repeat=0;
-           emit sendTestName(it.name);
-           emit sendSuiteName(suite_name);
-           data_base_man.sessionStart();
+           emit sendRepeatTest(QString::number(it.repeat));
            CreateHtml(testForRun.first());
-           data_base_man.sessionEnd();
+           //data_base_man.sessionEnd();
            break;
         }
         else if (it.item == currentIndex && it.type == "suite"){
@@ -405,12 +408,19 @@ void MainTree::RunOne(){
             for(int i=0; i<this->itemFromIndex(currentIndex)->rowCount(); i++) {
                 for (auto&it2 : treeData) {
                     if (it2.item == currentIndex.child(i,0) && it2.type == "test" && CheckTest(it2) && it2.repeat>0) {
+                        /*
+                        Test_D = new QStringList;
+                        Test_D->append(it2.name); Test_D->append(QString::number(it.repeat));
+                        Test_D->append(getSuiteName(it2.file));Test_D->append(dm.Get(it.file+"/suite/test/"+it.name+"/"+"description"));
+                        Test_Data.push_back(Test_D); */
+                        emit sendRepeatTest(QString::number(it.repeat));
                         testForRun.push_back(it2);
                         break;
                     }
                 }
             }
             if(!testForRun.isEmpty()) {
+
                 testForRun.first().repeat--;
                 CreateHtml(testForRun.first());
             }
@@ -651,6 +661,12 @@ void MainTree::setJS(QString file_name, QString test_name, QString data) {
     file.close();
 }
 void MainTree::CreateHtml(TreeInfo &it) {
+    emit sendSuiteInfo(dm.Get(it.file+"/suite/"+"description"),
+                       dm.Get(it.file+"/file/"+"repeat"));
+    emit sendTestName(it.name);
+    emit sendSuiteName(getSuiteName(it.file));
+    emit sendDescTest(Get("description"));
+    data_base_man.sessionStart();
     run=true;
     QStringList headers = getHeaders(it.file, it.name);
     QFile file(it.getPath()+"/"+"test.html");
@@ -697,6 +713,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
     file.write(page.toLatin1());
     file.close();
     view->load(QUrl("file:///"+it.getPath()+"/"+"test.html"));
+    data_base_man.sessionEnd();
 }
 void MainTree::WriteLog(QString msg) {
     QTime time=QTime::currentTime();

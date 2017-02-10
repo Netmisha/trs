@@ -169,6 +169,7 @@ Item {
             }
         }
     }
+
     id: root
     anchors.fill: parent
     Action {
