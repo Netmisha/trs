@@ -159,17 +159,19 @@ Item {
         }
         }
         }
-    }
-    Button{
-        x: 673
-        y: 0
-        width: 127
-        height: 33
-        text:"Show"
-        onClicked: {
-        list_ = DD.get_seesion_db(textField1.text,textField2.text);
+
+        Button{
+            x: 673
+            y: 0
+            width: 127
+            height: 33
+            text:"Show"
+            onClicked: {
+            list_ = DD.get_seesion_db(textField1.text,textField2.text);
+            }
         }
     }
+
 
 
 
@@ -422,6 +424,7 @@ Item {
                     id: startButton
                     action: runAllAction
                     iconSource: "icons/icons/Run.png"
+
                 }
                 ToolButton {
                     id: stopAllTestsButton

@@ -9,7 +9,7 @@ DataBase::DataBase(QObject *parent) :
 
 }
 void DataBase::defaultTableValue(QString start, QString end){
-
+datalist.clear();
     QRegExp exp("/");
     start_dates = start.split(exp);
     std::reverse(start_dates.begin(),start_dates.end());
@@ -28,7 +28,6 @@ void DataBase::defaultTableValue(QString start, QString end){
         QDir().mkdir(path_for_db);
     }
     path_for_db.append(DATABASE_NAME);
-
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(path_for_db);
     db.setHostName(LOCALHOST);
