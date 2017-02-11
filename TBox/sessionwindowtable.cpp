@@ -47,6 +47,8 @@ QString SessionWindowTable::IntTimetoString(Time time){
 void SessionWindowTable::parseSuiteData(QVector<QStringList *> suite_info_, QVector<QStringList *> table_data_){
     //QVector<suiteData*> SD;
     //QVector<TestData*> TD;
+    Time total_execution;
+    Time test_exe;
     for(int i=0;i<suite_info_.size();i++){
         suiteD = new suiteData;
         suiteD->suite_name = suite_info_.at(i)->at(0);
@@ -57,7 +59,7 @@ void SessionWindowTable::parseSuiteData(QVector<QStringList *> suite_info_, QVec
         suiteD->test_num = suite_info_.at(i)->at(5);
         suiteD->quant_el =  suite_info_.size();
         SD.push_back(suiteD);
-   }
+    }
    int a=0;
    for(int i =0;i<table_data_.size();){
      testD = new TestData;
@@ -71,7 +73,6 @@ void SessionWindowTable::parseSuiteData(QVector<QStringList *> suite_info_, QVec
      QString jmp=0;
          jmp = table_data_.at(i)->at(2);
          a+=jmp.toInt();
-         testD->total_test_time = table_data_.at(i)->at(3);
          Time prev,cur;
          for(int j=i;j<a;j++){
              QString temp_time =  table_data_.at(j)->at(3);
@@ -86,14 +87,35 @@ void SessionWindowTable::parseSuiteData(QVector<QStringList *> suite_info_, QVec
              cur.h = prev.h+cur.h;
              testD->total_test_time = IntTimetoString(cur);
          }
-         //res.h = cur.h; res.m = cur.m; res.s = cur.s; res.ms = cur.ms;
-         //testD->total_test_time = IntTimetoString(res);
          testD->quant_el = elements_;
          TD.push_back(testD);
-         //a+=jmp.toInt();
          i+=jmp.toInt();
-   }
-   qDebug()<<TD;
+    }
+
+   total_execution.h=0;total_execution.m=0;total_execution.s=0;total_execution.ms=0;
+   int h=0;
+   bool pass = false;
+   for(int i=0,j=0;i<SD.size();i++){
+         Time my_time;
+         h+=SD.at(i)->test_num.toInt();
+        for(;j<h;j++){
+           if(TD.at(j)->test_pass == "yes"){
+               pass = true;
+           }
+           my_time =StringTimetoInt( TD.at(j)->total_test_time);
+           total_execution.ms = total_execution.ms+my_time.ms;
+           if(total_execution.ms >=100){total_execution.ms = total_execution.ms-100;total_execution.s++;}
+           total_execution.s = total_execution.s +my_time.s;
+           if(total_execution.s >=60){total_execution.s = total_execution.s-60; total_execution.m++;}
+           total_execution.m = total_execution.m + my_time.m;
+           if(total_execution.m >=60){total_execution.m = total_execution.m-60;total_execution.h++;}
+           total_execution.h = total_execution.h+my_time.h;
+        }
+        (pass)?SD.at(i)->pass = "yes":0;
+        pass = false;
+        SD.at(i)->total_time = IntTimetoString(total_execution);
+        total_execution.h=0;total_execution.m=0;total_execution.s=0;total_execution.ms=0;
+    }
 }
 void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int elements,QStringList summary_data,QStringList test_r,QVector<QStringList*> suite_info){
     elements_ = elements;
@@ -114,6 +136,7 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
     today_.append(QDate::currentDate().toString("yyyy_"));
     today_.append(QTime::currentTime().toString("hh:mm:ss"));
      file.resize(0);
+     parseSuiteData(suite_info,table_data);
          QTextStream output(&file);
          output<<"<!DOCTYPE html>\n<html>\n<head>\n";
          output<<"</head>\n<body style = 'background-color:#F8F8F8   '>\n";
@@ -121,8 +144,8 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
          output<<"<table>";
          output<<"<tr>"; output<<"<td>"; output<<"Status: ";output<<summary_data.at(0); output<<"</td>"; output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Start time: ";output<<summary_data.at(1); output<<"</td>";output<<"</tr>";output<<"<tr>"; output<<"<td>"; output<<"End time: ";output<<summary_data.at(2); output<<"</td>";
-         output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<summary_data.at(3); output<<"</td>";  output<<"</tr>";
-         output<<"<tr>"; output<<"<td>"; output<<"Tests quantity: ";output<<table_data.size(); output<<"</td>"; output<<"</tr>";
+         output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<total_time; output<<"</td>";  output<<"</tr>";
+         output<<"<tr>"; output<<"<td>"; output<<"Tests quantity: ";output<<table_data.size()-2; output<<"</td>"; output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Test Passed: ";output<<test_r.at(0); output<<"</td>"; output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Test Failed: ";output<<test_r.at(1); output<<"</td>"; output<<"</tr>";
          output<<"<tr>";
@@ -157,43 +180,41 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
          output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
          output<<"Fail";
          output<<"</th>\n";
+         /*
          output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
          output<<"Result";
-         output<<"</th >\n";
+         output<<"</th >\n"; */
          output<<"</tr>\n";
-         int t=0;
-         bool init_ = true;
-         bool cu = true;
-         QString cur;
-         QString next;
-         parseSuiteData(suite_info,table_data);
-         bool next_suite = false;
          int beg=0;
          int end=0;
          for(int i=0;i<SD.size();i++){
-              output<<"<tr style='border: 1px solid black;'>";
-             output<<"<td style='border: 1px solid black;'>";
+              output<<"<tr style='border: 2px solid black;'>";
+             output<<"<td style='border: 2px solid black;font-weight:bold'>";
              output<<SD.at(i)->suite_name;
              output<<"</td>";
-             output<<"<td style='border: 1px solid black;'>";
+             output<<"<td style='border: 2px solid black;font-weight:bold'>";
              output<<SD.at(i)->suite_description;
              output<<"</td>";
-             output<<"<td style='border: 1px solid black;'>";
+             output<<"<td style='border: 2px solid black;font-weight:bold'>";
              output<<SD.at(i)->repeat;
              output<<"</td>";
-             output<<"<td style='border: 1px solid black;'>";
+             output<<"<td style='border: 2px solid black;font-weight:bold'>";
              output<<SD.at(i)->total_time;
              output<<"</td>";
-             output<<"<td style='border: 1px solid black;'>";
-             output<<SD.at(i)->pass;
+             if(SD.at(i)->pass =="yes"){
+             output<<"<td style='border: 2px solid black;font-weight:bold;background-color:#50D050'>";
              output<<"</td>";
-
-
-              output<<"</tr>";
-    end+=SD.at(i)->test_num.toInt();
-    for(int t =beg;t<end;t++){
-
-
+             output<<"<td style='border: 2px solid black;font-weight:bold;'>";
+             output<<"</td>";
+             }else if(SD.at(i)->pass =="no"){
+                 output<<"<td style='border: 2px solid black;font-weight:bold;'>";
+                 output<<"</td>";
+                 output<<"<td style='border: 2px solid black;font-weight:bold;background-color:red'>";
+                 output<<"</td>";
+             }
+            output<<"</tr>";
+            end+=SD.at(i)->test_num.toInt();
+        for(int t =beg;t<end;t++){
              output<<"<tr style='border: 1px solid black;'>";
              output<<"<td style='border: 1px solid black;'>";
              output<<TD.at(t)->test_name;
@@ -208,18 +229,17 @@ void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int el
              output<<TD.at(t)->total_test_time;
              output<<"</td>";
              if(TD.at(t)->test_pass=="yes"){
-                 output<<"<td style='border: 1px solid black;background-color:green'>";
+                 output<<"<td style='border: 1px solid black;background-color:#50D050'>";
                  output<<"</td>";
                  output<<"<td style='border: 1px solid black;'>";
                  output<<"</td>";
+                 /*
                  output<<"<td style='border: 1px solid black;'>";
-                 output<<"</td>";
+                 output<<"</td>"; */
              }else if(TD.at(t)->test_pass=="no"){
                  output<<"<td style='border: 1px solid black;'>";
                  output<<"</td>";
                  output<<"<td style='border: 1px solid black;background-color:red'>";
-                 output<<"</td>";
-                 output<<"<td style='border: 1px solid black;'>";
                  output<<"</td>";
              }
     }

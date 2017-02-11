@@ -391,8 +391,6 @@ void MainTree::RunOne(){
     if(run) {
         return;
     }
-    QVector<QStringList*> Test_Data;
-    QStringList *Test_D;
     emit sessionN();
     for (auto& it:treeData) {
         if (it.item == currentIndex && it.type == "test") {

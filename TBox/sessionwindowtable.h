@@ -19,13 +19,14 @@ public:
         QString total_time;
         QString pass;
         QString test_num;
+        QString suite_full_time_execution;
         int quant_el;
     };
     struct TestData{
         QString test_name;
         QString test_description;
         QString test_repeat;
-        QString total_test_time;
+        QString total_test_time = "0:0:0:0";
         QString test_pass;
         QString test_suite_name;
         int quant_el;
@@ -33,7 +34,7 @@ public:
     struct Time{
         int h=0,m=0,s=0,ms=0;
     };
-    Time *count_time;
+    QString total_time;
     TestData *testD;
     suiteData *suiteD;
     QString html_path;
