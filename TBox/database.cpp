@@ -278,6 +278,7 @@ QString DataBase::row_selected(QString row){
         Suite->append(qu->value(qu->record().indexOf("count(distinct Test_Name)")).toString());
         Suite_info.append(Suite);
     }
+
     current_session = list_from_ui.at(row.toInt());
     index = e->size();
     delete qu;
@@ -330,7 +331,7 @@ QString DataBase::row_selected(QString row){
     }
     qDebug()<<Duration;
     Sumary_data.append(Duration);
-    emit sendSummaryData(Sumary_data);
+   // emit sendSummaryData(Sumary_data);
     WindowTable.setIndex(row.toInt());
     WindowTable.setTableNames(tn);
     QDir DIR;
@@ -344,6 +345,11 @@ QString DataBase::row_selected(QString row){
     table_path.append("WebViewSessionTable.html");
     TableSessionPath =table_path;
     QStringList test_r; test_r.append(QString::number(y)); test_r.append(QString::number(n));
+    table_data_e = session_data;
+    elements_e = e->size();
+    summary_data_e = Sumary_data;
+    test_r_e =  test_r;
+    suite_info_e = Suite_info;
     WindowTable.CreateTable(table_path,session_data,e->size(),Sumary_data,test_r,Suite_info);
     return row;
  }

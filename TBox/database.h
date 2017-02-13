@@ -29,7 +29,8 @@ Q_OBJECT
 signals:
    void DateChanged();
    void EndDateChanged();
-   void PassHTMLdata(QVector<QStringList*> data,QStringList tn,int index,QString current_session);
+   void PassHTMLdata(QVector<QStringList*> table_data_e,int elements_e,QStringList summary_data_e,
+                     QStringList test_r_e,QVector<QStringList*> suite_info_e,QString current_session);
 public slots:
     Q_INVOKABLE QStringList get_seesion_db( QString start, QString end);
    Q_INVOKABLE void Export_Clicked();
@@ -47,12 +48,15 @@ public:
    Q_INVOKABLE QString exportFilePath;
    Q_INVOKABLE QString TableSessionPath;
    Q_INVOKABLE QList<QObject*> datalist;
+
+    QVector<QStringList*> table_data_e;int elements_e;QStringList summary_data_e;QStringList test_r_e;QVector<QStringList*> suite_info_e;
+
    Q_INVOKABLE QString current_session;
    Q_INVOKABLE int index;
    Q_INVOKABLE QString path_for_db;
    Q_INVOKABLE void test(){
        qDebug()<<"Inside";
-      emit PassHTMLdata(session_data,tn,index,current_session);
+       emit PassHTMLdata(table_data_e,elements_e,summary_data_e,test_r_e,suite_info_e,current_session);
    }
    Q_INVOKABLE QString datad(int i){
        if(i==0){
