@@ -24,7 +24,7 @@ Item {
         visible: false
         width: 800
         height: 480
-        title: qsTr("Reports")
+        title: qsTr("Report")
             ListView {
             id: list_V
             x: 0

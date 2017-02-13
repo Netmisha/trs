@@ -18,6 +18,7 @@ public:
         QObject::connect(this,SIGNAL(sendDescTest(QString)),&data_base_man,SLOT(getDescTest(QString)));
         QObject::connect(this,SIGNAL(sendSuiteInfo(QString,QString)),&data_base_man,SLOT(getSuiteInfo(QString,QString)));
         QObject::connect(this,SIGNAL(sessionN()),&data_base_man,SLOT(sessionNum()));
+        QObject::connect(this,SIGNAL(sendTestMessage(QString)),&data_base_man,SLOT(getTestMsg(QString)));
     }
     virtual ~MainTree() = default;
     enum MainTree_Roles{
@@ -90,6 +91,7 @@ signals:
     void sendDescTest(QString);
     void sendSuiteInfo(QString,QString);
     void sessionN();
+    void sendTestMessage(QString msg);
 };
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -137,7 +139,10 @@ void MainWindow::writeLog(QString msg){
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
 }
 void MainTree::testFinished(QString msg) {
+    qDebug()<<msg;
     WriteLog(msg);
+    emit sendTestMessage(msg);
+    data_base_man.sessionEnd();
     run=false;
     if(testForRun.isEmpty()) {
         QMetaObject::invokeMethod(contextObject, "setStopDisable");
@@ -715,7 +720,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
     file.write(page.toLatin1());
     file.close();
     view->load(QUrl("file:///"+it.getPath()+"/"+"test.html"));
-    data_base_man.sessionEnd();
+
 }
 void MainTree::WriteLog(QString msg) {
     QTime time=QTime::currentTime();

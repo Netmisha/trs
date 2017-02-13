@@ -44,6 +44,8 @@ private:
     QString repeatNumSuite;
     QString SuiteDesc;
     QString SuiteRepeat;
+    QString test_status;
+    QString test_msg;
 public slots:
 void getSuiteName(QString);
 void getTestName(QString);
@@ -51,6 +53,7 @@ void getRepeatNum(QString);
 void getDescTest(QString);
 void getSuiteInfo(QString,QString);
 void sessionNum();
+void getTestMsg(QString msg);
 public:
     DataBaseManager();
     void sessionStart();

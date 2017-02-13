@@ -29,6 +29,7 @@ public:
         QString total_test_time = "0:0:0:0";
         QString test_pass;
         QString test_suite_name;
+        QString test_msg;
         int quant_el;
     };
     struct Time{

@@ -54,6 +54,7 @@ ExportHTML::ExportHTML()
       testD->test_repeat = table_data_.at(i)->at(2);
       testD->test_pass = table_data_.at(i)->at(4);
       testD->test_suite_name = table_data_.at(i)->at(5);
+      testD->test_msg = table_data_.at(i)->at(6);
       QString inc_i = table_data_.at(i)->at(2);
       Time res;
       QString jmp=0;
@@ -103,6 +104,7 @@ ExportHTML::ExportHTML()
          total_execution.h=0;total_execution.m=0;total_execution.s=0;total_execution.ms=0;
      }
  }
+
  ExportHTML::Time ExportHTML::StringTimetoInt(QString time){
      QStringList tempListTime = time.split(":");
      Time time_;
@@ -133,119 +135,117 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
     today_.append(QDate::currentDate().toString("MM/"));
     today_.append(QDate::currentDate().toString("yyyy_"));
     today_.append(QTime::currentTime().toString("hh:mm:ss"));
-     file.resize(0);
-     parseSuiteData(suite_info,table_data);
-         QTextStream output(&file);
-         output<<"<!DOCTYPE html>\n<html>\n<head>\n";
-         output<<"</head>\n<body style = 'background-color:#F8F8F8   '>\n";
-         output<<"<h1> Summary Report </h1>";
-         output<<"<table>";
-         output<<"<tr>"; output<<"<td>"; output<<"Status: ";output<<summary_data.at(0); output<<"</td>"; output<<"</tr>";
-         output<<"<tr>"; output<<"<td>"; output<<"Start time: ";output<<summary_data.at(1); output<<"</td>";output<<"</tr>";output<<"<tr>"; output<<"<td>"; output<<"End time: ";output<<summary_data.at(2); output<<"</td>";
-         output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<total_time; output<<"</td>";  output<<"</tr>";
-         output<<"<tr>"; output<<"<td>"; output<<"Tests quantity: ";output<<table_data.size()-2; output<<"</td>"; output<<"</tr>";
-         output<<"<tr>"; output<<"<td>"; output<<"Test Passed: ";output<<test_r.at(0); output<<"</td>"; output<<"</tr>";
-         output<<"<tr>"; output<<"<td>"; output<<"Test Failed: ";output<<test_r.at(1); output<<"</td>"; output<<"</tr>";
-         output<<"<tr>";
-         output<<"<td>";output<<"File generated: ";output<<today_;output<<"</td>";
-         output<<"</tr>";
-         output<<"</table>";
-         output<<"<table style='width:100%;border-collapse: collapse;border: 1px solid black;'>\n";
-         output<<"<col width=100>";
-        output<<"<col width=100>";
-        output<<"<col width=100>";
-        output<<"<col width=100>";
+    file.resize(0);
+    parseSuiteData(suite_info,table_data);
+        QTextStream output(&file);
+        output<<"<!DOCTYPE html>\n<html>\n<head>\n";
+        output<<"</head>\n<body style = 'background-color:#F8F8F8   '>\n";
+        output<<"<h1>Report </h1>";
+        output<<"<table>";
+        output<<"<tr>"; output<<"<td>"; output<<"Start time: ";output<<summary_data.at(1); output<<"</td>";output<<"</tr>";output<<"<tr>"; output<<"<td>"; output<<"End time: ";output<<summary_data.at(2); output<<"</td>";
+        output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<total_time; output<<"</td>";  output<<"</tr>";
+        output<<"<tr>"; output<<"<td>"; output<<"Tests quantity: ";output<<table_data.size(); output<<"</td>"; output<<"</tr>";
+        output<<"<tr>"; output<<"<td>"; output<<"Test Passed: ";output<<test_r.at(0); output<<"</td>"; output<<"</tr>";
+        output<<"<tr>"; output<<"<td>"; output<<"Test Failed: ";output<<test_r.at(1); output<<"</td>"; output<<"</tr>";
+        output<<"<tr>";
+        output<<"<td>";output<<"File generated: ";output<<today_;output<<"</td>";
+        output<<"</tr>";
+        output<<"<tr>"; output<<"<td >"; output<<"Status: ";output<<summary_data.at(0); output<<"</td>"; output<<"</tr>";
+        output<<"</table>";
+        output<<"<table style='width:100%;border-collapse: collapse;border: 1px solid black;'>\n";
         output<<"<col width=100>";
        output<<"<col width=100>";
-       output<<"<col width=100>";
-       output<<"<col width=100>";
-         output<<"<tr style='border: 1px solid black'>\n";
-         output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
-         output<<"Name";
-         output<<"</th >\n";
-         output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
-         output<<"Descirption";
-         output<<"</th >\n";
-         output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
-         output<<"Count";
-         output<<"</th >\n";
-         output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
-         output<<"Total Duration";
-         output<<"</th >\n";
-         output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
-         output<<"Pass";
-         output<<"</th>\n";
-         output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
-         output<<"Fail";
-         output<<"</th>\n";
-         /*
-         output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
-         output<<"Result";
-         output<<"</th >\n"; */
-         output<<"</tr>\n";
-         int beg=0;
-         int end=0;
-         for(int i=0;i<SD.size();i++){
-              output<<"<tr style='border: 2px solid black;'>";
-             output<<"<td style='border: 2px solid black;font-weight:bold'>";
-             output<<SD.at(i)->suite_name;
-             output<<"</td>";
-             output<<"<td style='border: 2px solid black;font-weight:bold'>";
-             output<<SD.at(i)->suite_description;
-             output<<"</td>";
-             output<<"<td style='border: 2px solid black;font-weight:bold'>";
-             output<<SD.at(i)->repeat;
-             output<<"</td>";
-             output<<"<td style='border: 2px solid black;font-weight:bold'>";
-             output<<SD.at(i)->total_time;
-             output<<"</td>";
-             if(SD.at(i)->pass =="yes"){
-             output<<"<td style='border: 2px solid black;font-weight:bold;background-color:#50D050'>";
-             output<<"</td>";
-             output<<"<td style='border: 2px solid black;font-weight:bold;'>";
-             output<<"</td>";
-             }else if(SD.at(i)->pass =="no"){
-                 output<<"<td style='border: 2px solid black;font-weight:bold;'>";
-                 output<<"</td>";
-                 output<<"<td style='border: 2px solid black;font-weight:bold;background-color:red'>";
-                 output<<"</td>";
-             }
-            output<<"</tr>";
-            end+=SD.at(i)->test_num.toInt();
-        for(int t =beg;t<end;t++){
-             output<<"<tr style='border: 1px solid black;'>";
-             output<<"<td style='border: 1px solid black;'>";
-             output<<TD.at(t)->test_name;
-             output<<"</td>";
-             output<<"<td style='border: 1px solid black;'>";
-             output<<TD.at(t)->test_description;
-             output<<"</td>";
-             output<<"<td style='border: 1px solid black;'>";
-             output<<TD.at(t)->test_repeat;
-             output<<"</td>";
-             output<<"<td style='border: 1px solid black;'>";
-             output<<TD.at(t)->total_test_time;
-             output<<"</td>";
-             if(TD.at(t)->test_pass=="yes"){
-                 output<<"<td style='border: 1px solid black;background-color:#50D050'>";
-                 output<<"</td>";
-                 output<<"<td style='border: 1px solid black;'>";
-                 output<<"</td>";
-                 /*
-                 output<<"<td style='border: 1px solid black;'>";
-                 output<<"</td>"; */
-             }else if(TD.at(t)->test_pass=="no"){
-                 output<<"<td style='border: 1px solid black;'>";
-                 output<<"</td>";
-                 output<<"<td style='border: 1px solid black;background-color:red'>";
-                 output<<"</td>";
-             }
-    }
-    beg+=SD.at(i)->test_num.toInt();
-         }
-         output<<"</table>";
-         output<<"</html>";
-         output<<"</body>";
+       output<<"<col width=20>";
+       output<<"<col width=20>";
+       output<<"<col width=20>";
+      output<<"<col width=100>";
+        output<<"<tr style='border: 1px solid black'>\n";
+        output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
+        output<<"Name";
+        output<<"</th >\n";
+        output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
+        output<<"Descirption";
+        output<<"</th >\n";
+        output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
+        output<<"Count";
+        output<<"</th >\n";
+        output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
+        output<<"Total Duration";
+        output<<"</th >\n";
+        output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
+        output<<"Pass";
+        output<<"</th>\n";
+        output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
+        output<<"Info";
+        output<<"</th>\n";
+        /*
+        output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
+        output<<"Result";
+        output<<"</th >\n"; */
+        output<<"</tr>\n";
+        int beg=0;
+        int end=0;
+        for(int i=0;i<SD.size();i++){
+             output<<"<tr style='border: 2px solid black;'>";
+            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#D0D0D0 '>";
+            output<<SD.at(i)->suite_name;
+            output<<"</td>";
+            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#D0D0D0 '>";
+            output<<SD.at(i)->suite_description;
+            output<<"</td>";
+            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#D0D0D0 '>";
+            output<<SD.at(i)->repeat;
+            output<<"</td>";
+            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#D0D0D0 '>";
+            output<<SD.at(i)->total_time;
+            output<<"</td>";
+            if(SD.at(i)->pass =="yes"){
+            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:#50D050'>";
+            output<<"Success";
+            output<<"</td>";
+            }else if(SD.at(i)->pass =="no"){
+                output<<"<td style='border: 2px solid black;font-weight:bold;background-color:red'>";
+                output<<"Fail";
+                output<<"</td>";
+            }
+            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:#D0D0D0'>";
+            output<<"</td>";
+           output<<"</tr>";
+           end+=SD.at(i)->test_num.toInt();
+       for(int t =beg;t<end;t++){
+            output<<"<tr style='border: 1px solid black;'>";
+            output<<"<td style='border: 1px solid black;'>";
+            output<<TD.at(t)->test_name;
+            output<<"</td>";
+            output<<"<td style='border: 1px solid black;'>";
+            output<<TD.at(t)->test_description;
+            output<<"</td>";
+            output<<"<td style='border: 1px solid black;'>";
+            output<<TD.at(t)->test_repeat;
+            output<<"</td>";
+            output<<"<td style='border: 1px solid black;'>";
+            output<<TD.at(t)->total_test_time;
+            output<<"</td>";
+            if(TD.at(t)->test_pass=="yes"){
+                output<<"<td style='border: 1px solid black;background-color:#50D050'>";
+                output<<"Success";
+                output<<"</td>";
+
+            }else if(TD.at(t)->test_pass=="no"){
+
+                output<<"<td style='border: 1px solid black;background-color:red'>";
+                output<<"Fail";
+                output<<"</td>";
+            }
+            output<<"<td style='border: 1px solid black; '>";
+            output<<TD.at(t)->test_msg;
+            output<<"</td>";
+   }
+   beg+=SD.at(i)->test_num.toInt();
+        }
+        output<<"</table>";
+        output<<"</html>";
+        output<<"</body>";
                QMessageBox msgBox;
                msgBox.setText("File has been saved at:"+export_path_);
                msgBox.exec();

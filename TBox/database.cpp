@@ -51,6 +51,7 @@ datalist.clear();
    cd_.append(QDate::currentDate().toString("yyyy"));
    int i=0;
    qDebug()<< query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num" );
+
    while(query->next()){
        it.append(query->value(query->record().indexOf("Session_num")).toString());
        pass_session.append(query->value(query->record().indexOf("Test_Passed")).toString());
@@ -233,6 +234,7 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
 
 
 }
+
 QString DataBase::row_selected(QString row){
     // qDebug()<<list_from_ui.at(row.toInt());
      QSqlQuery *qu;
@@ -247,7 +249,7 @@ QString DataBase::row_selected(QString row){
              tn.append(rec.fieldName(i)); // save db columns
          }
          qDebug()<<list_from_ui;
-         qDebug()<<qu->exec("SELECT Test_Name,Test_Suite,Test_Passed,Test_repeat,Session_duration,Test_repeat,Test_Desc FROM Info WHERE Session_num = "+list_from_ui.at(row.toInt()));
+         qDebug()<<qu->exec("SELECT Test_Name,Test_Suite,Test_Passed,Test_repeat,Session_duration,Test_repeat,Test_Desc,Test_msg FROM Info WHERE Session_num = "+list_from_ui.at(row.toInt()));
          row_fields rf;
          while(qu->next()){
             e = new QStringList;
@@ -257,6 +259,7 @@ QString DataBase::row_selected(QString row){
             e->append(qu->value(qu->record().indexOf("Session_duration")).toString());
             e->append(qu->value(qu->record().indexOf(rf.Test_Passed)).toString());
             e->append(qu->value(qu->record().indexOf(rf.Test_Suite)).toString());
+            e->append(qu->value(qu->record().indexOf("Test_msg")).toString());
             session_data.push_back(e);
          }
     QVector<QStringList*> suite_full_time;

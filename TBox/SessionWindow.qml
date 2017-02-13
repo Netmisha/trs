@@ -18,7 +18,7 @@ ApplicationWindow{
     visible: true
     width: 640
     height: 480
-    title: qsTr("Session window")
+    title: qsTr("Report")
     property variant win_C;
     property  string st;
     FileDialog {

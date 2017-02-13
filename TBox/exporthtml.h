@@ -28,6 +28,7 @@ public:
         QString total_test_time = "0:0:0:0";
         QString test_pass;
         QString test_suite_name;
+        QString test_msg;
         int quant_el;
     };
     struct Time{
@@ -51,6 +52,7 @@ public:
     Time StringTimetoInt(QString time);
     void parseSuiteData(QVector<QStringList *> suite_info_, QVector<QStringList *> table_data_);
  public slots:
+
    void ReceiveHTMLdata(QVector<QStringList*> table_data_e,int elements_e,QStringList summary_data_e,
                         QStringList test_r_e,QVector<QStringList*> suite_info_e,QString current_session);
    void ReceiveHTMLpath(QString exportPath);
