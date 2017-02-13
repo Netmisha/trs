@@ -82,6 +82,7 @@ private:
     TestInfo *testinfo=nullptr;
     SuiteInfo *suiteinfo=nullptr;
     TRSCore* trscore=nullptr;
+    bool runOne = false;
 signals:
     void sendTestName(QString);
     void sendSuiteName(QString);
@@ -396,6 +397,7 @@ void MainTree::RunOne(){
         if (it.item == currentIndex && it.type == "test") {
            testForRun.push_back(it);
            testForRun.first().repeat=0;
+           runOne = true;
            //emit sendRepeatTest(QString::number(it.repeat));
            CreateHtml(testForRun.first());
            break;
@@ -647,10 +649,17 @@ void MainTree::setJS(QString file_name, QString test_name, QString data) {
     file.close();
 }
 void MainTree::CreateHtml(TreeInfo &it) {
-
-    emit sendRepeatTest (dm.Get(it.file+"/suite/test/"+it.name+"/repeat"));
-    emit sendSuiteInfo(dm.Get(it.file+"/suite/"+"description"),
-                       dm.Get(it.file+"/file/"+"repeat"));
+    if(runOne == false){
+        emit sendSuiteInfo(dm.Get(it.file+"/suite/"+"description"),
+                           dm.Get(it.file+"/file/"+"repeat"));
+         emit sendRepeatTest (dm.Get(it.file+"/suite/test/"+it.name+"/repeat"));
+    }else if(runOne == true){
+        emit sendSuiteInfo(dm.Get(it.file+"/suite/"+"description"),
+                           "1");
+        emit sendRepeatTest ("1");
+        runOne = false;
+    }
+   // emit sendRepeatTest (dm.Get(it.file+"/suite/test/"+it.name+"/repeat"));
     emit sendTestName(it.name);
     emit sendSuiteName(getSuiteName(it.file));
     emit sendDescTest(dm.Get(it.file+"/suite/test/"+it.name+"/"+"description"));
