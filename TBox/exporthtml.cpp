@@ -135,6 +135,34 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
     today_.append(QDate::currentDate().toString("MM/"));
     today_.append(QDate::currentDate().toString("yyyy_"));
     today_.append(QTime::currentTime().toString("hh:mm:ss"));
+    QRegExp exp("/|:");
+    QString res__;
+    QString st = summary_data.at(1);
+    QString en = summary_data.at(2);
+    QStringList split_ = st.split(" ");
+    QString date_start = split_.at(0);
+    QString time_start = split_.at(1);
+
+    QStringList td = date_start.split("/");
+    QStringList tt = time_start.split(":");
+
+    QStringList split__ = en.split(" ");
+    QString date_start_ = split__.at(0);
+    QString time_start_ = split__.at(1);
+
+    QStringList td_ = date_start_.split("/");
+    QStringList tt_ = time_start_.split(":");
+
+    for(int i=0;i<td.size();i++){
+    res__.append(QString::number(td_.at(i).toInt() - td.at(i).toInt()));
+    res__.append("/");
+    }
+    res__.append(" ");
+    for(int i=0;i<tt.size();i++){
+    res__.append(QString::number(tt_.at(i).toInt() - tt.at(i).toInt()));
+    res__.append(":");
+    }
+    res__.remove(res__.size()-1,1);
     file.resize(0);
     parseSuiteData(suite_info,table_data);
         QTextStream output(&file);
@@ -143,7 +171,7 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
         output<<"<h1>Report </h1>";
         output<<"<table>";
         output<<"<tr>"; output<<"<td>"; output<<"Start time: ";output<<summary_data.at(1); output<<"</td>";output<<"</tr>";output<<"<tr>"; output<<"<td>"; output<<"End time: ";output<<summary_data.at(2); output<<"</td>";
-        output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<total_time; output<<"</td>";  output<<"</tr>";
+        output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<res__; output<<"</td>";  output<<"</tr>";
         output<<"<tr>"; output<<"<td>"; output<<"Tests quantity: ";output<<table_data.size(); output<<"</td>"; output<<"</tr>";
         output<<"<tr>"; output<<"<td>"; output<<"Test Passed: ";output<<test_r.at(0); output<<"</td>"; output<<"</tr>";
         output<<"<tr>"; output<<"<td>"; output<<"Test Failed: ";output<<test_r.at(1); output<<"</td>"; output<<"</tr>";
@@ -187,28 +215,29 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
         int end=0;
         for(int i=0;i<SD.size();i++){
              output<<"<tr style='border: 2px solid black;'>";
-            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#D0D0D0 '>";
+            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#E0E0E0 '>";
             output<<SD.at(i)->suite_name;
             output<<"</td>";
-            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#D0D0D0 '>";
+            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#E0E0E0 '>";
             output<<SD.at(i)->suite_description;
             output<<"</td>";
-            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#D0D0D0 '>";
+            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#E0E0E0 '>";
             output<<SD.at(i)->repeat;
             output<<"</td>";
-            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#D0D0D0 '>";
+            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#E0E0E0 '>";
             output<<SD.at(i)->total_time;
             output<<"</td>";
             if(SD.at(i)->pass =="yes"){
             output<<"<td style='border: 2px solid black;font-weight:bold;background-color:#50D050'>";
             output<<"Success";
             output<<"</td>";
+
             }else if(SD.at(i)->pass =="no"){
                 output<<"<td style='border: 2px solid black;font-weight:bold;background-color:red'>";
                 output<<"Fail";
                 output<<"</td>";
             }
-            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:#D0D0D0'>";
+            output<<"<td style='border: 2px solid black;font-weight:bold;background-color:#E0E0E0 '>";
             output<<"</td>";
            output<<"</tr>";
            end+=SD.at(i)->test_num.toInt();

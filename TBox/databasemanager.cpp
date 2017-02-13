@@ -37,11 +37,12 @@ void DataBaseManager::getTestMsg(QString msg){
   QStringList t = msg.split(exp);
   test_msg.append(t.at(1));
   test_status = t.at(0);
+  /*
   if(test_status == "success"){
       test_status = "yes";
   }else if(test_status == "fail"){
       test_status = "no";
-  }
+  }*/
 }
 void DataBaseManager::InitDB(){
     //msecs =  test duration;

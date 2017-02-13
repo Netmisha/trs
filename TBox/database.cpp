@@ -50,9 +50,10 @@ datalist.clear();
    cd_.append(QDate::currentDate().toString("MM"));
    cd_.append(QDate::currentDate().toString("yyyy"));
    int i=0;
-   qDebug()<< query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num" );
-
+   qDebug()<< query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num order by Session_num desc" );
    while(query->next()){
+        QString res_ses;
+         QStringList session_duration;
        it.append(query->value(query->record().indexOf("Session_num")).toString());
        pass_session.append(query->value(query->record().indexOf("Test_Passed")).toString());
        Time_S.append( query->value(  query->record().indexOf("Test_Day")).toString());
@@ -63,18 +64,45 @@ datalist.clear();
        Time_E.append( query->value(  query->record().indexOf("Test_month_e")).toString());
        Time_E.append( query->value(  query->record().indexOf("Test_year_e")).toString());
        Time_E.append( query->value(  query->record().indexOf("max(S_Session_end)")).toString());
-       duration_s.append(  query->value(  query->record().indexOf("Session_duration")).toString());
+      session_duration.append(QString::number(Time_E.at(0).toInt()-Time_S.at(0).toInt()));
+      session_duration.append(QString::number(Time_E.at(1).toInt()-Time_S.at(1).toInt()));
+      session_duration.append(QString::number(Time_E.at(2).toInt()-Time_S.at(2).toInt()));
+      QRegExp exp(":");
+      QString t = Time_E.at(3);
+      QString t1 = Time_S.at(3);
+      QStringList temp = t.split(exp);
+      QStringList temp1 = t1.split(exp);
+      QString time_res;
+      time_res.append(QString::number(temp.at(0).toInt() - temp1.at(0).toInt()));
+      time_res.append(":");
+       time_res.append(QString::number(temp.at(1).toInt() - temp1.at(1).toInt()));
+       time_res.append(":");
+       QString sec;
+       sec = QString::number(temp.at(2).toInt() - temp1.at(2).toInt());
+       if(sec.toInt()<0){
+          sec = QString::number(sec.toInt()+60);
+       }
+        time_res.append(sec);
+        for(int i=0;i<session_duration.size();i++){
+        res_ses.append(session_duration.at(i)+"/");
+        }
+        session_duration.clear();
+         session_duration.append(time_res);
+        res_ses.append(" "+session_duration.first());
+       //duration_s.append(  query->value(  query->record().indexOf("Session_duration")).toString());
        for(int j=0,k=0;j<Time_S.size();j++,k++){
            Start_date_S.append(Time_S.at(j)+"/");
            End_date_S.append(Time_E.at(k)+"/");
        }
-       datalist.append( new LisModel(it.at(i),Start_date_S,duration_s,End_date_S,pass_session.at(i)));
+       datalist.append( new LisModel(it.at(i),Start_date_S,res_ses,End_date_S,pass_session.at(i)));
+
        Start_date_S.clear(); End_date_S.clear(); duration_s.clear();
        Time_S.clear(); Time_E.clear();
        i++;
     }
     engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(datalist)); // list model
     list_from_ui = it;
+
     it.clear();
 }
 void DataBase::InitDB(){
@@ -231,8 +259,6 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
            list_from_ui = it;
            it.clear();
            return it;
-
-
 }
 
 QString DataBase::row_selected(QString row){
@@ -293,7 +319,7 @@ QString DataBase::row_selected(QString row){
     }
     int y=0,n=0;
     for(int i=0;i<t.size();i++){
-        (t.at(i)=="yes")?y++:n++;
+        (t.at(i)=="success")?y++:n++;
     }
     (y > n)? Sumary_data.append("All tests passed"):Sumary_data.append("Some tests didn't make it");
     delete qu;

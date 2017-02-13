@@ -64,7 +64,7 @@ Item {
                             }
             TableViewColumn {
                                 role: "session_p"
-                                title: "Passed"
+                                title: "Status"
                             }
             }
         }
@@ -73,7 +73,7 @@ Item {
             x: 0
             y: 3
             width: 33
-            height: 28
+            height: 25
             text: "Start"
         }
         TextField {
@@ -82,28 +82,15 @@ Item {
             y: 0
             readOnly: true
             width: 130
-            height: 33
+            height: 25
             placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
         }
-        Calendar{
-            id:calenda
-            x: 8
-            y: 34
-            width: 257
-            height: 232
-            visible: false
-            frameVisible: true
-            onClicked: {
-            calenda.visible = false
-            DD.getDateQML = calenda.selectedDate
-            textField1.text = DD.getDateQML
-            }
-        }
+
         Button{
             x: 168
             y: 0
             width: 38
-            height: 33
+            height: 25
             text:"<>"
         onClicked: {
         if(calenda.visible == true){
@@ -119,7 +106,7 @@ Item {
             x: 238
             y: 5
             width: 27
-            height: 23
+            height: 25
             text:"End"
         }
         TextField {
@@ -128,7 +115,7 @@ Item {
             y: 0
             readOnly: true
             width: 130
-            height: 33
+            height: 25
             placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
         }
         Calendar{
@@ -149,7 +136,7 @@ Item {
             x: 401
             y: 0
             width: 38
-            height: 33
+            height: 25
             text:"<>"
         onClicked: {
         if(end_date.visible == true){
@@ -160,17 +147,18 @@ Item {
         }
         }
         }
-
         Button{
             x: 673
             y: 0
             width: 127
-            height: 33
+            height: 25
+
             text:"Show"
             onClicked: {
             list_ = DD.get_seesion_db(textField1.text,textField2.text);
             }
         }
+
     }
 
 
