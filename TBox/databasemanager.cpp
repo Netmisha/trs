@@ -138,7 +138,29 @@ void DataBaseManager::sessionNum(){
     qDebug()<<"session_started";
     if(!db.open()){
         qDebug()<<"cannot open db";
-        return;
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        QDir DIR;
+        QStringList path = DIR.absolutePath().split("/");
+        path.removeLast();
+        path.append("TBox");
+        QString path_for_db;
+        for(int i=0;i<path.size();i++){
+            path_for_db.append(path.at(i)+"\\\\");
+        }
+        path_for_db.append(FOLDER_DB_NAME);
+        if(!QDir().exists(path_for_db)){
+            QDir().mkdir(path_for_db);
+        }
+        path_for_db.append(DATABASE_NAME);
+        db.setDatabaseName(path_for_db);
+        db.setHostName(LOCALHOST);
+                  if(db.open()){
+                      qDebug()<<"Database: connection ok";
+                  }
+                  else{
+                      qDebug()<<db.lastError().text();
+                      return;
+                  }
     }
     QSqlQuery *qu = new QSqlQuery(db);
     qu->exec("select max(Session_num) from Info");

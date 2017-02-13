@@ -354,6 +354,12 @@ QString DataBase::row_selected(QString row){
     test_r_e =  test_r;
     suite_info_e = Suite_info;
     WindowTable.CreateTable(table_path,session_data,e->size(),Sumary_data,test_r,Suite_info);
+    for(int i=0;i<session_data.size();i++){
+        session_data.at(i)->clear();
+    }
+    Sumary_data.clear();
+    session_data.clear();
+    tn.clear();
     return row;
  }
 
