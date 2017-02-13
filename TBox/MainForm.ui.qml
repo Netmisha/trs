@@ -19,6 +19,7 @@ Item {
     property  variant db_list;
 
     Window{
+        modality: Qt.WindowModal
         id: report_window_
         visible: false
         width: 800

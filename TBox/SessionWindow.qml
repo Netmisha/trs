@@ -13,6 +13,7 @@ import QtQuick.Window 2.1
 import QtWebKit 3.0
 import QtQuick.Dialogs 1.0
 ApplicationWindow{
+    modality: Qt.WindowModal
     id: se
     visible: true
     width: 640
