@@ -19,13 +19,13 @@
  </test>
  <test description="Test description" name="Test3">
   <tag>Release</tag>
-  <disable>true</disable>
+  <disable>false</disable>
   <execution>test.js</execution>
   <repeat>5</repeat>
  </test>
  <test description="Test description" name="Test4">
   <tag>Release</tag>
-  <disable>true</disable>
+  <disable>false</disable>
   <execution>test.js</execution>
   <repeat>5</repeat>
  </test>

@@ -33,10 +33,13 @@ signals:
 public slots:
     Q_INVOKABLE QStringList get_seesion_db( QString start, QString end);
    Q_INVOKABLE void Export_Clicked();
+
 signals:
    void sendExportPath(QString exp);
    void sendSummaryData(QStringList sum_data);
 public:
+   QVector<QStringList*> FullSuiteInfo;
+    QStringList *suite_info;
    Q_INVOKABLE QStringList Sumary_data;
    Q_INVOKABLE void defaultTableValue(QString start, QString end);
    Q_INVOKABLE QString getTableSessionPath();

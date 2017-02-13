@@ -9,7 +9,7 @@ DataBase::DataBase(QObject *parent) :
 
 }
 void DataBase::defaultTableValue(QString start, QString end){
-
+datalist.clear();
     QRegExp exp("/");
     start_dates = start.split(exp);
     std::reverse(start_dates.begin(),start_dates.end());
@@ -28,7 +28,6 @@ void DataBase::defaultTableValue(QString start, QString end){
         QDir().mkdir(path_for_db);
     }
     path_for_db.append(DATABASE_NAME);
-
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(path_for_db);
     db.setHostName(LOCALHOST);
@@ -248,15 +247,37 @@ QString DataBase::row_selected(QString row){
              tn.append(rec.fieldName(i)); // save db columns
          }
          qDebug()<<list_from_ui;
-         qDebug()<<qu->exec("SELECT Test_Name,Test_Suite,Test_Passed FROM Info WHERE Session_num = "+list_from_ui.at(row.toInt()));
+         qDebug()<<qu->exec("SELECT Test_Name,Test_Suite,Test_Passed,Test_repeat,Session_duration,Test_repeat,Test_Desc FROM Info WHERE Session_num = "+list_from_ui.at(row.toInt()));
          row_fields rf;
          while(qu->next()){
             e = new QStringList;
             e->append(qu->value(qu->record().indexOf(rf.Test_name)).toString());
-            e->append(qu->value(qu->record().indexOf(rf.Test_Suite)).toString());
+            e->append(qu->value(qu->record().indexOf("Test_Desc")).toString());
+            e->append(qu->value(qu->record().indexOf("Test_repeat")).toString());
+            e->append(qu->value(qu->record().indexOf("Session_duration")).toString());
             e->append(qu->value(qu->record().indexOf(rf.Test_Passed)).toString());
+            e->append(qu->value(qu->record().indexOf(rf.Test_Suite)).toString());
             session_data.push_back(e);
          }
+    QVector<QStringList*> suite_full_time;
+    QStringList *suite_time;
+
+    delete qu; qu = new QSqlQuery(db);
+    QVector<QStringList*> Suite_info;
+    QStringList *Suite;
+
+
+   qDebug()<<qu->exec("select Test_Suite,Suite_repeat, Suite_desc, count(distinct Test_Name) from Info where Session_num = "+list_from_ui.at(row.toInt())+" group by Test_Suite");
+    while(qu->next()){
+        Suite = new QStringList;
+        Suite->append(qu->value(qu->record().indexOf("Test_Suite")).toString());
+        Suite->append(qu->value(qu->record().indexOf("Suite_desc")).toString());
+        Suite->append(qu->value(qu->record().indexOf("Suite_repeat")).toString());
+        Suite->append("Total");
+        Suite->append("Pass");
+        Suite->append(qu->value(qu->record().indexOf("count(distinct Test_Name)")).toString());
+        Suite_info.append(Suite);
+    }
     current_session = list_from_ui.at(row.toInt());
     index = e->size();
     delete qu;
@@ -300,7 +321,6 @@ QString DataBase::row_selected(QString row){
         End_time.append(qu->value(qu->record().indexOf("max(S_Session_end)")).toString());
     }
     Sumary_data.append(End_time);
-
     delete qu;
     qu = new QSqlQuery(db);
     qDebug()<<qu->exec("select Session_duration from Info where Session_num ="+list_from_ui.at(row.toInt()));
@@ -324,9 +344,10 @@ QString DataBase::row_selected(QString row){
     table_path.append("WebViewSessionTable.html");
     TableSessionPath =table_path;
     QStringList test_r; test_r.append(QString::number(y)); test_r.append(QString::number(n));
-    WindowTable.CreateTable(table_path,session_data,e->size(),Sumary_data,test_r);
+    WindowTable.CreateTable(table_path,session_data,e->size(),Sumary_data,test_r,Suite_info);
     return row;
  }
+
 void DataBase::Export_Clicked(){
     qDebug()<<"Export clicked";
 

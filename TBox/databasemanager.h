@@ -37,11 +37,19 @@ private:
     int minutes =0;
     int seconds = 0;
     int milliseconds =0;
+    QString test_desc;
     QSqlDatabase db;
     QSqlQuery *query_;
+    QString repeatNumTest;
+    QString repeatNumSuite;
+    QString SuiteDesc;
+    QString SuiteRepeat;
 public slots:
 void getSuiteName(QString);
 void getTestName(QString);
+void getRepeatNum(QString);
+void getDescTest(QString);
+void getSuiteInfo(QString,QString);
 void sessionNum();
 public:
     DataBaseManager();

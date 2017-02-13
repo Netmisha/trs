@@ -67,14 +67,81 @@ Item {
                             }
             }
         }
-        Button{
-            x: 673
+
+        Label{
+            x: 0
+            y: 3
+            width: 33
+            height: 28
+            text: "Start"
+        }
+        TextField {
+            id: textField1
+            x: 39
             y: 0
-            width: 127
+            readOnly: true
+            width: 130
             height: 33
-            text:"Show"
-            onClicked: { 
-            list_ = DD.get_seesion_db(textField1.text,textField2.text);
+            placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
+        }
+        Calendar{
+            id:calenda
+            x: 8
+            y: 34
+            width: 257
+            height: 232
+            visible: false
+            frameVisible: true
+            onClicked: {
+            calenda.visible = false
+            DD.getDateQML = calenda.selectedDate
+            textField1.text = DD.getDateQML
+            }
+        }
+        Button{
+            x: 168
+            y: 0
+            width: 38
+            height: 33
+            text:"<>"
+        onClicked: {
+        if(calenda.visible == true){
+        calenda.visible =false
+        }
+        else{
+        calenda.visible = true
+        }
+        }
+        }
+
+        Label{
+            x: 238
+            y: 5
+            width: 27
+            height: 23
+            text:"End"
+        }
+        TextField {
+            id: textField2
+            x: 271
+            y: 0
+            readOnly: true
+            width: 130
+            height: 33
+            placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
+        }
+        Calendar{
+            id:end_date
+            x: 278
+            y: 34
+            width: 257
+            height: 232
+            visible: false
+            frameVisible: true
+            onClicked: {
+                end_date.visible = false;
+                DD.get_EndDate = end_date.selectedDate
+                textField2.text = DD.get_EndDate
             }
         }
         Button{
@@ -92,83 +159,22 @@ Item {
         }
         }
         }
-        TextField {
-            id: textField1
-            x: 39
-            y: 0
-            readOnly: true
-            width: 130
-            height: 33
-            placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
-        }
-        Button{
-            x: 168
-            y: 0
-            width: 38
-            height: 33
-            text:"<>"
-        onClicked: {
-        if(calenda.visible == true){
-        calenda.visible =false
-        }
-        else{
-        calenda.visible = true
-        }
-        }
-        }
-        Label{
-            x: 0
-            y: 3
-            width: 33
-            height: 28
-            text: "Start"
-        }
-        Label{
-            x: 238
-            y: 5
-            width: 27
-            height: 23
-            text:"End"
-        }
-        TextField {
-            id: textField2
-            x: 271
-            y: 0
-            readOnly: true
-            width: 130
-            height: 33
-            placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
-        }
 
-        Calendar{
-            id:end_date
-            x: 278
-            y: 34
-            width: 257
-            height: 232
-            visible: false
-            frameVisible: true
+        Button{
+            x: 673
+            y: 0
+            width: 127
+            height: 33
+            text:"Show"
             onClicked: {
-                end_date.visible = false;
-                DD.get_EndDate = end_date.selectedDate
-                textField2.text = DD.get_EndDate
-            }
-        }
-        Calendar{
-            id:calenda
-            x: 8
-            y: 34
-            width: 257
-            height: 232
-            visible: false
-            frameVisible: true
-            onClicked: {
-            calenda.visible = false
-            DD.getDateQML = calenda.selectedDate
-            textField1.text = DD.getDateQML
+            list_ = DD.get_seesion_db(textField1.text,textField2.text);
             }
         }
     }
+
+
+
+
     id: root
     anchors.fill: parent
     Action {
@@ -418,6 +424,7 @@ Item {
                     id: startButton
                     action: runAllAction
                     iconSource: "icons/icons/Run.png"
+
                 }
                 ToolButton {
                     id: stopAllTestsButton

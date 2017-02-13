@@ -31,16 +31,16 @@ ApplicationWindow{
         }
     }
     ColumnLayout{
-
+        id: columnLayout
         x: 0
         y: 0
-        width: parent.width
-        height: parent.height
+        width: se.width
+        height: se.height
         spacing: 2
     Rectangle {
         id: content
-        width: 800
-        height: 600
+        width: se.width
+        height: se.height
         color: "white"
         Layout.alignment: Qt.AlignCenter
         Layout.preferredHeight: se.height
@@ -51,22 +51,21 @@ ApplicationWindow{
             url: "file:///"+DD.getTableSessionPath();
         }
     }
-    Rectangle {
-        id: rectangle1
+
         Button{
-        Layout.alignment: Qt.AlignBottom
-        Layout.preferredWidth: 70
-        Layout.preferredHeight: 30
-        id:export_button
-        x: 528
-        y: 0
+            anchors.top: columnLayout.top;
+            anchors.right: columnLayout.right;
+            anchors.margins: 10;
+            width: 130
+            height: 120
+            id:export_button
         text: "Export"
         onClicked: {
             fileDialog.visible = true;
             DD.test();
         }
         }
-    }
+
    }
 
 }
