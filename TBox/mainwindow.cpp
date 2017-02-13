@@ -510,6 +510,10 @@ QStandardItem * MainTree::AddItemToTree(QString name) {
         }
         i++;
     }
+    if( row== -1) {
+        this->itemFromIndex(currentIndex)->appendRow(item);
+        return item;
+    }
     this->itemFromIndex(currentIndex)->insertRow(row,item);
     int k=root->rowCount()-1;
     while (k!=row) {
