@@ -64,30 +64,41 @@ datalist.clear();
        Time_E.append( query->value(  query->record().indexOf("Test_month_e")).toString());
        Time_E.append( query->value(  query->record().indexOf("Test_year_e")).toString());
        Time_E.append( query->value(  query->record().indexOf("max(S_Session_end)")).toString());
-      session_duration.append(QString::number(Time_E.at(0).toInt()-Time_S.at(0).toInt()));
-      session_duration.append(QString::number(Time_E.at(1).toInt()-Time_S.at(1).toInt()));
-      session_duration.append(QString::number(Time_E.at(2).toInt()-Time_S.at(2).toInt()));
+       QString date_;
+       date_ = QString::number(Time_E.at(0).toInt()-Time_S.at(0).toInt());
+       (date_.toInt()<0)?std::abs(date_.toInt()):0;
+      session_duration.append(date_);
+      date_ = QString::number(Time_E.at(1).toInt()-Time_S.at(1).toInt());
+      (date_.toInt()<0)?std::abs(date_.toInt()):0;
+      session_duration.append(date_);
+      date_ = QString::number(Time_E.at(2).toInt()-Time_S.at(2).toInt());
+      (date_.toInt()<0)?std::abs(date_.toInt()):0;
+      session_duration.append(date_);
       QRegExp exp(":");
       QString t = Time_E.at(3);
       QString t1 = Time_S.at(3);
       QStringList temp = t.split(exp);
       QStringList temp1 = t1.split(exp);
       QString time_res;
-      time_res.append(QString::number(temp.at(0).toInt() - temp1.at(0).toInt()));
+      QString time_time;
+      time_time = QString::number(temp.at(0).toInt() - temp1.at(0).toInt());
+       (time_time.toInt()<0)?std::abs(time_time.toInt()):0;
+      time_res.append(time_time);
       time_res.append(":");
-       time_res.append(QString::number(temp.at(1).toInt() - temp1.at(1).toInt()));
+       time_time = QString::number(temp.at(1).toInt() - temp1.at(1).toInt());
+       (time_time.toInt()<0)?std::abs(time_time.toInt()):0;
+       time_res.append(time_time);
        time_res.append(":");
-       QString sec;
-       sec = QString::number(temp.at(2).toInt() - temp1.at(2).toInt());
-       if(sec.toInt()<0){
-          sec = QString::number(sec.toInt()+60);
+       time_time = QString::number(temp.at(2).toInt() - temp1.at(2).toInt());
+       if(time_time.toInt()<0){
+          std::abs(time_time.toInt());
        }
-        time_res.append(sec);
+        time_res.append(time_time);
         for(int i=0;i<session_duration.size();i++){
         res_ses.append(session_duration.at(i)+"/");
         }
         session_duration.clear();
-         session_duration.append(time_res);
+        session_duration.append(time_res);
         res_ses.append(" "+session_duration.first());
        //duration_s.append(  query->value(  query->record().indexOf("Session_duration")).toString());
        for(int j=0,k=0;j<Time_S.size();j++,k++){
@@ -380,11 +391,13 @@ QString DataBase::row_selected(QString row){
     test_r_e =  test_r;
     suite_info_e = Suite_info;
     WindowTable.CreateTable(table_path,session_data,e->size(),Sumary_data,test_r,Suite_info);
+    /*
     for(int i=0;i<session_data.size();i++){
         session_data.at(i)->clear();
     }
     Sumary_data.clear();
     session_data.clear();
+    */
     tn.clear();
     return row;
  }

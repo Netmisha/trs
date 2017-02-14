@@ -154,15 +154,21 @@ QString time_start_ = split__.at(1);
 
 QStringList td_ = date_start_.split("/");
 QStringList tt_ = time_start_.split(":");
-
+QString temp;
 for(int i=0;i<td.size();i++){
-res__.append(QString::number(td_.at(i).toInt() - td.at(i).toInt()));
+    temp = QString::number(td_.at(i).toInt() - td.at(i).toInt());
+    (temp.toInt()<0)?std::abs(temp.toInt()):0;
+res__.append(temp);
 res__.append("/");
+temp.clear();
 }
 res__.append(" ");
 for(int i=0;i<tt.size();i++){
-res__.append(QString::number(tt_.at(i).toInt() - tt.at(i).toInt()));
-res__.append(":");
+    temp = QString::number(tt_.at(i).toInt() - tt.at(i).toInt());
+    (temp.toInt()<0)?std::abs(temp.toInt()):0;
+    res__.append(temp);
+    res__.append(":");
+    temp.clear();
 }
 res__.remove(res__.size()-1,1);
      file.resize(0);

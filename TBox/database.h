@@ -51,15 +51,19 @@ public:
    Q_INVOKABLE QString TableSessionPath;
    Q_INVOKABLE QList<QObject*> datalist;
     QString test_msg;
-    QVector<QStringList*> table_data_e;int elements_e;QStringList summary_data_e;QStringList test_r_e;QVector<QStringList*> suite_info_e;
+   Q_INVOKABLE QVector<QStringList*> table_data_e;
+    Q_INVOKABLE int elements_e;
+    Q_INVOKABLE QStringList summary_data_e;
+    Q_INVOKABLE QStringList test_r_e;
+    Q_INVOKABLE QVector<QStringList*> suite_info_e;
 
    Q_INVOKABLE QString current_session;
    Q_INVOKABLE int index;
    Q_INVOKABLE QString path_for_db;
    Q_INVOKABLE void test(){
        qDebug()<<"Inside";
-       emit PassHTMLdata(table_data_e,elements_e,summary_data_e,test_r_e,suite_info_e,current_session);
-   }
+       emit PassHTMLdata(session_data,elements_e,summary_data_e,test_r_e,suite_info_e,current_session);
+     }
    Q_INVOKABLE QString datad(int i){
        if(i==0){
    return "Hello from func";
