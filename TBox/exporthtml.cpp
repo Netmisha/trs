@@ -208,7 +208,7 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
           output<<"Total Duration";
           output<<"</th >\n";
           output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
-          output<<"Pass";
+          output<<"Status";
           output<<"</th>\n";
           output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
           output<<"Info";

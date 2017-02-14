@@ -305,7 +305,22 @@ QString DataBase::row_selected(QString row){
     delete qu; qu = new QSqlQuery(db);
     QVector<QStringList*> Suite_info;
     QStringList *Suite;
+    qu = new QSqlQuery(db);
+    QStringList t;
+    qu->exec("select Test_Passed from Info where Session_num = "+list_from_ui.at(row.toInt()));
 
+     int y=0,n=0;
+    while(qu->next()){
+        t.append(qu->value(qu->record().indexOf(rf.Test_Passed)).toString());
+    }
+
+    for(int i=0;i<t.size();i++){
+        (t.at(i)=="success")?y++:n++;
+    }
+    (y > n)? Sumary_data.append("All tests passed"):Sumary_data.append("Some tests didn't make it");
+    delete qu;
+
+ qu = new QSqlQuery(db);
 
    qDebug()<<qu->exec("select Test_Suite,Suite_repeat, Suite_desc, count(distinct Test_Name) from Info where Session_num = "+list_from_ui.at(row.toInt())+" group by Test_Suite");
     while(qu->next()){
@@ -314,7 +329,7 @@ QString DataBase::row_selected(QString row){
         Suite->append(qu->value(qu->record().indexOf("Suite_desc")).toString());
         Suite->append(qu->value(qu->record().indexOf("Suite_repeat")).toString());
         Suite->append("Total");
-        Suite->append("Pass");
+        (y > n)? Suite->append("success"):Suite->append("fail");
         Suite->append(qu->value(qu->record().indexOf("count(distinct Test_Name)")).toString());
         Suite_info.append(Suite);
     }
@@ -322,18 +337,7 @@ QString DataBase::row_selected(QString row){
     current_session = list_from_ui.at(row.toInt());
     index = e->size();
     delete qu;
-    qu = new QSqlQuery(db);
-    QStringList t;
-    qu->exec("select Test_Passed from Info where Session_num = "+list_from_ui.at(row.toInt()));
-    while(qu->next()){
-        t.append(qu->value(qu->record().indexOf(rf.Test_Passed)).toString());
-    }
-    int y=0,n=0;
-    for(int i=0;i<t.size();i++){
-        (t.at(i)=="success")?y++:n++;
-    }
-    (y > n)? Sumary_data.append("All tests passed"):Sumary_data.append("Some tests didn't make it");
-    delete qu;
+
     SessionWindowTable WindowTable;
     qu = new QSqlQuery(db);
     qDebug()<<qu->exec("select min(Test_Day), min(Test_Month),min(Test_Year),min(S_Start_time) from Info where Session_num ="+list_from_ui.at(row.toInt()));

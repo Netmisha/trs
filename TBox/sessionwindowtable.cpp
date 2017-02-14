@@ -209,7 +209,7 @@ res__.remove(res__.size()-1,1);
          output<<"Total Duration";
          output<<"</th >\n";
          output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
-         output<<"Pass";
+         output<<"Status";
          output<<"</th>\n";
          output<<"<th style='border: 1px solid black;background-color:#B0B0B0'>";
          output<<"Info";
