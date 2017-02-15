@@ -353,6 +353,14 @@ Item {
     function selectItem (idx) {
          mainTree.selection.setCurrentIndex(idx, ItemSelectionModel.ClearAndSelect)
     }
+    function startRun() {
+        if(theModel.Run()) {
+            stopAllTestsButton.visible=true;
+            consoleText.text="";
+            startButton.visible=false;
+            testRun.enabled=false;
+        }
+    }
     Item {
         id: showMenu
         function menuForSuite() {
