@@ -13,6 +13,10 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
          MainWindow w;
+         if(argc>1) {
+             QString command(argv[argc-1]);
+             w.AddStartCommand(command);
+         }
          return a.exec();
 }
 

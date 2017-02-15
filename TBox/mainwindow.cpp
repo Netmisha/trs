@@ -138,6 +138,12 @@ void MainWindow::writeLog(QString msg){
     QTime time=QTime::currentTime();
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
 }
+void MainWindow::AddStartCommand(QString command)
+{
+    if(command == "run") {
+        QMetaObject::invokeMethod(object, "startRun");
+    }
+}
 void MainTree::testFinished(QString msg) {
     emit sendTestMessage(msg);
     WriteLog(msg);
