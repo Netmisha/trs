@@ -17,8 +17,8 @@ datalist.clear();
     std::reverse(end_dates.begin(),end_dates.end());
     QDir DIR;
     QStringList path = DIR.absolutePath().split("/");
-    path.removeLast();
-    path.append("TBox");
+   // path.removeLast();
+   // path.append("TBox");
     QString path_for_db;
     for(int i=0;i<path.size();i++){
         path_for_db.append(path.at(i)+"\\\\");
@@ -50,7 +50,8 @@ datalist.clear();
    cd_.append(QDate::currentDate().toString("MM"));
    cd_.append(QDate::currentDate().toString("yyyy"));
    int i=0;
-   qDebug()<< query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num order by Session_num desc" );
+
+   query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num order by Session_num desc" );
    while(query->next()){
         QString res_ses;
          QStringList session_duration;
@@ -212,8 +213,8 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
     }
     QDir DIR;
     QStringList path = DIR.absolutePath().split("/");
-    path.removeLast();
-    path.append("TBox");
+   // path.removeLast();
+   // path.append("TBox");
     QString path_for_db;
     for(int i=0;i<path.size();i++){
         path_for_db.append(path.at(i)+"\\\\");
@@ -236,8 +237,8 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
              }
             query = new QSqlQuery(db);
             datalist.clear();
-           qDebug()<< query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num" );
-           qDebug()<<query->executedQuery();
+             query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num" );
+            query->executedQuery();
            QStringList Time_S;
            QStringList Time_E;
            QString duration_s;
@@ -285,8 +286,8 @@ QString DataBase::row_selected(QString row){
          for(int i=0;i<rec.count();i++){
              tn.append(rec.fieldName(i)); // save db columns
          }
-         qDebug()<<list_from_ui;
-         qDebug()<<qu->exec("SELECT Test_Name,Test_Suite,Test_Passed,Test_repeat,Session_duration,Test_repeat,Test_Desc,Test_msg FROM Info WHERE Session_num = "+list_from_ui.at(row.toInt()));
+          list_from_ui;
+          qu->exec("SELECT Test_Name,Test_Suite,Test_Passed,Test_repeat,Session_duration,Test_repeat,Test_Desc,Test_msg FROM Info WHERE Session_num = "+list_from_ui.at(row.toInt()));
          row_fields rf;
          while(qu->next()){
             e = new QStringList;
@@ -299,9 +300,6 @@ QString DataBase::row_selected(QString row){
             e->append(qu->value(qu->record().indexOf("Test_msg")).toString());
             session_data.push_back(e);
          }
-    QVector<QStringList*> suite_full_time;
-    QStringList *suite_time;
-
     delete qu; qu = new QSqlQuery(db);
     QVector<QStringList*> Suite_info;
     QStringList *Suite;
@@ -322,7 +320,7 @@ QString DataBase::row_selected(QString row){
 
  qu = new QSqlQuery(db);
 
-   qDebug()<<qu->exec("select Test_Suite,Suite_repeat, Suite_desc, count(distinct Test_Name) from Info where Session_num = "+list_from_ui.at(row.toInt())+" group by Test_Suite");
+    qu->exec("select Test_Suite,Suite_repeat, Suite_desc, count(distinct Test_Name) from Info where Session_num = "+list_from_ui.at(row.toInt())+" group by Test_Suite");
     while(qu->next()){
         Suite = new QStringList;
         Suite->append(qu->value(qu->record().indexOf("Test_Suite")).toString());
@@ -340,7 +338,7 @@ QString DataBase::row_selected(QString row){
 
     SessionWindowTable WindowTable;
     qu = new QSqlQuery(db);
-    qDebug()<<qu->exec("select min(Test_Day), min(Test_Month),min(Test_Year),min(S_Start_time) from Info where Session_num ="+list_from_ui.at(row.toInt()));
+     qu->exec("select min(Test_Day), min(Test_Month),min(Test_Year),min(S_Start_time) from Info where Session_num ="+list_from_ui.at(row.toInt()));
     QString Start_time;
     while(qu->next()){
         Start_time.append(qu->value(qu->record().indexOf("min(Test_Day)")).toString());
@@ -368,12 +366,12 @@ QString DataBase::row_selected(QString row){
     Sumary_data.append(End_time);
     delete qu;
     qu = new QSqlQuery(db);
-    qDebug()<<qu->exec("select Session_duration from Info where Session_num ="+list_from_ui.at(row.toInt()));
+     qu->exec("select Session_duration from Info where Session_num ="+list_from_ui.at(row.toInt()));
     QStringList Duration;
     while(qu->next()){
         Duration.append(qu->value(qu->record().indexOf("Session_duration")).toString());
     }
-    qDebug()<<Duration;
+     Duration;
     Sumary_data.append(Duration);
    // emit sendSummaryData(Sumary_data);
     WindowTable.setIndex(row.toInt());
@@ -381,8 +379,8 @@ QString DataBase::row_selected(QString row){
     QDir DIR;
     QStringList path = DIR.absolutePath().split("/");
     QString table_path;
-    path.removeLast();
-    path.append("TBox");
+    //path.removeLast();
+    //path.append("TBox");
     for(int i=0;i<path.size();i++){
         table_path.append(path.at(i)+"\\\\");
     }

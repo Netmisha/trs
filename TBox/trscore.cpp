@@ -4,6 +4,9 @@
 TRSCore::TRSCore(QObject *parent) : QObject(parent) {
     process=new QProcess();
 }
+void TRSCore::ValidateDirStructure(QString dirValidatePath){
+qDebug()<<dirValidatePath;
+}
 void TRSCore::StartApp(QString appName) {
     process->start(appName);
     process->waitForStarted();

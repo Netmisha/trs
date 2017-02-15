@@ -79,7 +79,7 @@ public slots:
     QVariant getKeyValue(QString);
     void setKeyValue(QString, QVariant);
     QString List(QString);
-
+    void ValidateDirStructure(QString dirValidatePath);
 private:
     QProcess *process;
     POINT current_pos;

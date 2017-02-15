@@ -139,9 +139,8 @@ void MainWindow::writeLog(QString msg){
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
 }
 void MainTree::testFinished(QString msg) {
-    qDebug()<<msg;
-    WriteLog(msg);
     emit sendTestMessage(msg);
+    WriteLog(msg);
     data_base_man.sessionEnd();
     run=false;
     if(testForRun.isEmpty()) {
