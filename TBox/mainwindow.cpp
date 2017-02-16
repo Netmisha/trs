@@ -720,7 +720,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
         page+="\n\t\t<script type=\"text/javascript\">\n\t\t"+tooljs+"</script>";
         tools.close();
     }
-    page+="\n\t\t<script type=\"text/javascript\">\n\t\tTest.BEGIN();"+getJS(it.file, it.name)+"\n\t\tTest.SUCCESS()</script>";
+    page+="\n\t\t<script type=\"text/javascript\">\n\t\ttry{\n\t\tTest.BEGIN();"+getJS(it.file, it.name)+"\n\t\tSUCCESS()\n}\ncatch (err) {}</script>";
     page+="\n\t</head>\n\t<body>\n\t</body>\n</html>";
     file.write(page.toLatin1());
     file.close();
