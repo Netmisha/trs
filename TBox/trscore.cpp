@@ -7,9 +7,16 @@ TRSCore::TRSCore(QObject *parent) : QObject(parent) {
 void TRSCore::ValidateDirStructure(QString dirValidatePath){
 qDebug()<<dirValidatePath;
 }
-void TRSCore::StartApp(QString appName) {
+bool TRSCore::StartApp(QString appName) {
     process->start(appName);
-    process->waitForStarted();
+    if(process->error()<5) {
+        qDebug()<<process->errorString();
+        return false;
+    }
+    else {
+        process->waitForStarted();
+        return true;
+    }
 }
 void TRSCore::CloseApp() {
     process->close();

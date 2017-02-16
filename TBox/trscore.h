@@ -36,8 +36,9 @@ public:
 
 signals:
     void log(QString);
+    void fail(QString);
 public slots:
-    void StartApp(QString);
+    bool StartApp(QString);
     void CloseApp();
     void SetOnTop(QString);
     QString GetTopWnd();
