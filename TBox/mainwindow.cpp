@@ -729,6 +729,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
 }
 void MainTree::WriteLog(QString msg) {
     QTime time=QTime::currentTime();
+    qDebug() << time.toString()+":"+QString::number(time.msec())+" "+"Box: "+msg;
     QMetaObject::invokeMethod(contextObject, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
 }
 void MainTree::OpenInEditor(QString editor) {
