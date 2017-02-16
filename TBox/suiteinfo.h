@@ -19,6 +19,7 @@ public slots:
     Q_INVOKABLE QString getCurrentDir();
     Q_INVOKABLE void setData(QString, QString);
     Q_INVOKABLE QString getData(QString);
+    Q_INVOKABLE QString delData(QString);
     Q_INVOKABLE bool isData(QString);
 protected:
     QString currentPath;

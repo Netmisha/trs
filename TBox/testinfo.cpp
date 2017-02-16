@@ -70,6 +70,30 @@ QString TestInfo::getData(QString tag) {
     file.close();
     return "";
 }
+QString TestInfo::delData(QString tag) {
+    QDomDocument doc;
+    QFile file(currentPath);
+    file.open(QIODevice::ReadOnly);
+    if (doc.setContent(&file, false)) {
+        QDomElement root = doc.documentElement();
+        root = root.firstChildElement(tags_name::kTest);
+        while (root.attribute(tags_name::kName)!=testName) {
+            root = root.nextSiblingElement(tags_name::kTest);
+        }
+        root = root.firstChildElement(tags_name::kData);
+        file.close();
+        if(!root.firstChildElement(tag).isNull()) {
+            root.removeChild(root.firstChildElement(tag));
+            file.open(QIODevice::WriteOnly);
+            QTextStream stream( &file );
+            stream << doc.toString();
+            file.close();
+            return "";
+        }
+        file.close();
+        return "Test dont found!";
+    }
+}
 bool TestInfo::isData(QString tag) {
     QDomDocument doc;
     QFile file(currentPath);
