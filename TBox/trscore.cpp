@@ -4,8 +4,24 @@
 TRSCore::TRSCore(QObject *parent) : QObject(parent) {
     process=new QProcess();
 }
-void TRSCore::ValidateDirStructure(QString dirValidatePath){
-qDebug()<<dirValidatePath;
+
+
+QString TRSCore::getFileData(QString filePath){
+    QFile *xmlFile = new QFile(filePath);
+    QString streamData;
+    QMessageBox msgBox;
+    if(!xmlFile->open(QIODevice::ReadOnly | QIODevice::Text)){
+        msgBox.setText("Could not open XML file. Check your path");
+        msgBox.exec();
+        return "";
+    }
+    QTextStream stream(xmlFile);
+    while(!stream.atEnd()){
+        streamData.append(stream.readLine());
+    }
+    xmlFile->close();
+    return streamData;
+
 }
 void TRSCore::StartApp(QString appName) {
     process->start(appName);
@@ -300,3 +316,4 @@ QString TRSCore::List(QString path)
     }
     return data;
 }
+

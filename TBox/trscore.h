@@ -21,6 +21,7 @@
 #include <QVector>
 #include <QDebug>
 #include <QSettings>
+#include <QMessageBox>
 extern QWebView * view;
 
 namespace reg_keys {
@@ -79,7 +80,7 @@ public slots:
     QVariant getKeyValue(QString);
     void setKeyValue(QString, QVariant);
     QString List(QString);
-    void ValidateDirStructure(QString dirValidatePath);
+    QString getFileData(QString filePath);
 private:
     QProcess *process;
     POINT current_pos;

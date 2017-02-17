@@ -1717,6 +1717,19 @@ Item {
             height: 25
             placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
         }
+        Calendar{
+            id:calenda
+            x: 8
+            y: 34
+            width: 257
+            height: 232
+            visible: false
+            frameVisible: true
+            onClicked: {
+            DD.getDateQML = calenda.selectedDate
+            textField1.text = DD.getDateQML
+            }
+        }
 
         Button{
             x: 170
