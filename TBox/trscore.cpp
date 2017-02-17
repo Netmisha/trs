@@ -23,9 +23,16 @@ QString TRSCore::getFileData(QString filePath){
     return streamData;
 
 }
-void TRSCore::StartApp(QString appName) {
+bool TRSCore::StartApp(QString appName) {
     process->start(appName);
-    process->waitForStarted();
+    if(process->error()<5) {
+        qDebug()<<process->errorString();
+        return false;
+    }
+    else {
+        process->waitForStarted();
+        return true;
+    }
 }
 void TRSCore::CloseApp() {
     process->close();
@@ -282,26 +289,27 @@ bool TRSCore::delFile(QString path) {
 
 bool TRSCore::isKeyExist(QString key)
 {
-    QString separator=key.contains("/")?"/":"\\";
-    QSettings regSetting(key.left(key.lastIndexOf(separator)), QSettings::NativeFormat);
-    return regSetting.contains(key.right(key.length()-key.lastIndexOf(separator)-1));
+    key.replace("/","\\");
+    QSettings regSetting(key.left(key.lastIndexOf("\\")), QSettings::NativeFormat);
+    return regSetting.contains(key.right(key.length()-key.lastIndexOf("\\")-1));
 }
 
 QVariant TRSCore::getKeyValue(QString key)
 {
-    QString separator=key.contains("/")?"/":"\\";
-    QSettings regSetting(key.left(key.lastIndexOf(separator)), QSettings::NativeFormat);
-    return regSetting.value(key.right(key.length()-key.lastIndexOf(separator)-1));
+    key.replace("/","\\");
+    QSettings regSetting(key.left(key.lastIndexOf("\\")), QSettings::NativeFormat);
+    return regSetting.value(key.right(key.length()-key.lastIndexOf("\\")-1));
 }
 
 void TRSCore::setKeyValue(QString key, QVariant value)
 {
-    QString separator=key.contains("/")?"/":"\\";
-    QSettings regSetting(key.left(key.lastIndexOf(separator)), QSettings::NativeFormat);
-    regSetting.setValue(key.right(key.length()-key.lastIndexOf(separator)-1), value);
+    key.replace("/","\\");
+    QSettings regSetting(key.left(key.lastIndexOf("\\")), QSettings::NativeFormat);
+    regSetting.setValue(key.right(key.length()-key.lastIndexOf("\\")-1), value);
 }
 QString TRSCore::List(QString path)
 {
+    path.replace("/","\\");
     if(path=="") {
         return "Invalid path.";
     }
@@ -309,7 +317,7 @@ QString TRSCore::List(QString path)
     QSettings regSetting(path, QSettings::NativeFormat);
     QStringList list=regSetting.allKeys();
     for(auto& it:list) {
-        data+=path+it+"\n";
+        data+=path+"\\"+it+"\n";
     }
     if(data.size()>1000000) {
         return "A lot of data";

@@ -69,3 +69,11 @@ function getHash(obj){
 function getTicCount(){
   return (new Date()).getTime();
 };
+function FAIL(msg) {
+    Test.FAIL(msg);
+    throw "FAIL";
+}
+function SUCCESS(msg) {
+    Test.SUCCESS(msg);
+    throw "SUCCESS";
+}

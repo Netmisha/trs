@@ -38,6 +38,7 @@ public:
     ~MainWindow();
 public slots:
     void writeLog(QString);
+    void AddStartCommand(QString);
 private slots:
 private:
     DataBase O;

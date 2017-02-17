@@ -138,6 +138,12 @@ void MainWindow::writeLog(QString msg){
     QTime time=QTime::currentTime();
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
 }
+void MainWindow::AddStartCommand(QString command)
+{
+    if(command == "run") {
+        QMetaObject::invokeMethod(object, "startRun");
+    }
+}
 void MainTree::testFinished(QString msg) {
     emit sendTestMessage(msg);
     WriteLog(msg);
@@ -714,7 +720,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
         page+="\n\t\t<script type=\"text/javascript\">\n\t\t"+tooljs+"</script>";
         tools.close();
     }
-    page+="\n\t\t<script type=\"text/javascript\">\n\t\tTest.BEGIN();"+getJS(it.file, it.name)+"\n\t\tTest.SUCCESS()</script>";
+    page+="\n\t\t<script type=\"text/javascript\">\n\t\ttry{\n\t\tTest.BEGIN();"+getJS(it.file, it.name)+"\n\t\tSUCCESS()\n}\ncatch (err) {}</script>";
     page+="\n\t</head>\n\t<body>\n\t</body>\n</html>";
     file.write(page.toLatin1());
     file.close();
@@ -723,6 +729,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
 }
 void MainTree::WriteLog(QString msg) {
     QTime time=QTime::currentTime();
+    qDebug() << time.toString()+":"+QString::number(time.msec())+" "+"Box: "+msg;
     QMetaObject::invokeMethod(contextObject, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
 }
 void MainTree::OpenInEditor(QString editor) {

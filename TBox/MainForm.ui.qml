@@ -208,6 +208,14 @@ Item {
     function selectItem (idx) {
          mainTree.selection.setCurrentIndex(idx, ItemSelectionModel.ClearAndSelect)
     }
+	function startRun() {
+        if(theModel.Run()) {
+            stopAllTestsButton.visible=true;
+            consoleText.text="";
+            startButton.visible=false;
+            testRun.enabled=false;
+        }
+    }
     Item {
         id: showMenu
         function menuForSuite() {
@@ -1806,7 +1814,5 @@ Item {
                 list_ = DD.get_seesion_db(textField1.text,textField2.text);
             }
         }
-
     }
-
 }
