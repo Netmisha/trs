@@ -82,7 +82,7 @@ public slots:
     QVariant getKeyValue(QString);
     void setKeyValue(QString, QVariant);
     QString List(QString);
-    QStringList getFileData(QString filePath);
+    QString getFileData(QString filePath);
     void recurseElementsXML(QDomElement root,QString attribute,QStringList *list_);
 private:
     QProcess *process;

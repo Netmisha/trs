@@ -11,98 +11,93 @@ import QtQml 2.0 as QML
 import QtQml 2.2
 import QtQuick.Window 2.1
 import QtWebKit 3.0
-ApplicationWindow {
-    id: root
-    visible: true
+ApplicationWindow{
+    modality: Qt.WindowModal
+    id: report_window_
+    visible: false
     width: 800
     height: 480
-    title: qsTr("Reports")
-    property variant win;
-    property  variant list_;
-    property  variant db_list;
+    title: qsTr("Report")
         ListView {
         id: list_V
         x: 0
         y: 42
         width: 182; height: 438
         TableView{
-            //model: MLM
+            model: MLM
             id: t_view
             x: 0
             y: -8
-            width: root.width
-            height: root.height
+            width: report_window_.width
+            height: report_window_.height
             onClicked: {
                 DD.row_selected(t_view.currentRow)
             }
             onDoubleClicked: {
-                var component = Qt.createComponent("SessionWindow.qml")
+                var component = Qt.createComponent("SessionWindow.qml");
                 win = component.createObject(root);
                 win.show();
-
             }
         TableViewColumn {
                             role: "session_n"
-                            title: "Session"
+                            title: "ID"
                         }
 
         TableViewColumn {
                             role: "session_s"
-                            title: "Session start"
+                            title: "Start"
                         }
         TableViewColumn {
                             role: "session_d"
-                            title: "Session durration"
+                            title: "Durration"
                         }
         TableViewColumn {
                             role: "session_e"
-                            title: "Session end"
+                            title: "End"
                         }
         TableViewColumn {
                             role: "session_p"
-                            title: "Session passed"
+                            title: "Status"
                         }
         }
     }
-    Button{
-        x: 673
-        y: 0
-        width: 127
-        height: 33
-        text:"Show"
-        onClicked: {
-        list_ = DD.get_seesion_db(textField1.text,textField2.text);
-        }
-    }
-    Button{
-        x: 401
-        y: 0
-        width: 38
-        height: 33
-        text:"<>"
-    onClicked: {
-    if(end_date.visible == true){
-    end_date.visible =false
-    }
-    else{
-    end_date.visible = true
-    }
-    }
+
+    Label{
+        x: 0
+        y: 11
+        width: 33
+        height: 25
+        text: "Start"
     }
     TextField {
         id: textField1
-        x: 39
-        y: 0
+        x: 34
+        y: 10
         readOnly: true
         width: 130
-        height: 33
-         placeholderText: "Set start date"
+        height: 25
+        placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
     }
+    Calendar{
+        id:calenda
+        x: 6
+        y: 42
+        width: 257
+        height: 232
+        visible: false
+        frameVisible: true
+        onClicked: {
+        calenda.visible = false
+        DD.getDateQML = calenda.selectedDate
+        textField1.text = DD.getDateQML
+        }
+    }
+
     Button{
-        x: 168
-        y: 0
+        x: 170
+        y: 11
         width: 38
-        height: 33
+        height: 25
         text:"<>"
     onClicked: {
     if(calenda.visible == true){
@@ -113,53 +108,65 @@ ApplicationWindow {
     }
     }
     }
+
     Label{
-        x: 0
-        y: 3
-        width: 33
-        height: 28
-        text: "Start"
-    }
-    Label{
-        x: 238
-        y: 5
+        x: 230
+        y: 11
         width: 27
-        height: 23
+        height: 25
         text:"End"
     }
     TextField {
         id: textField2
-        x: 271
-        y: 0
+        x: 263
+        y: 10
         readOnly: true
         width: 130
-        height: 33
-        placeholderText: "Set end date"
+        height: 25
+        placeholderText: qsTr(new Date().toJSON().slice(0,10).replace(/-/g,'/'))
     }
     Calendar{
         id:end_date
-        x: 278
-        y: 34
+        x:272
+        y: 42
         width: 257
         height: 232
+        //anchors.left: parent.left
+        //anchors.leftMargin: 0
         visible: false
         frameVisible: true
         onClicked: {
+            end_date.visible = false;
             DD.get_EndDate = end_date.selectedDate
             textField2.text = DD.get_EndDate
         }
     }
-    Calendar{
-        id:calenda
-        x: 8
-        y: 34
-        width: 257
-        height: 232
-        visible: false
-        frameVisible: true
+    Button{
+        x: 399
+        y: 10
+        width: 38
+        height: 25
+        text:"<>"
+    onClicked: {
+    if(end_date.visible == true){
+    end_date.visible =false
+    }
+    else{
+    end_date.visible = true
+    }
+    }
+    }
+    Button{
+        x: 673
+        y: 10
+        width: 127
+        height: 25
+
+        text:"Show"
+        anchors.right: parent.right
+        anchors.rightMargin: 0
         onClicked: {
-        DD.getDateQML = calenda.selectedDate
-        textField1.text = DD.getDateQML
+            list_ = DD.get_seesion_db(textField1.text,textField2.text);
         }
     }
 }

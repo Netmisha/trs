@@ -9,9 +9,9 @@ void TRSCore::recurseElementsXML(QDomElement root, QString attribute,QStringList
     QString data_;
     QDomNodeList items = root.childNodes();
     for(int i=0;i<items.count();i++){
-        data_.append(items.at(i).toElement().attribute("name")+"|");
+        data_.append(items.at(i).toElement().attribute(attribute)+"|");
     }
-    data_.append(root.toElement().attribute("name"));
+    data_.append(root.toElement().attribute(attribute));
     list_->push_back(data_);
     data_.clear();
     for(int i=0;i<items.count();i++){
@@ -20,23 +20,41 @@ void TRSCore::recurseElementsXML(QDomElement root, QString attribute,QStringList
             QDomElement element = itemnode.toElement();
             if(element.tagName() == "file"){continue;}
             else if(element.tagName() == "dir"){
-                recurseElementsXML(element,"name",list_);
+                recurseElementsXML(element,attribute,list_);
             }
         }
     }
 }
-QStringList TRSCore::getFileData(QString path){
+QString TRSCore::getFileData(QString filePath){
+
+    QFile *xmlFile = new QFile(filePath);
+        QString streamData;
+       QMessageBox msgBox;
+        if(!xmlFile->open(QIODevice::ReadOnly | QIODevice::Text)){
+           msgBox.setText("Could not open XML file. Check your path");
+            msgBox.exec();
+            return "";
+       }
+        QTextStream stream(xmlFile);
+       while(!stream.atEnd()){
+            streamData.append(stream.readLine());
+        }
+        xmlFile->close();
+        return streamData;
+
+/*
     QStringList *list_ = new QStringList;
     QDomDocument document;
-
-    QFile file(path);
+    QFile file(filePath);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
        qDebug()<<"Error";
     }
     document.setContent(&file);
     QDomElement root = document.firstChildElement();
     recurseElementsXML(root,"name",list_);
-    return *list_;
+
+    return *list_;*/
+
 }
 bool TRSCore::StartApp(QString appName) {
     process->start(appName);
@@ -48,6 +66,7 @@ bool TRSCore::StartApp(QString appName) {
         process->waitForStarted();
         return true;
     }
+
 }
 void TRSCore::CloseApp() {
     process->close();
