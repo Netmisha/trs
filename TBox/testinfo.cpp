@@ -134,3 +134,9 @@ void TestInfo::SUCCESS(QString msg) {
         emit sendMessage("Waiting...");
     }
 }
+void TestInfo::VERIFY(QString param1, QString param2)
+{
+    if(param1!=param2) {
+        emit testFinish(" fail_"+param1+"doesn`t equal"+param2);
+    }
+}
