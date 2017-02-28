@@ -54,6 +54,7 @@ return;
 //-----------checkFile_Start--------//
 function checkFiles(XML_Folder,XML_Data,final_folders,final_data){
 if(dirFail){return;}
+
 var tempXMLFiles = new Array();
 var tempFinFiles = new Array();
 for(var i=0;i<XML_Folder.length;i++){
@@ -61,6 +62,8 @@ for(var i=0;i<XML_Folder.length;i++){
     if(XML_Folder[i] == final_folders[j]){
        tempXMLFiles = XML_Data[i].split(",");
        tempFinFiles = final_data[j].split(",");
+       Box.log(tempXMLFiles); 
+       Box.log(tempFinFiles);
       for(var k=0;k<tempXMLFiles.length;k++){
       if(contains(tempXMLFiles[k],tempFinFiles)){
       }else{window.alert("Missing data:" + tempXMLFiles[k]+"\n"+"At folder:"+XML_Folder[i]);return; }
@@ -74,25 +77,20 @@ window.alert("All data parts are present")
 //-------------checkFile_END--------//
 //---------Check_duplicates_START-----//
 function hasDuplicate(arr) {
-    var i = arr.length, j, val;
-    var t; var counter=0;
-    while (i--) {
-        val = arr[i];
-        j = i;
-        while (j--) {
-            if (arr[j] === val) {
-               arr[j] = arr[j]+ counter.toString();
-               counter++;
-            }
-        }
-    }
-    return false;
+var dup_sign = '@';
+//arr.sort();
+var cur; var dup_count=0;
+for(var i=0;i<arr.length;i++){
+dup_count=0;
+for(var j=i+1;j<arr.length;j++){
+if( arr[i] == arr[j]){
+dup_count++; for(var k=0;k<dup_count;k++){arr[j] = arr[j]+dup_sign;}}
+}
+}
 }
 //--------END_Check_duplicates-------//
 //------------contains_START--------//
 function contains(data,array){
-Box.log(data);
-Box.log(array);
 if(array.indexOf(data,0) >= 0){
 return true;
 }
@@ -103,7 +101,7 @@ return false;
 //----------contains_END-----------//
 
 //------main_function------//
-var FileData = Box.getFileData("XML_PATH");
+var FileData = Box.getFileData("PATH_TO_XML");
 var parser = new DOMParser();
 var xmlData = parser.parseFromString(FileData,"text/xml");
 
@@ -125,7 +123,7 @@ for(var i=0;i<nodes.length;i++){
 }
 //--------END_of_Parse_XML_FILE----------//
 
-struct_list("FOLDER_PATH");
+struct_list("PATH_TO_FOLDER");
 var XML_Data = new Array();
 var XML_Folder = new Array();
 for(var i=0;i<folder_data.length;i++){
@@ -136,8 +134,6 @@ XML_Data[i] = temp.join();
 }
 hasDuplicate(XML_Folder)
 hasDuplicate(final_folders);
-Box.log(XML_Folder);
-Box.log(final_folders);
 checkDir(XML_Folder,final_folders);
 checkFiles(XML_Folder,XML_Data,final_folders,final_data);
 
