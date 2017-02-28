@@ -72,7 +72,23 @@ for(var i=0;i<XML_Folder.length;i++){
 window.alert("All data parts are present")
 }
 //-------------checkFile_END--------//
-
+//---------Check_duplicates_START-----//
+function hasDuplicate(arr) {
+    var i = arr.length, j, val;
+    var t; var counter=0;
+    while (i--) {
+        val = arr[i];
+        j = i;
+        while (j--) {
+            if (arr[j] === val) {
+               arr[j] = arr[j]+ counter.toString();
+               counter++;
+            }
+        }
+    }
+    return false;
+}
+//--------END_Check_duplicates-------//
 //------------contains_START--------//
 function contains(data,array){
 Box.log(data);
@@ -87,7 +103,7 @@ return false;
 //----------contains_END-----------//
 
 //------main_function------//
-var FileData = Box.getFileData("PATH_TO_XML"); // Double slash! (//)
+var FileData = Box.getFileData("XML_PATH");
 var parser = new DOMParser();
 var xmlData = parser.parseFromString(FileData,"text/xml");
 
@@ -109,7 +125,7 @@ for(var i=0;i<nodes.length;i++){
 }
 //--------END_of_Parse_XML_FILE----------//
 
-struct_list("PATH_TO_TEST_FOLDER"); // Double slash (//)
+struct_list("FOLDER_PATH");
 var XML_Data = new Array();
 var XML_Folder = new Array();
 for(var i=0;i<folder_data.length;i++){
@@ -118,6 +134,11 @@ temp = folder_data[i].split("|");
 XML_Folder[i] = temp.pop();
 XML_Data[i] = temp.join();
 }
+hasDuplicate(XML_Folder)
+hasDuplicate(final_folders);
+Box.log(XML_Folder);
+Box.log(final_folders);
 checkDir(XML_Folder,final_folders);
 checkFiles(XML_Folder,XML_Data,final_folders,final_data);
+
 //-------end_of_main_function------//
