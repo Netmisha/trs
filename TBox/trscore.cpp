@@ -5,35 +5,14 @@ TRSCore::TRSCore(QObject *parent) : QObject(parent) {
     process=new QProcess();
 }
 
-void TRSCore::recurseElementsXML(QDomElement root, QString attribute,QStringList *list_){
-    QString data_;
-    QDomNodeList items = root.childNodes();
-    for(int i=0;i<items.count();i++){
-        data_.append(items.at(i).toElement().attribute(attribute)+"|");
-    }
-    data_.append(root.toElement().attribute(attribute));
-    list_->push_back(data_);
-    data_.clear();
-    for(int i=0;i<items.count();i++){
-        QDomNode itemnode = items.at(i);
-        if(itemnode.isElement()){
-            QDomElement element = itemnode.toElement();
-            if(element.tagName() == "file"){continue;}
-            else if(element.tagName() == "dir"){
-                recurseElementsXML(element,attribute,list_);
-            }
-        }
-    }
-}
 QString TRSCore::getFileData(QString filePath){
-
     QFile *xmlFile = new QFile(filePath);
         QString streamData;
        QMessageBox msgBox;
         if(!xmlFile->open(QIODevice::ReadOnly | QIODevice::Text)){
            msgBox.setText("Could not open XML file. Check your path");
             msgBox.exec();
-            return "";
+            return "error";
        }
         QTextStream stream(xmlFile);
        while(!stream.atEnd()){
@@ -41,20 +20,6 @@ QString TRSCore::getFileData(QString filePath){
         }
         xmlFile->close();
         return streamData;
-
-/*
-    QStringList *list_ = new QStringList;
-    QDomDocument document;
-    QFile file(filePath);
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-       qDebug()<<"Error";
-    }
-    document.setContent(&file);
-    QDomElement root = document.firstChildElement();
-    recurseElementsXML(root,"name",list_);
-
-    return *list_;*/
-
 }
 bool TRSCore::StartApp(QString appName) {
     process->start(appName);
