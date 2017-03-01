@@ -31,6 +31,7 @@ public:
     DataBaseManager data_base_man;
     public slots:
     void testFinished(QString);
+	void testFail(QString);
     void acceptMessage(QString);
     Q_INVOKABLE QString Load(QString path);
     Q_INVOKABLE QString getFile(QModelIndex);
@@ -145,12 +146,16 @@ void MainWindow::AddStartCommand(QString command)
     }
 }
 void MainTree::testFinished(QString msg) {
+	if(!run) {
+        return;
+    }
     emit sendTestMessage(msg);
     WriteLog(msg);
     data_base_man.sessionEnd();
     run=false;
     if(testForRun.isEmpty()) {
         QMetaObject::invokeMethod(contextObject, "setStopDisable");
+		WriteLog("All tests finished.");
         return;
     }
     if(testForRun.first().repeat>1) {
@@ -168,6 +173,12 @@ void MainTree::testFinished(QString msg) {
             delete view->page();
         }
     }
+}
+void MainTree::testFail(QString msg)
+{
+    delete view->page();
+    testForRun.removeFirst();
+    testFinished("fail_"+msg);
 }
 void MainTree::acceptMessage(QString msg) {
     WriteLog(msg);
@@ -697,6 +708,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
     trscore=new TRSCore();
     view->page()->mainFrame()->addToJavaScriptWindowObject("Box", trscore);
     QObject::connect(trscore, SIGNAL(log(QString)), this, SLOT(WriteLog(QString)));
+	QObject::connect(trscore, SIGNAL(fail(QString)), this, SLOT(testFail(QString)));
     testinfo=new TestInfo();
     testinfo->setName(it.name);
     testinfo->setPath(it.file);
