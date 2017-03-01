@@ -208,7 +208,7 @@ QStringList TRSCore::getList(QString path) {
     QDirIterator it(path, QDirIterator::NoIteratorFlags);
     while (it.hasNext()) {
         it.next();
-        if (it.filePath().contains("/.") || it.filePath().contains("/.")) {
+        if (it.fileName()=="." || it.fileName()=="..") {
             continue;
         }
         else {
@@ -222,7 +222,7 @@ QStringList TRSCore::getFullList(QString path) {
     QDirIterator it(path, QDirIterator::Subdirectories);
     while (it.hasNext()) {
         it.next();
-        if (it.filePath().contains("/.") || it.filePath().contains("/.")) {
+        if (it.fileName()=="." || it.fileName()=="..") {
             continue;
         }
         else {
