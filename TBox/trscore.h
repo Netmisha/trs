@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <QSettings>
 #include <QMessageBox>
+#include <QDomDocument>
 extern QWebView * view;
 
 namespace reg_keys {

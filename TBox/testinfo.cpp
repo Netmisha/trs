@@ -119,14 +119,14 @@ void TestInfo::ExitOnFinish(bool val) {
 void TestInfo::FAIL(QString msg) {
     if(!finished) {
         finished=true;
-        emit testFinish(" fail_"+msg);
+        emit testFinish(" fail_ "+msg);
     }
 }
 void TestInfo::SUCCESS(QString msg) {
     if(defaultExit) {
         if(!finished) {
             finished=true;
-            emit testFinish("success_"+msg);
+            emit testFinish("success_ "+msg);
         }
     }
     else {

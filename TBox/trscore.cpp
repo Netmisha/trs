@@ -5,23 +5,21 @@ TRSCore::TRSCore(QObject *parent) : QObject(parent) {
     process=new QProcess();
 }
 
-
 QString TRSCore::getFileData(QString filePath){
     QFile *xmlFile = new QFile(filePath);
-    QString streamData;
-    QMessageBox msgBox;
-    if(!xmlFile->open(QIODevice::ReadOnly | QIODevice::Text)){
-        msgBox.setText("Could not open XML file. Check your path");
-        msgBox.exec();
-        return "";
-    }
-    QTextStream stream(xmlFile);
-    while(!stream.atEnd()){
-        streamData.append(stream.readLine());
-    }
-    xmlFile->close();
-    return streamData;
-
+        QString streamData;
+       QMessageBox msgBox;
+        if(!xmlFile->open(QIODevice::ReadOnly | QIODevice::Text)){
+           msgBox.setText("Could not open XML file. Check your path");
+            msgBox.exec();
+            return "error";
+       }
+        QTextStream stream(xmlFile);
+       while(!stream.atEnd()){
+            streamData.append(stream.readLine());
+        }
+        xmlFile->close();
+        return streamData;
 }
 bool TRSCore::StartApp(QString appName) {
     process->start(appName);
@@ -33,6 +31,7 @@ bool TRSCore::StartApp(QString appName) {
         process->waitForStarted();
         return true;
     }
+
 }
 void TRSCore::CloseApp() {
     process->close();
@@ -209,7 +208,7 @@ QStringList TRSCore::getList(QString path) {
     QDirIterator it(path, QDirIterator::NoIteratorFlags);
     while (it.hasNext()) {
         it.next();
-        if (it.filePath().contains("/.") || it.filePath().contains("/.")) {
+        if (it.fileName()=="." || it.fileName()=="..") {
             continue;
         }
         else {
@@ -223,7 +222,7 @@ QStringList TRSCore::getFullList(QString path) {
     QDirIterator it(path, QDirIterator::Subdirectories);
     while (it.hasNext()) {
         it.next();
-        if (it.filePath().contains("/.") || it.filePath().contains("/.")) {
+        if (it.fileName()=="." || it.fileName()=="..") {
             continue;
         }
         else {
@@ -324,4 +323,3 @@ QString TRSCore::List(QString path)
     }
     return data;
 }
-

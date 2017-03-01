@@ -12,7 +12,6 @@ import QtQuick.Dialogs 1.2
 import FileSave 1.0
 import QtWebKit 3.0
 import Highlighter 1.0
-
 Item {
     property variant win;
     property  variant list_;
@@ -1727,13 +1726,14 @@ Item {
         }
         Calendar{
             id:calenda
-            x: 8
-            y: 34
+            x: 6
+            y: 42
             width: 257
             height: 232
             visible: false
             frameVisible: true
             onClicked: {
+            calenda.visible = false
             DD.getDateQML = calenda.selectedDate
             textField1.text = DD.getDateQML
             }
@@ -1773,11 +1773,12 @@ Item {
         }
         Calendar{
             id:end_date
-            y: 49
+            x:272
+            y: 42
             width: 257
             height: 232
-            anchors.left: parent.left
-            anchors.leftMargin: 0
+            //anchors.left: parent.left
+            //anchors.leftMargin: 0
             visible: false
             frameVisible: true
             onClicked: {
