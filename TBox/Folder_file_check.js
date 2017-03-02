@@ -44,7 +44,9 @@ for(var i=0;i<XMLArray.length;i++){
 if(contains(XMLArray[i],LoArray) == true){
 }else{
 dirFail = true;
-window.alert("Missing folder: " + XMLArray[i]);
+var TempFolder_ = XMLArray[i];
+TempFolder_ = TempFolder_.replace(/@/g," ");
+window.alert("Missing folder: " + TempFolder_);
 return;
 }
 }
@@ -66,7 +68,11 @@ for(var i=0;i<XML_Folder.length;i++){
        Box.log(tempFinFiles);
       for(var k=0;k<tempXMLFiles.length;k++){
       if(contains(tempXMLFiles[k],tempFinFiles)){
-      }else{window.alert("Missing data:" + tempXMLFiles[k]+"\n"+"At folder:"+XML_Folder[i]);return; }
+      }else{
+      var TempFolder_ = tempXMLFiles[k];
+      TempFolder_ = TempFolder_.replace(/@/g," "); 
+      var TempFolder__ = XML_Folder[i]; TempFolder__ = TempFolder__.replace(/@/g," ");  
+      window.alert("Missing data:" + TempFolder_+"\n"+"At folder:"+TempFolder__);return; }
       }tempXMLFiles = []; tempFinFiles =[];
 
     }
@@ -123,7 +129,7 @@ for(var i=0;i<nodes.length;i++){
 }
 //--------END_of_Parse_XML_FILE----------//
 
-struct_list("PATH_TO_FOLDER");
+struct_list("PATH_TO_TEST_FOLDER");
 var XML_Data = new Array();
 var XML_Folder = new Array();
 for(var i=0;i<folder_data.length;i++){
