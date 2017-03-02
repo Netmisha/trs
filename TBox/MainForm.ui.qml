@@ -148,6 +148,7 @@ Item {
             settingFile.setRootDir(rootDir.text);
             if(theModel.IsFolderEmpty(folder)) {
                 showMenu.menuForSuite();
+				addSuiteLayout.enabled=true;
                 centerRect.visible=false;
                 addSuiteLayout.visible=true;
                 testName.text="New Suite";
@@ -1435,6 +1436,7 @@ Item {
                             if(rootDir.text!="") {
                                 if(theModel.IsFolderEmpty(rootDir.text)) {
                                     showMenu.menuForSuite();
+									addSuiteLayout.enabled=true;
                                     centerRect.visible=false;
                                     addSuiteLayout.visible=true;
                                     testName.text="New Suite";
@@ -1566,6 +1568,7 @@ Item {
                         settingFile.setRootDir(rootDir.text);
                         if(theModel.IsFolderEmpty(rootDir.text)) {
                             showMenu.menuForSuite();
+							addSuiteLayout.enabled=true;
                             centerRect.visible=false;
                             addSuiteLayout.visible=true;
                             testName.text="New Suite";

@@ -1,2 +1,2 @@
 alert("Hello from siute2!");
-Box.Log('Hello from siute3!');
+Box.log('Hello from siute3!');

@@ -90,10 +90,9 @@ public slots:
     Q_INVOKABLE void SUCCESS(QString msg="");
     /**
     * @brief VERIFY: compare two paramets, if false finishing the test with fail message
-     * @param param1 a string argument
-     * @param param2 a string argument
+     * @param value a boolean argument
     */
-    Q_INVOKABLE void VERIFY(QString param1, QString param2);
+    Q_INVOKABLE void VERIFY(bool value);
 protected:
     QString currentPath;
     QString testName;
