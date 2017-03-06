@@ -51,7 +51,7 @@ datalist.clear();
    cd_.append(QDate::currentDate().toString("yyyy"));
    int i=0;
 
-   query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num order by Session_num desc" );
+   qDebug()<<query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num order by Session_num desc" );
    while(query->next()){
         QString res_ses;
          QStringList session_duration;
@@ -67,13 +67,19 @@ datalist.clear();
        Time_E.append( query->value(  query->record().indexOf("max(S_Session_end)")).toString());
        QString date_;
        date_ = QString::number(Time_E.at(0).toInt()-Time_S.at(0).toInt());
-       (date_.toInt()<0)?std::abs(date_.toInt()):0;
+       if(date_.toInt()<0){
+           date_ = QString::number(std::abs(date_.toInt()));
+       }
       session_duration.append(date_);
       date_ = QString::number(Time_E.at(1).toInt()-Time_S.at(1).toInt());
-      (date_.toInt()<0)?std::abs(date_.toInt()):0;
+      if(date_.toInt()<0){
+          date_ = QString::number(std::abs(date_.toInt()));
+      }
       session_duration.append(date_);
       date_ = QString::number(Time_E.at(2).toInt()-Time_S.at(2).toInt());
-      (date_.toInt()<0)?std::abs(date_.toInt()):0;
+      if(date_.toInt()<0){
+          date_ = QString::number(std::abs(date_.toInt()));
+      }
       session_duration.append(date_);
       QRegExp exp(":");
       QString t = Time_E.at(3);
@@ -83,16 +89,20 @@ datalist.clear();
       QString time_res;
       QString time_time;
       time_time = QString::number(temp.at(0).toInt() - temp1.at(0).toInt());
-       (time_time.toInt()<0)?std::abs(time_time.toInt()):0;
+      if(time_time.toInt()<0){
+         time_time = QString::number(std::abs(time_time.toInt()));
+      }
       time_res.append(time_time);
       time_res.append(":");
        time_time = QString::number(temp.at(1).toInt() - temp1.at(1).toInt());
-       (time_time.toInt()<0)?std::abs(time_time.toInt()):0;
+       if(time_time.toInt()<0){
+          time_time = QString::number(std::abs(time_time.toInt()));
+       }
        time_res.append(time_time);
        time_res.append(":");
        time_time = QString::number(temp.at(2).toInt() - temp1.at(2).toInt());
        if(time_time.toInt()<0){
-          std::abs(time_time.toInt());
+          time_time = QString::number(std::abs(time_time.toInt()));
        }
         time_res.append(time_time);
         for(int i=0;i<session_duration.size();i++){
@@ -286,7 +296,6 @@ QString DataBase::row_selected(QString row){
          for(int i=0;i<rec.count();i++){
              tn.append(rec.fieldName(i)); // save db columns
          }
-          list_from_ui;
           qu->exec("SELECT Test_Name,Test_Suite,Test_Passed,Test_repeat,Session_duration,Test_repeat,Test_Desc,Test_msg FROM Info WHERE Session_num = "+list_from_ui.at(row.toInt()));
          row_fields rf;
          while(qu->next()){
@@ -371,7 +380,7 @@ QString DataBase::row_selected(QString row){
     while(qu->next()){
         Duration.append(qu->value(qu->record().indexOf("Session_duration")).toString());
     }
-     Duration;
+
     Sumary_data.append(Duration);
    // emit sendSummaryData(Sumary_data);
     WindowTable.setIndex(row.toInt());
@@ -393,6 +402,7 @@ QString DataBase::row_selected(QString row){
     test_r_e =  test_r;
     suite_info_e = Suite_info;
     WindowTable.CreateTable(table_path,session_data,e->size(),Sumary_data,test_r,Suite_info);
+    session_data.clear();
     /*
     for(int i=0;i<session_data.size();i++){
         session_data.at(i)->clear();

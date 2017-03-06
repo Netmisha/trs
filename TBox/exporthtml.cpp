@@ -164,7 +164,9 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
  res__.append(" ");
  for(int i=0;i<tt.size();i++){
      temp = QString::number(tt_.at(i).toInt() - tt.at(i).toInt());
-     (temp.toInt()<0)?std::abs(temp.toInt()):0;
+     if(temp.toInt()<0){
+        temp = QString::number(std::abs(temp.toInt()));
+     }
      res__.append(temp);
      res__.append(":");
      temp.clear();
@@ -235,7 +237,7 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
               output<<"Success";
               output<<"</td>";
 
-              }else if(SD.at(i)->pass =="fail"){
+              }else{
                   output<<"<td style='border: 2px solid black;font-weight:bold;background-color:red'>";
                   output<<"Fail";
                   output<<"</td>";
@@ -263,7 +265,7 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
                   output<<"Success";
                   output<<"</td>";
 
-              }else if(TD.at(t)->test_pass=="fail"){
+              }else{
 
                   output<<"<td style='border: 1px solid black;background-color:red'>";
                   output<<"Fail";

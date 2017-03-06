@@ -80,7 +80,7 @@ void SessionWindowTable::parseSuiteData(QVector<QStringList *> suite_info_, QVec
              cur =StringTimetoInt(testD->total_test_time);
              prev = StringTimetoInt(temp_time);
              cur.ms = prev.ms+cur.ms;
-             if(cur.ms >=100){cur.ms = cur.ms-100;cur.s++;}
+             if(cur.ms >=1000){cur.ms = cur.ms-1000;cur.s++;}
              cur.s = prev.s + cur.s;
              if(cur.s >=60){cur.s = cur.s-60; cur.m++;}
              cur.m = prev.m + cur.m;
@@ -105,7 +105,7 @@ void SessionWindowTable::parseSuiteData(QVector<QStringList *> suite_info_, QVec
            }
            my_time =StringTimetoInt( TD.at(j)->total_test_time);
            total_execution.ms = total_execution.ms+my_time.ms;
-           if(total_execution.ms >=100){total_execution.ms = total_execution.ms-100;total_execution.s++;}
+           if(total_execution.ms >=1000){total_execution.ms = total_execution.ms-1000;total_execution.s++;}
            total_execution.s = total_execution.s +my_time.s;
            if(total_execution.s >=60){total_execution.s = total_execution.s-60; total_execution.m++;}
            total_execution.m = total_execution.m + my_time.m;
@@ -165,7 +165,9 @@ temp.clear();
 res__.append(" ");
 for(int i=0;i<tt.size();i++){
     temp = QString::number(tt_.at(i).toInt() - tt.at(i).toInt());
-    (temp.toInt()<0)?std::abs(temp.toInt()):0;
+    if(temp.toInt()<0){
+       temp = QString::number(std::abs(temp.toInt()));
+    }
     res__.append(temp);
     res__.append(":");
     temp.clear();
@@ -179,7 +181,7 @@ res__.remove(res__.size()-1,1);
          output<<"<h1>Report </h1>";
          output<<"<table>";
          output<<"<tr>"; output<<"<td>"; output<<"Start time: ";output<<summary_data.at(1); output<<"</td>";output<<"</tr>";output<<"<tr>"; output<<"<td>"; output<<"End time: ";output<<summary_data.at(2); output<<"</td>";
-         output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<res__; output<<"</td>";  output<<"</tr>";
+         output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<summary_data.at(3); output<<"</td>";  output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Tests quantity: ";output<<table_data.size(); output<<"</td>"; output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Test Passed: ";output<<test_r.at(0); output<<"</td>"; output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Test Failed: ";output<<test_r.at(1); output<<"</td>"; output<<"</tr>";
@@ -240,7 +242,7 @@ res__.remove(res__.size()-1,1);
              output<<"Success";
              output<<"</td>";
 
-             }else if(SD.at(i)->pass =="fail"){
+             }else{
                  output<<"<td style='border: 2px solid black;font-weight:bold;background-color:red'>";
                  output<<"Fail";
                  output<<"</td>";
@@ -268,7 +270,7 @@ res__.remove(res__.size()-1,1);
                  output<<"Success";
                  output<<"</td>";
 
-             }else if(TD.at(t)->test_pass=="fail"){
+             }else{
 
                  output<<"<td style='border: 1px solid black;background-color:red'>";
                  output<<"Fail";

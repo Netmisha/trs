@@ -4,12 +4,13 @@
 TRSCore::TRSCore(QObject *parent) : QObject(parent) {
     process=new QProcess();
 }
+
 QString TRSCore::getFileData(QString filePath){
     QFile *xmlFile = new QFile(filePath);
-        QString streamData;
+       QString streamData;
        QMessageBox msgBox;
         if(!xmlFile->open(QIODevice::ReadOnly | QIODevice::Text)){
-           msgBox.setText("Could not open XML file. Check your path");
+           msgBox.setText("Could not open file. Check your path. Put the file into the test folder.");
             msgBox.exec();
             return "error";
        }

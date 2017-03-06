@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <QSettings>
 #include <QMessageBox>
+#include <testinfo.h>
 extern QWebView * view;
 #define MOUSEEVENTF_HWHEEL 4096
 /**
