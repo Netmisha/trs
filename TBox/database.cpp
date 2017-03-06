@@ -122,6 +122,13 @@ datalist.clear();
        Time_S.clear(); Time_E.clear();
        i++;
     }
+   /*
+   QList<QObject*> temp;
+   temp.reserve( datalist.size() );
+   std::reverse_copy(datalist.begin(), datalist.end(), std::back_inserter( temp ) );
+   datalist.clear(); datalist = temp;
+*/
+
     engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(datalist)); // list model
     list_from_ui = it;
 
@@ -153,6 +160,7 @@ void DataBase::InitDB(){
               }
 }
 void DataBase::getExportPath(QString path){
+    exportFilePath.clear();
    QRegExp exp("file| ///|/");
    QStringList l = path.split(exp);
    l.removeFirst();
@@ -247,7 +255,7 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
              }
             query = new QSqlQuery(db);
             datalist.clear();
-             query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num" );
+             query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num order by Session_num desc" );
             query->executedQuery();
            QStringList Time_S;
            QStringList Time_E;
@@ -277,10 +285,11 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
               Time_S.clear(); Time_E.clear();
               i++;
            }
+           /*
            QList<QObject*> temp;
            temp.reserve( datalist.size() );
            std::reverse_copy(datalist.begin(), datalist.end(), std::back_inserter( temp ) );
-           datalist.clear(); datalist = temp;
+           datalist.clear(); datalist = temp;*/
            engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(datalist)); // list model
            list_from_ui = it;
            it.clear();
@@ -288,6 +297,8 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
 }
 
 QString DataBase::row_selected(QString row){
+    Sumary_data.clear();
+    session_data.clear();
     // qDebug()<<list_from_ui.at(row.toInt());
      QSqlQuery *qu;
      if(!db.isOpen()){
@@ -406,8 +417,7 @@ QString DataBase::row_selected(QString row){
     test_r_e =  test_r;
     suite_info_e = Suite_info;
     WindowTable.CreateTable(table_path,session_data,e->size(),Sumary_data,test_r,Suite_info);
-    Sumary_data.clear();
-    session_data.clear();
+
     /*
     for(int i=0;i<session_data.size();i++){
         session_data.at(i)->clear();

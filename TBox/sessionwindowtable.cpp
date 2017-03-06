@@ -166,7 +166,7 @@ res__.append(" ");
 for(int i=0;i<tt.size();i++){
     temp = QString::number(tt_.at(i).toInt() - tt.at(i).toInt());
     if(temp.toInt()<0){
-       temp = QString::number(std::abs(temp.toInt()));
+       temp = QString::number(temp.toInt()+60);
     }
     res__.append(temp);
     res__.append(":");
@@ -181,7 +181,7 @@ res__.remove(res__.size()-1,1);
          output<<"<h1>Report </h1>";
          output<<"<table>";
          output<<"<tr>"; output<<"<td>"; output<<"Start time: ";output<<summary_data.at(1); output<<"</td>";output<<"</tr>";output<<"<tr>"; output<<"<td>"; output<<"End time: ";output<<summary_data.at(2); output<<"</td>";
-         output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<summary_data.at(3); output<<"</td>";  output<<"</tr>";
+         output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<res__; output<<"</td>";  output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Tests quantity: ";output<<table_data.size(); output<<"</td>"; output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Test Passed: ";output<<test_r.at(0); output<<"</td>"; output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Test Failed: ";output<<test_r.at(1); output<<"</td>"; output<<"</tr>";

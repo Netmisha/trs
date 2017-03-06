@@ -21,6 +21,7 @@ ExportHTML::ExportHTML()
 
  }
  void ExportHTML::ReceiveHTMLpath(QString exportPath){
+
      export_path_ = exportPath;
      CreateHTMLReportFile(table_data_,elements_, summary_data_,test_r_,suite_info_,current_session);
  }
@@ -118,6 +119,7 @@ ExportHTML::ExportHTML()
  }
 void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int elements,QStringList summary_data,
                                       QStringList test_r,QVector<QStringList*> suite_info,QString current_session){
+   SD.clear(); TD.clear();
     bool file_open = 0;
     QFile file(export_path_+"Session"+current_session+"_"+QDate::currentDate().toString("dd_MM_yyyy_")+QTime::currentTime().toString("(HH_mm_ss)")+".html");
     QFileInfo *file_info = new QFileInfo(file);
