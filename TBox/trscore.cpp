@@ -1,3 +1,4 @@
+
 #include "trscore.h"
 #include <QDesktopWidget>
 #include <QObject>
@@ -10,7 +11,7 @@ QString TRSCore::getFileData(QString filePath){
        QString streamData;
        QMessageBox msgBox;
         if(!xmlFile->open(QIODevice::ReadOnly | QIODevice::Text)){
-           msgBox.setText("Could not open file. Check your path. Put the file into the test folder.");
+           msgBox.setText("Could not open file. Check your path.");
             msgBox.exec();
             return "error";
        }
@@ -139,25 +140,28 @@ int TRSCore::GetAppHeight(QString windowName)
     emit fail("Can not get window size.");
     return -1;
 }
-QRect TRSCore::GetAppRect(QString windowName)
+QString TRSCore::GetAppRect(QString windowName)
 {
-    if(windowName.isEmpty()) {
+     if(windowName.isEmpty()) {
         emit fail("Invalid window name.");
-        return QRect(-1,-1,-1,-1);
+        return QString();
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
         emit fail("Window not found.");
-        return QRect(-1,-1,-1,-1);
+        return QString();
     }
     RECT win_rect;
     QRect qwin_rect(QPoint(-1, -1),QPoint(-1,-1));
     if(GetWindowRect(windowHandle, &win_rect)) {
         qwin_rect.setTopLeft(QPoint(win_rect.top, win_rect.left));
         qwin_rect.setBottomRight(QPoint(win_rect.bottom,win_rect.right));
+        QString rect("{\"x\": "+QString::number(win_rect.left)+",\"y\": "+QString::number(win_rect.top)+
+                     ",\"width\": "+QString::number(win_rect.right-win_rect.left)+",\"height\": "+QString::number(win_rect.bottom-win_rect.top)+"}");
+        return rect;
     }
     emit fail("Can not get window rect.");
-    return qwin_rect;
+    return QString();
 }
 
 void TRSCore::WindowMinimize(QString windowName)
@@ -261,12 +265,50 @@ void TRSCore::MouseMove(int x, int y, int pause) {
         emit fail("Invalid coordinates.");
         return;
     }
-    auto fun = [&](int _x){ return (_x - current_pos.x)*(y - current_pos.y) / (x - current_pos.x) + current_pos.y; };
-    for (int i = current_pos.x; i < x; i++) {
-        Sleep(pause);
-        if(!SetCursorPos(i, fun(i))) {
-            emit fail("Can not set mouse at this position.");
-            return;
+    int w=current_pos.x-x;
+    int h=current_pos.y-y;
+    if(fabs(w)>fabs(h)) {
+        if(current_pos.x>x) {
+            auto fun = [&](int _x){ return (current_pos.x - _x)*(y - current_pos.y) / (current_pos.x - x) + current_pos.y; };
+            for (int i = current_pos.x; i > x; i--) {
+                Sleep(pause);
+                if(!SetCursorPos(i, fun(i))) {
+                    emit fail("Can not set mouse at this position.");
+                    return;
+                }
+            }
+        }
+        else {
+            auto fun = [&](int _x){ return (_x - current_pos.x)*(y - current_pos.y) / (x - current_pos.x) + current_pos.y; };
+            for (int i = current_pos.x; i < x; i++) {
+                Sleep(pause);
+                if(!SetCursorPos(i, fun(i))) {
+                    emit fail("Can not set mouse at this position.");
+                    return;
+                }
+            }
+        }
+    }
+    else {
+        if(current_pos.y>y) {
+            auto fun = [&](int _y){ return (current_pos.y - _y)*(x - current_pos.x) / (current_pos.y - y) + current_pos.x; };
+            for (int i = current_pos.y; i > y; i--) {
+                Sleep(pause);
+                if(!SetCursorPos(fun(i), i)) {
+                    emit fail("Can not set mouse at this position.");
+                    return;
+                }
+            }
+        }
+        else {
+            auto fun = [&](int _y){ return (_y - current_pos.y)*(x - current_pos.x) / (y - current_pos.y) + current_pos.x; };
+            for (int i = current_pos.y; i < y; i++) {
+                Sleep(pause);
+                if(!SetCursorPos(fun(i), i)) {
+                    emit fail("Can not set mouse at this position.");
+                    return;
+                }
+            }
         }
     }
     if(!GetCursorPos(&current_pos)) {
@@ -274,8 +316,9 @@ void TRSCore::MouseMove(int x, int y, int pause) {
         return;
     }
 }
+
 void TRSCore::MouseDown(int button) {
-    if(button!=0 || button!=1) {
+    if(button!=0 && button!=1) {
         emit fail("Invalid button.");
         return;
     }
@@ -287,7 +330,7 @@ void TRSCore::MouseDown(int button) {
     }
 }
 void TRSCore::MouseUp(int button) {
-    if(button!=0 || button!=1) {
+    if(button!=0 && button!=1) {
         emit fail("Invalid button.");
         return;
     }
@@ -299,7 +342,7 @@ void TRSCore::MouseUp(int button) {
     }
 }
 void TRSCore::MouseClick(int button) {
-    if(button!=0 || button!=1) {
+    if(button!=0 && button!=1) {
         emit fail("Invalid button.");
         return;
     }

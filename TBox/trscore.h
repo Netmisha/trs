@@ -89,9 +89,9 @@ public slots:
     /**
      * @brief GetAppRect: returns rectangle of window with some name
      * @param windowName a string argument
-     * @return Rect, size of window
+     * @return QString, contains JSON obect
      */
-    QRect GetAppRect(QString windowName);
+    QString GetAppRect(QString windowName);
     /**
      * @brief WindowMinimize: minimaze window with some name
      * @param windowName a string argument
