@@ -277,6 +277,10 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
               Time_S.clear(); Time_E.clear();
               i++;
            }
+           QList<QObject*> temp;
+           temp.reserve( datalist.size() );
+           std::reverse_copy(datalist.begin(), datalist.end(), std::back_inserter( temp ) );
+           datalist.clear(); datalist = temp;
            engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(datalist)); // list model
            list_from_ui = it;
            it.clear();
@@ -402,6 +406,7 @@ QString DataBase::row_selected(QString row){
     test_r_e =  test_r;
     suite_info_e = Suite_info;
     WindowTable.CreateTable(table_path,session_data,e->size(),Sumary_data,test_r,Suite_info);
+    Sumary_data.clear();
     session_data.clear();
     /*
     for(int i=0;i<session_data.size();i++){
