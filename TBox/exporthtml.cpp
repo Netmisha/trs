@@ -67,7 +67,7 @@ ExportHTML::ExportHTML()
               cur =StringTimetoInt(testD->total_test_time);
               prev = StringTimetoInt(temp_time);
               cur.ms = prev.ms+cur.ms;
-              if(cur.ms >=100){cur.ms = cur.ms-100;cur.s++;}
+              if(cur.ms >=1000){cur.ms = cur.ms-1000;cur.s++;}
               cur.s = prev.s + cur.s;
               if(cur.s >=60){cur.s = cur.s-60; cur.m++;}
               cur.m = prev.m + cur.m;
@@ -92,7 +92,7 @@ ExportHTML::ExportHTML()
             }
             my_time =StringTimetoInt( TD.at(j)->total_test_time);
             total_execution.ms = total_execution.ms+my_time.ms;
-            if(total_execution.ms >=100){total_execution.ms = total_execution.ms-100;total_execution.s++;}
+            if(total_execution.ms >=1000){total_execution.ms = total_execution.ms-1000;total_execution.s++;}
             total_execution.s = total_execution.s +my_time.s;
             if(total_execution.s >=60){total_execution.s = total_execution.s-60; total_execution.m++;}
             total_execution.m = total_execution.m + my_time.m;
