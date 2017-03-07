@@ -120,6 +120,7 @@ void SessionWindowTable::parseSuiteData(QVector<QStringList *> suite_info_, QVec
 }
 void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int elements,QStringList summary_data,QStringList test_r,QVector<QStringList*> suite_info){
     elements_ = elements;
+     SD.clear(); TD.clear();
     QFile file(getHTMLPath());
     QFileInfo *file_info = new QFileInfo(file);
     if(!file.exists()){
