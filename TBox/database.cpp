@@ -88,8 +88,8 @@ datalist.clear();
       QStringList temp1 = t1.split(exp);
       QString time_res;
       QString time_time;
-      QString TT = QString::number((temp.at(0).toInt()*60*60)+(temp.at(1).toInt()*60)+temp.at(2).toInt());
-      QString TT1 = QString::number((temp1.at(0).toInt()*60*60)+(temp1.at(1).toInt()*60)+temp1.at(2).toInt());
+      QString TT = QString::number((temp.at(0).toInt()*60*60)+(temp.at(1).toInt()*60)+temp.at(2).toInt()); //end time
+      QString TT1 = QString::number((temp1.at(0).toInt()*60*60)+(temp1.at(1).toInt()*60)+temp1.at(2).toInt()); //start time
       QString T_dif = QString::number(TT.toInt() - TT1.toInt());
       QString TT2 =  QString::number(T_dif.toInt() / 60);
       time_time.append(QString::number(TT2.toInt()/60));
@@ -312,25 +312,15 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
              QStringList temp1 = t1.split(exp);
              QString time_res;
              QString time_time;
-             time_time = QString::number(temp.at(0).toInt() - temp1.at(0).toInt());
-             if(time_time.toInt()<0){
-                 // time_time = QString::number(time_time.toInt()+60);
-                time_time = QString::number(std::abs(time_time.toInt()));
-             }
-             time_res.append(time_time);
-             time_res.append(":");
-              time_time = QString::number(temp.at(1).toInt() - temp1.at(1).toInt());
-              if(time_time.toInt()<0){
-                   //time_time = QString::number(time_time.toInt()+60);
-                 time_time = QString::number(std::abs(time_time.toInt()));
-              }
-              time_res.append(time_time);
-              time_res.append(":");
-              time_time = QString::number(temp.at(2).toInt() - temp1.at(2).toInt());
-              if(time_time.toInt()<0){
-                 // time_time = QString::number(time_time.toInt()+60);
-                 time_time = QString::number(std::abs(time_time.toInt()));
-              }
+             QString TT = QString::number((temp.at(0).toInt()*60*60)+(temp.at(1).toInt()*60)+temp.at(2).toInt());// end time
+             QString TT1 = QString::number((temp1.at(0).toInt()*60*60)+(temp1.at(1).toInt()*60)+temp1.at(2).toInt()); //start time
+             QString T_dif = QString::number(TT.toInt() - TT1.toInt());
+             QString TT2 =  QString::number(T_dif.toInt() / 60);
+             time_time.append(QString::number(TT2.toInt()/60));
+             time_time.append(":");
+             time_time.append(QString::number(TT2.toInt()%60));
+             time_time.append(":");
+             time_time.append(QString::number(T_dif.toInt()%60));
                time_res.append(time_time);
                for(int i=0;i<session_duration.size();i++){
                res_ses.append(session_duration.at(i)+"/");

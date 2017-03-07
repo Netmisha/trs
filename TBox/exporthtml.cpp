@@ -164,9 +164,9 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
  temp.clear();
  }
  res__.append(" ");
- QString TT = QString::number((tt.at(0).toInt()*60*60)+(tt.at(1).toInt()*60)+tt.at(2).toInt());
- QString TT1 = QString::number((tt_.at(0).toInt()*60*60)+(tt_.at(1).toInt()*60)+tt_.at(2).toInt());
- QString T_dif = QString::number(std::abs(TT.toInt() - TT1.toInt()));
+ QString TT1 = QString::number((tt.at(0).toInt()*60*60)+(tt.at(1).toInt()*60)+tt.at(2).toInt()); //start time
+ QString TT = QString::number((tt_.at(0).toInt()*60*60)+(tt_.at(1).toInt()*60)+tt_.at(2).toInt()); // end time
+ QString T_dif = QString::number(TT.toInt() - TT1.toInt());
  QString TT2 =  QString::number(T_dif.toInt() / 60);
  res__.append(QString::number(TT2.toInt()/60));
  res__.append(":");
