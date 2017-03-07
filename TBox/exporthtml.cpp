@@ -164,16 +164,15 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
  temp.clear();
  }
  res__.append(" ");
- for(int i=0;i<tt.size();i++){
-     temp = QString::number(tt_.at(i).toInt() - tt.at(i).toInt());
-     if(temp.toInt()<0){
-        temp = QString::number(std::abs(temp.toInt()));
-     }
-     res__.append(temp);
-     res__.append(":");
-     temp.clear();
- }
- res__.remove(res__.size()-1,1);
+ QString TT = QString::number((tt.at(0).toInt()*60*60)+(tt.at(1).toInt()*60)+tt.at(2).toInt());
+ QString TT1 = QString::number((tt_.at(0).toInt()*60*60)+(tt_.at(1).toInt()*60)+tt_.at(2).toInt());
+ QString T_dif = QString::number(std::abs(TT.toInt() - TT1.toInt()));
+ QString TT2 =  QString::number(T_dif.toInt() / 60);
+ res__.append(QString::number(TT2.toInt()/60));
+ res__.append(":");
+ res__.append(QString::number(TT2.toInt()%60));
+ res__.append(":");
+ res__.append(QString::number(T_dif.toInt()%60));
       file.resize(0);
       parseSuiteData(suite_info,table_data);
           QTextStream output(&file);
