@@ -9,7 +9,10 @@ DataBase::DataBase(QObject *parent) :
 
 }
 void DataBase::defaultTableValue(QString start, QString end){
-datalist.clear();
+//for(int i=0;i<datalist.size();i++){
+//delete datalist.at(i);
+//}
+    datalist.clear();
     QRegExp exp("/");
     start_dates = start.split(exp);
     std::reverse(start_dates.begin(),start_dates.end());
@@ -193,23 +196,7 @@ void DataBase::FilterData(){
         }
     }
 }
-void DataBase::getDataFromDB(){
-    rdO = new DataBase::row_data;
-    rfO = new DataBase::row_fields;
-    query = new QSqlQuery(db);
-    query->exec("SELECT * FROM Info");
-    while (query->next()) {
-       rdO->ID = query->value(query->record().indexOf(rfO->ID)).toString();
-       rdO->Test_name = query->value(query->record().indexOf(rfO->Test_name)).toString();
-       rdO->Test_Day = query->value(query->record().indexOf(rfO->Test_Day)).toString();
-       rdO->Test_Month = query->value(query->record().indexOf(rfO->Test_Month)).toString();
-       rdO->Test_Year = query->value(query->record().indexOf(rfO->Test_Year)).toString();
-       rdO->Test_Passed = query->value(query->record().indexOf(rfO->Test_Passed)).toString();
-       rc_data.push_back(rdO);
-       rdO = new DataBase::row_data;
-    }
-FilterData();
-}
+
 QString DataBase::ParseDateS(QString data){
     QRegExp ex("(-|T|:)");
     Date_  = data.split(ex);
@@ -265,6 +252,9 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
                  return it ;
              }
             query = new QSqlQuery(db);
+           // for(int i=0;i<datalist.size();i++){
+           // delete datalist.at(i);
+            //}
             datalist.clear();
              qDebug()<<query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num order by Session_num desc" );
             query->executedQuery();
@@ -351,7 +341,15 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
 
 QString DataBase::row_selected(QString row){
     Sumary_data.clear();
+    //for(int i=0;i<session_data.size();i++){
+   //     delete session_data[i];
+   // }
     session_data.clear();
+   // for(int i=0;i<Suite_info.size();i++){
+   //     delete Suite_info[i];
+   // }
+    Suite_info.clear();
+    tn.clear();
     // qDebug()<<list_from_ui.at(row.toInt());
      QSqlQuery *qu;
      if(!db.isOpen()){
@@ -378,7 +376,7 @@ QString DataBase::row_selected(QString row){
             session_data.push_back(e);
          }
     delete qu; qu = new QSqlQuery(db);
-    QVector<QStringList*> Suite_info;
+
     QStringList *Suite;
     qu = new QSqlQuery(db);
     QStringList t;

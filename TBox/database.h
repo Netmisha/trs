@@ -89,7 +89,7 @@ public:
     Q_INVOKABLE QStringList *e;
      Q_INVOKABLE QVector <QStringList*> session_data;
      Q_INVOKABLE QVector<QVector<QStringList*>> pass;
-
+     Q_INVOKABLE  QVector<QStringList*> Suite_info;
      QQuickView *engine;
      Q_INVOKABLE void setEngi(QQuickView *e){
              engine = e;
@@ -137,7 +137,6 @@ public:
      QVector<QStringList*> htmlData;
      void FilterData();
      void InitDB();
-     void getDataFromDB();
      Q_INVOKABLE  QString getID(int ind);
      Q_INVOKABLE QString getTestName(int ind);
      Q_INVOKABLE  QString getTestDay(int ind);

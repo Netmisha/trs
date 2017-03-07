@@ -120,7 +120,12 @@ void SessionWindowTable::parseSuiteData(QVector<QStringList *> suite_info_, QVec
 }
 void SessionWindowTable::CreateHTMLTable(QVector<QStringList*> table_data,int elements,QStringList summary_data,QStringList test_r,QVector<QStringList*> suite_info){
     elements_ = elements;
-     SD.clear(); TD.clear();
+    for(int i=0;i<TD.size();i++){
+        delete TD.at(i);
+    }TD.clear();
+    for(int i=0;i<SD.size();i++){
+        delete SD.at(i);
+    }SD.clear();
     QFile file(getHTMLPath());
     QFileInfo *file_info = new QFileInfo(file);
     if(!file.exists()){
@@ -285,6 +290,7 @@ res__.append(QString::number(T_dif.toInt()%60));
          output<<"</table>";
          output<<"</html>";
          output<<"</body>";
+         delete file_info;
 }
 
 void SessionWindowTable::CreateTable(QString html_url,QVector<QStringList*> table_data,int elements,QStringList summary_data,QStringList test_r,QVector<QStringList*> suite_info){

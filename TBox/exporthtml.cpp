@@ -18,6 +18,7 @@ ExportHTML::ExportHTML()
         }
         qDebug()<<"dir was created";
        qDebug()<<dir->absolutePath();
+       delete dir;
 
  }
  void ExportHTML::ReceiveHTMLpath(QString exportPath){
@@ -119,7 +120,12 @@ ExportHTML::ExportHTML()
  }
 void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int elements,QStringList summary_data,
                                       QStringList test_r,QVector<QStringList*> suite_info,QString current_session){
-   SD.clear(); TD.clear();
+    for(int i=0;i<TD.size();i++){
+        delete TD.at(i);
+    }TD.clear();
+    for(int i=0;i<SD.size();i++){
+        delete SD.at(i);
+    }SD.clear();
     bool file_open = 0;
     QFile file(export_path_+"Session"+current_session+"_"+QDate::currentDate().toString("dd_MM_yyyy_")+QTime::currentTime().toString("(HH_mm_ss)")+".html");
     QFileInfo *file_info = new QFileInfo(file);
@@ -284,7 +290,7 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
                QMessageBox msgBox;
                msgBox.setText("File has been saved at:"+export_path_);
                msgBox.exec();
-
+   delete file_info;
 }
 void ExportHTML::ReceiveHTMLdata(QVector<QStringList*> table_data_e,int elements_e,QStringList summary_data_e,
                                  QStringList test_r_e,QVector<QStringList*> suite_info_e,QString current_session_e){
