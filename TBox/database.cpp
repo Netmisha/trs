@@ -258,6 +258,8 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
              qDebug()<<query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num order by Session_num desc" );
             query->executedQuery();
            QStringList Time_S;
+           QString res_ses;
+            QStringList session_duration;
            QStringList Time_E;
            QString duration_s;
            QString Start_date_S;
@@ -275,14 +277,61 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
               Time_E.append( query->value(  query->record().indexOf("Test_month_e")).toString());
               Time_E.append( query->value(  query->record().indexOf("Test_year_e")).toString());
               Time_E.append( query->value(  query->record().indexOf("max(S_Session_end)")).toString());
-              duration_s.append(  query->value(  query->record().indexOf("Session_duration")).toString());
+              //duration_s.append(  query->value(  query->record().indexOf("Session_duration")).toString());
+              QString date_;
+              date_ = QString::number(Time_E.at(0).toInt()-Time_S.at(0).toInt());
+              if(date_.toInt()<0){
+                  date_ = QString::number(std::abs(date_.toInt()));
+              }
+             session_duration.append(date_);
+             date_ = QString::number(Time_E.at(1).toInt()-Time_S.at(1).toInt());
+             if(date_.toInt()<0){
+                 date_ = QString::number(std::abs(date_.toInt()));
+             }
+             session_duration.append(date_);
+             date_ = QString::number(Time_E.at(2).toInt()-Time_S.at(2).toInt());
+             if(date_.toInt()<0){
+                 date_ = QString::number(std::abs(date_.toInt()));
+             }
+             session_duration.append(date_);
+             QRegExp exp(":");
+             QString t = Time_E.at(3);
+             QString t1 = Time_S.at(3);
+             QStringList temp = t.split(exp);
+             QStringList temp1 = t1.split(exp);
+             QString time_res;
+             QString time_time;
+             time_time = QString::number(temp.at(0).toInt() - temp1.at(0).toInt());
+             if(time_time.toInt()<0){
+                time_time = QString::number(std::abs(time_time.toInt()));
+             }
+             time_res.append(time_time);
+             time_res.append(":");
+              time_time = QString::number(temp.at(1).toInt() - temp1.at(1).toInt());
+              if(time_time.toInt()<0){
+                 time_time = QString::number(std::abs(time_time.toInt()));
+              }
+              time_res.append(time_time);
+              time_res.append(":");
+              time_time = QString::number(temp.at(2).toInt() - temp1.at(2).toInt());
+              if(time_time.toInt()<0){
+                 time_time = QString::number(std::abs(time_time.toInt()));
+              }
+               time_res.append(time_time);
+               for(int i=0;i<session_duration.size();i++){
+               res_ses.append(session_duration.at(i)+"/");
+               }
+               session_duration.clear();
+               session_duration.append(time_res);
+               res_ses.append(" "+session_duration.first());
               for(int j=0,k=0;j<Time_S.size();j++,k++){
                   Start_date_S.append(Time_S.at(j)+"/");
                   End_date_S.append(Time_E.at(k)+"/");
               }
-              datalist.append( new LisModel(it.at(i),Start_date_S,duration_s,End_date_S,pass_session.at(i)));
-              Start_date_S.clear(); End_date_S.clear(); duration_s.clear();
+              datalist.append( new LisModel(it.at(i),Start_date_S,res_ses,End_date_S,pass_session.at(i)));
+              Start_date_S.clear(); End_date_S.clear(); duration_s.clear();res_ses.clear();
               Time_S.clear(); Time_E.clear();
+              session_duration.clear();
               i++;
            }
            /*
