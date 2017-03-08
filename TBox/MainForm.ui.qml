@@ -37,7 +37,8 @@ Item {
                 mainTree.enabled=true;
                 navigationBar.enabled=true;
                 consoleRect.enabled=true;
-                //fontComboBox.visible=false;
+                fontComboBox.visible=false;
+                fontComboBox.currentIndex=4;
             }
         }
     }
@@ -45,7 +46,7 @@ Item {
         id: editJSAction
         shortcut: "Ctrl+E"
         onTriggered: {
-            if(testEdit.visible){
+            if(testEdit.visible && testEdit.enabled){
                 testStatus.visible=false;
                 testRun.visible=false;
                 testDelete.visible=false;
@@ -58,7 +59,7 @@ Item {
                 mainTree.enabled=false;
                 consoleRect.enabled=false;
                 navigationBar.enabled=false;
-                //fontComboBox.visible=true;
+                fontComboBox.visible=true;
             }
         }
     }
@@ -70,6 +71,16 @@ Item {
             theModel.RunOne();
             testRun.visible=false;
             startButton.enabled=false;
+            refreshTree.enabled=false;
+            runTags.enabled=false;
+            reportsButton.enabled=false;
+            settingButton.enabled=false;
+            testStatus.enabled=false;
+            openFolder.enabled=false;
+            externalEditor.enabled=false;
+            testDelete.enabled=false;
+            testEdit.enabled=false;
+            testSetting.enabled=false;
         }
     }
     Action {
@@ -81,6 +92,12 @@ Item {
                 consoleText.text="";
                 startButton.visible=false;
                 testRun.enabled=false;
+                subToolBar.enabled=false;
+                refreshTree.enabled=false;
+                runTags.enabled=false;
+                reportsButton.enabled=false;
+                settingButton.enabled=false;
+
             }
         }
     }
@@ -88,6 +105,9 @@ Item {
         id: disableAction
         shortcut: "Ctrl+D"
         onTriggered: {
+            if(testStatus.enabled==false) {
+                return;
+            }
             if(theModel.Get("disable")=="true"){
                 testStatus.iconSource="icons/icons/turnon.png";
                 theModel.Set("disable","false");
@@ -137,6 +157,18 @@ Item {
         testRun.visible=true;
         startButton.enabled=true;
         testRun.enabled=true;
+        navigationBar.enabled=true;
+        testStatus.enabled=true;
+        openFolder.enabled=true;
+        externalEditor.enabled=true;
+        testDelete.enabled=true;
+        testEdit.enabled=true;
+        testSetting.enabled=true;
+        subToolBar.enabled=true;
+        refreshTree.enabled=true;
+        runTags.enabled=true;
+        reportsButton.enabled=true;
+        settingButton.enabled=true;
     }
     function setSelectedFolder(folder) {
         if(selectFolderDialog.isFromSetting()){
@@ -206,7 +238,7 @@ Item {
         }
     }
     function selectItem (idx) {
-         mainTree.selection.setCurrentIndex(idx, ItemSelectionModel.ClearAndSelect)
+         mainTree.selection.setCurrentIndex(idx, ItemSelectionModel.ClearAndSelect);
     }
 	function startRun() {
         if(theModel.Run()) {
@@ -366,9 +398,11 @@ Item {
                            height: 20
                        }
                        onClicked: {
+                           fontComboBox.currentIndex=4;
                            root.showItem(index);
                        }
                        onDoubleClicked: {
+                           fontComboBox.currentIndex=4;
                            if(mainTree.isExpanded(index)) {
                                 mainTree.collapse(index);
                            }
@@ -409,17 +443,18 @@ Item {
                                             Text {
                                                 id:testName
                                             }
-                                            /*ComboBox{
+                                            ComboBox{
                                                 id: fontComboBox
                                                 width: 50
                                                 currentIndex: 4
                                                 visible: false
-                                                model: ["8","9","10","11","12","14","16","18","20","22","24","26","28","36","48","72"]
+                                                model: ["8","9","10","11","12","14","16","18","20","22","24","26","28","36","48"]
                                                 onCurrentIndexChanged: {
                                                     jsCodeEdit.font.pixelSize=parseInt(fontComboBox.currentText);
+                                                    lineColumn.rowHeight=jsCodeEdit.font.pixelSize+lineColumn.spaceSizePX[fontComboBox.currentIndex];
                                                     lineRect.width=Math.max(jsCodeEdit.lineCount.toString().length, (lineColumn.height/lineColumn.rowHeight).toFixed(0).toString().length)*jsCodeEdit.font.pixelSize;
                                                 }
-                                            }*/
+                                            }
                                             ToolButton {
                                                 id: testStatus
                                                 action: disableAction
@@ -524,7 +559,8 @@ Item {
                                                     mainTree.enabled=true;
                                                     consoleRect.enabled=true;
                                                     navigationBar.enabled=true;
-                                                    //fontComboBox.visible=false;
+                                                    fontComboBox.visible=false;
+                                                    fontComboBox.currentIndex=4;
 
                                                 }
                                                 iconSource: "icons/icons/restore.png"
@@ -807,7 +843,8 @@ Item {
                                             verticalScrollBarPolicy: Qt.ScrollBarAlwaysOff
                                             contentItem: Rectangle {
                                                 id: lineColumn
-                                                property int rowHeight: jsCodeEdit.font.pixelSize+2
+                                                property int rowHeight: jsCodeEdit.font.pixelSize+3
+                                                property variant spaceSizePX: [0,3,2,3,3,3,2,2,2,2,3,3,3,3,2]
                                                 color: "#f2f2f2"
                                                 width: lineRect.width
                                                 height: lineRect.height
@@ -850,7 +887,7 @@ Item {
                                             id: jsCodeEdit
                                             readOnly: true
                                             selectByMouse: true
-                                            font.pixelSize: 14
+                                            font.pixelSize: 12
                                             font.family: "Courier New"
                                             textFormat: Qt.PlainText
                                             anchors.fill: parent
