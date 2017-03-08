@@ -281,6 +281,7 @@ public slots:
      * @return bool, true if the application is running
      */
     bool isAlive(QString windowName);
+    bool isImageEqual(QString path,QString path2);
 private:
     QProcess *process;
     POINT current_pos;
