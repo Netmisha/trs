@@ -1,6 +1,7 @@
 #include "trscore.h"
 #include <QDesktopWidget>
 #include <QObject>
+#include <qDebug>
 TRSCore::TRSCore(QObject *parent) : QObject(parent) {
     process=new QProcess();
 }
@@ -17,6 +18,7 @@ QString TRSCore::getFileData(QString filePath){
     while(!stream.atEnd()){
         streamData.append(stream.readLine());
     }
+
     xmlFile->close();
     return streamData;
 
@@ -161,7 +163,54 @@ QString TRSCore::GetAppRect(QString windowName)
     emit fail("Can not get window rect.");
     return QString();
 }
-
+void TRSCore::SetAppPos(QString windowName, int x, int y) {
+	if(windowName.isEmpty()) {
+        emit fail("Invalid window name.");
+        return;
+    }
+    HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    if(windowHandle==NULL) {
+        emit fail("Window not found.");
+        return;
+    }
+	if(!SetWindowPos(windowHandle, HWND_TOP, x, y, 0, 0, SWP_NOSIZE)) {
+		emit fail("Can not set window position.");
+        return;
+	}
+	return;
+}
+void TRSCore::SetAppSize(QString windowName, int w, int h) {
+	if(windowName.isEmpty()) {
+        emit fail("Invalid window name.");
+        return;
+    }
+    HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    if(windowHandle==NULL) {
+        emit fail("Window not found.");
+        return;
+    }
+	if(!SetWindowPos(windowHandle, HWND_TOP, 0, 0, w, h, SWP_NOMOVE)) {
+		emit fail("Can not set window size.");
+        return;
+	}
+	return;
+}
+void TRSCore::SetAppRect(QString windowName, int x, int y, int w, int h) {
+	if(windowName.isEmpty()) {
+        emit fail("Invalid window name.");
+        return;
+    }
+    HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    if(windowHandle==NULL) {
+        emit fail("Window not found.");
+        return;
+    }
+    if(!SetWindowPos(windowHandle, HWND_TOP, x, y, w, h, SWP_SHOWWINDOW)) {
+		emit fail("Can not set window size.");
+        return;
+	}
+	return;
+}
 void TRSCore::WindowMinimize(QString windowName)
 {
     if(windowName.isEmpty()) {

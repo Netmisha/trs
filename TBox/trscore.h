@@ -92,6 +92,27 @@ public slots:
      */
     QString GetAppRect(QString windowName);
     /**
+     * @brief SetAppPos: sets window position
+     * @param windowName a string argument
+     * @param x a integer argument
+     * @param y a integer argument
+     */
+    void SetAppPos(QString windowName, int x, int y);
+	/**
+     * @brief SetAppSize: sets window size
+     * @param windowName a string argument
+     * @param w a integer argument
+     * @param h a integer argument
+     */
+    void SetAppSize(QString windowName, int w, int h);
+	/**
+     * @brief SetAppRect: sets window rectangle
+     * @param windowName a string argument
+     * @param x a integer argument
+     * @param y a integer argument
+     */
+    void SetAppRect(QString windowName, int x, int y, int w, int h);
+    /**
      * @brief WindowMinimize: minimaze window with some name
      * @param windowName a string argument
      */

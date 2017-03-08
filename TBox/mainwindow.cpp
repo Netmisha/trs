@@ -476,7 +476,7 @@ void MainTree::Parse(QString path, QStandardItem * suite) {
             continue;
         }
         else {
-            if (it.filePath().contains(".xml")) {
+            if (it.filePath().contains("suite.xml")) {
                 isValid=true;
                 QString name = getSuiteName(it.filePath());
                 suite->setText(name);
@@ -732,7 +732,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
         page+="\n\t\t<script type=\"text/javascript\">\n\t\t"+tooljs+"</script>";
         tools.close();
     }
-    page+="\n\t\t<script type=\"text/javascript\">\n\t\ttry{\n\t\tTest.BEGIN();"+getJS(it.file, it.name)+"\n\t\tSUCCESS()\n}\ncatch (err) {}</script>";
+    page+="\n\t\t<script type=\"text/javascript\">\n\t\ttry{\n\t\tTest.BEGIN();"+getJS(it.file, it.name)+"\n\t\tSUCCESS();\n}\ncatch (err) {}</script>";
     page+="\n\t</head>\n\t<body>\n\t</body>\n</html>";
     file.write(page.toLatin1());
     file.close();
