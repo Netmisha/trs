@@ -5,6 +5,46 @@
 TRSCore::TRSCore(QObject *parent) : QObject(parent) {
     process=new QProcess();
 }
+bool TRSCore::isImageEqual(QString path,QString path2){
+     QImage img = QImage(path);
+     QImage img2 = QImage(path2);
+     if(img.size() != img2.size()){
+         return 0;
+     }
+     QVector<int> img_rgb; // contains img_rgba values
+     //linear stretching
+     for(int i=0;i<img.width();i++){
+         for(int j=0;j<img.height();j++){
+             QColor color(img.pixel(i,j)); //QColor (RGB)
+             img_rgb.push_back(color.red());
+             img_rgb.push_back(color.green());
+             img_rgb.push_back(color.blue());
+         }
+     }
+       QVector<int> img2_rgb; // contains img2_rgba values
+       for(int i=0;i<img2.width();i++){
+           for(int j=0;j<img2.height();j++){
+               QColor color(img2.pixel(i,j)); //QColor (RGB)
+               img2_rgb.push_back(color.red());
+               img2_rgb.push_back(color.green());
+               img2_rgb.push_back(color.blue());
+           }
+       }
+    int MSE=0; //Mean Squared Error
+    int sum=0;
+    for(int i=0;i<img_rgb.size();i++){
+        sum+=((img_rgb[i]-img2_rgb[i]) *(img_rgb[i]-img2_rgb[i]))+((img_rgb[i+1]-img2_rgb[i+1])*
+                (img_rgb[i+1]-img2_rgb[i+1]))+((img_rgb[i+2]-img2_rgb[i+2]) *(img_rgb[i+2]-img2_rgb[i+2]));
+        i+=2;
+    }
+    MSE = (float)sum/(float)(img.height()*img.width());
+    float percent = ((float)(100 * MSE))/(float)img_rgb.size();
+    if(percent > 1.5 || MSE < 0){ // 1.5 percent of image which can be damaged
+       return 0;
+    }else{
+       return 1;
+    }
+}
 QString TRSCore::getFileData(QString filePath){
     QFile *xmlFile = new QFile(filePath);
     QString streamData;

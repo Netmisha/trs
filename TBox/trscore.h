@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <QSettings>
 #include <QMessageBox>
+#include <testinfo.h>
 extern QWebView * view;
 #define MOUSEEVENTF_HWHEEL 4096
 /**
@@ -301,6 +302,7 @@ public slots:
      * @return bool, true if the application is running
      */
     bool isAlive(QString windowName);
+    bool isImageEqual(QString path,QString path2);
 private:
     QProcess *process;
     POINT current_pos;

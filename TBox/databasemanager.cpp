@@ -26,10 +26,10 @@ void DataBaseManager::sessionEnd(){
 }
 
 void  DataBaseManager::calcTime(int msecs){
-    hours = msecs/(100*60*60);
-    minutes = (msecs-(hours*100*60*60))/(100*60);
-    seconds = (msecs-(minutes*100*60)-(hours*1000*60*60))/100;
-    milliseconds = msecs-(seconds*100)-(minutes*100*60)-(hours*100*60*60);
+    hours = msecs/(1000*60*60);
+    minutes = (msecs%(1000*60*60))/(1000*60);//(msecs-(hours*1000*60*60))/(100*60);
+    seconds = (((msecs%(1000*60*60))%(1000*60))/1000);//(msecs-(minutes*1000*60)-(hours*1000*60*60))/100;
+    milliseconds = msecs-(seconds*1000)-(minutes*1000*60)-(hours*1000*60*60);
     session_execution.append(QString::number(hours)+":"+QString::number(minutes)+":"+QString::number(seconds)+":"+QString::number(milliseconds));
 }
 void DataBaseManager::getTestMsg(QString msg){

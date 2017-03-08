@@ -18,9 +18,11 @@ ExportHTML::ExportHTML()
         }
         qDebug()<<"dir was created";
        qDebug()<<dir->absolutePath();
+       delete dir;
 
  }
  void ExportHTML::ReceiveHTMLpath(QString exportPath){
+
      export_path_ = exportPath;
      CreateHTMLReportFile(table_data_,elements_, summary_data_,test_r_,suite_info_,current_session);
  }
@@ -66,7 +68,7 @@ ExportHTML::ExportHTML()
               cur =StringTimetoInt(testD->total_test_time);
               prev = StringTimetoInt(temp_time);
               cur.ms = prev.ms+cur.ms;
-              if(cur.ms >=100){cur.ms = cur.ms-100;cur.s++;}
+              if(cur.ms >=1000){cur.ms = cur.ms-1000;cur.s++;}
               cur.s = prev.s + cur.s;
               if(cur.s >=60){cur.s = cur.s-60; cur.m++;}
               cur.m = prev.m + cur.m;
@@ -91,7 +93,7 @@ ExportHTML::ExportHTML()
             }
             my_time =StringTimetoInt( TD.at(j)->total_test_time);
             total_execution.ms = total_execution.ms+my_time.ms;
-            if(total_execution.ms >=100){total_execution.ms = total_execution.ms-100;total_execution.s++;}
+            if(total_execution.ms >=1000){total_execution.ms = total_execution.ms-1000;total_execution.s++;}
             total_execution.s = total_execution.s +my_time.s;
             if(total_execution.s >=60){total_execution.s = total_execution.s-60; total_execution.m++;}
             total_execution.m = total_execution.m + my_time.m;
@@ -118,6 +120,12 @@ ExportHTML::ExportHTML()
  }
 void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int elements,QStringList summary_data,
                                       QStringList test_r,QVector<QStringList*> suite_info,QString current_session){
+    for(int i=0;i<TD.size();i++){
+        delete TD.at(i);
+    }TD.clear();
+    for(int i=0;i<SD.size();i++){
+        delete SD.at(i);
+    }SD.clear();
     bool file_open = 0;
     QFile file(export_path_+"Session"+current_session+"_"+QDate::currentDate().toString("dd_MM_yyyy_")+QTime::currentTime().toString("(HH_mm_ss)")+".html");
     QFileInfo *file_info = new QFileInfo(file);
@@ -162,14 +170,15 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
  temp.clear();
  }
  res__.append(" ");
- for(int i=0;i<tt.size();i++){
-     temp = QString::number(tt_.at(i).toInt() - tt.at(i).toInt());
-     (temp.toInt()<0)?std::abs(temp.toInt()):0;
-     res__.append(temp);
-     res__.append(":");
-     temp.clear();
- }
- res__.remove(res__.size()-1,1);
+ QString TT1 = QString::number((tt.at(0).toInt()*60*60)+(tt.at(1).toInt()*60)+tt.at(2).toInt()); //start time
+ QString TT = QString::number((tt_.at(0).toInt()*60*60)+(tt_.at(1).toInt()*60)+tt_.at(2).toInt()); // end time
+ QString T_dif = QString::number(TT.toInt() - TT1.toInt());
+ QString TT2 =  QString::number(T_dif.toInt() / 60);
+ res__.append(QString::number(TT2.toInt()/60));
+ res__.append(":");
+ res__.append(QString::number(TT2.toInt()%60));
+ res__.append(":");
+ res__.append(QString::number(T_dif.toInt()%60));
       file.resize(0);
       parseSuiteData(suite_info,table_data);
           QTextStream output(&file);
@@ -235,7 +244,7 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
               output<<"Success";
               output<<"</td>";
 
-              }else if(SD.at(i)->pass =="fail"){
+              }else{
                   output<<"<td style='border: 2px solid black;font-weight:bold;background-color:red'>";
                   output<<"Fail";
                   output<<"</td>";
@@ -263,7 +272,7 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
                   output<<"Success";
                   output<<"</td>";
 
-              }else if(TD.at(t)->test_pass=="fail"){
+              }else{
 
                   output<<"<td style='border: 1px solid black;background-color:red'>";
                   output<<"Fail";
@@ -281,7 +290,7 @@ void ExportHTML::CreateHTMLReportFile(QVector<QStringList*> table_data,int eleme
                QMessageBox msgBox;
                msgBox.setText("File has been saved at:"+export_path_);
                msgBox.exec();
-
+   delete file_info;
 }
 void ExportHTML::ReceiveHTMLdata(QVector<QStringList*> table_data_e,int elements_e,QStringList summary_data_e,
                                  QStringList test_r_e,QVector<QStringList*> suite_info_e,QString current_session_e){

@@ -9,7 +9,10 @@ DataBase::DataBase(QObject *parent) :
 
 }
 void DataBase::defaultTableValue(QString start, QString end){
-datalist.clear();
+//for(int i=0;i<datalist.size();i++){
+//delete datalist.at(i);
+//}
+    datalist.clear();
     QRegExp exp("/");
     start_dates = start.split(exp);
     std::reverse(start_dates.begin(),start_dates.end());
@@ -51,7 +54,7 @@ datalist.clear();
    cd_.append(QDate::currentDate().toString("yyyy"));
    int i=0;
 
-   query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num order by Session_num desc" );
+   qDebug()<<query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num order by Session_num desc" );
    while(query->next()){
         QString res_ses;
          QStringList session_duration;
@@ -67,13 +70,19 @@ datalist.clear();
        Time_E.append( query->value(  query->record().indexOf("max(S_Session_end)")).toString());
        QString date_;
        date_ = QString::number(Time_E.at(0).toInt()-Time_S.at(0).toInt());
-       (date_.toInt()<0)?std::abs(date_.toInt()):0;
+       if(date_.toInt()<0){
+           date_ = QString::number(std::abs(date_.toInt()));
+       }
       session_duration.append(date_);
       date_ = QString::number(Time_E.at(1).toInt()-Time_S.at(1).toInt());
-      (date_.toInt()<0)?std::abs(date_.toInt()):0;
+      if(date_.toInt()<0){
+          date_ = QString::number(std::abs(date_.toInt()));
+      }
       session_duration.append(date_);
       date_ = QString::number(Time_E.at(2).toInt()-Time_S.at(2).toInt());
-      (date_.toInt()<0)?std::abs(date_.toInt()):0;
+      if(date_.toInt()<0){
+          date_ = QString::number(std::abs(date_.toInt()));
+      }
       session_duration.append(date_);
       QRegExp exp(":");
       QString t = Time_E.at(3);
@@ -82,18 +91,33 @@ datalist.clear();
       QStringList temp1 = t1.split(exp);
       QString time_res;
       QString time_time;
+      QString TT = QString::number((temp.at(0).toInt()*60*60)+(temp.at(1).toInt()*60)+temp.at(2).toInt()); //end time
+      QString TT1 = QString::number((temp1.at(0).toInt()*60*60)+(temp1.at(1).toInt()*60)+temp1.at(2).toInt()); //start time
+      QString T_dif = QString::number(TT.toInt() - TT1.toInt());
+      QString TT2 =  QString::number(T_dif.toInt() / 60);
+      time_time.append(QString::number(TT2.toInt()/60));
+      time_time.append(":");
+      time_time.append(QString::number(TT2.toInt()%60));
+      time_time.append(":");
+      time_time.append(QString::number(T_dif.toInt()%60));
+      /*
       time_time = QString::number(temp.at(0).toInt() - temp1.at(0).toInt());
-       (time_time.toInt()<0)?std::abs(time_time.toInt()):0;
+      if(time_time.toInt()<0){
+         time_time = QString::number(std::abs(time_time.toInt()));
+      }
       time_res.append(time_time);
       time_res.append(":");
        time_time = QString::number(temp.at(1).toInt() - temp1.at(1).toInt());
-       (time_time.toInt()<0)?std::abs(time_time.toInt()):0;
+       if(time_time.toInt()<0){
+          time_time = QString::number(std::abs(time_time.toInt()+60));
+       }
        time_res.append(time_time);
        time_res.append(":");
        time_time = QString::number(temp.at(2).toInt() - temp1.at(2).toInt());
        if(time_time.toInt()<0){
-          std::abs(time_time.toInt());
+          time_time = QString::number(std::abs(time_time.toInt()+60));
        }
+       */
         time_res.append(time_time);
         for(int i=0;i<session_duration.size();i++){
         res_ses.append(session_duration.at(i)+"/");
@@ -112,6 +136,13 @@ datalist.clear();
        Time_S.clear(); Time_E.clear();
        i++;
     }
+   /*
+   QList<QObject*> temp;
+   temp.reserve( datalist.size() );
+   std::reverse_copy(datalist.begin(), datalist.end(), std::back_inserter( temp ) );
+   datalist.clear(); datalist = temp;
+*/
+
     engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(datalist)); // list model
     list_from_ui = it;
 
@@ -143,6 +174,7 @@ void DataBase::InitDB(){
               }
 }
 void DataBase::getExportPath(QString path){
+    exportFilePath.clear();
    QRegExp exp("file| ///|/");
    QStringList l = path.split(exp);
    l.removeFirst();
@@ -164,23 +196,7 @@ void DataBase::FilterData(){
         }
     }
 }
-void DataBase::getDataFromDB(){
-    rdO = new DataBase::row_data;
-    rfO = new DataBase::row_fields;
-    query = new QSqlQuery(db);
-    query->exec("SELECT * FROM Info");
-    while (query->next()) {
-       rdO->ID = query->value(query->record().indexOf(rfO->ID)).toString();
-       rdO->Test_name = query->value(query->record().indexOf(rfO->Test_name)).toString();
-       rdO->Test_Day = query->value(query->record().indexOf(rfO->Test_Day)).toString();
-       rdO->Test_Month = query->value(query->record().indexOf(rfO->Test_Month)).toString();
-       rdO->Test_Year = query->value(query->record().indexOf(rfO->Test_Year)).toString();
-       rdO->Test_Passed = query->value(query->record().indexOf(rfO->Test_Passed)).toString();
-       rc_data.push_back(rdO);
-       rdO = new DataBase::row_data;
-    }
-FilterData();
-}
+
 QString DataBase::ParseDateS(QString data){
     QRegExp ex("(-|T|:)");
     Date_  = data.split(ex);
@@ -236,10 +252,15 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
                  return it ;
              }
             query = new QSqlQuery(db);
+           // for(int i=0;i<datalist.size();i++){
+           // delete datalist.at(i);
+            //}
             datalist.clear();
-             query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num" );
+             qDebug()<<query->exec("select Session_num, Test_Day,Test_Month,Test_Year,min(S_Start_time),Session_duration,Test_day_e,Test_month_e,Test_year_e,max(S_Session_end),Test_Passed from Info WHERE (Test_Day BETWEEN "+start_dates.at(0)+" and "+end_dates.at(0)+") and (Test_Month between "+start_dates.at(1)+" and "+end_dates.at(1)+") and (Test_Year between "+start_dates.at(2)+" and "+end_dates.at(2)+") group by Session_num order by Session_num desc" );
             query->executedQuery();
            QStringList Time_S;
+           QString res_ses;
+            QStringList session_duration;
            QStringList Time_E;
            QString duration_s;
            QString Start_date_S;
@@ -257,16 +278,61 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
               Time_E.append( query->value(  query->record().indexOf("Test_month_e")).toString());
               Time_E.append( query->value(  query->record().indexOf("Test_year_e")).toString());
               Time_E.append( query->value(  query->record().indexOf("max(S_Session_end)")).toString());
-              duration_s.append(  query->value(  query->record().indexOf("Session_duration")).toString());
+              //duration_s.append(  query->value(  query->record().indexOf("Session_duration")).toString());
+              QString date_;
+              date_ = QString::number(Time_E.at(0).toInt()-Time_S.at(0).toInt());
+              if(date_.toInt()<0){
+                  date_ = QString::number(std::abs(date_.toInt()));
+              }
+             session_duration.append(date_);
+             date_ = QString::number(Time_E.at(1).toInt()-Time_S.at(1).toInt());
+             if(date_.toInt()<0){
+                 date_ = QString::number(std::abs(date_.toInt()));
+             }
+             session_duration.append(date_);
+             date_ = QString::number(Time_E.at(2).toInt()-Time_S.at(2).toInt());
+             if(date_.toInt()<0){
+                 date_ = QString::number(std::abs(date_.toInt()));
+             }
+             session_duration.append(date_);
+             QRegExp exp(":");
+             QString t = Time_E.at(3);
+             QString t1 = Time_S.at(3);
+             QStringList temp = t.split(exp);
+             QStringList temp1 = t1.split(exp);
+             QString time_res;
+             QString time_time;
+             QString TT = QString::number((temp.at(0).toInt()*60*60)+(temp.at(1).toInt()*60)+temp.at(2).toInt());// end time
+             QString TT1 = QString::number((temp1.at(0).toInt()*60*60)+(temp1.at(1).toInt()*60)+temp1.at(2).toInt()); //start time
+             QString T_dif = QString::number(TT.toInt() - TT1.toInt());
+             QString TT2 =  QString::number(T_dif.toInt() / 60);
+             time_time.append(QString::number(TT2.toInt()/60));
+             time_time.append(":");
+             time_time.append(QString::number(TT2.toInt()%60));
+             time_time.append(":");
+             time_time.append(QString::number(T_dif.toInt()%60));
+               time_res.append(time_time);
+               for(int i=0;i<session_duration.size();i++){
+               res_ses.append(session_duration.at(i)+"/");
+               }
+               session_duration.clear();
+               session_duration.append(time_res);
+               res_ses.append(" "+session_duration.first());
               for(int j=0,k=0;j<Time_S.size();j++,k++){
                   Start_date_S.append(Time_S.at(j)+"/");
                   End_date_S.append(Time_E.at(k)+"/");
               }
-              datalist.append( new LisModel(it.at(i),Start_date_S,duration_s,End_date_S,pass_session.at(i)));
-              Start_date_S.clear(); End_date_S.clear(); duration_s.clear();
+              datalist.append( new LisModel(it.at(i),Start_date_S,res_ses,End_date_S,pass_session.at(i)));
+              Start_date_S.clear(); End_date_S.clear(); duration_s.clear();res_ses.clear();
               Time_S.clear(); Time_E.clear();
+              session_duration.clear();
               i++;
            }
+           /*
+           QList<QObject*> temp;
+           temp.reserve( datalist.size() );
+           std::reverse_copy(datalist.begin(), datalist.end(), std::back_inserter( temp ) );
+           datalist.clear(); datalist = temp;*/
            engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(datalist)); // list model
            list_from_ui = it;
            it.clear();
@@ -274,6 +340,16 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
 }
 
 QString DataBase::row_selected(QString row){
+    Sumary_data.clear();
+    //for(int i=0;i<session_data.size();i++){
+   //     delete session_data[i];
+   // }
+    session_data.clear();
+   // for(int i=0;i<Suite_info.size();i++){
+   //     delete Suite_info[i];
+   // }
+    Suite_info.clear();
+    tn.clear();
     // qDebug()<<list_from_ui.at(row.toInt());
      QSqlQuery *qu;
      if(!db.isOpen()){
@@ -286,7 +362,6 @@ QString DataBase::row_selected(QString row){
          for(int i=0;i<rec.count();i++){
              tn.append(rec.fieldName(i)); // save db columns
          }
-          list_from_ui;
           qu->exec("SELECT Test_Name,Test_Suite,Test_Passed,Test_repeat,Session_duration,Test_repeat,Test_Desc,Test_msg FROM Info WHERE Session_num = "+list_from_ui.at(row.toInt()));
          row_fields rf;
          while(qu->next()){
@@ -301,7 +376,7 @@ QString DataBase::row_selected(QString row){
             session_data.push_back(e);
          }
     delete qu; qu = new QSqlQuery(db);
-    QVector<QStringList*> Suite_info;
+
     QStringList *Suite;
     qu = new QSqlQuery(db);
     QStringList t;
@@ -371,7 +446,7 @@ QString DataBase::row_selected(QString row){
     while(qu->next()){
         Duration.append(qu->value(qu->record().indexOf("Session_duration")).toString());
     }
-     Duration;
+
     Sumary_data.append(Duration);
    // emit sendSummaryData(Sumary_data);
     WindowTable.setIndex(row.toInt());
@@ -393,6 +468,7 @@ QString DataBase::row_selected(QString row){
     test_r_e =  test_r;
     suite_info_e = Suite_info;
     WindowTable.CreateTable(table_path,session_data,e->size(),Sumary_data,test_r,Suite_info);
+
     /*
     for(int i=0;i<session_data.size();i++){
         session_data.at(i)->clear();
