@@ -11,7 +11,7 @@ bool TRSCore::isImageEqual(QString path,QString path2){
      if(img.size() != img2.size()){
          return 0;
      }
-     QVector<int> img_rgb; // contains img_rgb values
+     QVector<int> img_rgb; // contains img_rgba values
      //linear stretching
      for(int i=0;i<img.width();i++){
          for(int j=0;j<img.height();j++){
@@ -21,7 +21,7 @@ bool TRSCore::isImageEqual(QString path,QString path2){
              img_rgb.push_back(color.blue());
          }
      }
-       QVector<int> img2_rgb; // contains img2_rgb values
+       QVector<int> img2_rgb; // contains img2_rgba values
        for(int i=0;i<img2.width();i++){
            for(int j=0;j<img2.height();j++){
                QColor color(img2.pixel(i,j)); //QColor (RGB)
@@ -63,20 +63,51 @@ QString TRSCore::getFileData(QString filePath){
     return streamData;
 
 }
-bool TRSCore::isAlive(QString windowName)
+bool TRSCore::isAlive(QString windowName, bool emitFail)
 {
     if(windowName.isEmpty()) {
         emit fail("Invalid window name.");
         return false;
     }
     windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
-    if(windowHandle==NULL) {
+    if(windowHandle==NULL && emitFail) {
         emit fail("Application did not run.");
         return false;
     }
     return true;
 }
-bool TRSCore::StartApp(QString appName) {
+
+bool TRSCore::isWin()
+{
+    if(QSysInfo::windowsVersion()!=QSysInfo::WV_None) {
+        return true;
+    }
+    return false;
+}
+
+bool TRSCore::isMac()
+{
+    if(QSysInfo::macVersion()!=QSysInfo::WV_None) {
+        return true;
+    }
+    return false;
+}
+
+QString TRSCore::getBitDepth()
+{
+    typedef BOOL (WINAPI *LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+    LPFN_ISWOW64PROCESS fnIsWow64Process;
+    BOOL bIsWow64 = FALSE;
+    fnIsWow64Process = (LPFN_ISWOW64PROCESS) GetProcAddress(
+        GetModuleHandle(TEXT("kernel32")),"IsWow64Process");
+    if(NULL != fnIsWow64Process) {
+        if (!fnIsWow64Process(GetCurrentProcess(),&bIsWow64)) {
+            return "";
+        }
+    }
+    return bIsWow64?"64":"32";
+}
+bool TRSCore::StartApp(QString appName, bool waitForStart) {
     process->start(appName);
     if(process->error()<5) {
         qDebug()<<process->errorString();
@@ -84,19 +115,23 @@ bool TRSCore::StartApp(QString appName) {
         return false;
     }
     else {
+        emit log("Waiting...");
         process->waitForStarted();
         return true;
     }
 }
-void TRSCore::CloseApp(QString windowName) {
+void TRSCore::CloseApp(QString windowName, bool waitForClose) {
     if(windowName.isEmpty()) {
         emit fail("Invalid window name.");
         return;
     }
     CloseWindow(windowName);
+    if(waitForClose) {
+        emit log("Waiting...");
     if(!process->waitForFinished()) {
         emit fail("Application close failed.");
         return;
+    }
     }
 }
 
@@ -108,6 +143,7 @@ void TRSCore::SetOnTop(QString windowName)
     }
     windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     SetForegroundWindow(windowHandle);
+    emit log("Waiting...");
     while (GetForegroundWindow() != windowHandle)
     {
         windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
@@ -312,7 +348,7 @@ void TRSCore::CloseWindow(QString windowName)
         emit fail("Window not found.");
         return;
     }
-    SendMessage(windowHandle, WM_SYSCOMMAND, SC_CLOSE, 0);
+    PostMessageA(windowHandle, WM_SYSCOMMAND, SC_CLOSE, 0);
 }
 void TRSCore::KeyDown(int dkey){
     if(dkey<8) {

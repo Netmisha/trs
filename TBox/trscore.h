@@ -23,6 +23,7 @@
 #include <QSettings>
 #include <QMessageBox>
 #include <testinfo.h>
+#include <QSysInfo>
 extern QWebView * view;
 #define MOUSEEVENTF_HWHEEL 4096
 /**
@@ -41,14 +42,16 @@ signals:
 public slots:
     /**
      * @brief StartApp: runs application
+     * @param waitForStart a bool argument
      * @param path a string argument
      */
-    bool StartApp(QString path);
+    bool StartApp(QString path, bool waitForStart=true);
     /**
      * @brief CloseApp: closes application
+     * @param waitForClose a bool argument
      * @param windowName a string argument
      */
-    void CloseApp(QString windowName);
+    void CloseApp(QString windowName, bool waitForClose=true);
     /**
      * @brief SetOnTop: sets window with some name on top
      * @param windowName a string argument
@@ -299,9 +302,25 @@ public slots:
     /**
      * @brief isAlive: checks if the application is running
      * @param windowName a string argument
+     * @param emitFail a bool argument, true as default
      * @return bool, true if the application is running
      */
-    bool isAlive(QString windowName);
+    bool isAlive(QString windowName, bool emitFail=false);
+    /**
+     * @brief isWin: checks if the current OS is Windows
+     * @return bool, true if the OS Win
+     */
+    bool isWin();
+    /**
+     * @brief isMac: checks if the current OS is Mac
+     * @return bool, true if the OS Mac
+     */
+    bool isMac();
+    /**
+     * @brief getBitDepth: returns bit depth of OS
+     * @return int, 32 or 64
+     */
+    QString getBitDepth();
     bool isImageEqual(QString path,QString path2);
 private:
     QProcess *process;
