@@ -139,6 +139,16 @@ void MainWindow::writeLog(QString msg){
     QTime time=QTime::currentTime();
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
 }
+void MainWindow::sendMail()
+{
+
+}
+
+void MainWindow::mailSent(QString status)
+{
+    if(status == "Message sent")
+        QMessageBox::warning( 0, tr( "Qt Simple SMTP client" ), tr( "Message sent!\n\n" ) );
+}
 void MainWindow::AddStartCommand(QString command)
 {
     if(command == "run") {

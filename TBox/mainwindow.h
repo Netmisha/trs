@@ -27,6 +27,7 @@
 #include <reportform.h>
 #include <databasemanager.h>
 #include <suiteinfo.h>
+#include <smtp.h>
 namespace Ui {
 class MainWindow;
 }
@@ -40,6 +41,9 @@ public slots:
     void writeLog(QString);
     void AddStartCommand(QString);
 private slots:
+    void sendMail();
+    void mailSent(QString);
+
 private:
     DataBase O;
     ExportHTML H;

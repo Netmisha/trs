@@ -11,7 +11,7 @@ bool TRSCore::isImageEqual(QString path,QString path2){
      if(img.size() != img2.size()){
          return 0;
      }
-     QVector<int> img_rgb; // contains img_rgba values
+     QVector<int> img_rgb; // contains img_rgb values
      //linear stretching
      for(int i=0;i<img.width();i++){
          for(int j=0;j<img.height();j++){
@@ -21,7 +21,7 @@ bool TRSCore::isImageEqual(QString path,QString path2){
              img_rgb.push_back(color.blue());
          }
      }
-       QVector<int> img2_rgb; // contains img2_rgba values
+       QVector<int> img2_rgb; // contains img2_rgb values
        for(int i=0;i<img2.width();i++){
            for(int j=0;j<img2.height();j++){
                QColor color(img2.pixel(i,j)); //QColor (RGB)

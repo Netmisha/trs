@@ -1580,6 +1580,96 @@ Item {
                     }
                 }
             }
+
+            ColumnLayout{
+                id: mailLayout
+                Layout.alignment: Qt.AlignLeft
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                CheckBox {
+                    id: checkBox1
+                    Layout.alignment: Qt.AlignLeft
+                    text: qsTr("Send Report to E-mail")
+                    checked: false
+                    onCheckedChanged: {
+                    if(checked == false){
+                        label1.visible = false;
+                        label2.visible = false;
+                        label3.visible = false;
+                        textInput1.visible = false;
+                        textInput2.visible = false;
+                        textInput3.visible = false;
+
+                    }else{
+                        label1.visible = true;
+                        label2.visible = true;
+                        label3.visible = true;
+                        textInput1.visible = true;
+                        textInput2.visible = true;
+                        textInput3.visible = true;
+                    }
+                    }
+                }
+                RowLayout{
+                  ColumnLayout{
+                   Label {
+                       id: label1
+                       visible: false
+                       text: qsTr("Username")
+                   }
+                   Label {
+                       id: label2
+                       visible: false
+                       x: 17
+                       y: 158
+                       text: qsTr("E-mail")
+                   }
+                   Label {
+                       id: label3
+                       visible: false
+                       x: 23
+                       y: 190
+                       text: qsTr("Password ")
+                   }
+                  }
+                  ColumnLayout{
+                TextField {
+
+                    id: textInput1
+                    visible: false
+                    x: 78
+                    y: 116
+                    width: 117
+                    height: 20
+                    font.pixelSize: 12;
+                    placeholderText: qsTr("username")
+
+                }
+
+               TextField {
+                   id: textInput2
+                   visible: false
+                   x: 115
+                   y: 156
+                   width: 80
+                   height: 20
+                   placeholderText: qsTr("username@gmail.com")
+                   font.pixelSize: 12
+               }
+
+                TextField {
+                    id: textInput3
+                    visible: false
+                    x: 84
+                    y: 190
+                    width: 111
+                    height: 20
+                    placeholderText: qsTr("password")
+                    font.pixelSize: 12
+                }
+              }
+             }
+            }
             RowLayout {
                 id: rowLayout3
                 width: 100

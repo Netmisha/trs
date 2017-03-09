@@ -27,7 +27,8 @@ SOURCES+= main.cpp\
     databasemanager.cpp \
     highlighter.cpp \
     selectfolderdialog.cpp \
-    suiteinfo.cpp
+    suiteinfo.cpp \
+    smtp.cpp
 
 HEADERS+= mainwindow.h \
     maintree.h \
@@ -46,7 +47,8 @@ HEADERS+= mainwindow.h \
     databasemanager.h \
     highlighter.h \
     selectfolderdialog.h \
-    suiteinfo.h
+    suiteinfo.h \
+    smtp.h
 
 FORMS+= mainwindow.ui \
     reportform.ui
