@@ -187,7 +187,7 @@ int TRSCore::GetAppWidth(QString windowName)
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("Window not found.");
+        emit fail("GetAppWidth Window:"+windowName+" not found.");
         return -1;
     }
     RECT win_rect;
@@ -206,7 +206,7 @@ int TRSCore::GetAppHeight(QString windowName)
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("Window not found.");
+        emit fail("GetAppHeight:"+windowName+" not found.Window not found.");
         return -1;
     }
     RECT win_rect;
@@ -224,7 +224,7 @@ QString TRSCore::GetAppRect(QString windowName)
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("Window not found.");
+        emit fail("GetAppRect Window:"+windowName+" not found.");
         return QString();
     }
     RECT win_rect;
@@ -246,7 +246,7 @@ void TRSCore::SetAppPos(QString windowName, int x, int y) {
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("Window not found.");
+        emit fail("SetAppPos Window:"+windowName+" not found.");
         return;
     }
 	if(!SetWindowPos(windowHandle, HWND_TOP, x, y, 0, 0, SWP_NOSIZE)) {
@@ -262,7 +262,7 @@ void TRSCore::SetAppSize(QString windowName, int w, int h) {
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("Window not found.");
+        emit fail("SetAppSize Window:"+windowName+" not found.");
         return;
     }
 	if(!SetWindowPos(windowHandle, HWND_TOP, 0, 0, w, h, SWP_NOMOVE)) {
@@ -278,7 +278,7 @@ void TRSCore::SetAppRect(QString windowName, int x, int y, int w, int h) {
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("Window not found.");
+        emit fail("SetAppRect Window:"+windowName+" not found.");
         return;
     }
     if(!SetWindowPos(windowHandle, HWND_TOP, x, y, w, h, SWP_SHOWWINDOW)) {
@@ -295,7 +295,7 @@ void TRSCore::WindowMinimize(QString windowName)
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("Window not found.");
+        emit fail("WindowMinimize Window:"+windowName+" not found.");
         return;
     }
     if (!ShowWindow(windowHandle, SW_MINIMIZE)) {
@@ -312,7 +312,7 @@ void TRSCore::WindowMaximize(QString windowName)
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("Window not found.");
+        emit fail("WindowMaximize Window:"+windowName+" not found.");
         return;
     }
     if (!ShowWindow(windowHandle, SW_MAXIMIZE)) {
@@ -329,7 +329,7 @@ void TRSCore::WindowRestore(QString windowName)
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("Window not found.");
+        emit fail("WindowRestore Window:"+windowName+" not found.");
         return;
     }
     if (!ShowWindow(windowHandle, SW_RESTORE)) {
@@ -345,7 +345,7 @@ void TRSCore::CloseWindow(QString windowName)
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("Window not found.");
+        emit fail("CloseWindow Window:"+windowName+" not found.");
         return;
     }
     PostMessageA(windowHandle, WM_SYSCOMMAND, SC_CLOSE, 0);

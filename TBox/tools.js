@@ -77,3 +77,14 @@ function SUCCESS(msg) {
     Test.SUCCESS(msg);
     throw "SUCCESS";
 }
+
+////////////////////////////////////////////////
+NB.document.executeCommand = function (command, args) {
+
+    var jsonData = { "command": command, "args": args };
+
+    NB.ajaxNew('POST', 'document/executeCommand', jsonData)
+            .fail(function (data) {
+                throw (data);
+            });
+};
