@@ -324,3 +324,4 @@ QString TRSCore::List(QString path)
     }
     return data;
 }
+
