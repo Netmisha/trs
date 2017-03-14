@@ -60,6 +60,7 @@ public:
    Q_INVOKABLE QString current_session;
    Q_INVOKABLE int index;
    Q_INVOKABLE QString path_for_db;
+    Q_INVOKABLE void callBrowser();
    Q_INVOKABLE void test(){
        qDebug()<<"Inside";
        emit PassHTMLdata(session_data,elements_e,summary_data_e,test_r_e,suite_info_e,current_session);

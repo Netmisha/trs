@@ -188,12 +188,21 @@ res__.append(QString::number(T_dif.toInt()%60));
          output<<"<tr>"; output<<"<td>"; output<<"Start time: ";output<<summary_data.at(1); output<<"</td>";output<<"</tr>";output<<"<tr>"; output<<"<td>"; output<<"End time: ";output<<summary_data.at(2); output<<"</td>";
          output<<"</tr>"; output<<"<tr>";output<<"<td>"; output<<"Execution time: ";output<<res__; output<<"</td>";  output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Tests quantity: ";output<<table_data.size(); output<<"</td>"; output<<"</tr>";
+
          output<<"<tr>"; output<<"<td>"; output<<"Test Passed: ";output<<test_r.at(0); output<<"</td>"; output<<"</tr>";
          output<<"<tr>"; output<<"<td>"; output<<"Test Failed: ";output<<test_r.at(1); output<<"</td>"; output<<"</tr>";
+
          output<<"<tr>";
          output<<"<td>";output<<"File generated: ";output<<today_;output<<"</td>";
          output<<"</tr>";
-         output<<"<tr>"; output<<"<td >"; output<<"Status: ";output<<summary_data.at(0); output<<"</td>"; output<<"</tr>";
+         QString num;
+         num.append(test_r.at(1));
+         if(num.toInt() > 0){
+         output<<"<tr>"; output<<"<td >"; output<<"Status: ";output<<"Failed";output<<"</td>"; output<<"</tr>";
+         }else{
+           output<<"<tr>"; output<<"<td >"; output<<"Status: ";output<<"Success";output<<"</td>"; output<<"</tr>";
+         }
+         num.clear();
          output<<"</table>";
          output<<"<table style='width:100%;border-collapse: collapse;border: 1px solid black;'>\n";
          output<<"<col width=100>";

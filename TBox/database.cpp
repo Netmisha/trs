@@ -338,7 +338,19 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
            it.clear();
            return it;
 }
+void DataBase::callBrowser(){
+    QDir dir;
+    QString path = dir.absolutePath();
+    QStringList pathToHtml = path.split("/");
+    path.clear();
+    for(int i=0;i<pathToHtml.size();i++){
+        path.append(pathToHtml.at(i)+"//");
+    }
+    path.append("WebViewSessionTable.html");
+    QString link = "file:///" +path;
+    QDesktopServices::openUrl(QUrl(link));
 
+}
 QString DataBase::row_selected(QString row){
     Sumary_data.clear();
     //for(int i=0;i<session_data.size();i++){
@@ -390,7 +402,7 @@ QString DataBase::row_selected(QString row){
     for(int i=0;i<t.size();i++){
         (t.at(i)=="success")?y++:n++;
     }
-    (y > n)? Sumary_data.append("All tests passed"):Sumary_data.append("Some tests didn't make it");
+    (y > n)? Sumary_data.append("All tests passed"):Sumary_data.append("Tests have failed");
     delete qu;
 
  qu = new QSqlQuery(db);

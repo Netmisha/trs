@@ -1817,9 +1817,10 @@ Item {
                     DD.row_selected(t_view.currentRow)
                 }
                 onDoubleClicked: {
-                    var component = Qt.createComponent("SessionWindow.qml");
-                    win = component.createObject(root);
-                    win.show();
+                    DD.callBrowser();
+                   // var component = Qt.createComponent("SessionWindow.qml");
+                   //win = component.createObject(root);
+                   // win.show();
                 }
             TableViewColumn {
                                 role: "session_n"
