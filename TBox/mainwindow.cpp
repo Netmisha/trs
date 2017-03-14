@@ -19,6 +19,7 @@ public:
         QObject::connect(this,SIGNAL(sendSuiteInfo(QString,QString)),&data_base_man,SLOT(getSuiteInfo(QString,QString)));
         QObject::connect(this,SIGNAL(sessionN()),&data_base_man,SLOT(sessionNum()));
         QObject::connect(this,SIGNAL(sendTestMessage(QString)),&data_base_man,SLOT(getTestMsg(QString)));
+        QObject::connect(this,SIGNAL(sendSMTPMail()),this,SLOT(sendMail()));
     }
     virtual ~MainTree() = default;
     enum MainTree_Roles{
@@ -31,7 +32,7 @@ public:
     DataBaseManager data_base_man;
     public slots:
     void testFinished(QString);
-	void testFail(QString);
+    void testFail(QString);
     void acceptMessage(QString);
     Q_INVOKABLE QString Load(QString path);
     Q_INVOKABLE QString getFile(QModelIndex);
@@ -47,6 +48,7 @@ public:
     Q_INVOKABLE QStringList GetTags();
     Q_INVOKABLE void Stop();
     Q_INVOKABLE void setRootDir(QString);
+    Q_INVOKABLE void setMailCredentials(QString username,QString password,QString MailTo);
     Q_INVOKABLE QString AddNewTest(QString, QString, QString, QString, QString, QString);
     Q_INVOKABLE QString AddNewSuite(QString, QString, QString, QString);
     Q_INVOKABLE QString AddRootSuite(QString, QString, QString, QString);
@@ -84,6 +86,9 @@ private:
     TestInfo *testinfo=nullptr;
     SuiteInfo *suiteinfo=nullptr;
     TRSCore* trscore=nullptr;
+    QString username;
+    QString password;
+    QString MailTo;
     bool runOne = false;
 signals:
     void sendTestName(QString);
@@ -93,6 +98,10 @@ signals:
     void sendSuiteInfo(QString,QString);
     void sessionN();
     void sendTestMessage(QString msg);
+    void sendSMTPMail();
+private slots:
+    void sendMail();
+    void mailSent(QString);
 };
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -139,12 +148,24 @@ void MainWindow::writeLog(QString msg){
     QTime time=QTime::currentTime();
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
 }
-void MainWindow::sendMail()
-{
 
+void MainTree::setMailCredentials(QString Username, QString Password, QString mailTo){
+    username = Username;
+    password = Password;
+    MailTo = mailTo;
+}
+void MainTree::sendMail()
+{
+    qDebug()<<username;
+/*
+    Smtp* smtp = new Smtp(username,password,"smtp.gmail.com");
+    connect(smtp, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
+    QStringList p; p.append("C:\\Users\\o.mandrychenko\\Desktop\\anatdifb1.jpg");
+    smtp->sendMail(username,MailTo,"Report file","Report file",p);
+*/
 }
 
-void MainWindow::mailSent(QString status)
+void MainTree::mailSent(QString status)
 {
     if(status == "Message sent")
         QMessageBox::warning( 0, tr( "Qt Simple SMTP client" ), tr( "Message sent!\n\n" ) );
@@ -156,7 +177,7 @@ void MainWindow::AddStartCommand(QString command)
     }
 }
 void MainTree::testFinished(QString msg) {
-	if(!run) {
+    if(!run) {
         return;
     }
     emit sendTestMessage(msg);
@@ -165,7 +186,7 @@ void MainTree::testFinished(QString msg) {
     run=false;
     if(testForRun.isEmpty()) {
         QMetaObject::invokeMethod(contextObject, "setStopDisable");
-		WriteLog("All tests finished.");
+        WriteLog("All tests finished.");
         return;
     }
     if(testForRun.first().repeat>1) {
@@ -440,7 +461,7 @@ void MainTree::RunOne(){
             testForRun.clear();
             for(int i=0; i<this->itemFromIndex(currentIndex)->rowCount(); i++) {
                 for (auto&it2 : treeData) {
-                    if (it2.item == currentIndex.child(i,0) && it2.type == "test" && CheckTest(it2) && it2.repeat>0) {                       
+                    if (it2.item == currentIndex.child(i,0) && it2.type == "test" && CheckTest(it2) && it2.repeat>0) {
                         //emit sendRepeatTest(QString::number(it2.repeat));
                         testForRun.push_back(it2);
                         break;
@@ -453,6 +474,8 @@ void MainTree::RunOne(){
             }
         }
     }
+
+      emit sendSMTPMail();
 }
 bool MainTree::Run() {
     if(run) {
@@ -470,6 +493,8 @@ bool MainTree::Run() {
         //testForRun.first().repeat--;
         CreateHtml(testForRun.first());
     }
+
+   // emit sendSMTPMail();
     return true;
 }
 QStringList MainTree::GetTags() {
@@ -720,7 +745,7 @@ void MainTree::CreateHtml(TreeInfo &it) {
     trscore=new TRSCore();
     view->page()->mainFrame()->addToJavaScriptWindowObject("Box", trscore);
     QObject::connect(trscore, SIGNAL(log(QString)), this, SLOT(WriteLog(QString)));
-	QObject::connect(trscore, SIGNAL(fail(QString)), this, SLOT(testFail(QString)));
+    QObject::connect(trscore, SIGNAL(fail(QString)), this, SLOT(testFail(QString)));
     testinfo=new TestInfo();
     testinfo->setName(it.name);
     testinfo->setPath(it.file);

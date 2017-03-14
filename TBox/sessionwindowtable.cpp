@@ -95,13 +95,13 @@ void SessionWindowTable::parseSuiteData(QVector<QStringList *> suite_info_, QVec
 
    total_execution.h=0;total_execution.m=0;total_execution.s=0;total_execution.ms=0;
    int h=0;
-   bool pass = false;
+   bool pass = true;
    for(int i=0,j=0;i<SD.size();i++){
          Time my_time;
          h+=SD.at(i)->test_num.toInt();
         for(;j<h;j++){
-           if(TD.at(j)->test_pass == "success"){
-               pass = true;
+           if(TD.at(j)->test_pass == " fail" || TD.at(j)->test_pass == "fail" ){
+               pass = false;
            }
            my_time =StringTimetoInt( TD.at(j)->total_test_time);
            total_execution.ms = total_execution.ms+my_time.ms;
@@ -112,8 +112,8 @@ void SessionWindowTable::parseSuiteData(QVector<QStringList *> suite_info_, QVec
            if(total_execution.m >=60){total_execution.m = total_execution.m-60;total_execution.h++;}
            total_execution.h = total_execution.h+my_time.h;
         }
-        (pass)?SD.at(i)->pass = "success":0;
-        pass = false;
+        (pass)?SD.at(i)->pass = "success":SD.at(i)->pass="fail";
+        pass = true;
         SD.at(i)->total_time = IntTimetoString(total_execution);
         total_execution.h=0;total_execution.m=0;total_execution.s=0;total_execution.ms=0;
     }
@@ -251,11 +251,11 @@ res__.append(QString::number(T_dif.toInt()%60));
              output<<"<td style='border: 2px solid black;font-weight:bold;background-color:	#E0E0E0 '>";
              output<<SD.at(i)->total_time;
              output<<"</td>";
+
              if(SD.at(i)->pass =="success"){
              output<<"<td style='border: 2px solid black;font-weight:bold;background-color:#50D050'>";
              output<<"Success";
              output<<"</td>";
-
              }else{
                  output<<"<td style='border: 2px solid black;font-weight:bold;background-color:red'>";
                  output<<"Fail";

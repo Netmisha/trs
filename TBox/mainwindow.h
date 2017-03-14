@@ -40,9 +40,6 @@ public:
 public slots:
     void writeLog(QString);
     void AddStartCommand(QString);
-private slots:
-    void sendMail();
-    void mailSent(QString);
 
 private:
     DataBase O;

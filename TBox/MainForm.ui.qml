@@ -1606,6 +1606,9 @@ Item {
                         textInput1.visible = false;
                         textInput2.visible = false;
                         textInput3.visible = false;
+                        textInput1.text="";
+                        textInput2.text="";
+                        textInput3.text="";
 
                     }else{
                         label1.visible = true;

@@ -107,7 +107,8 @@ return false;
 //----------contains_END-----------//
 
 //------main_function------//
-var FileData = Box.getFileData("PATH_TO_XML");
+var FileData = Box.getFileData(Test.getCurrentDir()+"//"+"DirXMLStruct.xml");
+
 var parser = new DOMParser();
 var xmlData = parser.parseFromString(FileData,"text/xml");
 
@@ -128,8 +129,29 @@ for(var i=0;i<nodes.length;i++){
 	tmp_folder_data  = [];
 }
 //--------END_of_Parse_XML_FILE----------//
+var nbRegKey64 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\SMART Technologies\\Notebook Software\\Install Information\\NotebookExePath";
+var nbRegKey32 = "HKEY_LOCAL_MACHINE\\SOFTWARE\\SMART Technologies\\Notebook Software\\Install Information\\NotebookExePath";
 
-struct_list("PATH_TO_TEST_FOLDER");
+var nbPath = "";
+if(Box.getBitDepth()==64){
+ Box.log("Windows 64 registry key");
+ nbPath = Box.getKeyValue(nbRegKey64);
+}else{
+ Box.log("Windows 32 registry key");
+ nbPath = Box.getKeyValue(nbRegKey32);
+}
+var PathToFolder;
+PathToFolder = nbPath.split("\\");
+PathToFolder.pop();
+PathToFolder.pop();
+var t="";
+for(var i=0;i<PathToFolder.length;i++){
+t = t.concat(PathToFolder[i]+"\\");
+}
+t  = t.slice(0,-1);	
+Box.log(t);
+
+struct_list(t);
 var XML_Data = new Array();
 var XML_Folder = new Array();
 for(var i=0;i<folder_data.length;i++){
