@@ -88,3 +88,210 @@ NB.document.executeCommand = function (command, args) {
                 throw (data);
             });
 };
+////////////////////////////////////////////////////
+
+NB.ui.mainMenu = function() {
+    var data = [];
+
+    var _success = function(param) {
+        data = param;
+    };
+
+    NB.ajax("GET", "ui/mainmenu", null, _success);
+    return data;
+};
+
+var MainMenu = function(){};
+
+    var ResetID = 0;
+    var MenuObject = NB.ui.mainMenu().replace(/\t/g,' ');
+    for( var i = 0;i < MenuObject.length; i++) {
+        MenuObject = MenuObject.replace("-1", ResetID);
+        ++ResetID;
+    }
+    console.log(MenuObject);
+    MainMenu.prototype = JSON.parse(MenuObject);
+
+
+
+
+    MainMenu.prototype.menu = function(ID) {
+        for(var item in this.MainMenu) {
+            var sumMenu = this.MainMenu[item];
+                if(sumMenu.ID == ID) {
+                    var resultItem = Object.create(MainMenu.prototype);console.log("result",resultItem);
+                    resultItem.MainMenu = sumMenu;console.log(resultItem);
+                    return resultItem;
+                }
+        }
+    }
+
+    MainMenu.prototype.update = function() {ResetID = 0;
+        var getUpdatedCoord = NB.ui.mainMenu().replace(/\t/g,' ');
+        for( var i = 0;i < getUpdatedCoord.length; i++) {
+        getUpdatedCoord = getUpdatedCoord.replace("-1", ResetID);
+        ++ResetID;
+    }
+        var newData = JSON.parse(getUpdatedCoord);
+        console.log("newData:",newData);
+        console.log("MainMenu:",MainMenu.prototype);
+        MainMenu.prototype.MainMenu = newData.MainMenu;
+    }
+    MainMenu.prototype.getSubmenuPos = function(ID) {
+        var count = 0;
+        for(var item in this.MainMenu) {
+            if(this.MainMenu[item].ID == ID) {
+                return count;
+            }
+            count++;
+        }
+    }
+    MainMenu.prototype.click = function() { update();
+        return this;
+    }
+
+    var ObjArray = new Array();
+
+    var click = function(menuItem, subMenu) {
+        var currentMenu;
+        if(subMenu !== undefined) {
+            currentMenu = subMenu;
+        }
+        else {
+            currentMenu = MainMenu.prototype.MainMenu;
+        }
+        for(var item in currentMenu) {
+            var subMenu = currentMenu[item];
+            if(subMenu !== undefined ) {
+                if(subMenu.ID !== undefined) {
+                    if(subMenu.ID == menuItem.ID) {
+                        console.log(menuItem.rect);
+                        ObjArray.push(menuItem.rect);
+                        return;
+                    }
+                    else {
+                        click(menuItem, subMenu);
+                        if(ObjArray.length > 0) {
+                            ObjArray.push(subMenu.rect);
+                            return;
+                        }
+                    }
+                }
+            }
+            else {
+                return;
+            }
+        }
+    }
+
+
+    NB.ui.GetRootMenuObject = function() {
+        return MainMenu.prototype;
+    }
+
+    NB.ui.GetUpdatedMenu = function(){console.log("ENTER");
+        var res = NB.ui.mainMenu().replace(/\t/g,' ');
+        MainMenu.prototype = JSON.parse(res);
+        return MainMenu.prototype;
+    }
+
+    NB.ui.ClickOnMenuItem = function(MenuItem) {
+
+        click(MenuItem["MainMenu"]);
+        console.log("=============================================================================");
+        ObjArray.reverse();
+        console.log(ObjArray);
+        var retVal = ObjArray;
+        ObjArray = [];
+        return retVal;
+    }
+function CToolBar () {};
+CToolBar.prototype.PrevPage = function(){  NB.document.executeCommand("com.smarttech.feature.page_navigator.previous", {"command_id" : "previous", "feature_id":"com.smarttech.feature.page_navigator"});}
+CToolBar.prototype.NextPage = function(){  NB.document.executeCommand("com.smarttech.feature.page_navigator.next", {"command_id" : "next", "feature_id":"com.smarttech.feature.page_navigator"});}
+CToolBar.prototype.Undo = function(){  NB.document.executeCommand("com.smarttech.feature.undo", {"feature_id":"com.smarttech.feature.undo"});}
+CToolBar.prototype.Redo = function(){  NB.document.executeCommand("com.smarttech.feature.redo", {"feature_id":"com.smarttech.feature.redo"});}
+CToolBar.prototype.AddPage = function(){  NB.document.executeCommand("com.smarttech.feature.document.insert_page", {"command_id" : "insert_page", "feature_id":"com.smarttech.feature.document"});}
+CToolBar.prototype.DelPage = function(){  NB.document.executeCommand("com.smarttech.feature.document.delete_page", {"command_id" : "delete_page", "feature_id":"com.smarttech.feature.document"});}
+CToolBar.prototype.OpenFile = function(){  NB.document.executeCommand("com.smarttech.feature.document.open", {"command_id" : "open", "feature_id":"com.smarttech.feature.document"});}
+CToolBar.prototype.Save = function(){  NB.document.executeCommand("com.smarttech.feature.document.save", {"command_id" : "save", "feature_id":"com.smarttech.feature.document"});}
+CToolBar.prototype.Delete = function(){  NB.document.executeCommand("com.smarttech.feature.object.delete", {"command_id" : "delete", "feature_id":"com.smarttech.feature.object"});}
+CToolBar.prototype.ScrShade = function(){  NB.document.executeCommand("com.smarttech.feature.screenshade", {"feature_id":"com.smarttech.feature.screenshade"});}
+CToolBar.prototype.Table = function(){  NB.document.executeCommand("com.smarttech.feature.popup.dismiss", {"command_id" : "launch", "feature_id":"com.smarttech.feature.table"});}
+CToolBar.prototype.MeasurTools = function(){  NB.document.executeCommand("com.smarttech.feature.popup.dismiss", {"command_id" : "group", "feature_id":"com.smarttech.feature.measurementtools"});}
+CToolBar.prototype.ViewScr = function(){  NB.document.executeCommand("com.smarttech.feature.popup.dismiss", {"command_id" : "group", "feature_id":"com.smarttech.feature.view"});}
+CToolBar.prototype.Response = function(){  NB.document.executeCommand("com.smarttech.feature.external.response2", {"command_id" : "response2", "feature_id":"com.smarttech.feature.external"});}
+CToolBar.prototype.Lab = function(){  NB.document.executeCommand("com.smarttech.feature.external.lab", {"command_id" : "lab", "feature_id":"com.smarttech.feature.external"});}
+CToolBar.prototype.MathBtn = function(){  NB.document.executeCommand("com.math.feature.math_slideout_toggle", {"command_id" : "math_slideout_toggle", "feature_id":"com.math.feature"});}
+CToolBar.prototype.AddOns = function(){  NB.document.executeCommand("com.smarttech.feature.addons.toggleAddons", {"command_id" : "toggleAddons", "feature_id":"com.smarttech.feature.addons"});}
+CToolBar.prototype.Select = function(){  NB.document.executeCommand("com.smarttech.feature.selection", {"feature_id":"com.smarttech.feature.selection"});}
+CToolBar.prototype.Pens = function(){  NB.document.executeCommand("com.smarttech.feature.pens.pentool", {"command_id" : "pentool", "feature_id":"com.smarttech.feature.pens"});}
+CToolBar.prototype.Shapes = function(){  NB.document.executeCommand("com.smarttech.feature.shape", {"feature_id":"com.smarttech.feature.shape"});}
+CToolBar.prototype.Text = function(){  NB.document.executeCommand("com.smarttech.feature.text", {"feature_id":"com.smarttech.feature.text"});}
+CToolBar.prototype.RegPolygons = function(){  NB.document.executeCommand("com.smarttech.feature.polygons", {"feature_id":"com.smarttech.feature.polygons"});}
+CToolBar.prototype.Lines = function(){  NB.document.executeCommand("com.smarttech.feature.line", {"feature_id":"com.smarttech.feature.line"});}
+CToolBar.prototype.Fill = function(){  NB.document.executeCommand("com.smarttech.feature.fill", {"feature_id":"com.smarttech.feature.fill"});}
+CToolBar.prototype.Eraser = function(){  NB.document.executeCommand("com.smarttech.feature.eraser", {"feature_id":"com.smarttech.feature.eraser"});}
+CToolBar.prototype.PenLine0 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.pen_command_0", {"command_id" : "pen_command_0", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.PenLine1 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.pen_command_1", {"command_id" : "pen_command_1", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.PenLine2 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.pen_command_2", {"command_id" : "pen_command_2", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.PenLine3 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.pen_command_3", {"command_id" : "pen_command_3", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.PenLine4 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.pen_command_4", {"command_id" : "pen_command_4", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.PenLine5 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.pen_command_5", {"command_id" : "pen_command_5", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.PenLine6 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.pen_command_6", {"command_id" : "pen_command_6", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.PenLine7 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.pen_command_7", {"command_id" : "pen_command_7", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.AlignBottom = function(){  NB.document.executeCommand("com.smarttech.feature.addons.com###DOT###smarttech###DOT###addon###DOT###alignment_alignBottom", {"command_id" : "com###DOT###smarttech###DOT###addon###DOT###alignment_alignBottom", "feature_id":"com.smarttech.feature.addons"});}
+CToolBar.prototype.AlignTop = function(){  NB.document.executeCommand("com.smarttech.feature.addons.com###DOT###smarttech###DOT###addon###DOT###alignment_alignTop", {"command_id" : "com###DOT###smarttech###DOT###addon###DOT###alignment_alignTop", "feature_id":"com.smarttech.feature.addons"});}
+CToolBar.prototype.AlignLeft = function(){  NB.document.executeCommand("com.smarttech.feature.addons.com###DOT###smarttech###DOT###addon###DOT###alignment_alignLeft", {"command_id" : "com###DOT###smarttech###DOT###addon###DOT###alignment_alignLeft", "feature_id":"com.smarttech.feature.addons"});}
+CToolBar.prototype.AlignRight = function(){  NB.document.executeCommand("com.smarttech.feature.addons.com###DOT###smarttech###DOT###addon###DOT###alignment_alignRight", {"command_id" : "com###DOT###smarttech###DOT###addon###DOT###alignment_alignRight", "feature_id":"com.smarttech.feature.addons"});}
+CToolBar.prototype.SmallEraser = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.eraser_command_0", {"command_id" : "eraser_command_0", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.MediumEraser = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.eraser_command_1", {"command_id" : "eraser_command_1", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.LargeEraser = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.eraser_command_2", {"command_id" : "eraser_command_2", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType0 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_0", {"command_id" : "shape_command_0", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType1 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_1", {"command_id" : "shape_command_1", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType2 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_2", {"command_id" : "shape_command_2", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType3 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_3", {"command_id" : "shape_command_3", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType4 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_4", {"command_id" : "shape_command_4", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType5 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_5", {"command_id" : "shape_command_5", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType6 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_6", {"command_id" : "shape_command_6", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType7 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_7", {"command_id" : "shape_command_7", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType8 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_8", {"command_id" : "shape_command_8", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType9 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_9", {"command_id" : "shape_command_9", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType10 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_10", {"command_id" : "shape_command_10", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType11 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_11", {"command_id" : "shape_command_11", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType12 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_12", {"command_id" : "shape_command_12", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType13 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_13", {"command_id" : "shape_command_13", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType14 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_14", {"command_id" : "shape_command_14", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType15 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_15", {"command_id" : "shape_command_15", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType16 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_16", {"command_id" : "shape_command_16", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType17 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_17", {"command_id" : "shape_command_17", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType18 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_18", {"command_id" : "shape_command_18", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType19 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_19", {"command_id" : "shape_command_19", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType20 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_20", {"command_id" : "shape_command_20", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.ShapesType21 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.shape_command_21", {"command_id" : "shape_command_21", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.TextType0 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.text_command_0", {"command_id" : "text_command_0", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.TextType1 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.text_command_1", {"command_id" : "text_command_1", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.TextType2 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.text_command_2", {"command_id" : "text_command_2", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.TextType3 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.text_command_3", {"command_id" : "text_command_3", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.TextType4 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.text_command_4", {"command_id" : "text_command_4", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.TextType5 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.text_command_5", {"command_id" : "text_command_5", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Polygon0 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.polygon_command_0", {"command_id" : "polygon_command_0", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Polygon1 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.polygon_command_1", {"command_id" : "polygon_command_1", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Polygon2 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.polygon_command_2", {"command_id" : "polygon_command_2", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Polygon3 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.polygon_command_3", {"command_id" : "polygon_command_3", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Polygon4 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.polygon_command_4", {"command_id" : "polygon_command_4", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Polygon5 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.polygon_command_5", {"command_id" : "polygon_command_5", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Polygon6 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.polygon_command_6", {"command_id" : "polygon_command_6", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Polygon7 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.polygon_command_7", {"command_id" : "polygon_command_7", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Polygon8 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.polygon_command_8", {"command_id" : "polygon_command_8", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Polygon9 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.polygon_command_9", {"command_id" : "polygon_command_9", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Line0 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.line_command_0", {"command_id" : "line_command_0", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Line1 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.line_command_1", {"command_id" : "line_command_1", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Line2 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.line_command_2", {"command_id" : "line_command_2", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Line3 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.line_command_3", {"command_id" : "line_command_3", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Line4 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.line_command_4", {"command_id" : "line_command_4", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Line5 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.line_command_5", {"command_id" : "line_command_5", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Line6 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.line_command_6", {"command_id" : "line_command_6", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Line7 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.line_command_7", {"command_id" : "line_command_7", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Line8 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.line_command_8", {"command_id" : "line_command_8", "feature_id":"com.smarttech.feature.tools.presets"});}
+CToolBar.prototype.Line9 = function(){  NB.document.executeCommand("com.smarttech.feature.tools.presets.line_command_9", {"command_id" : "line_command_9", "feature_id":"com.smarttech.feature.tools.presets"});}
+var ToolBar = new CToolBar();

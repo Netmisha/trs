@@ -55,7 +55,8 @@
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 #include <QQuickTextDocument>
-
+const int kDefaultFontSize = 12;
+const int kDefaultTabWidth = 20;
 QT_BEGIN_NAMESPACE
 class QTextDocument;
 QT_END_NAMESPACE
@@ -67,8 +68,17 @@ class Highlighter : public QSyntaxHighlighter {
 public:
   // This is the function to handle from QML
   Q_INVOKABLE void setQuickDocument(QQuickTextDocument *doc) {
+    QTextOption opt = doc->textDocument()->defaultTextOption();
+    opt.setTabStop(tabWidth);
+    doc->textDocument()->setDefaultTextOption(opt);
     setDocument(doc->textDocument());
   }
+  Q_INVOKABLE void setFontSize(int fontsize) {
+        tabWidth=kDefaultTabWidth*fontsize/kDefaultFontSize;
+        QTextOption opt = this->document()->defaultTextOption();
+        opt.setTabStop(tabWidth);
+        this->document()->setDefaultTextOption(opt);
+    }
 
 public:
   Highlighter(QTextDocument *parent = 0);
@@ -92,6 +102,7 @@ private:
   QTextCharFormat multiLineCommentFormat;
   QTextCharFormat quotationFormat;
   QTextCharFormat functionFormat;
+  int tabWidth=kDefaultTabWidth;
 };
 //! [0]
 

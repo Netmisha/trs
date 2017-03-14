@@ -451,6 +451,7 @@ Item {
                                                 model: ["8","9","10","11","12","14","16","18","20","22","24","26","28","36","48"]
                                                 onCurrentIndexChanged: {
                                                     jsCodeEdit.font.pixelSize=parseInt(fontComboBox.currentText);
+                                                    highlight1.setFontSize(jsCodeEdit.font.pixelSize);
                                                     lineColumn.rowHeight=jsCodeEdit.font.pixelSize+lineColumn.spaceSizePX[fontComboBox.currentIndex];
                                                     lineRect.width=Math.max(jsCodeEdit.lineCount.toString().length, (lineColumn.height/lineColumn.rowHeight).toFixed(0).toString().length)*jsCodeEdit.font.pixelSize;
                                                 }
@@ -899,6 +900,12 @@ Item {
                                             }
                                             Component.onCompleted: {
                                                 highlight1.setQuickDocument(jsCodeEdit.textDocument)
+                                            }
+                                            Keys.onPressed: {
+                                                if (event.key == Qt.Key_Tab) {
+                                                    jsCodeEdit.insert(jsCodeEdit.cursorPosition, "\t");
+                                                    event.accepted = true;
+                                                }
                                             }
                                         }
                                     }

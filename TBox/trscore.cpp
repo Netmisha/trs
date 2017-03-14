@@ -87,7 +87,7 @@ bool TRSCore::isWin()
 
 bool TRSCore::isMac()
 {
-    if(QSysInfo::macVersion()!=QSysInfo::WV_None) {
+    if(QSysInfo::macVersion()!=QSysInfo::MV_None) {
         return true;
     }
     return false;
@@ -115,8 +115,10 @@ bool TRSCore::StartApp(QString appName, bool waitForStart) {
         return false;
     }
     else {
-        emit log("Waiting...");
-        process->waitForStarted();
+        if(waitForStart) {
+            emit log("Waiting...");
+            process->waitForStarted();
+        }
         return true;
     }
 }
