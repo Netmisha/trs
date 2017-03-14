@@ -15,5 +15,5 @@ def DirAsLessXML(path):
 
 if __name__ == '__main__':
     file_data = open('DirXMLStruct.xml','w')
-    file_data.write('<?xml version="1.0"?>\n' + DirAsLessXML("C:\Users\o.mandrychenko\Desktop\PandaStuff"))
+    file_data.write('<?xml version="1.0"?>\n' + DirAsLessXML("PATH_TO_FOLDER"))
     file_data.close()
