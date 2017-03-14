@@ -302,7 +302,7 @@ public slots:
     /**
      * @brief isAlive: checks if the application is running
      * @param windowName a string argument
-     * @param emitFail a bool argument, true as default
+     * @param emitFail a bool argument, false as default
      * @return bool, true if the application is running
      */
     bool isAlive(QString windowName, bool emitFail=false);

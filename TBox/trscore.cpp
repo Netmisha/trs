@@ -70,8 +70,10 @@ bool TRSCore::isAlive(QString windowName, bool emitFail)
         return false;
     }
     windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
-    if(windowHandle==NULL && emitFail) {
-        emit fail("Application did not run.");
+    if(windowHandle==NULL) {
+        if(emitFail) {
+            emit fail("Application did not run.");
+        }
         return false;
     }
     return true;
