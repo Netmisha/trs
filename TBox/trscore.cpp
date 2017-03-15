@@ -50,8 +50,6 @@ QString TRSCore::getFileData(QString filePath){
     QString streamData;
     QMessageBox msgBox;
     if(!xmlFile->open(QIODevice::ReadOnly | QIODevice::Text)){
-        msgBox.setText("Could not open XML file. Check your path");
-        msgBox.exec();
         return "";
     }
     QTextStream stream(xmlFile);
