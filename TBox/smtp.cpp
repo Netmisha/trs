@@ -198,11 +198,11 @@ void Smtp::readyRead()
         *t << "QUIT\r\n";
         t->flush();
         state = Close;
-        emit status( tr( "Message sent" ) );
+        //emit status( tr( "Message sent" ) );
     }
     else if ( state == Close )
     {
-        deleteLater();
+        //deleteLater();
         return;
     }
     else

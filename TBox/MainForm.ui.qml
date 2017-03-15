@@ -1606,9 +1606,9 @@ Item {
                         textInput1.visible = false;
                         textInput2.visible = false;
                         textInput3.visible = false;
-                        textInput1.text="";
-                        textInput2.text="";
-                        textInput3.text="";
+                        textInput1.text="default";
+                        textInput2.text="default";
+                        textInput3.text="default";
 
                     }else{
                         label1.visible = true;
@@ -1674,6 +1674,7 @@ Item {
                     y: 190
                     width: 111
                     height: 20
+                    echoMode: TextInput.Password
                     placeholderText: qsTr("password")
                     font.pixelSize: 12
                 }
@@ -1694,6 +1695,9 @@ Item {
                     id: saveSetting
                     text: qsTr("Save")
                     onClicked: {
+                        if(checkBox1.checked == true){
+                        theModel.setMailCredentials(textInput1.text,textInput3.text,textInput2.text);
+                         }
                         settingFile.setEditor(editorTextInput.text);
                         if(editorTextInput.text!="") {
                             externalEditor.enabled=true;

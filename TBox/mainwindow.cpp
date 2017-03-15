@@ -86,9 +86,9 @@ private:
     TestInfo *testinfo=nullptr;
     SuiteInfo *suiteinfo=nullptr;
     TRSCore* trscore=nullptr;
-    QString username;
-    QString password;
-    QString MailTo;
+    QString username = "default";
+    QString password="default";
+    QString MailTo="default";
     bool runOne = false;
 signals:
     void sendTestName(QString);
@@ -103,6 +103,7 @@ private slots:
     void sendMail();
     void mailSent(QString);
 };
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -156,13 +157,44 @@ void MainTree::setMailCredentials(QString Username, QString Password, QString ma
 }
 void MainTree::sendMail()
 {
-    qDebug()<<username;
-/*
+    if(!(username == "default" || password == "default" || MailTo == "default")){
+     QString T;
+     T.append(QDate::currentDate().toString("dd/MM/yyyy"));
+     QString T1;
+     T1.append(QDate::currentDate().toString("yyyy/MM/dd"));
+     DataBase O;
+    QQuickView *t = new QQuickView;
+    O.setEngi(t);
+    O.defaultTableValue(T1,T1);
+    QList <QObject*> obj = O.getReportList();
+    QString q = QString::number(O.getReportList().size());
+    O.row_selected("0");
+    QDir path_;
+    QString Path = path_.absolutePath();
+    QString tempPath;
+    QRegExp exp("/");
+    QStringList p;
+    p = Path.split(exp);
+    Path.clear();
+    for(int i=0;i<p.size();i++){
+        tempPath.append(p.at(i)+"//");
+    }
+    Path.append(tempPath+"WebViewSessionTable.html");
+    QString folderPath = tempPath+"SMTPSend//";
+    if(QDir("SMTPSend").exists()){
+        QFile::copy(Path,folderPath+"ReportFile.html");
+    }else{
+        QDir().mkdir("SMTPSend");
+        QFile::copy(Path,folderPath+"ReportFile.html");
+    }
     Smtp* smtp = new Smtp(username,password,"smtp.gmail.com");
     connect(smtp, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
-    QStringList p; p.append("C:\\Users\\o.mandrychenko\\Desktop\\anatdifb1.jpg");
-    smtp->sendMail(username,MailTo,"Report file","Report file",p);
-*/
+    QStringList PP; PP.append(folderPath+"ReportFile.html");
+    smtp->sendMail(username,MailTo,"Report file","Report file",PP);
+    QString folderRemove = folderPath;
+    QDir direc;direc.remove(folderRemove+"ReportFile.html");
+    }
+
 }
 
 void MainTree::mailSent(QString status)
@@ -186,6 +218,7 @@ void MainTree::testFinished(QString msg) {
     run=false;
     if(testForRun.isEmpty()) {
         QMetaObject::invokeMethod(contextObject, "setStopDisable");
+         emit sendSMTPMail();
         WriteLog("All tests finished.");
         return;
     }
@@ -200,6 +233,7 @@ void MainTree::testFinished(QString msg) {
         }
         else {
             WriteLog("All tests finished.");
+             emit sendSMTPMail();
             QMetaObject::invokeMethod(contextObject, "setStopDisable");
             delete view->page();
         }
@@ -475,7 +509,6 @@ void MainTree::RunOne(){
         }
     }
 
-      emit sendSMTPMail();
 }
 bool MainTree::Run() {
     if(run) {

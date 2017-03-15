@@ -161,6 +161,13 @@ void DataBase::defaultTableValue(QString start, QString end){
 
     it.clear();
 }
+ QList<QObject*> DataBase::setDataList(QList<QObject*> list){
+     tempData = list;
+ }
+QList<QObject*> DataBase::getReportList(){
+    return tempData;
+
+}
 void DataBase::InitDB(){
     QDir DIR;
     QStringList path = DIR.absolutePath().split("/");
@@ -357,6 +364,7 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
            temp.reserve( datalist.size() );
            std::reverse_copy(datalist.begin(), datalist.end(), std::back_inserter( temp ) );
            datalist.clear(); datalist = temp;*/
+           tempData = datalist;
            engine->rootContext()->setContextProperty("MLM", QVariant::fromValue(datalist)); // list model
            list_from_ui = it;
            it.clear();
@@ -373,6 +381,11 @@ void DataBase::callBrowser(){
     path.append("WebViewSessionTable.html");
     QString link = "file:///" +path;
     QDesktopServices::openUrl(QUrl(link));
+
+}
+void DataBase::setListFromUI(QString l){
+
+        list_from_ui.append(QString::number(l.toInt()));
 
 }
 QString DataBase::row_selected(QString row){
@@ -446,7 +459,6 @@ QString DataBase::row_selected(QString row){
     current_session = list_from_ui.at(row.toInt());
     index = e->size();
     delete qu;
-
     SessionWindowTable WindowTable;
     qu = new QSqlQuery(db);
      qu->exec("select min(Test_Day), min(Test_Month),min(Test_Year),min(S_Start_time) from Info where Session_num ="+list_from_ui.at(row.toInt()));

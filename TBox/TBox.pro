@@ -28,7 +28,8 @@ SOURCES+= main.cpp\
     highlighter.cpp \
     selectfolderdialog.cpp \
     suiteinfo.cpp \
-    smtp.cpp
+    smtp.cpp \
+    smtpreport.cpp
 
 HEADERS+= mainwindow.h \
     maintree.h \
@@ -48,7 +49,8 @@ HEADERS+= mainwindow.h \
     highlighter.h \
     selectfolderdialog.h \
     suiteinfo.h \
-    smtp.h
+    smtp.h \
+    smtpreport.h
 
 FORMS+= mainwindow.ui \
     reportform.ui

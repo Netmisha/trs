@@ -50,6 +50,8 @@ public:
    Q_INVOKABLE QString exportFilePath;
    Q_INVOKABLE QString TableSessionPath;
    Q_INVOKABLE QList<QObject*> datalist;
+    Q_INVOKABLE QList<QObject*> setDataList(QList<QObject*> list);
+    Q_INVOKABLE QList<QObject*> tempData;
     QString test_msg;
    Q_INVOKABLE QVector<QStringList*> table_data_e;
     Q_INVOKABLE int elements_e;
@@ -145,6 +147,9 @@ public:
      Q_INVOKABLE QString getTestYear(int ind);
      Q_INVOKABLE  QString getTestPassed(int ind);
      QVector<row_data*> getDBdata();
+     Q_INVOKABLE QList<QObject*> getReportList();
+     Q_INVOKABLE void setListFromUI(QString list);
+
      //void setDataForDB();
  public:
 
