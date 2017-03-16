@@ -149,7 +149,6 @@ public:
      QVector<row_data*> getDBdata();
      Q_INVOKABLE QList<QObject*> getReportList();
      Q_INVOKABLE void setListFromUI(QString list);
-
      //void setDataForDB();
  public:
 

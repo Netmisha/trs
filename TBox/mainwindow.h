@@ -37,8 +37,6 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-signals:
-    void sendDB(DataBase O);
 public slots:
     void writeLog(QString);
     void AddStartCommand(QString);
