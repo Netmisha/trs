@@ -188,7 +188,7 @@ void MainTree::sendMail()
         QFile::copy(Path,folderPath+"ReportFile.html");
     }
 
-    Smtp* smtp = new Smtp("report.notebook","8$hYKgYt","smtp-ua.globallogic.com");
+    Smtp* smtp = new Smtp("report.notebook","","smtp-ua.globallogic.com");
     connect(smtp, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
     QStringList PP; PP.append(folderPath+"ReportFile.html");
     smtp->sendMail("report.notebook","report.notebook@globallogic.com","Report file","Report file",PP);
