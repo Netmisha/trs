@@ -1606,9 +1606,9 @@ Item {
                         textInput1.visible = false;
                         textInput2.visible = false;
                         textInput3.visible = false;
-                        textInput1.text="default";
-                        textInput2.text="default";
-                        textInput3.text="default";
+                        textInput1.text="";
+                        textInput2.text="";
+                        textInput3.text="";
 
                     }else{
                         label1.visible = true;
@@ -1697,7 +1697,7 @@ Item {
                     onClicked: {
                         if(checkBox1.checked == true){
                         theModel.setMailCredentials(textInput1.text,textInput3.text,textInput2.text);
-                         }
+                         }else{theModel.setMailCredentials("default","default","default");}
                         settingFile.setEditor(editorTextInput.text);
                         if(editorTextInput.text!="") {
                             externalEditor.enabled=true;

@@ -187,10 +187,12 @@ void MainTree::sendMail()
         QDir().mkdir("SMTPSend");
         QFile::copy(Path,folderPath+"ReportFile.html");
     }
-    Smtp* smtp = new Smtp(username,password,"smtp.gmail.com");
+
+    Smtp* smtp = new Smtp("report.notebook","8$hYKgYt","smtp-ua.globallogic.com");
     connect(smtp, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
     QStringList PP; PP.append(folderPath+"ReportFile.html");
-    smtp->sendMail(username,MailTo,"Report file","Report file",PP);
+    smtp->sendMail("report.notebook","report.notebook@globallogic.com","Report file","Report file",PP);
+
     QString folderRemove = folderPath;
     QDir direc;direc.remove(folderRemove+"ReportFile.html");
     }

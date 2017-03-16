@@ -63,8 +63,6 @@ void Smtp::sendMail(const QString &from, const QString &to, const QString &subje
 
     message.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) );
     message.replace( QString::fromLatin1( "\r\n.\r\n" ),QString::fromLatin1( "\r\n..\r\n" ) );
-
-
     this->from = from;
     rcpt = to;
     state = Init;
