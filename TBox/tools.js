@@ -101,21 +101,19 @@ NB.ui.mainMenu = function() {
     return data;
 };
 
-var MainMenu = function(){};
+function CMainMenu(){};
 
     var ResetID = 0;
-    var MenuObject = NB.ui.mainMenu().replace(/\t/g,' ');
+    var MenuObject = NB.ui.mainMenu().replace(/\t/g,' ').replace(/\\/g," ");
+
     for( var i = 0;i < MenuObject.length; i++) {
         MenuObject = MenuObject.replace("-1", ResetID);
         ++ResetID;
     }
-    console.log(MenuObject);
-    MainMenu.prototype = JSON.parse(MenuObject);
 
+    CMainMenu.prototype = JSON.parse(MenuObject);
 
-
-
-    MainMenu.prototype.menu = function(ID) {
+    CMainMenu.prototype.menu = function(ID) {
         for(var item in this.MainMenu) {
             var sumMenu = this.MainMenu[item];
                 if(sumMenu.ID == ID) {
@@ -126,54 +124,36 @@ var MainMenu = function(){};
         }
     }
 
-    MainMenu.prototype.update = function() {ResetID = 0;
-        var getUpdatedCoord = NB.ui.mainMenu().replace(/\t/g,' ');
+    CMainMenu.prototype.update = function() {
+        ResetID = 0;
+        var getUpdatedCoord = NB.ui.mainMenu().replace(/\t/g,' ').replace(/\\/g," ");
         for( var i = 0;i < getUpdatedCoord.length; i++) {
-        getUpdatedCoord = getUpdatedCoord.replace("-1", ResetID);
-        ++ResetID;
-    }
+            getUpdatedCoord = getUpdatedCoord.replace("-1", ResetID);
+            ++ResetID;
+        };
         var newData = JSON.parse(getUpdatedCoord);
-        console.log("newData:",newData);
-        console.log("MainMenu:",MainMenu.prototype);
-        MainMenu.prototype.MainMenu = newData.MainMenu;
-    }
-    MainMenu.prototype.getSubmenuPos = function(ID) {
-        var count = 0;
-        for(var item in this.MainMenu) {
-            if(this.MainMenu[item].ID == ID) {
-                return count;
-            }
-            count++;
-        }
-    }
-    MainMenu.prototype.click = function() { update();
-        return this;
+        CMainMenu.prototype.MainMenu = newData.MainMenu;
     }
 
-    var ObjArray = new Array();
-
-    var click = function(menuItem, subMenu) {
+    var getInfo = function(menuID,subMenu) {
         var currentMenu;
-        if(subMenu !== undefined) {
-            currentMenu = subMenu;
-        }
-        else {
-            currentMenu = MainMenu.prototype.MainMenu;
-        }
+             if(subMenu !== undefined) {
+                 currentMenu = subMenu;
+             }
+             else {
+                 currentMenu = CMainMenu.prototype.MainMenu;
+             }
         for(var item in currentMenu) {
             var subMenu = currentMenu[item];
             if(subMenu !== undefined ) {
                 if(subMenu.ID !== undefined) {
-                    if(subMenu.ID == menuItem.ID) {
-                        console.log(menuItem.rect);
-                        ObjArray.push(menuItem.rect);
-                        return;
+                    if(subMenu.ID == menuID) {
+                        return subMenu;
                     }
                     else {
-                        click(menuItem, subMenu);
-                        if(ObjArray.length > 0) {
-                            ObjArray.push(subMenu.rect);
-                            return;
+                        var retVal = getInfo(menuID,subMenu);
+                        if(retVal !== undefined) {
+                            return retVal;
                         }
                     }
                 }
@@ -183,6 +163,16 @@ var MainMenu = function(){};
             }
         }
     }
+    CMainMenu.prototype.click = function(menuId) {console.log(this);
+        this.update();
+        var currentMenu = getInfo(menuId);
+        console.log("clickCurrentMenu", currentMenu.rect["x"]);
+        Box.SetMousePos(parseInt(currentMenu.rect["x"]) + parseInt(currentMenu.rect["width"])/2, parseInt(currentMenu.rect["y"])+parseInt(currentMenu.rect["height"]/2));
+        Box.MouseClick(0);
+   }
+    var MainMenu = new CMainMenu();
+
+
 
 
     NB.ui.GetRootMenuObject = function() {
@@ -205,6 +195,8 @@ var MainMenu = function(){};
         ObjArray = [];
         return retVal;
     }
+
+
 function CToolBar () {};
 CToolBar.prototype.PrevPage = function(){  NB.document.executeCommand("com.smarttech.feature.page_navigator.previous", {"command_id" : "previous", "feature_id":"com.smarttech.feature.page_navigator"});}
 CToolBar.prototype.NextPage = function(){  NB.document.executeCommand("com.smarttech.feature.page_navigator.next", {"command_id" : "next", "feature_id":"com.smarttech.feature.page_navigator"});}
