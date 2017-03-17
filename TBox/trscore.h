@@ -58,6 +58,11 @@ public slots:
      */
     void SetOnTop(QString windowName);
     /**
+     * @brief waitForStart: returns name of window that is on top
+     */
+
+    bool waitForStart(QString windowName, ulong maxTime=0);
+    /**
      * @brief GetTopWnd: returns name of window that is on top
      * @return string, window name
      */

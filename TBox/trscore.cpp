@@ -143,16 +143,36 @@ void TRSCore::SetOnTop(QString windowName)
         emit fail("Invalid window name.");
         return;
     }
+
+    windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    if(windowHandle == NULL){
+        emit fail("Window isnt exist");
+        return;
+    }
+
+    SetForegroundWindow(windowHandle);
+}
+
+bool TRSCore::waitForStart(QString windowName, ulong maxTime){
+    emit log("waitForStart Waiting...");
+    ulong waitTime = 0;
     windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     SetForegroundWindow(windowHandle);
-    emit log("Waiting...");
     while (GetForegroundWindow() != windowHandle)
     {
         windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
         SetForegroundWindow(windowHandle);
         Sleep(200);
+        if(maxTime != 0){
+            waitTime+=200;
+            if (maxTime<waitTime) {
+                return false;
+            }
+        }
     }
+    return true;
 }
+
 QString TRSCore::GetTopWnd()
 {
     HWND wind = GetForegroundWindow();
