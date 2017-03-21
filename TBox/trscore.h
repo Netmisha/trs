@@ -327,6 +327,7 @@ public slots:
      */
     QString getBitDepth();
     bool isImageEqual(QString path,QString path2);
+    unsigned int getQuantColor(QString path,int R,int G,int B);
 private:
     QProcess *process;
     POINT current_pos;

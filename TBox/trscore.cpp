@@ -5,6 +5,26 @@
 TRSCore::TRSCore(QObject *parent) : QObject(parent) {
     process=new QProcess();
 }
+unsigned int TRSCore::getQuantColor(QString path,int R,int G,int B){
+    if(R >255 || G>255 || B>255 ){
+        emit fail("Strange color");
+    }
+    if(R <0 || G<0 || B<0 ){
+        emit fail("Strange color");
+    }
+     int countColor = 0;
+    QImage img = QImage(path);
+   emit log("Image width:" + QString::number(img.width()) + " height:"+QString::number(img.height()) + " size:"+QString::number(img.width() * img.height()));
+    for(int i=0;i<img.height();i++){
+        for(int j=0;j<img.width();j++){
+            QColor color(img.pixel(i,j));
+            if(color.red() == R && color.green() == G && color.blue()== B){
+                countColor++;
+            }
+        }
+    }
+    return countColor;
+}
 bool TRSCore::isImageEqual(QString path,QString path2){
      QImage img = QImage(path);
      QImage img2 = QImage(path2);
@@ -48,7 +68,6 @@ bool TRSCore::isImageEqual(QString path,QString path2){
 QString TRSCore::getFileData(QString filePath){
     QFile *xmlFile = new QFile(filePath);
     QString streamData;
-    QMessageBox msgBox;
     if(!xmlFile->open(QIODevice::ReadOnly | QIODevice::Text)){
         return "";
     }
