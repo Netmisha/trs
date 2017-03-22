@@ -116,7 +116,7 @@ bool TRSCore::StartApp(QString appName, bool waitForStart) {
     }
     else {
         if(waitForStart) {
-            emit log("Waiting...");
+            emit log("StartApp Waiting...");
             process->waitForStarted();
         }
         return true;
@@ -129,7 +129,7 @@ void TRSCore::CloseApp(QString windowName, bool waitForClose) {
     }
     CloseWindow(windowName);
     if(waitForClose) {
-        emit log("Waiting...");
+        emit log("CloseApp Waiting...");
     if(!process->waitForFinished()) {
         emit fail("Application close failed.");
         return;
@@ -184,6 +184,9 @@ QString TRSCore::GetTopWnd()
 void TRSCore::Sleep(int msec) {
     if(msec<0) {
         emit fail("Invalid sleep time.");
+        return;
+    }
+    if(msec == 0){
         return;
     }
     QTest::qSleep(msec);
