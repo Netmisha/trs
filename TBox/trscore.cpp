@@ -14,7 +14,7 @@ unsigned int TRSCore::getQuantColor(QString path,int R,int G,int B){
     }
      int countColor = 0;
     QImage img = QImage(path);
-   emit log("Image width:" + QString::number(img.width()) + " height:"+QString::number(img.height()) + " size:"+QString::number(img.width() * img.height()));
+   //emit log("Image width:" + QString::number(img.width()) + " height:"+QString::number(img.height()) + " size:"+QString::number(img.width() * img.height()));
     for(int i=0;i<img.height();i++){
         for(int j=0;j<img.width();j++){
             QColor color(img.pixel(i,j));
@@ -282,6 +282,26 @@ QString TRSCore::GetAppRect(QString windowName)
     }
     emit fail("Can not get window rect.");
     return QString();
+}
+
+QString TRSCore::GetChildRect(QString windowName, QString childName) {
+    windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    HWND prev = NULL;
+    HWND curr = NULL;
+    RECT win_rect;
+    curr=FindWindowEx(windowHandle, NULL, NULL ,NULL);
+    while (curr) {
+        wchar_t buff[2048];
+        GetWindowText( curr, buff, 2048);
+        if(QString::fromWCharArray(buff)==childName) {
+            GetWindowRect(curr, &win_rect);
+            return QString("{\"x\": "+QString::number(win_rect.left)+",\"y\": "+QString::number(win_rect.top)+
+                         ",\"width\": "+QString::number(win_rect.right-win_rect.left)+",\"height\": "+QString::number(win_rect.bottom-win_rect.top)+"}");
+        }
+        prev=curr;
+        curr=FindWindowEx(windowHandle,prev,NULL,NULL);
+    }
+    return "";
 }
 void TRSCore::SetAppPos(QString windowName, int x, int y) {
 	if(windowName.isEmpty()) {

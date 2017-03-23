@@ -101,6 +101,12 @@ public slots:
      */
     QString GetAppRect(QString windowName);
     /**
+     * @brief GetAppRect: returns rectangle of window with some name
+     * @param windowName a string argument
+     * @return QString, contains JSON obect
+     */
+    QString GetChildRect(QString windowName, QString childName);
+    /**
      * @brief SetAppPos: sets window position
      * @param windowName a string argument
      * @param x a integer argument

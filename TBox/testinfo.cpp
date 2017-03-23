@@ -131,7 +131,7 @@ void TestInfo::SUCCESS(QString msg) {
     }
     else {
         defaultExit=true;
-        emit sendMessage("Waiting...");
+        emit sendMessage("SUCCESS Waiting...");
     }
 }
 void TestInfo::VERIFY(bool value)
