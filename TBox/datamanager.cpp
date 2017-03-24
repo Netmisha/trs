@@ -26,9 +26,15 @@ void DataManager::Set(QString path, QString data) {
             i++;
         }
         else {
-            root = root.firstChildElement(tags[i]);
             if(i+1==tags.length()) {
-                root.firstChild().setNodeValue(data);
+                if(!root.firstChildElement(tags[i]).isNull()) {
+                    root.firstChildElement(tags[i]).firstChild().setNodeValue(data);
+                }
+                else {
+                    QDomElement node = doc.createElement(tags[i]);
+                    root.appendChild(node);
+                    node.appendChild( doc.createTextNode(data));
+                }
             }
         }
     }
@@ -38,7 +44,7 @@ void DataManager::Set(QString path, QString data) {
     stream << doc.toString();
     file.close();
 }
-QString DataManager::AddTest(QString path, QString name, QString dis, QString tag, QString exe, QString rep, QString disable) {
+QString DataManager::AddTest(QString path, QString name, QString dis, QString tag, QString exe, QString rep, QString disable, QString important) {
     if(name=="" || exe=="" || !(disable=="true" || disable=="false")) {
         return "Fill all fields correctly!";
     }
@@ -76,6 +82,9 @@ QString DataManager::AddTest(QString path, QString name, QString dis, QString ta
         node.appendChild(snode);
         snode = doc.createElement(tags_name::kRepeat);
         snode.appendChild( doc.createTextNode(rep));
+        node.appendChild(snode);
+        snode = doc.createElement(tags_name::kImportant);
+        snode.appendChild( doc.createTextNode(important));
         node.appendChild(snode);
         snode = doc.createElement(tags_name::kHeaders);
         node.appendChild(snode);

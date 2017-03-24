@@ -215,20 +215,8 @@ Item {
     }
     function showItem (index) {
         theModel.setCurrentItem(index);
-        jsCodeEdit.text = theModel.FindTest(index);
         lineRect.visible=false;
         lineRect.width=0;
-        if(theModel.GetType()=="test") {
-            showMenu.menuForTest();
-            lineRect.visible=true;
-            lineRect.width=Math.max(jsCodeEdit.lineCount.toString().length, (lineColumn.height/lineColumn.rowHeight).toFixed(0).toString().length)*jsCodeEdit.font.pixelSize;
-        }
-        else if(theModel.GetType()=="suite") {
-            showMenu.menuForSuite();
-        }
-        else {
-          showMenu.hideAll();
-        }
         testName.text=theModel.Get("name");
         if(theModel.Get("disable")=="false"){
             testStatus.iconSource="icons/icons/turnon.png";
@@ -236,9 +224,22 @@ Item {
         else {
             testStatus.iconSource="icons/icons/turnoff.png";
         }
+        if(theModel.GetType(index)=="test") {
+            showMenu.menuForTest();
+            jsCodeEdit.text = theModel.FindTest(index);
+            lineRect.visible=true;
+            lineRect.width=Math.max(jsCodeEdit.lineCount.toString().length, (lineColumn.height/lineColumn.rowHeight).toFixed(0).toString().length)*jsCodeEdit.font.pixelSize;
+        }
+        else if(theModel.GetType(index)=="suite") {
+            showMenu.menuForSuite();
+        }
+        else {
+          showMenu.hideAll();
+        }
     }
     function selectItem (idx) {
          mainTree.selection.setCurrentIndex(idx, ItemSelectionModel.ClearAndSelect);
+         root.showItem(idx);
     }
 	function startRun() {
         if(theModel.Run()) {
@@ -274,6 +275,7 @@ Item {
             externalEditor.visible=true;
             addSuiteLayout.visible=false;
             addSuiteLayout.enabled=true;
+            addTestLayout.visible=false;
         }
         function hideAll() {
             testToolBar.visible=false;
@@ -377,8 +379,7 @@ Item {
                                   verticalAlignment: Image.AlignVCenter
                                   horizontalAlignment: Image.AlignHCenter
                                   source: {
-                                      theModel.setCurrentItem(styleData.index);
-                                      if(theModel.GetType()=="test") {
+                                      if(theModel.GetType(styleData.index)=="test") {
                                           return "icons/icons/test.png"
                                       }
                                       else {
@@ -493,7 +494,13 @@ Item {
                                                     addTestLayout.visible=true;
                                                     addSuiteLayout.visible=false;
                                                     testName.text="New Test";
-                                                    theModel.setCurrentItem(mainTree.currentIndex);
+                                                    textEditTName.text="";
+                                                    textEditTDiscr.text="";
+                                                    textEditTTag.text="";
+                                                    textEditTExe.text="";
+                                                    textEditTRepeat.text="1"
+                                                    testStatus.iconSource="icons/icons/turnon.png";
+                                                    testImportant.checked=false;
                                                     testRun.visible=false;
                                                     newTest.visible=false;
                                                     newSuite.visible=false;
@@ -512,7 +519,6 @@ Item {
                                                 onClicked: {
                                                     centerRect.visible=false;
                                                     testName.text="New Suite";
-                                                    theModel.setCurrentItem(mainTree.currentIndex);
                                                     textEditSName.text="";
                                                     textEditSDiscr.text="";
                                                     textEditSRepeat.text="1";
@@ -576,7 +582,7 @@ Item {
                                                 id: testSetting
                                                 iconSource: "icons/icons/testsetting.png"
                                                 onClicked:{
-                                                    if(theModel.GetType() == "test") {
+                                                    if(theModel.GetType(theModel.getCurrentIndex()) == "test") {
                                                         textEditTName.text=theModel.Get("name");
                                                         textEditTDiscr.text=theModel.Get("description");
                                                         textEditTTag.text=theModel.Get("tag");
@@ -587,6 +593,12 @@ Item {
                                                         }
                                                         else if(theModel.Get("disable")=="true"){
                                                             testStatus.iconSource="icons/icons/turnoff.png";
+                                                        }
+                                                        if(theModel.Get("important")=="true"){
+                                                            testImportant.checked=true;
+                                                        }
+                                                        else {
+                                                            testImportant.checked=false;
                                                         }
                                                         centerRect.visible=false;
                                                         addTestLayout.visible=true;
@@ -603,7 +615,7 @@ Item {
                                                         consoleRect.enabled=false;
                                                         navigationBar.enabled=false;
                                                     }
-                                                    else if(theModel.GetType()=="suite") {
+                                                    else if(theModel.GetType(theModel.getCurrentIndex())=="suite") {
                                                         textEditSName.text=theModel.Get("name");
                                                         textEditSDiscr.text=theModel.Get("description");
                                                         textEditSRepeat.text=theModel.Get("repeat");
@@ -647,13 +659,12 @@ Item {
                                                     }
                                                     else if(testName.text== "New Suite") {
                                                         addSuiteLayout.enabled=false;
-                                                        theModel.setCurrentItem(mainTree.currentIndex);
                                                         showMenu.menuForSuite();
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
                                                     }
                                                     else {
-                                                        if(theModel.GetType()=="test") {
+                                                        if(theModel.GetType(theModel.getCurrentIndex())=="test") {
                                                             textEditTName.text="";
                                                             textEditTDiscr.text="";
                                                             textEditTExe.text="";
@@ -666,7 +677,6 @@ Item {
                                                         }
                                                         else {
                                                             addSuiteLayout.enabled=false;
-                                                            theModel.setCurrentItem(mainTree.currentIndex);
                                                             showMenu.menuForSuite();
                                                             newTest.visible=true;
                                                             newSuite.visible=true;
@@ -691,7 +701,7 @@ Item {
                                                 onClicked: {
                                                     if(testName.text== "New Test") {
                                                         var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
-                                                        var res=theModel.AddNewTest(textEditTName.text,textEditTDiscr.text, textEditTExe.text, textEditTTag.text, textEditTRepeat.text, dis);
+                                                        var res=theModel.AddNewTest(textEditTName.text,textEditTDiscr.text, textEditTExe.text, textEditTTag.text, textEditTRepeat.text, dis, testImportant.checked.toString());
                                                         if(res!="") {
                                                             messageDialog.text=res;
                                                             messageDialog.open()
@@ -703,12 +713,12 @@ Item {
                                                         textEditTTag.text="";
                                                         textEditTRepeat.text="1";
                                                         addTestLayout.visible=false;
-                                                        addSuiteLayout.visible=true;
+                                                        addSuiteLayout.visible=false;
                                                         addSuiteLayout.enabled=false;
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
                                                         centerRect.visible=true;
-                                                        showItem(theModel.getCurrentIndex());
+                                                        runTags.model=theModel.GetTags();
                                                     }
                                                     else if(testName.text== "New Suite") {
                                                         var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
@@ -719,15 +729,12 @@ Item {
                                                             return;
                                                         }
                                                         addSuiteLayout.enabled=false;
-                                                        theModel.setCurrentItem(mainTree.currentIndex);
-                                                        showMenu.menuForSuite();
                                                         newTest.visible=true;
                                                         newSuite.visible=true;
-                                                        showItem(theModel.getCurrentIndex());
                                                     }
                                                     else {
                                                         var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
-                                                        if(theModel.GetType()=="test") {
+                                                        if(theModel.GetType(theModel.getCurrentIndex())=="test") {
                                                             if(textEditTName.text!="" && textEditTExe.text!="") {
                                                                 theModel.Set("name", textEditTName.text);
                                                                 theModel.Set("description", textEditTDiscr.text);
@@ -735,11 +742,13 @@ Item {
                                                                 theModel.Set("execution", textEditTExe.text);
                                                                 theModel.Set("repeat", textEditTRepeat.text==""?"1":textEditTRepeat.text);
                                                                 theModel.Set("disable", dis);
+                                                                theModel.Set("important", testImportant.checked.toString());
                                                                 addTestLayout.visible=false;
                                                                 centerRect.visible=true;
                                                                 testEdit.visible=true;
                                                                 externalEditor.visible=true;
                                                                 centerRect.visible=true;
+                                                                runTags.model=theModel.GetTags();
                                                             }
                                                             else {
                                                                 messageDialog.text="Fill all fields correctly!";
@@ -749,7 +758,6 @@ Item {
                                                         }
                                                         else {
                                                             if(textEditSName.text!="") {
-                                                                theModel.setCurrentItem(mainTree.currentIndex);
                                                                 theModel.Set("name", textEditSName.text);
                                                                 theModel.Set("description", textEditSDiscr.text);
                                                                 theModel.Set("repeat", textEditSRepeat.text==""?"1":textEditSRepeat.text);
@@ -765,8 +773,6 @@ Item {
                                                             }
                                                         }
                                                     }
-                                                    runTags.model=theModel.GetTags();
-                                                    testName.text=theModel.Get("name");
                                                     testRun.visible=true;
                                                     testDelete.visible=true;
                                                     testSetting.visible=true;
@@ -1297,6 +1303,41 @@ Item {
                                         anchors.rightMargin: 0
                                         anchors.leftMargin: 0
                                     }
+                                    RowLayout {
+                                        y: 0
+                                        height: 36
+                                        anchors.right: parent.right
+                                        CheckBox {
+                                            id: testImportant
+                                            style: CheckBoxStyle {
+                                                indicator: Rectangle {
+                                                                implicitWidth: 16
+                                                                implicitHeight: 16
+                                                                radius: 3
+                                                                border.color: control.activeFocus ? "darkblue" : "gray"
+                                                                border.width: 1
+                                                                Rectangle {
+                                                                    visible: control.checked
+                                                                    color: "#555"
+                                                                    border.color: "#333"
+                                                                    radius: 1
+                                                                    anchors.margins: 4
+                                                                    anchors.fill: parent
+                                                                }
+                                                        }
+                                                label:Text {
+                                                    font.pixelSize: 12
+                                                    text: qsTr("Important")
+                                                }
+                                            }
+                                            checked: false
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.rightMargin: 0
+                                        anchors.leftMargin: 0
+                                    }
                                     Item {
                                         width: 200
                                         height: 200
@@ -1782,18 +1823,14 @@ Item {
                 messageDialog.open()
                 return;
             }
-            res=theModel.Load(settingFile.getRootDir());
             runTags.model=theModel.GetTags();
-            selectItem(theModel.getCurrentIndex());
-            addSuiteLayout.visible=false;
-            centerRect.visible=false;
-            subToolBar.visible=false;
             theModel.setCurrentTag(runTags.currentText);
             if(res!="") {
                 messageDialog.text=res;
                 messageDialog.open()
                 return;
             }
+            selectItem(theModel.getCurrentIndex());
             Qt.quit();
         }
         onRejected: {

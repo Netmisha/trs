@@ -24,6 +24,8 @@
 #include <QMessageBox>
 #include <testinfo.h>
 #include <QSysInfo>
+#include <psapi.h>
+
 extern QWebView * view;
 #define MOUSEEVENTF_HWHEEL 4096
 /**
@@ -332,6 +334,16 @@ public slots:
      * @return int, 32 or 64
      */
     QString getBitDepth();
+    /**
+     * @brief getMemoryStatus(): returns memory status
+     * @return string, json which contains information about memory
+     */
+    QString getMemoryStatus();
+    /**
+     * @brief getAppMemory: returns memory status
+     * @return string, json which contains information about memory
+     */
+    QString getAppMemory(QString windowName);
     bool isImageEqual(QString path,QString path2);
     unsigned int getQuantColor(QString path,int R,int G,int B);
 private:

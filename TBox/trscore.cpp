@@ -126,6 +126,44 @@ QString TRSCore::getBitDepth()
     }
     return bIsWow64?"64":"32";
 }
+
+QString TRSCore::getAppMemory(QString windowName)
+{
+    HWND wndHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    DWORD PID;
+    HANDLE hProcess;
+    PROCESS_MEMORY_COUNTERS pmc;
+    QString res="";
+    GetWindowThreadProcessId(wndHandle, &PID);
+    hProcess = OpenProcess(  PROCESS_QUERY_INFORMATION, FALSE, PID );
+    if ( GetProcessMemoryInfo( hProcess, &pmc, sizeof(pmc)) ) {
+        res="{\"WorkingSetSize\": ";
+        res.append(QString::number(pmc.WorkingSetSize)+",\"PageFaultCount\": ");
+        res.append(QString::number(pmc.PageFaultCount)+",\"PagefileUsage\": ");
+        res.append(QString::number(pmc.PagefileUsage)+",\"PeakPagefileUsage\": ");
+        res.append(QString::number(pmc.PeakPagefileUsage)+",\"PeakWorkingSetSize\": ");
+        res.append(QString::number(pmc.PeakWorkingSetSize)+",\"QuotaNonPagedPoolUsage\": ");
+        res.append(QString::number(pmc.QuotaNonPagedPoolUsage)+",\"QuotaPagedPoolUsage\": ");
+        res.append(QString::number(pmc.QuotaPagedPoolUsage)+",\"QuotaPeakNonPagedPoolUsage\": ");
+        res.append(QString::number(pmc.QuotaPeakNonPagedPoolUsage)+",\"QuotaPeakPagedPoolUsage\": ");
+        res.append(QString::number(pmc.QuotaPeakPagedPoolUsage)+",}");
+    }
+    return res;
+}
+
+QString TRSCore::getMemoryStatus()
+{
+    QString res="{\"percent\": ";
+    MEMORYSTATUSEX statex;
+    statex.dwLength = sizeof (statex);
+    GlobalMemoryStatusEx (&statex);
+    res.append(QString::number(statex.dwMemoryLoad)+",\"ph_total\": ");
+    res.append(QString::number(statex.ullTotalPhys)+",\"ph_usege\": ");
+    res.append(QString::number(statex.ullTotalPhys-statex.ullAvailPhys)+",\"vr_total\": ");
+    res.append(QString::number(statex.ullTotalVirtual)+",\"vr_usege\": ");
+    res.append(QString::number(statex.ullTotalVirtual-statex.ullAvailVirtual)+",}");
+    return res;
+}
 bool TRSCore::StartApp(QString appName, bool waitForStart) {
     process->start(appName);
     if(process->error()<5) {
