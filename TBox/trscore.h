@@ -191,6 +191,11 @@ public slots:
      */
     void MouseClick(int button);
     /**
+     * @brief MouseClickA: simulates click on mouse button
+     * @param button an integer argument, o - left button, 1 - right button
+     */
+    void MouseClickA(int x, int y,int button);
+    /**
      * @brief MouseWheelDown: simulates mouse scroll to right on 120 pixels
      */
     void MouseWheelDown();

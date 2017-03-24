@@ -541,6 +541,12 @@ void TRSCore::MouseClick(int button) {
         mouse_event(MOUSEEVENTF_LEFTUP, current_pos.x, current_pos.y, 0, 0);
     }
 }
+
+void TRSCore::MouseClickA(int x, int y,int button){
+    SetMousePos(x,y);
+    MouseClick(button);
+}
+
 void TRSCore::MouseWheelDown() {
     mouse_event(MOUSEEVENTF_WHEEL, 0, 0, -WHEEL_DELTA, 0);
 }
