@@ -1755,6 +1755,7 @@ Item {
                             addSuiteLayout.visible=true;
                             testName.text="New Suite";
                             textEditSName.text="Main suite";
+                            textEditSDiscr.text="Main suite description";
                             testRun.visible=false;
                             newTest.visible=false;
                             newSuite.visible=false;

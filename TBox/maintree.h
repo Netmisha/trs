@@ -32,11 +32,14 @@ public:
     void ResetRepeat();
     void ResetAllRepeat();
     void ResetChildRepeat();
+    void ResetFirsRun();
     TreeInfo * FindByItem(QModelIndex);
     bool isValid();
     QStringList getSuites();
     TreeInfo * getNextTest();
     void setAsFail();
+    void setFirsRun(bool);
+    bool isFirstRun();
 private:
     QString file;
     QString name;
@@ -44,6 +47,7 @@ private:
     int repeat;
     int baseRepeat;
     bool disable;
+    bool firstRun=false;
     QModelIndex item; // make class and add root dir
     QList<TreeInfo *> childTests;
     QList<TreeInfo *> childSuites;

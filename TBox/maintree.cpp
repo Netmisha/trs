@@ -118,6 +118,16 @@ void TreeInfo::ResetChildRepeat() {
         it->ResetAllRepeat();
     }
 }
+void TreeInfo::ResetFirsRun()
+{
+    firstRun=true;
+    for(auto&it:childTests) {
+        it->setFirsRun(true);
+    }
+    for(auto&it:childSuites) {
+        it->ResetFirsRun();
+    }
+}
 TreeInfo *TreeInfo::FindByItem(QModelIndex item)
 {
     if(item==this->item) {
@@ -200,4 +210,13 @@ void TreeInfo::setAsFail()
     for(auto&it:parent->getChildTests()) {
         it->setRepeat(0);
     }
+}
+void TreeInfo::setFirsRun(bool val)
+{
+    firstRun=val;
+}
+
+bool TreeInfo::isFirstRun()
+{
+    return firstRun;
 }

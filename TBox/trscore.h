@@ -349,12 +349,19 @@ public slots:
      * @return string, json which contains information about memory
      */
     QString getAppMemory(QString windowName);
+    /**
+     * @brief isRunAll: returns if the run all button was pressed
+     * @return bool, if user run all tests return true
+     */
+    bool isRunAll();
     bool isImageEqual(QString path,QString path2);
     unsigned int getQuantColor(QString path,int R,int G,int B);
+    void setRunAll(bool type);
 private:
     QProcess *process;
     POINT current_pos;
     HWND windowHandle;
+    bool runAll=false;
 };
 
 #endif // TRSCORE_H
