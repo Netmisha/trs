@@ -79,12 +79,7 @@ public slots:
      * @brief Sleep: suspends current process
      * @param time an integer argument
      */
-    void TimerStart();
-    /**
-     * @brief Sleep: suspends current process
-     * @param time an integer argument
-     */
-    int TimerElapsed();
+    int TimeElapsed();
     /**
      * @brief GetScreenWidth: returns width of screen
      * @return integer, window width

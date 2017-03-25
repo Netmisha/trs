@@ -4,6 +4,7 @@
 #include <qDebug>
 TRSCore::TRSCore(QObject *parent) : QObject(parent) {
     process=new QProcess();
+    elapseTimer.start();
 }
 unsigned int TRSCore::getQuantColor(QString path,int R,int G,int B){
     if(R >255 || G>255 || B>255 ){
@@ -249,11 +250,7 @@ void TRSCore::Sleep(int msec) {
     QTest::qSleep(msec);
 }
 
-void TRSCore::TimerStart(){
-    elapseTimer.restart();
-}
-
-int TRSCore::TimerElapsed(){
+int TRSCore::TimeElapsed(){
     return elapseTimer.elapsed();
 }
 
