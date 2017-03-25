@@ -17,7 +17,7 @@ unsigned int TRSCore::getQuantColor(QString path,int R,int G,int B){
    //emit log("Image width:" + QString::number(img.width()) + " height:"+QString::number(img.height()) + " size:"+QString::number(img.width() * img.height()));
     for(int i=0;i<img.height();i++){
         for(int j=0;j<img.width();j++){
-            QColor color(img.pixel(i,j));
+            QColor color(img.pixel(j,i));
             if(color.red() == R && color.green() == G && color.blue()== B){
                 countColor++;
             }
