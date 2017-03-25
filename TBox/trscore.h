@@ -74,6 +74,17 @@ public slots:
      * @param time an integer argument
      */
     void Sleep(int time);
+
+    /**
+     * @brief Sleep: suspends current process
+     * @param time an integer argument
+     */
+    void TimerStart();
+    /**
+     * @brief Sleep: suspends current process
+     * @param time an integer argument
+     */
+    int TimerElapsed();
     /**
      * @brief GetScreenWidth: returns width of screen
      * @return integer, window width
@@ -355,6 +366,7 @@ private:
     QProcess *process;
     POINT current_pos;
     HWND windowHandle;
+    QTime elapseTimer;
 };
 
 #endif // TRSCORE_H

@@ -249,6 +249,14 @@ void TRSCore::Sleep(int msec) {
     QTest::qSleep(msec);
 }
 
+void TRSCore::TimerStart(){
+    elapseTimer.restart();
+}
+
+int TRSCore::TimerElapsed(){
+    return elapseTimer.elapsed();
+}
+
 int TRSCore::GetScreenWidth()
 {
     QDesktopWidget desktop;
