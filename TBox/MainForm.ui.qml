@@ -1407,6 +1407,7 @@ Item {
                                             }
                                         }
                                         ScrollView {
+                                            id: consoleScroll
                                             Layout.fillWidth: true
                                             Layout.fillHeight: true
                                             contentItem: TextEdit {
@@ -1424,7 +1425,11 @@ Item {
                                                         consoleClear.enabled=true;
                                                         consoleSave.enabled=true;
                                                     }
+                                                    if(consoleScroll.flickableItem.contentHeight>consoleScroll.height) {
+                                                        consoleScroll.flickableItem.contentY = consoleScroll.flickableItem.contentHeight-consoleScroll.height;
+                                                    }
                                                 }
+
                                             }
                                         }
                                     }
