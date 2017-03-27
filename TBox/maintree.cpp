@@ -82,18 +82,22 @@ bool TreeInfo::DecreaseRepeat() {
     if(type=="suite") {
         if(repeat>1) {
             repeat--;
+            qDebug()<<name+" : repeat is "+QString::number(repeat);
             return true;
         }
         else {
+            qDebug()<<name+" : repeat is null";
             return false;
         }
     }
     else {
         if(repeat>0) {
             repeat--;
+            qDebug()<<name+" : repeat is "+QString::number(repeat);
             return true;
         }
         else {
+            qDebug()<<name+" : repeat is null";
             return false;
         }
     }
@@ -177,17 +181,20 @@ TreeInfo *TreeInfo::getNextTest()
     for(auto&it:childTests) {
         if(!it->isDisable() && it->DecreaseRepeat()) {
             nextTest=it;
+            qDebug()<<QString("Next test is")+it->getName();
             break;
         }
     }
     for(auto&it:childSuites) {
         nextTest=it->getNextTest();
-        if(nextTest) {
+        if(nextTest) {            
+            qDebug()<<QString("Next test is")+nextTest->getName();
             break;
         }
     }
     if(!nextTest) {
         if(DecreaseRepeat()) {
+            qDebug()<<QString("Next test din`t find. Decrese ")+name + "and reset children repeat";
             ResetChildRepeat();
             nextTest = getNextTest();
         }
