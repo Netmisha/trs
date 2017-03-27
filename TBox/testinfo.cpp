@@ -94,6 +94,33 @@ QString TestInfo::delData(QString tag) {
         return "Test dont found!";
     }
 }
+
+QString TestInfo::clearAllData()
+{
+    QDomDocument doc;
+    QFile file(currentPath);
+    file.open(QIODevice::ReadOnly);
+    if (doc.setContent(&file, false)) {
+        QDomElement root = doc.documentElement();
+        root = root.firstChildElement(tags_name::kTest);
+        while (root.attribute(tags_name::kName)!=testName) {
+            root = root.nextSiblingElement(tags_name::kTest);
+        }
+        if(!root.firstChildElement(tags_name::kData).isNull()) {
+            root.removeChild(root.firstChildElement(tags_name::kData));
+            QDomElement node = doc.createElement(tags_name::kData);
+            root.appendChild(node);
+            file.close();
+            file.open(QIODevice::WriteOnly);
+            QTextStream stream( &file );
+            stream << doc.toString();
+            file.close();
+            return "";
+        }
+        return "Data is not exist";
+    }
+    return "Test dont found!";
+}
 bool TestInfo::isData(QString tag) {
     QDomDocument doc;
     QFile file(currentPath);
@@ -131,7 +158,7 @@ void TestInfo::SUCCESS(QString msg) {
     }
     else {
         defaultExit=true;
-        emit sendMessage("Waiting...");
+        emit sendMessage("SUCCESS Waiting...");
     }
 }
 void TestInfo::VERIFY(bool value)
@@ -139,4 +166,14 @@ void TestInfo::VERIFY(bool value)
     if(!value) {
         emit testFinish(" fail_");
     }
+}
+
+bool TestInfo::isFirstRun()
+{
+    return firstRun;
+}
+
+void TestInfo::setFirstRun(bool value)
+{
+    firstRun=value;
 }

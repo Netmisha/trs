@@ -24,6 +24,8 @@
 #include <QMessageBox>
 #include <testinfo.h>
 #include <QSysInfo>
+#include <psapi.h>
+
 extern QWebView * view;
 #define MOUSEEVENTF_HWHEEL 4096
 /**
@@ -72,6 +74,12 @@ public slots:
      * @param time an integer argument
      */
     void Sleep(int time);
+
+    /**
+     * @brief Sleep: suspends current process
+     * @param time an integer argument
+     */
+    int TimeElapsed();
     /**
      * @brief GetScreenWidth: returns width of screen
      * @return integer, window width
@@ -100,6 +108,12 @@ public slots:
      * @return QString, contains JSON obect
      */
     QString GetAppRect(QString windowName);
+    /**
+     * @brief GetAppRect: returns rectangle of window with some name
+     * @param windowName a string argument
+     * @return QString, contains JSON obect
+     */
+    QString GetChildRect(QString windowName, QString childName);
     /**
      * @brief SetAppPos: sets window position
      * @param windowName a string argument
@@ -184,6 +198,11 @@ public slots:
      * @param button an integer argument, o - left button, 1 - right button
      */
     void MouseClick(int button);
+    /**
+     * @brief MouseClickA: simulates click on mouse button
+     * @param button an integer argument, o - left button, 1 - right button
+     */
+    void MouseClickA(int x, int y,int button);
     /**
      * @brief MouseWheelDown: simulates mouse scroll to right on 120 pixels
      */
@@ -326,12 +345,30 @@ public slots:
      * @return int, 32 or 64
      */
     QString getBitDepth();
+    /**
+     * @brief getMemoryStatus(): returns memory status
+     * @return string, json which contains information about memory
+     */
+    QString getMemoryStatus();
+    /**
+     * @brief getAppMemory: returns memory status
+     * @return string, json which contains information about memory
+     */
+    QString getAppMemory(QString windowName);
+    /**
+     * @brief isRunAll: returns if the run all button was pressed
+     * @return bool, if user run all tests return true
+     */
+    bool isRunAll();
     bool isImageEqual(QString path,QString path2);
     unsigned int getQuantColor(QString path,int R,int G,int B);
+    void setRunAll(bool type);
 private:
     QProcess *process;
     POINT current_pos;
     HWND windowHandle;
+    QTime elapseTimer;
+    bool runAll=false;
 };
 
 #endif // TRSCORE_H

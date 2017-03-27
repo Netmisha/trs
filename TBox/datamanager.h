@@ -15,6 +15,7 @@ namespace tags_name {
     const QString kTest = "test";
     const QString kData = "data";
     const QString kSuite = "suite";
+    const QString kImportant = "important";
     const QString kMetadata = "metadata";
     const QString kAuthor = "author";
     const QString kDate = "date";
@@ -35,7 +36,7 @@ public:
 signals:
 public slots:
     void Set(QString, QString);
-    QString AddTest(QString, QString, QString, QString, QString, QString, QString);
+    QString AddTest(QString, QString, QString, QString, QString, QString, QString, QString);
     QString AddSuite(QString, QString, QString, QString, QString);
     QString AddRoot(QString, QString, QString, QString, QString);
     QString RemoveTest(QString, QString);

@@ -4,6 +4,7 @@
 #include <qDebug>
 TRSCore::TRSCore(QObject *parent) : QObject(parent) {
     process=new QProcess();
+    elapseTimer.start();
 }
 unsigned int TRSCore::getQuantColor(QString path,int R,int G,int B){
     if(R >255 || G>255 || B>255 ){
@@ -14,16 +15,21 @@ unsigned int TRSCore::getQuantColor(QString path,int R,int G,int B){
     }
      int countColor = 0;
     QImage img = QImage(path);
-   emit log("Image width:" + QString::number(img.width()) + " height:"+QString::number(img.height()) + " size:"+QString::number(img.width() * img.height()));
+   //emit log("Image width:" + QString::number(img.width()) + " height:"+QString::number(img.height()) + " size:"+QString::number(img.width() * img.height()));
     for(int i=0;i<img.height();i++){
         for(int j=0;j<img.width();j++){
-            QColor color(img.pixel(i,j));
+            QColor color(img.pixel(j,i));
             if(color.red() == R && color.green() == G && color.blue()== B){
                 countColor++;
             }
         }
     }
     return countColor;
+}
+
+void TRSCore::setRunAll(bool type)
+{
+    runAll=type;
 }
 bool TRSCore::isImageEqual(QString path,QString path2){
      QImage img = QImage(path);
@@ -126,6 +132,48 @@ QString TRSCore::getBitDepth()
     }
     return bIsWow64?"64":"32";
 }
+
+QString TRSCore::getAppMemory(QString windowName)
+{
+    HWND wndHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    DWORD PID;
+    HANDLE hProcess;
+    PROCESS_MEMORY_COUNTERS pmc;
+    QString res="";
+    GetWindowThreadProcessId(wndHandle, &PID);
+    hProcess = OpenProcess(  PROCESS_QUERY_INFORMATION, FALSE, PID );
+    if ( GetProcessMemoryInfo( hProcess, &pmc, sizeof(pmc)) ) {
+        res="{\"WorkingSetSize\": ";
+        res.append(QString::number(pmc.WorkingSetSize)+",\"PageFaultCount\": ");
+        res.append(QString::number(pmc.PageFaultCount)+",\"PagefileUsage\": ");
+        res.append(QString::number(pmc.PagefileUsage)+",\"PeakPagefileUsage\": ");
+        res.append(QString::number(pmc.PeakPagefileUsage)+",\"PeakWorkingSetSize\": ");
+        res.append(QString::number(pmc.PeakWorkingSetSize)+",\"QuotaNonPagedPoolUsage\": ");
+        res.append(QString::number(pmc.QuotaNonPagedPoolUsage)+",\"QuotaPagedPoolUsage\": ");
+        res.append(QString::number(pmc.QuotaPagedPoolUsage)+",\"QuotaPeakNonPagedPoolUsage\": ");
+        res.append(QString::number(pmc.QuotaPeakNonPagedPoolUsage)+",\"QuotaPeakPagedPoolUsage\": ");
+        res.append(QString::number(pmc.QuotaPeakPagedPoolUsage)+",}");
+    }
+    return res;
+}
+
+bool TRSCore::isRunAll()
+{
+    return runAll;
+}
+QString TRSCore::getMemoryStatus()
+{
+    QString res="{\"percent\": ";
+    MEMORYSTATUSEX statex;
+    statex.dwLength = sizeof (statex);
+    GlobalMemoryStatusEx (&statex);
+    res.append(QString::number(statex.dwMemoryLoad)+",\"ph_total\": ");
+    res.append(QString::number(statex.ullTotalPhys)+",\"ph_usege\": ");
+    res.append(QString::number(statex.ullTotalPhys-statex.ullAvailPhys)+",\"vr_total\": ");
+    res.append(QString::number(statex.ullTotalVirtual)+",\"vr_usege\": ");
+    res.append(QString::number(statex.ullTotalVirtual-statex.ullAvailVirtual)+",}");
+    return res;
+}
 bool TRSCore::StartApp(QString appName, bool waitForStart) {
     process->start(appName);
     if(process->error()<5) {
@@ -211,6 +259,10 @@ void TRSCore::Sleep(int msec) {
     QTest::qSleep(msec);
 }
 
+int TRSCore::TimeElapsed(){
+    return elapseTimer.elapsed();
+}
+
 int TRSCore::GetScreenWidth()
 {
     QDesktopWidget desktop;
@@ -282,6 +334,26 @@ QString TRSCore::GetAppRect(QString windowName)
     }
     emit fail("Can not get window rect.");
     return QString();
+}
+
+QString TRSCore::GetChildRect(QString windowName, QString childName) {
+    windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
+    HWND prev = NULL;
+    HWND curr = NULL;
+    RECT win_rect;
+    curr=FindWindowEx(windowHandle, NULL, NULL ,NULL);
+    while (curr) {
+        wchar_t buff[2048];
+        GetWindowText( curr, buff, 2048);
+        if(QString::fromWCharArray(buff)==childName) {
+            GetWindowRect(curr, &win_rect);
+            return QString("{\"x\": "+QString::number(win_rect.left)+",\"y\": "+QString::number(win_rect.top)+
+                         ",\"width\": "+QString::number(win_rect.right-win_rect.left)+",\"height\": "+QString::number(win_rect.bottom-win_rect.top)+"}");
+        }
+        prev=curr;
+        curr=FindWindowEx(windowHandle,prev,NULL,NULL);
+    }
+    return "";
 }
 void TRSCore::SetAppPos(QString windowName, int x, int y) {
 	if(windowName.isEmpty()) {
@@ -521,6 +593,12 @@ void TRSCore::MouseClick(int button) {
         mouse_event(MOUSEEVENTF_LEFTUP, current_pos.x, current_pos.y, 0, 0);
     }
 }
+
+void TRSCore::MouseClickA(int x, int y,int button){
+    SetMousePos(x,y);
+    MouseClick(button);
+}
+
 void TRSCore::MouseWheelDown() {
     mouse_event(MOUSEEVENTF_WHEEL, 0, 0, -WHEEL_DELTA, 0);
 }
