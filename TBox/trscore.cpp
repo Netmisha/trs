@@ -26,6 +26,11 @@ unsigned int TRSCore::getQuantColor(QString path,int R,int G,int B){
     }
     return countColor;
 }
+
+void TRSCore::setRunAll(bool type)
+{
+    runAll=type;
+}
 bool TRSCore::isImageEqual(QString path,QString path2){
      QImage img = QImage(path);
      QImage img2 = QImage(path2);
@@ -152,6 +157,10 @@ QString TRSCore::getAppMemory(QString windowName)
     return res;
 }
 
+bool TRSCore::isRunAll()
+{
+    return runAll;
+}
 QString TRSCore::getMemoryStatus()
 {
     QString res="{\"percent\": ";

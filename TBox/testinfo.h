@@ -63,6 +63,12 @@ public slots:
     */
     Q_INVOKABLE QString delData(QString tag);
     /**
+    * @brief clearAllData: delete all user data from current test
+     * @return result of deleting data, string
+    */
+    Q_INVOKABLE QString clearAllData();
+    /**
+    /**
     * @brief isData: checks, whether data exist
      * @param tag a string argument
      * @return bool, result of checking data
@@ -93,11 +99,18 @@ public slots:
      * @param value a boolean argument
     */
     Q_INVOKABLE void VERIFY(bool value);
+    /**
+    * @brief isFirstRun: if the test first run
+     * @param value a boolean argument
+    */
+    Q_INVOKABLE bool isFirstRun();
+    void setFirstRun(bool value);
 protected:
     QString currentPath;
     QString testName;
     bool defaultExit=true;
     bool finished=false;
+    bool firstRun=false;
 };
 
 #endif // TEST_H

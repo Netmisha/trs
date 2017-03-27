@@ -97,6 +97,7 @@ private:
     QString MailTo="default";
     QString testFile;
     bool runOne = false;
+    bool runAll = false;
     bool importantTestFail = false;
 signals:
     void sendTestName(QString);
@@ -226,6 +227,7 @@ void MainTree::testFinished(QString msg) {
     QFile file(currentTest->getPath()+"/"+"test.html");
     qDebug() << file.fileName();
     file.remove();
+    currentTest->setFirsRun(false);
     if(msg.contains("fail")) {
         if(dm.Get(currentTest->getFile()+"/suite/test/"+currentTest->getName()+"/important")=="true") {
             importantTestFail=true;
@@ -238,12 +240,13 @@ void MainTree::testFinished(QString msg) {
         CreateHtml(currentTest);
             }
     else {
-            QMetaObject::invokeMethod(contextObject, "setStopDisable");
-             emit sendSMTPMail();
-            WriteLog("All tests finished.");
-            rootSuite->ResetAllRepeat();
-            delete view->page();
-        }
+        QMetaObject::invokeMethod(contextObject, "setStopDisable");
+        emit sendSMTPMail();
+        WriteLog("All tests finished.");
+        rootSuite->ResetAllRepeat();
+        delete view->page();
+        runAll=false;
+    }
 }
 void MainTree::testFail(QString msg)
 {
@@ -549,8 +552,10 @@ bool MainTree::Run() {
     if(run) {
         return false;
     }
+    runAll=true;
     emit sessionN();
     rootSuite->ResetAllRepeat();
+    rootSuite->ResetFirsRun();
     itemForRun=rootSuite;
     auto it = rootSuite->getNextTest();
     if(it) {
@@ -773,10 +778,12 @@ void MainTree::CreateHtml(TreeInfo *it) {
     view->setPage(new QWebPage());
     view->page()->setProperty("_q_webInspectorServerPort",kDefaultPort);
     trscore=new TRSCore();
+    trscore->setRunAll(runAll);
     view->page()->mainFrame()->addToJavaScriptWindowObject("Box", trscore);
     QObject::connect(trscore, SIGNAL(log(QString)), this, SLOT(WriteLog(QString)));
     QObject::connect(trscore, SIGNAL(fail(QString)), this, SLOT(testFail(QString)));
     testinfo=new TestInfo();
+    testinfo->setFirstRun(it->isFirstRun());
     testinfo->setName(it->getName());
     testinfo->setPath(it->getFile());
     QObject::connect(testinfo, SIGNAL(testBegin(QString)), this, SLOT(WriteLog(QString)));
