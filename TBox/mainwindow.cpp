@@ -41,6 +41,7 @@ public:
     void testFinished(QString);
     void testFail(QString);
     void acceptMessage(QString);
+    void EmitMessage(bool);
     Q_INVOKABLE QString Load(QString path);
     Q_INVOKABLE QString getFile(QModelIndex);
     Q_INVOKABLE QString FindTest(QModelIndex);
@@ -68,6 +69,7 @@ public:
     Q_INVOKABLE bool IsFolderEmpty(QString);
     Q_INVOKABLE void setViewStatus(bool);
     Q_INVOKABLE void showInspector();
+    Q_INVOKABLE void showHelp();
     Q_INVOKABLE void openFolder();
     Q_INVOKABLE QStringList GetSuiteList();
     Q_INVOKABLE QStringList getHeaders(QString, QString);
@@ -234,6 +236,7 @@ void MainTree::testFinished(QString msg) {
             currentTest->setAsFail();
             WriteLog("All tests from this suite stoped.");
         }
+        EmitMessage(true);
     }
     currentTest=itemForRun->getNextTest();
     if(currentTest) {
@@ -246,6 +249,7 @@ void MainTree::testFinished(QString msg) {
         rootSuite->ResetAllRepeat();
         delete view->page();
         runAll=false;
+        EmitMessage(false);
     }
 }
 void MainTree::testFail(QString msg)
@@ -259,6 +263,14 @@ void MainTree::testFail(QString msg)
 }
 void MainTree::acceptMessage(QString msg) {
     WriteLog(msg);
+}
+void MainTree::EmitMessage(bool isFail) {
+    QApplication::beep();
+    if(!isFail) {
+        QMessageBox msgBox;
+        msgBox.setText("All tests finished.");
+        msgBox.exec();
+    }
 }
 QString MainTree::Load(QString path) {
     if(path=="") {
@@ -480,6 +492,12 @@ void MainTree::showInspector() {
     QString link = "http://127.0.0.1:9876/webkit/inspector/inspector.html?page=1";
     QDesktopServices::openUrl(QUrl(link));
 }
+void MainTree::showHelp()
+{
+    QString link = "file:///"+QDir::currentPath()+"/html/index.html";
+    qDebug()<< link;
+    QDesktopServices::openUrl(QUrl(link));
+}
 void MainTree::openFolder() {
     auto it = rootSuite->FindByItem(currentIndex);
     if(!it) {
@@ -540,7 +558,6 @@ void MainTree::RunOne(){
        return;
             }
     if (itemForRun->getType() == "suite"){
-        //itemForRun->DecreaseRepeat();
         auto it = itemForRun->getNextTest();
         if(it) {
             CreateHtml(it);

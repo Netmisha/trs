@@ -28,6 +28,7 @@
         <file>icons/suite.png</file>
         <file>icons/test.png</file>
         <file>icons/editor.png</file>
+        <file>icons/help.png</file>
     </qresource>
     <qresource prefix="/js">
         <file>tools.js</file>

@@ -338,6 +338,11 @@ Item {
                     onClicked: theModel.showInspector();
                     iconSource: "icons/icons/inspector.png"
                 }
+                ToolButton {
+                    id: helpButton
+                    onClicked: theModel.showHelp();
+                    iconSource: "icons/icons/help.png"
+                }
             }
         }
         Rectangle {
@@ -1401,6 +1406,7 @@ Item {
                                                 id: consoleText
                                                 Layout.fillWidth: true
                                                 selectByMouse: true
+                                                readOnly: true
                                                 font.pixelSize: 12
                                                 onTextChanged: {
                                                     if(consoleText.text=="") {
