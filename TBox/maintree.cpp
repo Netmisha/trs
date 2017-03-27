@@ -81,8 +81,8 @@ void TreeInfo::addChildSuites(TreeInfo * suite) {
 bool TreeInfo::DecreaseRepeat() {
     if(type=="suite") {
         if(repeat>1) {
-            repeat--;
             qDebug()<<name+" : repeat is "+QString::number(repeat);
+            repeat--;
             return true;
         }
         else {
@@ -92,8 +92,8 @@ bool TreeInfo::DecreaseRepeat() {
     }
     else {
         if(repeat>0) {
-            repeat--;
             qDebug()<<name+" : repeat is "+QString::number(repeat);
+            repeat--;
             return true;
         }
         else {
@@ -191,20 +191,20 @@ TreeInfo *TreeInfo::getNextTest()
     for(auto&it:childTests) {
         if(!it->isDisable() && it->DecreaseRepeat()) {
             nextTest=it;
-            qDebug()<<QString("Next test is")+it->getName();
+            qDebug()<<QString("Next test is ")+it->getName();
             break;
         }
     }
     for(auto&it:childSuites) {
         nextTest=it->getNextTest();
         if(nextTest) {            
-            qDebug()<<QString("Next test is")+nextTest->getName();
+            qDebug()<<QString("Next test is ")+nextTest->getName();
             break;
         }
     }
     if(!nextTest) {
         if(DecreaseRepeat()) {
-            qDebug()<<QString("Next test din`t find. Decrese ")+name + "and reset children repeat";
+            qDebug()<<QString("Next test din`t find. Decrese ")+name + " and reset children repeat";
             ResetChildRepeat();
             nextTest = getNextTest();
         }
@@ -212,11 +212,34 @@ TreeInfo *TreeInfo::getNextTest()
     return nextTest;
 }
 
-void TreeInfo::setAsFail()
+int TreeInfo::setAsFail()
 {
+    int repeats=0;
     for(auto&it:parent->getChildTests()) {
+        repeats+=it->getRepeat();
         it->setRepeat(0);
     }
+    return repeats;
+}
+
+int TreeInfo::getTotalRuns()
+{
+    if(isDisable()) {
+        return 0;
+    }
+    int repeats=0;
+    if(type=="test") {
+        repeats=repeat;
+    }
+    else {
+        for(auto&it:childTests) {
+            repeats+=it->getTotalRuns()*repeat;
+        }
+        for(auto&it:childSuites) {
+            repeats+=it->getTotalRuns()*repeat;
+        }
+    }
+    return repeats;
 }
 void TreeInfo::setFirsRun(bool val)
 {

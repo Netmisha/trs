@@ -12,11 +12,12 @@ import QtQuick.Dialogs 1.2
 import FileSave 1.0
 import QtWebKit 3.0
 import Highlighter 1.0
+import QtWinExtras 1.0
+
 Item {
     property variant win;
     property  variant list_;
     property  variant db_list;
-
     id: root
     anchors.fill: parent
     Action {
@@ -150,6 +151,9 @@ Item {
             selectFolderDialog.show();
         }
     }
+    function setProgress(value) {
+        taskBar.progress.value=value;
+    }
     function setStopDisable(){
         stopAllTestsButton.visible=false;
         startButton.visible=true;
@@ -212,6 +216,9 @@ Item {
     function writeLog(msg) {
 
         consoleText.text=consoleText.text+msg+"\n";
+    }
+    function getLog() {
+        return consoleText.text;
     }
     function showItem (index) {
         theModel.setCurrentItem(index);
@@ -1449,6 +1456,13 @@ Item {
             }
         }
     }
+    TaskbarButton {
+        id:taskBar
+        overlay.iconSource: "loading.png"
+        overlay.accessibleDescription: "Loading"
+        progress.visible: true
+        progress.value: 0
+    }
     FileSaveDialog {
         id: saveFile
         title: "Save file"
@@ -1844,7 +1858,6 @@ Item {
             Qt.quit();
         }
     }
-
     Window{
         modality: Qt.WindowModal
         id: report_window_

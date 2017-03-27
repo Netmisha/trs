@@ -37,7 +37,8 @@ public:
     bool isValid();
     QStringList getSuites();
     TreeInfo * getNextTest();
-    void setAsFail();
+    int setAsFail();
+    int getTotalRuns();
     void setFirsRun(bool);
     bool isFirstRun();
 private:

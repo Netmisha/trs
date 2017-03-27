@@ -74,6 +74,7 @@ public:
     Q_INVOKABLE QStringList GetSuiteList();
     Q_INVOKABLE QStringList getHeaders(QString, QString);
     Q_INVOKABLE void WriteLog(QString);
+    Q_INVOKABLE void FailLog();
     Q_INVOKABLE void OpenInEditor(QString);
     Q_INVOKABLE void Terminate();
 private:
@@ -101,6 +102,9 @@ private:
     bool runOne = false;
     bool runAll = false;
     bool importantTestFail = false;
+    qint64 totalTestCount=0;
+    qint64 finishedTestCount=0;
+    qint64 failedTestCount=0;
 signals:
     void sendTestName(QString);
     void sendSuiteName(QString);
@@ -233,11 +237,17 @@ void MainTree::testFinished(QString msg) {
     if(msg.contains("fail")) {
         if(dm.Get(currentTest->getFile()+"/suite/test/"+currentTest->getName()+"/important")=="true") {
             importantTestFail=true;
-            currentTest->setAsFail();
+            qint64 res=currentTest->setAsFail();
+            finishedTestCount+=res;
+            failedTestCount+=res;
             WriteLog("All tests from this suite stoped.");
         }
+        failedTestCount++;
         EmitMessage(true);
+        FailLog();
     }
+    finishedTestCount++;
+    QMetaObject::invokeMethod(contextObject, "setProgress", Q_ARG(QVariant, 100*finishedTestCount/totalTestCount));
     currentTest=itemForRun->getNextTest();
     if(currentTest) {
         CreateHtml(currentTest);
@@ -268,7 +278,10 @@ void MainTree::EmitMessage(bool isFail) {
     QApplication::beep();
     if(!isFail) {
         QMessageBox msgBox;
-        msgBox.setText("All tests finished.");
+        msgBox.setText("All tests finished.\nTests run: "+QString::number(totalTestCount)+"\nSuccess: "
+                       +QString::number(totalTestCount-failedTestCount)+"\nFail: "+QString::number(failedTestCount));
+        totalTestCount=finishedTestCount=failedTestCount=0;
+        QMetaObject::invokeMethod(contextObject, "setProgress", Q_ARG(QVariant, totalTestCount));
         msgBox.exec();
     }
 }
@@ -495,7 +508,13 @@ void MainTree::showInspector() {
 void MainTree::showHelp()
 {
     QString link = "file:///"+QDir::currentPath()+"/html/index.html";
-    qDebug()<< link;
+    QFile file(QDir::currentPath()+"/html/index.html");
+    if(!file.exists()) {
+        QMessageBox msgBox;
+        msgBox.setText("Help file not found.");
+        msgBox.exec();
+        return;
+    }
     QDesktopServices::openUrl(QUrl(link));
 }
 void MainTree::openFolder() {
@@ -555,10 +574,12 @@ void MainTree::RunOne(){
            runOne = true;
        itemForRun->setRepeat(0);
        CreateHtml(itemForRun);
+       totalTestCount=1;
        return;
             }
     if (itemForRun->getType() == "suite"){
         auto it = itemForRun->getNextTest();
+        totalTestCount=itemForRun->getTotalRuns();
         if(it) {
             CreateHtml(it);
         }
@@ -574,6 +595,7 @@ bool MainTree::Run() {
     rootSuite->ResetAllRepeat();
     rootSuite->ResetFirsRun();
     itemForRun=rootSuite;
+    totalTestCount=itemForRun->getTotalRuns();
     auto it = rootSuite->getNextTest();
     if(it) {
         CreateHtml(it);
@@ -834,6 +856,27 @@ void MainTree::WriteLog(QString msg) {
     QTime time=QTime::currentTime();
     qDebug() << time.toString()+":"+QString::number(time.msec())+" "+"Box: "+msg;
     QMetaObject::invokeMethod(contextObject, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
+}
+void MainTree::FailLog() {
+    QString curPath=QDir::currentPath();
+    QDir dir(curPath+"/Logs");
+    if(!dir.exists()) {
+        dir.mkdir(curPath+"/Logs");
+    }
+    curPath+="/Logs";
+    QTime time=QTime::currentTime();
+    QVariant returnedValue;
+    QString fname=curPath+"/"+time.toString("hh.mm.ss.zzz")+"_"+currentTest->getParent()->getName()+"_"+currentTest->getName();
+    dir.setPath(fname);
+    if(!dir.exists()) {
+        dir.mkdir(fname);
+    }
+    trscore->PrintScreen(fname+"/screenshot.jpg");
+    QMetaObject::invokeMethod(contextObject, "getLog", Q_RETURN_ARG(QVariant, returnedValue));
+    QFile file(fname+"/log.txt");
+    file.open(QIODevice::WriteOnly);
+    file.write(returnedValue.toByteArray());
+    file.close();
 }
 void MainTree::OpenInEditor(QString editor) {
     QString file;

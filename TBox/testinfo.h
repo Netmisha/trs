@@ -68,7 +68,6 @@ public slots:
     */
     Q_INVOKABLE QString clearAllData();
     /**
-    /**
     * @brief isData: checks, whether data exist
      * @param tag a string argument
      * @return bool, result of checking data
