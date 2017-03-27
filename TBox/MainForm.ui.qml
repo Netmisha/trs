@@ -69,6 +69,7 @@ Item {
         shortcut: "Ctrl+R"
         onTriggered: {
             stopTestButton.visible=true;
+            consoleText.text="";
             theModel.RunOne();
             testRun.visible=false;
             startButton.enabled=false;
