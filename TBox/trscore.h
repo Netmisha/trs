@@ -360,6 +360,7 @@ public slots:
      * @return bool, if user run all tests return true
      */
     bool isRunAll();
+    bool isSingleRun();
     bool isImageEqual(QString path,QString path2);
     unsigned int getQuantColor(QString path,int R,int G,int B);
     void setRunAll(bool type);

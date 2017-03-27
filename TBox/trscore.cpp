@@ -161,6 +161,11 @@ bool TRSCore::isRunAll()
 {
     return runAll;
 }
+
+bool TRSCore::isSingleRun()
+{
+    return !runAll;
+}
 QString TRSCore::getMemoryStatus()
 {
     QString res="{\"percent\": ";
