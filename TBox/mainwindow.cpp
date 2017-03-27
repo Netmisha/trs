@@ -223,6 +223,9 @@ void MainTree::testFinished(QString msg) {
     WriteLog(msg);
     data_base_man.sessionEnd();
     run=false;
+    QFile file(currentTest->getPath()+"/"+"test.html");
+    qDebug() << file.fileName();
+    file.remove();
     if(msg.contains("fail")) {
         if(dm.Get(currentTest->getFile()+"/suite/test/"+currentTest->getName()+"/important")=="true") {
             importantTestFail=true;
@@ -235,10 +238,10 @@ void MainTree::testFinished(QString msg) {
         CreateHtml(currentTest);
             }
     else {
-        QMetaObject::invokeMethod(contextObject, "setStopDisable");
-         emit sendSMTPMail();
-        WriteLog("All tests finished.");
-        rootSuite->ResetAllRepeat();
+            QMetaObject::invokeMethod(contextObject, "setStopDisable");
+             emit sendSMTPMail();
+            WriteLog("All tests finished.");
+            rootSuite->ResetAllRepeat();
             delete view->page();
         }
 }
@@ -522,6 +525,7 @@ void MainTree::RunOne(){
         return;
     }
     emit sessionN();
+    rootSuite->ResetAllRepeat();
     itemForRun = rootSuite->FindByItem(currentIndex);
     if(!itemForRun) {
         return;
