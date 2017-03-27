@@ -71,6 +71,7 @@ public:
     Q_INVOKABLE void showInspector();
     Q_INVOKABLE void showHelp();
     Q_INVOKABLE void openFolder();
+    Q_INVOKABLE void ClearCache();
     Q_INVOKABLE QStringList GetSuiteList();
     Q_INVOKABLE QStringList getHeaders(QString, QString);
     Q_INVOKABLE void WriteLog(QString);
@@ -524,6 +525,23 @@ void MainTree::openFolder() {
     }
     QDesktopServices::openUrl(QUrl::fromLocalFile(QString(it->getFile()).split("/suite.xml")[0]));
 }
+void MainTree::ClearCache()
+{
+    QString path=QDir::currentPath()+"/Logs";
+    if(QDir(path).exists()) {
+        QDir qd(path);
+        if(qd.removeRecursively()) {
+            QMessageBox msgBox;
+            msgBox.setText("Cache deleted.");
+            msgBox.exec();
+        }
+        else {
+            QMessageBox msgBox;
+            msgBox.setText("Cache not deleted.");
+            msgBox.exec();
+        }
+    }
+}
 QStringList MainTree::GetSuiteList() {
     return rootSuite->getSuites();
 }
@@ -877,6 +895,7 @@ void MainTree::FailLog() {
     file.open(QIODevice::WriteOnly);
     file.write(returnedValue.toByteArray());
     file.close();
+    WriteLog("<html><style type=\"text/css\"></style><a href=\"file:///"+fname+"/screenshot.jpg"+"\">Screenshot</a></html>");
 }
 void MainTree::OpenInEditor(QString editor) {
     QString file;

@@ -1414,6 +1414,7 @@ Item {
                                             contentItem: TextEdit {
                                                 id: consoleText
                                                 Layout.fillWidth: true
+                                                textFormat: TextEdit.RichText
                                                 selectByMouse: true
                                                 readOnly: true
                                                 font.pixelSize: 12
@@ -1430,6 +1431,7 @@ Item {
                                                         consoleScroll.flickableItem.contentY = consoleScroll.flickableItem.contentHeight-consoleScroll.height;
                                                     }
                                                 }
+                                                onLinkActivated: Qt.openUrlExternally(link)
 
                                             }
                                         }
@@ -1654,7 +1656,32 @@ Item {
                     }
                 }
             }
-
+            RowLayout {
+                id: rowLayoutCache
+                width: 100
+                height: 100
+                clip: false
+                spacing: 10
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Text {
+                    id: textCache
+                    text: qsTr("Cache")
+                    font.pixelSize: 12
+                }
+                Item {
+                    Layout.fillWidth: true
+                }
+                Button {
+                    id: clearCache
+                    text: "Clear"
+                    width: 50
+                    onClicked:{
+                        messageDialogCache.open();
+                    }
+                }
+            }
             ColumnLayout{
                 id: mailLayout
                 Layout.alignment: Qt.AlignLeft
@@ -1833,6 +1860,17 @@ Item {
         icon: StandardIcon.Warning
         onAccepted: {
             Qt.quit();
+        }
+    }
+    MessageDialog {
+        id: messageDialogCache
+        width: 200;
+        modality: Qt.WindowModal
+        title: "Warning!"
+        icon: StandardIcon.Warning
+        text: "Are you sure?"
+        onAccepted: {
+            theModel.ClearCache();
         }
     }
     MessageDialog {
