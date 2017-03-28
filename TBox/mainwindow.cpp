@@ -315,7 +315,7 @@ QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag
         return "Suite does not exist";
     }
             rep=rep==""?"1":rep;
-    QString res= dm.AddTest(it->getFile(), name, dis, tag, exe, rep, disable,important,alwaysRun);
+    QString res= dm.AddTest(it->getFile(), name, dis, tag, exe, rep, disable,important,alwaysRun,0);
             if(res=="") {
         TreeInfo * test = new TreeInfo();
         test->setParent(it);
@@ -342,7 +342,7 @@ QString MainTree::AddNewSuite(QString name, QString dis, QString rep, QString di
         return "Suite does not exist";
     }
             rep=rep==""?"1":rep;
-    QString res=dm.AddSuite(it->getFile(), name, dis, rep, disable);
+    QString res=dm.AddSuite(it->getFile(), name, dis, rep, disable,0);
             if(res=="") {
         TreeInfo *suite = new TreeInfo();
         QString parentFile=it->getFile();
@@ -364,7 +364,7 @@ QString MainTree::AddNewSuite(QString name, QString dis, QString rep, QString di
             return res;
 }
 QString MainTree::AddRootSuite(QString name, QString dis, QString rep, QString disable) {
-    return dm.AddRoot(rootDir+"/suite.xml", name, dis, rep, disable);
+    return dm.AddRoot(rootDir+"/suite.xml", name, dis, rep, disable,0);
 }
 void MainTree::setCurrentTag(QString tag) {
     currentTag=tag;
