@@ -2,9 +2,10 @@
 #define MAINTREE_H
 #include <QStandardItemModel>
 #include <QList>
+#include "datamanager.h"
 class TreeInfo {
 public:
-    TreeInfo ():parent(nullptr){}
+    TreeInfo ():parent(nullptr){dm=new  DataManager();}
     TreeInfo (TreeInfo *parent, QString, QString, QString, int, QModelIndex);
     ~TreeInfo();
     QString getPath();
@@ -52,6 +53,7 @@ private:
     QModelIndex item; // make class and add root dir
     QList<TreeInfo *> childTests;
     QList<TreeInfo *> childSuites;
+    DataManager *dm;
     TreeInfo * parent;
 };
 #endif // MAINTREE_H

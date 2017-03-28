@@ -44,7 +44,7 @@ void DataManager::Set(QString path, QString data) {
     stream << doc.toString();
     file.close();
 }
-QString DataManager::AddTest(QString path, QString name, QString dis, QString tag, QString exe, QString rep, QString disable, QString important) {
+QString DataManager::AddTest(QString path, QString name, QString dis, QString tag, QString exe, QString rep, QString disable, QString important, QString alwaysRun) {
     if(name=="" || exe=="" || !(disable=="true" || disable=="false")) {
         return "Fill all fields correctly!";
     }
@@ -85,6 +85,9 @@ QString DataManager::AddTest(QString path, QString name, QString dis, QString ta
         node.appendChild(snode);
         snode = doc.createElement(tags_name::kImportant);
         snode.appendChild( doc.createTextNode(important));
+        node.appendChild(snode);
+        snode = doc.createElement(tags_name::kAlwaysRun);
+        snode.appendChild( doc.createTextNode(alwaysRun));
         node.appendChild(snode);
         snode = doc.createElement(tags_name::kHeaders);
         node.appendChild(snode);

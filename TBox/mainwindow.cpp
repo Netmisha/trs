@@ -56,7 +56,7 @@ public:
     Q_INVOKABLE QStringList GetTags();
     Q_INVOKABLE void setRootDir(QString);
     Q_INVOKABLE void setMailCredentials(QString username,QString password,QString MailTo);
-    Q_INVOKABLE QString AddNewTest(QString, QString, QString, QString, QString, QString, QString);
+    Q_INVOKABLE QString AddNewTest(QString, QString, QString, QString, QString, QString, QString, QString);
     Q_INVOKABLE QString AddNewSuite(QString, QString, QString, QString);
     Q_INVOKABLE QString AddRootSuite(QString, QString, QString, QString);
     Q_INVOKABLE void setCurrentTag(QString);
@@ -309,13 +309,13 @@ QString MainTree::Load(QString path) {
 void MainTree::setRootDir(QString path) {
     rootDir=path;
 }
-QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag, QString rep, QString disable, QString important) {
+QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag, QString rep, QString disable, QString important, QString alwaysRun) {
     auto it = rootSuite->FindByItem(currentIndex);
     if(!it) {
         return "Suite does not exist";
     }
             rep=rep==""?"1":rep;
-    QString res= dm.AddTest(it->getFile(), name, dis, tag, exe, rep, disable,important);
+    QString res= dm.AddTest(it->getFile(), name, dis, tag, exe, rep, disable,important,alwaysRun);
             if(res=="") {
         TreeInfo * test = new TreeInfo();
         test->setParent(it);
@@ -584,6 +584,7 @@ void MainTree::RunOne(){
     }
     emit sessionN();
     rootSuite->ResetAllRepeat();
+    totalTestCount=finishedTestCount=failedTestCount=0;
     itemForRun = rootSuite->FindByItem(currentIndex);
     if(!itemForRun) {
         return;
@@ -602,12 +603,12 @@ void MainTree::RunOne(){
             CreateHtml(it);
         }
     }
-
 }
 bool MainTree::Run() {
     if(run) {
         return false;
     }
+    totalTestCount=finishedTestCount=failedTestCount=0;
     runAll=true;
     emit sessionN();
     rootSuite->ResetAllRepeat();
@@ -916,5 +917,7 @@ void MainTree::Terminate() {
     run=false;
     WriteLog("All tests stopped.\n\n");
     rootSuite->ResetAllRepeat();
+    totalTestCount=finishedTestCount=failedTestCount=0;
+    QMetaObject::invokeMethod(contextObject, "setProgress", Q_ARG(QVariant, totalTestCount));
 }
 #include "mainwindow.moc"

@@ -514,6 +514,7 @@ Item {
                                                     textEditTRepeat.text="1"
                                                     testStatus.iconSource="icons/icons/turnon.png";
                                                     testImportant.checked=false;
+                                                    alwaysRun.checked=false;
                                                     testRun.visible=false;
                                                     newTest.visible=false;
                                                     newSuite.visible=false;
@@ -612,6 +613,12 @@ Item {
                                                         }
                                                         else {
                                                             testImportant.checked=false;
+                                                        }
+                                                        if(theModel.Get("alwaysrun")=="true"){
+                                                            alwaysRun.checked=true;
+                                                        }
+                                                        else {
+                                                            alwaysRun.checked=false;
                                                         }
                                                         centerRect.visible=false;
                                                         addTestLayout.visible=true;
@@ -714,7 +721,7 @@ Item {
                                                 onClicked: {
                                                     if(testName.text== "New Test") {
                                                         var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
-                                                        var res=theModel.AddNewTest(textEditTName.text,textEditTDiscr.text, textEditTExe.text, textEditTTag.text, textEditTRepeat.text, dis, testImportant.checked.toString());
+                                                        var res=theModel.AddNewTest(textEditTName.text,textEditTDiscr.text, textEditTExe.text, textEditTTag.text, textEditTRepeat.text, dis, testImportant.checked.toString(),alwaysRun.checked.toString());
                                                         if(res!="") {
                                                             messageDialog.text=res;
                                                             messageDialog.open()
@@ -756,6 +763,7 @@ Item {
                                                                 theModel.Set("repeat", textEditTRepeat.text==""?"1":textEditTRepeat.text);
                                                                 theModel.Set("disable", dis);
                                                                 theModel.Set("important", testImportant.checked.toString());
+                                                                theModel.Set("alwaysrun", alwaysRun.checked.toString());
                                                                 addTestLayout.visible=false;
                                                                 centerRect.visible=true;
                                                                 testEdit.visible=true;
@@ -1341,6 +1349,41 @@ Item {
                                                 label:Text {
                                                     font.pixelSize: 12
                                                     text: qsTr("Important")
+                                                }
+                                            }
+                                            checked: false
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.rightMargin: 0
+                                        anchors.leftMargin: 0
+                                    }
+                                    RowLayout {
+                                        y: 0
+                                        height: 36
+                                        anchors.right: parent.right
+                                        CheckBox {
+                                            id: alwaysRun
+                                            style: CheckBoxStyle {
+                                                indicator: Rectangle {
+                                                                implicitWidth: 16
+                                                                implicitHeight: 16
+                                                                radius: 3
+                                                                border.color: control.activeFocus ? "darkblue" : "gray"
+                                                                border.width: 1
+                                                                Rectangle {
+                                                                    visible: control.checked
+                                                                    color: "#555"
+                                                                    border.color: "#333"
+                                                                    radius: 1
+                                                                    anchors.margins: 4
+                                                                    anchors.fill: parent
+                                                                }
+                                                        }
+                                                label:Text {
+                                                    font.pixelSize: 12
+                                                    text: qsTr("Always Run")
                                                 }
                                             }
                                             checked: false

@@ -1,7 +1,9 @@
 #include "maintree.h"
 #include <QDebug>
 TreeInfo::TreeInfo (TreeInfo *parent, QString fil, QString nam, QString typ, int rep, QModelIndex ind)
-    : parent(parent), file(fil), name(nam), type(typ), repeat(rep), item(ind) {}
+    : parent(parent), file(fil), name(nam), type(typ), repeat(rep), item(ind) {
+    dm=new  DataManager();
+}
 
 TreeInfo::~TreeInfo()
 {
@@ -13,6 +15,7 @@ TreeInfo::~TreeInfo()
     }
     childTests.clear();
     childSuites.clear();
+    delete dm;
 }
 QString TreeInfo::getPath() {
     return QString(file).replace("/suite.xml","");
@@ -216,8 +219,12 @@ int TreeInfo::setAsFail()
 {
     int repeats=0;
     for(auto&it:parent->getChildTests()) {
-        repeats+=it->getRepeat();
-        it->setRepeat(0);
+        QString req(it->getFile());
+        req+="/"+it->getParent()->getName()+"/"+tags_name::kTest+"/"+it->getName()+"/"+tags_name::kAlwaysRun;
+        if(dm->Get(req)!="true") {
+            repeats+=it->getRepeat();
+            it->setRepeat(0);
+        }
     }
     return repeats;
 }
