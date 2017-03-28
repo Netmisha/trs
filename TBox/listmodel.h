@@ -2,7 +2,7 @@
 #define LISMODEL_H
 #include <QObject>
 #include <qDebug>
-class LisModel : public QObject
+class ListModel : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString session_n READ session_n WRITE setSession_n NOTIFY session_n_changed)
@@ -12,8 +12,8 @@ class LisModel : public QObject
     Q_PROPERTY(QString session_p READ session_p WRITE setSession_p NOTIFY session_p_changed)
 
 public:
-   LisModel(QObject *parent=0);
-   LisModel(const QString &session_n, const QString &session_s,const QString session_d,const QString session_e,QString session_p, QObject *parent=0);
+   ListModel(QObject *parent=0);
+   ListModel(const QString &session_n, const QString &session_s,const QString session_d,const QString session_e,QString session_p, QObject *parent=0);
     QString session_n() const;
     QString session_s() const;
     QString session_d() const;

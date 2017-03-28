@@ -21,7 +21,6 @@ SOURCES+= main.cpp\
     filesave.cpp\
     datamanager.cpp \
     reportform.cpp \
-    lismodel.cpp \
     sessionwindowtable.cpp \
     exporthtml.cpp \
     databasemanager.cpp \
@@ -30,7 +29,8 @@ SOURCES+= main.cpp\
     suiteinfo.cpp \
     smtp.cpp \
     smtpreport.cpp \
-    TreeInfo.cpp
+    TreeInfo.cpp \
+    listmodel.cpp
 
 HEADERS+= mainwindow.h \
     trscore.h \
@@ -42,7 +42,6 @@ HEADERS+= mainwindow.h \
     filesave.h\
     datamanager.h \
     reportform.h \
-    lismodel.h \
     sessionwindowtable.h \
     exporthtml.h \
     databasemanager.h \
@@ -51,7 +50,8 @@ HEADERS+= mainwindow.h \
     suiteinfo.h \
     smtp.h \
     smtpreport.h \
-    TreeInfo.h
+    TreeInfo.h \
+    listmodel.h
 
 FORMS+= mainwindow.ui \
     reportform.ui
