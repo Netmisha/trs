@@ -527,10 +527,11 @@ void MainTree::openFolder() {
 }
 void MainTree::ClearCache()
 {
+    bool res=data_base_man.clearDataBase();
     QString path=QDir::currentPath()+"/Logs";
     if(QDir(path).exists()) {
         QDir qd(path);
-        if(qd.removeRecursively()) {
+        if(qd.removeRecursively() || res) {
             QMessageBox msgBox;
             msgBox.setText("Cache deleted.");
             msgBox.exec();
