@@ -1,4 +1,4 @@
-#include "maintree.h"
+#include "TreeInfo.h"
 #include <QDebug>
 TreeInfo::TreeInfo (TreeInfo *parent, QString fil, QString nam, QString typ, int rep, QModelIndex ind)
     : parent(parent), file(fil), name(nam), type(typ), repeat(rep), item(ind) {

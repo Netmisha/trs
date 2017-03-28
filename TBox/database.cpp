@@ -143,7 +143,7 @@ void DataBase::defaultTableValue(QString start, QString end){
       if(session_nums.contains(it.at(i))){
       pass_session.append("fail");
       }else{pass_session.append("success");}
-       datalist.append( new LisModel(it.at(i),Start_date_S,res_ses,End_date_S,pass_session.at(i)));
+       datalist.append( new ListModel(it.at(i),Start_date_S,res_ses,End_date_S,pass_session.at(i)));
 
        Start_date_S.clear(); End_date_S.clear(); duration_s.clear();
        Time_S.clear(); Time_E.clear();
@@ -353,7 +353,7 @@ QStringList DataBase::get_seesion_db( QString start,  QString end){
               if(session_nums.contains(it.at(i))){
               pass_session.append("fail");
               }else{pass_session.append("success");}
-              datalist.append( new LisModel(it.at(i),Start_date_S,res_ses,End_date_S,pass_session.at(i)));
+              datalist.append( new ListModel(it.at(i),Start_date_S,res_ses,End_date_S,pass_session.at(i)));
               Start_date_S.clear(); End_date_S.clear(); duration_s.clear();res_ses.clear();
               Time_S.clear(); Time_E.clear();
               session_duration.clear();

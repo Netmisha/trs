@@ -12,7 +12,6 @@ TEMPLATE = app
 win32:LIBS += -lpsapi
 SOURCES+= main.cpp\
     mainwindow.cpp \
-    maintree.cpp \
     trscore.cpp \
     database.cpp \
     reporter.cpp \
@@ -22,7 +21,6 @@ SOURCES+= main.cpp\
     filesave.cpp\
     datamanager.cpp \
     reportform.cpp \
-    lismodel.cpp \
     sessionwindowtable.cpp \
     exporthtml.cpp \
     databasemanager.cpp \
@@ -30,10 +28,11 @@ SOURCES+= main.cpp\
     selectfolderdialog.cpp \
     suiteinfo.cpp \
     smtp.cpp \
-    smtpreport.cpp
+    smtpreport.cpp \
+    TreeInfo.cpp \
+    listmodel.cpp
 
 HEADERS+= mainwindow.h \
-    maintree.h \
     trscore.h \
     database.h \
     reporter.h \
@@ -43,7 +42,6 @@ HEADERS+= mainwindow.h \
     filesave.h\
     datamanager.h \
     reportform.h \
-    lismodel.h \
     sessionwindowtable.h \
     exporthtml.h \
     databasemanager.h \
@@ -51,7 +49,9 @@ HEADERS+= mainwindow.h \
     selectfolderdialog.h \
     suiteinfo.h \
     smtp.h \
-    smtpreport.h
+    smtpreport.h \
+    TreeInfo.h \
+    listmodel.h
 
 FORMS+= mainwindow.ui \
     reportform.ui
