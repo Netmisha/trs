@@ -12,7 +12,6 @@ TEMPLATE = app
 win32:LIBS += -lpsapi
 SOURCES+= main.cpp\
     mainwindow.cpp \
-    maintree.cpp \
     trscore.cpp \
     database.cpp \
     reporter.cpp \
@@ -30,10 +29,10 @@ SOURCES+= main.cpp\
     selectfolderdialog.cpp \
     suiteinfo.cpp \
     smtp.cpp \
-    smtpreport.cpp
+    smtpreport.cpp \
+    TreeInfo.cpp
 
 HEADERS+= mainwindow.h \
-    maintree.h \
     trscore.h \
     database.h \
     reporter.h \
@@ -51,7 +50,8 @@ HEADERS+= mainwindow.h \
     selectfolderdialog.h \
     suiteinfo.h \
     smtp.h \
-    smtpreport.h
+    smtpreport.h \
+    TreeInfo.h
 
 FORMS+= mainwindow.ui \
     reportform.ui

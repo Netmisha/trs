@@ -1,5 +1,5 @@
-#ifndef MAINTREE_H
-#define MAINTREE_H
+#ifndef TREEINFO_H
+#define TREEINFO_H
 #include <QStandardItemModel>
 #include <QList>
 #include "datamanager.h"
