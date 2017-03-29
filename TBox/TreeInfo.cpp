@@ -7,14 +7,10 @@ TreeInfo::TreeInfo (TreeInfo *parent, QString fil, QString nam, QString typ, int
 
 TreeInfo::~TreeInfo()
 {
-    for(auto&it:childTests) {
+    for(auto&it:children) {
         delete it;
     }
-    for(auto&it:childSuites) {
-        delete it;
-    }
-    childTests.clear();
-    childSuites.clear();
+    children.clear();
     delete dm;
 }
 QString TreeInfo::getPath() {
@@ -22,6 +18,9 @@ QString TreeInfo::getPath() {
 }
 QString TreeInfo::getFile() {
     return file;
+}
+int TreeInfo::getPosition() {
+    return position;
 }
 QString TreeInfo::getName() {
     return name;
@@ -44,11 +43,8 @@ QModelIndex TreeInfo::getItem() {
 TreeInfo * TreeInfo::getParent() {
     return parent;
 }
-QList<TreeInfo *>& TreeInfo::getChildTests() {
-    return childTests;
-}
-QList<TreeInfo *>& TreeInfo::getChildSuites() {
-    return childSuites;
+QList<TreeInfo *>& TreeInfo::getChildren() {
+    return children;
 }
 void TreeInfo::setFile(QString file) {
     this->file=file;
@@ -58,6 +54,9 @@ void TreeInfo::setName(QString name) {
 }
 void TreeInfo::setType(QString type) {
     this->type=type;
+}
+void TreeInfo::setPosition(int pos) {
+    position=pos;
 }
 void TreeInfo::setDisable(bool status) {
     disable=status;
@@ -75,11 +74,18 @@ void TreeInfo::setItem(QModelIndex item) {
 void TreeInfo::setParent(TreeInfo *parent) {
     this->parent=parent;
 }
-void TreeInfo::addChildTests(TreeInfo * test) {
-    childTests.push_back(test);
-}
-void TreeInfo::addChildSuites(TreeInfo * suite) {
-    childSuites.push_back(suite);
+int TreeInfo::addChild(TreeInfo * test) {
+    int i=0;
+    for(auto&it:children) {
+        if(it->getPosition()<=test->getPosition()) {
+            i++;
+        }
+        else {
+            break;
+        }
+    }
+    children.insert(i,test);
+    return i;
 }
 bool TreeInfo::DecreaseRepeat() {
     if(type=="suite") {
@@ -110,29 +116,35 @@ void TreeInfo::ResetRepeat() {
 }
 void TreeInfo::ResetAllRepeat() {
     repeat=baseRepeat;
-    for(auto&it:childTests) {
-        it->ResetRepeat();
-    }
-    for(auto&it:childSuites) {
-        it->ResetAllRepeat();
+    for(auto&it:children) {
+        if(it->getType()==tags_name::kTest) {
+            it->ResetRepeat();
+        }
+        else {
+            it->ResetAllRepeat();
+        }
     }
 }
 void TreeInfo::ResetChildRepeat() {
-    for(auto&it:childTests) {
-        it->ResetRepeat();
-    }
-    for(auto&it:childSuites) {
-        it->ResetAllRepeat();
+    for(auto&it:children) {
+        if(it->getType()==tags_name::kTest) {
+            it->ResetRepeat();
+        }
+        else {
+            it->ResetAllRepeat();
+        }
     }
 }
 void TreeInfo::ResetFirsRun()
 {
     firstRun=true;
-    for(auto&it:childTests) {
-        it->setFirsRun(true);
-    }
-    for(auto&it:childSuites) {
-        it->ResetFirsRun();
+    for(auto&it:children) {
+        if(it->getType()==tags_name::kTest) {
+            it->setFirsRun(true);
+        }
+        else {
+            it->ResetFirsRun();
+        }
     }
 }
 TreeInfo *TreeInfo::FindByItem(QModelIndex item)
@@ -140,15 +152,17 @@ TreeInfo *TreeInfo::FindByItem(QModelIndex item)
     if(item==this->item) {
         return this;
     }
-    for(auto&it:childTests) {
-        if(item==it->getItem()) {
-            return it;
+    for(auto&it:children) {
+        if(it->getType()==tags_name::kTest) {
+            if(item==it->getItem()) {
+                return it;
+            }
         }
-    }
-    for(auto&it:childSuites) {
-        auto res=it->FindByItem(item);
-        if(res) {
-            return res;
+        else {
+            auto res=it->FindByItem(item);
+            if(res) {
+                return res;
+            }
         }
     }
     return nullptr;
@@ -156,18 +170,20 @@ TreeInfo *TreeInfo::FindByItem(QModelIndex item)
 
 bool TreeInfo::isValid()
 {
-    if(name.isEmpty() || file.isEmpty() || repeat<1 || !item.isValid()) {
+    if(name.isEmpty() || file.isEmpty() || repeat<1) {
         return false;
     }
-    for(auto&it:childTests) {
-        if(it->getName().isEmpty() || it->getFile().isEmpty() || it->getRepeat()<1 || !it->getItem().isValid()) {
-            return false;
+    for(auto&it:children) {
+        if(it->getType()==tags_name::kTest) {
+            if(it->getName().isEmpty() || it->getFile().isEmpty() || it->getRepeat()<1) {
+                return false;
+            }
         }
-    }
-    for(auto&it:childSuites) {
-        auto res=it->isValid();
-        if(!res) {
-            return res;
+        else {
+            auto res=it->isValid();
+            if(!res) {
+                return res;
+            }
         }
     }
     return true;
@@ -178,8 +194,10 @@ QStringList TreeInfo::getSuites()
     QStringList suites;
     if(type=="suite") {
         suites.append(name);
-        for(auto&it:childSuites) {
-            suites.append(it->getSuites());
+        for(auto&it:children) {
+            if(it->getType()==tags_name::kSuite) {
+                suites.append(it->getSuites());
+            }
         }
     }
     return suites;
@@ -191,18 +209,20 @@ TreeInfo *TreeInfo::getNextTest()
         return nullptr;
     }
     TreeInfo * nextTest=nullptr;
-    for(auto&it:childTests) {
-        if(!it->isDisable() && it->DecreaseRepeat()) {
-            nextTest=it;
-            qDebug()<<QString("Next test is ")+it->getName();
-            break;
+    for(auto&it:children) {
+        if(it->getType()==tags_name::kTest) {
+            if(!it->isDisable() && it->DecreaseRepeat()) {
+                nextTest=it;
+                qDebug()<<QString("Next test is ")+it->getName();
+                break;
+            }
         }
-    }
-    for(auto&it:childSuites) {
-        nextTest=it->getNextTest();
-        if(nextTest) {            
-            qDebug()<<QString("Next test is ")+nextTest->getName();
-            break;
+        else {
+            nextTest=it->getNextTest();
+            if(nextTest) {
+                qDebug()<<QString("Next test is ")+nextTest->getName();
+                break;
+            }
         }
     }
     if(!nextTest) {
@@ -218,12 +238,14 @@ TreeInfo *TreeInfo::getNextTest()
 int TreeInfo::setAsFail()
 {
     int repeats=0;
-    for(auto&it:parent->getChildTests()) {
-        QString req(it->getFile());
-        req+="/"+it->getParent()->getName()+"/"+tags_name::kTest+"/"+it->getName()+"/"+tags_name::kAlwaysRun;
-        if(dm->Get(req)!="true") {
-            repeats+=it->getRepeat();
-            it->setRepeat(0);
+    for(auto&it:parent->getChildren()) {
+        if(it->getType()==tags_name::kTest) {
+            QString req(it->getFile());
+            req+="/"+it->getParent()->getName()+"/"+tags_name::kTest+"/"+it->getName()+"/"+tags_name::kAlwaysRun;
+            if(dm->Get(req)!="true") {
+                repeats+=it->getRepeat();
+                it->setRepeat(0);
+            }
         }
     }
     return repeats;
@@ -239,11 +261,13 @@ int TreeInfo::getTotalRuns()
         repeats=repeat;
     }
     else {
-        for(auto&it:childTests) {
-            repeats+=it->getTotalRuns()*repeat;
-        }
-        for(auto&it:childSuites) {
-            repeats+=it->getTotalRuns()*repeat;
+        for(auto&it:children) {
+            if(it->getType()==tags_name::kTest) {
+                repeats+=it->getTotalRuns()*repeat;
+            }
+            else {
+                repeats+=it->getTotalRuns()*repeat;
+            }
         }
     }
     return repeats;

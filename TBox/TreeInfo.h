@@ -10,6 +10,7 @@ public:
     ~TreeInfo();
     QString getPath();
     QString getFile();
+    int getPosition();
     QString getName();
     QString getType();
     bool isDisable();
@@ -17,18 +18,17 @@ public:
     int getBaseRepeat();
     QModelIndex getItem();
     TreeInfo * getParent();
-    QList<TreeInfo *>& getChildTests();
-    QList<TreeInfo *>& getChildSuites();
+    QList<TreeInfo *>& getChildren();
     void setFile(QString);
     void setName(QString);
     void setType(QString);
+    void setPosition(int);
     void setDisable(bool);
     void setRepeat(int);
     void setBaseRepeat(int);
     void setItem(QModelIndex);
     void setParent(TreeInfo *);
-    void addChildTests(TreeInfo *);
-    void addChildSuites(TreeInfo *);
+    int addChild(TreeInfo *);
     bool DecreaseRepeat();
     void ResetRepeat();
     void ResetAllRepeat();
@@ -50,11 +50,11 @@ private:
     int baseRepeat;
     bool disable;
     bool firstRun=false;
+    int position;
     QModelIndex item; // make class and add root dir
-    QList<TreeInfo *> childTests;
-    QList<TreeInfo *> childSuites;
+    QList<TreeInfo *> children;
     DataManager *dm;
-    TreeInfo * parent;
+    TreeInfo * parent=nullptr;
 };
 #endif // MAINTREE_H
 

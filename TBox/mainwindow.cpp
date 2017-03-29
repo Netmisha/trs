@@ -56,9 +56,9 @@ public:
     Q_INVOKABLE QStringList GetTags();
     Q_INVOKABLE void setRootDir(QString);
     Q_INVOKABLE void setMailCredentials(QString username,QString password,QString MailTo);
-    Q_INVOKABLE QString AddNewTest(QString, QString, QString, QString, QString, QString, QString, QString);
-    Q_INVOKABLE QString AddNewSuite(QString, QString, QString, QString);
-    Q_INVOKABLE QString AddRootSuite(QString, QString, QString, QString);
+    Q_INVOKABLE QString AddNewTest(QString, QString, QString, QString, QString, QString, QString, QString, QString);
+    Q_INVOKABLE QString AddNewSuite(QString, QString, QString, QString, QString);
+    Q_INVOKABLE QString AddRootSuite(QString, QString, QString, QString, QString);
     Q_INVOKABLE void setCurrentTag(QString);
     Q_INVOKABLE void Set(QString, QString);
     Q_INVOKABLE QString Get(QString);
@@ -80,9 +80,10 @@ public:
     Q_INVOKABLE void Terminate();
 private:
     void CreateHtml(TreeInfo *);
-    void Parse(QString, QStandardItem *, TreeInfo *);
-    QStandardItem * AddItemToTree(QString);
+    void Parse(QString, TreeInfo *);
+    QStandardItem * AddItemToTree(TreeInfo *);
     QString ParseFolder(QString);
+    void BuildQmlTree(QStandardItem *, TreeInfo *);
     QHash<int, QByteArray> m_roleNameMapping;
     TreeInfo *rootSuite;
     TreeInfo *itemForRun=nullptr;
@@ -232,7 +233,6 @@ void MainTree::testFinished(QString msg) {
     data_base_man.sessionEnd();
     run=false;
     QFile file(currentTest->getPath()+"/"+"test.html");
-    qDebug() << file.fileName();
     file.remove();
     currentTest->setFirsRun(false);
     if(msg.contains("fail")) {
@@ -309,22 +309,24 @@ QString MainTree::Load(QString path) {
 void MainTree::setRootDir(QString path) {
     rootDir=path;
 }
-QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag, QString rep, QString disable, QString important, QString alwaysRun) {
+QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag, QString rep, QString disable, QString important, QString alwaysRun, QString pos) {
     auto it = rootSuite->FindByItem(currentIndex);
     if(!it) {
         return "Suite does not exist";
     }
             rep=rep==""?"1":rep;
-    QString res= dm.AddTest(it->getFile(), name, dis, tag, exe, rep, disable,important,alwaysRun,0);
+            pos=pos==""?"10000":pos;
+    QString res= dm.AddTest(it->getFile(), name, dis, tag, exe, rep, disable,important,alwaysRun,pos);
             if(res=="") {
         TreeInfo * test = new TreeInfo();
         test->setParent(it);
         test->setFile(it->getFile());
-        test->setItem(this->indexFromItem(AddItemToTree(name)));
         test->setName(name);
         test->setType("test");
         test->setBaseRepeat(rep.toInt());
-        it->addChildTests(test);
+        test->setPosition(pos.toInt());
+        it->addChild(test);
+        test->setItem(this->indexFromItem(AddItemToTree(test)));
                 QStringList t=tag.split(",");
                 for(auto&i:t) {
                     if(!tags.contains(i)) {
@@ -336,35 +338,34 @@ QString MainTree::AddNewTest(QString name, QString dis, QString exe, QString tag
             }
             return res;
 }
-QString MainTree::AddNewSuite(QString name, QString dis, QString rep, QString disable) {
+QString MainTree::AddNewSuite(QString name, QString dis, QString rep, QString disable, QString pos) {
     auto it = rootSuite->FindByItem(currentIndex);
     if(!it) {
         return "Suite does not exist";
     }
             rep=rep==""?"1":rep;
-    QString res=dm.AddSuite(it->getFile(), name, dis, rep, disable,0);
+            pos=pos==""?"10000":pos;
+    QString res=dm.AddSuite(it->getFile(), name, dis, rep, disable, pos);
             if(res=="") {
         TreeInfo *suite = new TreeInfo();
         QString parentFile=it->getFile();
         parentFile.data()[parentFile.lastIndexOf("/")+1]='\0';
         parentFile = QString(parentFile.data())+name+"/suite.xml";
         suite->setFile(parentFile);
-                QStandardItem * item = new QStandardItem(name);
-                this->itemFromIndex(currentIndex)->appendRow(item);
-        suite->setItem(this->indexFromItem(item));
         suite->setName(name);
         suite->setType("suite");
         suite->setBaseRepeat(rep.toInt());
         suite->setParent(it);
-        it->addChildSuites(suite);
+        suite->setPosition(pos.toInt());
+        it->addChild(suite);
+        suite->setItem(this->indexFromItem(AddItemToTree(suite)));
         currentIndex=suite->getItem();
-        qDebug() << "AddNewSuite";
         QMetaObject::invokeMethod(contextObject, "selectItem", Q_ARG(QVariant, currentIndex));
             }
             return res;
 }
-QString MainTree::AddRootSuite(QString name, QString dis, QString rep, QString disable) {
-    return dm.AddRoot(rootDir+"/suite.xml", name, dis, rep, disable,0);
+QString MainTree::AddRootSuite(QString name, QString dis, QString rep, QString disable, QString pos) {
+    return dm.AddRoot(rootDir+"/suite.xml", name, dis, rep, disable,pos);
 }
 void MainTree::setCurrentTag(QString tag) {
     currentTag=tag;
@@ -389,6 +390,23 @@ void MainTree::Set(QString path, QString data) {
             }
     if(path==tags_name::kDisable) {
         it->setDisable(data=="true"?true:false);
+    }
+    if(path==tags_name::kPosition) {
+        it->setPosition(data.toInt());
+        if(it!=rootSuite){
+            auto obj=it;
+            obj->getParent()->getChildren().removeAll(obj);
+            int newRow=obj->getParent()->addChild(obj);
+            auto root=this->itemFromIndex(currentIndex)->parent();
+            int row=currentIndex.row();
+            auto items=root->takeRow(row);
+            root->insertRow(newRow, items);
+            row=0;
+            for(auto&it:obj->getParent()->getChildren()) {
+                it->setItem(root->child(row++)->index());
+            }
+            currentIndex=obj->getItem();
+        }
     }
 }
 QString MainTree::Get(QString path) {
@@ -428,42 +446,18 @@ QString MainTree::Remove() {
     auto parent = it->getParent();
     int row=currentIndex.row();
     root->removeRow(row);
-    if(parent->getChildTests().contains(it)) {
-        bool found=false;
-        for(auto&i:parent->getChildTests()) {
-            if(i==it) {
-                found=true;
-                continue;
-            }
-            if(found) {
-                i->setItem(root->child(row++)->index());
-            }
+    bool found=false;
+    for(auto&i:parent->getChildren()) {
+        if(i==it) {
+            found=true;
+            continue;
         }
-        for(auto&i:parent->getChildSuites()) {
+        if(found) {
             i->setItem(root->child(row++)->index());
         }
-        prev=parent->getChildTests().indexOf(it)==0?parent:parent->getChildTests().at(parent->getChildTests().indexOf(it)-1);
-        parent->getChildTests().removeAll(it);
     }
-    else if(parent->getChildSuites().contains(it)) {
-        bool found=false;
-        for(auto&i:parent->getChildSuites()) {
-            if(i==it) {
-                found=true;
-                continue;
-            }
-            if(found) {
-                i->setItem(root->child(row++)->index());
-            }
-        }
-        if(!parent->getChildSuites().indexOf(it)) {
-            prev=parent->getChildTests().isEmpty()?parent:parent->getChildTests().last();
-        }
-        else {
-            prev=parent->getChildSuites().at(parent->getChildSuites().indexOf(it)-1);
-        }
-        parent->getChildSuites().removeAll(it);
-    }
+    prev=parent->getChildren().indexOf(it)==0?parent:parent->getChildren().at(parent->getChildren().indexOf(it)-1);
+    parent->getChildren().removeAll(it);
     currentIndex=prev->getItem();
     return res;
 }
@@ -549,7 +543,7 @@ QStringList MainTree::GetSuiteList() {
 QStringList MainTree::getHeaders(QString file, QString test) {
     return dm.getHeaders(file, test);
 }
-QString MainTree::getFile(QModelIndex item) {
+QString MainTree::getFile(QModelIndex) {
     auto it = rootSuite->FindByItem(currentIndex);
     if(!it) {
         return "";
@@ -625,7 +619,7 @@ bool MainTree::Run() {
 QStringList MainTree::GetTags() {
     return tags;
 }
-void MainTree::Parse(QString path, QStandardItem * rootItem, TreeInfo * rootSuite) {
+void MainTree::Parse(QString path, TreeInfo * rootSuite) {
     if(!rootSuite) {
         return;
     }
@@ -641,24 +635,21 @@ void MainTree::Parse(QString path, QStandardItem * rootItem, TreeInfo * rootSuit
             if (it.filePath().contains("suite.xml")) {
                 isValid=true;
                 QString name = getSuiteName(it.filePath());
-                rootItem->setText(name);
                 rootSuite->setFile(it.filePath());
-                rootSuite->setItem(this->indexFromItem(rootItem));
                 rootSuite->setName(name);
                 rootSuite->setType("suite");
                 rootSuite->setBaseRepeat(dm.Get(rootSuite->getFile()+"/suite/repeat").toInt());
                 rootSuite->setDisable(dm.Get(rootSuite->getFile()+"/suite/disable")=="true"?true:false);
+                rootSuite->setPosition(dm.Get(rootSuite->getFile()+"/suite/position").toInt());
                 QStringList list = getTestsName(it.filePath());
                 for (auto& iter : list) {
-                    QStandardItem * testItem = new QStandardItem(iter);
-                    rootItem->appendRow(testItem);
                     TreeInfo * test = new TreeInfo();
                     test->setParent(rootSuite);
                     test->setFile(it.filePath());
-                    test->setItem(this->indexFromItem(testItem));
                     test->setName(iter);
                     test->setType("test");
                     test->setBaseRepeat(dm.Get(test->getFile()+"/suite/test/"+iter+"/repeat").toInt());
+                    test->setPosition(dm.Get(test->getFile()+"/suite/test/"+iter+"/position").toInt());
                     test->setDisable(dm.Get(test->getFile()+"/suite/test/"+iter+"/disable")=="true"?true:false);
                     QStringList t=dm.Get(test->getFile()+"/suite/test/"+iter+"/tag").split(",");
                     for(auto&i:t) {
@@ -666,7 +657,10 @@ void MainTree::Parse(QString path, QStandardItem * rootItem, TreeInfo * rootSuit
                             tags.push_back(i);
                         }
                     }
-                    rootSuite->addChildTests(test);
+                    rootSuite->addChild(test);
+                }
+                if(rootSuite->getParent()) {
+                    rootSuite->getParent()->addChild(rootSuite);
                 }
             }
             if (it.fileInfo().isDir() && !IsFolderEmpty(it.filePath())) {
@@ -676,35 +670,40 @@ void MainTree::Parse(QString path, QStandardItem * rootItem, TreeInfo * rootSuit
     }
     if(isValid) {
         for(auto&ind:chilSuite) {
-           QStandardItem * childItem = new QStandardItem("");
            TreeInfo * childSuite = new TreeInfo();
-           rootItem->appendRow(childItem);
            childSuite->setParent(rootSuite);
-           rootSuite->addChildSuites(childSuite);
-           Parse(ind, childItem, childSuite);
+           Parse(ind, childSuite);
         }
     }
 }
-QStandardItem * MainTree::AddItemToTree(QString name) {
-    QStandardItem * item = new QStandardItem(name);
+QStandardItem * MainTree::AddItemToTree(TreeInfo *obj) {
+    QStandardItem * item = new QStandardItem(obj->getName());
     QStandardItem * root=this->itemFromIndex(currentIndex);
     auto suite = rootSuite->FindByItem(currentIndex);
     int row=0;
-    if(!suite->getChildTests().isEmpty()) {
-        row=suite->getChildTests().size();
+    bool setup=false;
+    for(auto&it:suite->getChildren()) {
+        if(setup) {
+            it->setItem(root->child(++row)->index());
+        }
+        else {
+            if(it==obj) {
+                this->itemFromIndex(currentIndex)->insertRow(row,item);
+                setup=true;
+            }
+            else {
+                row++;
+            }
+        }
     }
-    this->itemFromIndex(currentIndex)->insertRow(row,item);
-    for(auto&it:suite->getChildSuites()) {
-        it->setItem(root->child(++row)->index());
-    }
+    this->itemFromIndex(currentIndex)->insertRow(++row,new QStandardItem(""));
+    this->itemFromIndex(currentIndex)->removeRow(row);
     return item;
 }
 QString MainTree::ParseFolder(QString path) {
-    QStandardItem * rootItem = new QStandardItem("");
-    this->appendRow(rootItem);
     tags.clear();
     tags.push_back("All");
-    Parse(path, rootItem, rootSuite);
+    Parse(path, rootSuite);
     if(!rootSuite->isValid()) {
         tags.clear();
         this->clear();
@@ -712,8 +711,28 @@ QString MainTree::ParseFolder(QString path) {
         tags.push_back("All");
         return "Invalid folder";
     }
+    QStandardItem * rootItem = new QStandardItem(rootSuite->getName());
+    this->appendRow(rootItem);
+    rootSuite->setItem(this->indexFromItem(rootItem));
+    BuildQmlTree(rootItem, rootSuite);
     return "";
 
+}
+void MainTree::BuildQmlTree(QStandardItem *rootItem, TreeInfo *rootSuite)
+{
+    for(auto&it:rootSuite->getChildren()) {
+        if(it->getType()==tags_name::kTest) {
+            QStandardItem * item = new QStandardItem(it->getName());
+            rootItem->appendRow(item);
+            it->setItem(this->indexFromItem(item));
+        }
+        else {
+            QStandardItem * item = new QStandardItem(it->getName());
+            rootItem->appendRow(item);
+            it->setItem(this->indexFromItem(item));
+            BuildQmlTree(item, it);
+        }
+    }
 }
 QStringList MainTree::getTestsName(QString file_name) {
     QFile file(file_name);
