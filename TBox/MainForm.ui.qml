@@ -823,7 +823,9 @@ Item {
                                                 iconSource: "icons/icons/jssave.png"
                                                 onClicked: {
                                                     var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
-                                                    var res=theModel.AddRootSuite(textEditSName.text,textEditSDiscr.text, textEditSRepeat.text, dis, textEditSPosition.text);
+                                                    var rep=textEditSRepeat.text==""?"1":textEditSRepeat.text;
+                                                    var pos=textEditSPosition.text==""?"10000":textEditSPosition.text;
+                                                    var res=theModel.AddRootSuite(textEditSName.text,textEditSDiscr.text, rep, dis, pos);
                                                     if(res!="") {
                                                         messageDialog.text=res;
                                                         messageDialog.open()

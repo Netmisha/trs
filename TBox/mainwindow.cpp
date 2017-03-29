@@ -300,7 +300,9 @@ QString MainTree::Load(QString path) {
     if(rootDir!="") {
         res=ParseFolder(path);
         if(res!="") {
-            delete rootSuite;
+            if(!rootSuite) {
+                delete rootSuite;
+            }
             return res;
         }
     }
