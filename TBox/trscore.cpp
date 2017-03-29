@@ -38,7 +38,6 @@ bool TRSCore::isImageEqual(QString path,QString path2){
          return 0;
      }
      QVector<int> img_rgb; // contains img_rgba values
-     //linear stretching
      for(int i=0;i<img.width();i++){
          for(int j=0;j<img.height();j++){
              QColor color(img.pixel(i,j)); //QColor (RGB)

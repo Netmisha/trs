@@ -27,8 +27,8 @@ void DataBaseManager::sessionEnd(){
 
 void  DataBaseManager::calcTime(int msecs){
     hours = msecs/(1000*60*60);
-    minutes = (msecs%(1000*60*60))/(1000*60);//(msecs-(hours*1000*60*60))/(100*60);
-    seconds = (((msecs%(1000*60*60))%(1000*60))/1000);//(msecs-(minutes*1000*60)-(hours*1000*60*60))/100;
+    minutes = (msecs%(1000*60*60))/(1000*60);
+    seconds = (((msecs%(1000*60*60))%(1000*60))/1000);
     milliseconds = msecs-(seconds*1000)-(minutes*1000*60)-(hours*1000*60*60);
     session_execution.append(QString::number(hours)+":"+QString::number(minutes)+":"+QString::number(seconds)+":"+QString::number(milliseconds));
 }

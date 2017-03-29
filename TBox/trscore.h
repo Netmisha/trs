@@ -76,8 +76,8 @@ public slots:
     void Sleep(int time);
 
     /**
-     * @brief Sleep: suspends current process
-     * @param time an integer argument
+     * @brief TimeElapsed: starts timer on test run
+     * @return integer, elapsed time
      */
     int TimeElapsed();
     /**
@@ -109,8 +109,8 @@ public slots:
      */
     QString GetAppRect(QString windowName);
     /**
-     * @brief GetAppRect: returns rectangle of window with some name
-     * @param windowName a string argument
+     * @brief GetChildRect: returns child of rectangle of window with some name
+     * @param windowName a string argument, childName a string argument
      * @return QString, contains JSON obect
      */
     QString GetChildRect(QString windowName, QString childName);
@@ -225,7 +225,7 @@ public slots:
      */
     void PrintScreen(QString file);
     /**
-     * @brief exec: makes print screen of current size and save to file
+     * @brief PrintScreenA: makes print screen of current size and save to file
      * @param x an integer argunemt
      * @param y an integer argunemt
      * @param w an integer argunemt
@@ -360,9 +360,31 @@ public slots:
      * @return bool, if user run all tests return true
      */
     bool isRunAll();
+    /**
+     * @brief isSingleRun: returns true if the run single button was pressed
+     * @return bool, if single run test returh true
+     */
     bool isSingleRun();
+    /**
+     * @brief isImageEqual: returns true if two images are mostly equal
+     * @param path a string argument
+     * @param path a string argument
+     * @return bool, if images are mostly equal return true
+     */
     bool isImageEqual(QString path,QString path2);
+    /**
+     * @brief getQuantColor: returns number of
+     * @param path a string argument
+     * @param R an int argument
+     * @param G an int argument
+     * @param B an int argument
+     * @return unsigned int, return RGB color occurrence
+     */
     unsigned int getQuantColor(QString path,int R,int G,int B);
+    /**
+     * @brief setRunAll run All tests
+     * @param type a bool argument
+     */
     void setRunAll(bool type);
 private:
     QProcess *process;
