@@ -679,16 +679,19 @@ void MainTree::Parse(QString path, TreeInfo * rootSuite) {
 QStandardItem * MainTree::AddItemToTree(TreeInfo *obj) {
     QStandardItem * item = new QStandardItem(obj->getName());
     QStandardItem * root=this->itemFromIndex(currentIndex);
+    QList<QStandardItem *> items;
     auto suite = rootSuite->FindByItem(currentIndex);
     int row=0;
     bool setup=false;
     for(auto&it:suite->getChildren()) {
         if(setup) {
-            it->setItem(root->child(++row)->index());
+            if(root->rowCount()<row) {
+                break;
+            }
+            items.append(root->takeRow(row));
         }
         else {
             if(it==obj) {
-                this->itemFromIndex(currentIndex)->insertRow(row,item);
                 setup=true;
             }
             else {
@@ -696,8 +699,12 @@ QStandardItem * MainTree::AddItemToTree(TreeInfo *obj) {
             }
         }
     }
-    this->itemFromIndex(currentIndex)->insertRow(++row,new QStandardItem(""));
-    this->itemFromIndex(currentIndex)->removeRow(row);
+    root->insertRow(row,item);
+    root->appendRows(items);
+    row=0;
+    for(auto&it:suite->getChildren()) {
+        it->setItem(root->child(row++)->index());
+    }
     return item;
 }
 QString MainTree::ParseFolder(QString path) {
