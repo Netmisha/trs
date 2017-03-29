@@ -52,7 +52,7 @@ public:
     Q_INVOKABLE static QString getJS(QString, QString);
     Q_INVOKABLE static void setJS(QString, QString, QString);
     Q_INVOKABLE bool Run();
-    Q_INVOKABLE void RunOne();
+    Q_INVOKABLE bool RunOne();
     Q_INVOKABLE QStringList GetTags();
     Q_INVOKABLE void setRootDir(QString);
     Q_INVOKABLE void setMailCredentials(QString username,QString password,QString MailTo);
@@ -232,15 +232,22 @@ void MainTree::testFinished(QString msg) {
     WriteLog(msg);
     data_base_man.sessionEnd();
     run=false;
+    delete view->page();
     QFile file(currentTest->getPath()+"/"+"test.html");
     file.remove();
     currentTest->setFirsRun(false);
     if(msg.contains("fail")) {
         if(dm.Get(currentTest->getFile()+"/suite/test/"+currentTest->getName()+"/important")=="true") {
             importantTestFail=true;
-            qint64 res=currentTest->setAsFail();
-            finishedTestCount+=res;
-            failedTestCount+=res;
+            if(runOne) {
+                currentTest->setAsFail();
+                runOne = false;
+            }
+            else {
+                qint64 res=currentTest->setAsFail();
+                finishedTestCount+=res;
+                failedTestCount+=res;
+            }
             WriteLog("All tests from this suite stoped.");
         }
         failedTestCount++;
@@ -575,31 +582,36 @@ void MainTree::FindJSFile(QString data) {
         return setJS(it->getFile(), it->getName(), data);
     }
 }
-void MainTree::RunOne(){
+bool MainTree::RunOne(){
     if(run) {
-        return;
+        return false;
     }
     emit sessionN();
     rootSuite->ResetAllRepeat();
     totalTestCount=finishedTestCount=failedTestCount=0;
     itemForRun = rootSuite->FindByItem(currentIndex);
     if(!itemForRun) {
-        return;
+        WriteLog("Item not found.");
+        return false;
     }
     if (itemForRun->getType() == "test") {
            runOne = true;
        itemForRun->setRepeat(0);
        CreateHtml(itemForRun);
        totalTestCount=1;
-       return;
+       return true;
             }
     if (itemForRun->getType() == "suite"){
         auto it = itemForRun->getNextTest();
         totalTestCount=itemForRun->getTotalRuns();
         if(it) {
             CreateHtml(it);
+            return true;
         }
+        WriteLog("No tests to run.");
+        return false;
     }
+    return false;
 }
 bool MainTree::Run() {
     if(run) {
@@ -615,8 +627,10 @@ bool MainTree::Run() {
     auto it = rootSuite->getNextTest();
     if(it) {
         CreateHtml(it);
-        }
-    return true;
+        return true;
+    }
+    WriteLog("No tests to run.");
+    return false;
 }
 QStringList MainTree::GetTags() {
     return tags;
@@ -844,7 +858,6 @@ void MainTree::CreateHtml(TreeInfo *it) {
         emit sendSuiteInfo(dm.Get(it->getFile()+"/suite/"+"description"),
                            "1");
         emit sendRepeatTest ("1");
-        runOne = false;
     }
     emit sendTestName(it->getName());
     emit sendSuiteName(getSuiteName(it->getFile()));

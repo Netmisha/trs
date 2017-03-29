@@ -28,6 +28,7 @@
 #include <databasemanager.h>
 #include <suiteinfo.h>
 #include <smtp.h>
+class MainTree;
 namespace Ui {
 class MainWindow;
 }

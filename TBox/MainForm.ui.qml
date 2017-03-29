@@ -69,21 +69,23 @@ Item {
         id: runJSAction
         shortcut: "Ctrl+R"
         onTriggered: {
-            stopTestButton.visible=true;
-            consoleText.text="";
-            theModel.RunOne();
-            testRun.visible=false;
-            startButton.enabled=false;
-            refreshTree.enabled=false;
-            runTags.enabled=false;
-            reportsButton.enabled=false;
-            settingButton.enabled=false;
-            testStatus.enabled=false;
-            openFolder.enabled=false;
-            externalEditor.enabled=false;
-            testDelete.enabled=false;
-            testEdit.enabled=false;
-            testSetting.enabled=false;
+            if(theModel.RunOne()) {
+                stopTestButton.visible=true;
+                consoleText.text="";
+                testRun.visible=false;
+                startButton.enabled=false;
+                refreshTree.enabled=false;
+                runTags.enabled=false;
+                reportsButton.enabled=false;
+                settingButton.enabled=false;
+                testStatus.enabled=false;
+                openFolder.enabled=false;
+                externalEditor.enabled=false;
+                testDelete.enabled=false;
+                testEdit.enabled=false;
+                testSetting.enabled=false;
+
+            }
         }
     }
     Action {
