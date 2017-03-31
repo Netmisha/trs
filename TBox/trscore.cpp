@@ -8,10 +8,12 @@ TRSCore::TRSCore(QObject *parent) : QObject(parent) {
 }
 unsigned int TRSCore::getQuantColor(QString path,int R,int G,int B){
     if(R >255 || G>255 || B>255 ){
-        emit fail("Strange color");
+        emit log("Strange color");
+        return -1;
     }
     if(R <0 || G<0 || B<0 ){
-        emit fail("Strange color");
+        emit log("Strange color");
+        return -1;
     }
      int countColor = 0;
     QImage img = QImage(path);
@@ -85,17 +87,15 @@ QString TRSCore::getFileData(QString filePath){
     return streamData;
 
 }
-bool TRSCore::isAlive(QString windowName, bool emitFail)
+bool TRSCore::isAlive(QString windowName)
 {
     if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
+        emit log("Invalid window name.");
         return false;
     }
     windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        if(emitFail) {
-            emit fail("Application did not run.");
-        }
+        emit log("Application did not run.");
         return false;
     }
     return true;
@@ -182,7 +182,7 @@ bool TRSCore::StartApp(QString appName, bool waitForStart) {
     process->start(appName);
     if(process->error()<5) {
         qDebug()<<process->errorString();
-        emit fail("Application start failed.");
+        emit log("Application start failed.");
         return false;
     }
     else {
@@ -193,35 +193,36 @@ bool TRSCore::StartApp(QString appName, bool waitForStart) {
         return true;
     }
 }
-void TRSCore::CloseApp(QString windowName, bool waitForClose) {
+bool TRSCore::CloseApp(QString windowName, bool waitForClose) {
     if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
-        return;
+        emit log("Invalid window name.");
+        return false;
     }
     CloseWindow(windowName);
     if(waitForClose) {
         emit log("CloseApp Waiting...");
-    if(!process->waitForFinished()) {
-        emit fail("Application close failed.");
-        return;
+        if(!process->waitForFinished()) {
+            emit log("Application close failed.");
+            return false;
+        }
     }
-    }
+    return true;
 }
 
-void TRSCore::SetOnTop(QString windowName)
+bool TRSCore::SetOnTop(QString windowName)
 {
     if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
-        return;
+        emit log("Invalid window name.");
+        return false;
     }
 
     windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle == NULL){
-        emit fail("Window isnt exist");
-        return;
+        emit log("Window isnt exist");
+        return false ;
     }
 
-    SetForegroundWindow(windowHandle);
+    return SetForegroundWindow(windowHandle);
 }
 
 bool TRSCore::waitForStart(QString windowName, ulong maxTime){
@@ -252,15 +253,16 @@ QString TRSCore::GetTopWnd()
     return QString::fromWCharArray(buff);
 
 }
-void TRSCore::Sleep(int msec) {
+bool TRSCore::Sleep(int msec) {
     if(msec<0) {
-        emit fail("Invalid sleep time.");
-        return;
+        emit log("Invalid sleep time.");
+        return false;
     }
-    if(msec == 0){
-        return;
+    if(msec==0) {
+        return false;
     }
     QTest::qSleep(msec);
+    return true;
 }
 
 int TRSCore::TimeElapsed(){
@@ -282,49 +284,49 @@ int TRSCore::GetScreenHeight()
 int TRSCore::GetAppWidth(QString windowName)
 {
     if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
+        emit log("Invalid window name.");
         return -1;
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("GetAppWidth Window:"+windowName+" not found.");
+        emit log("GetAppWidth Window:"+windowName+" not found.");
         return -1;
     }
     RECT win_rect;
     if(GetWindowRect(windowHandle, &win_rect)) {
         return win_rect.right-win_rect.left;
     }
-    emit fail("Can not get window size.");
+    emit log("Can not get window size.");
     return -1;
 }
 
 int TRSCore::GetAppHeight(QString windowName)
 {
     if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
+        emit log("Invalid window name.");
         return -1;
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("GetAppHeight:"+windowName+" not found.Window not found.");
+        emit log("GetAppHeight:"+windowName+" not found.Window not found.");
         return -1;
     }
     RECT win_rect;
     if(GetWindowRect(windowHandle, &win_rect)) {
         return win_rect.bottom-win_rect.top;
     }
-    emit fail("Can not get window size.");
+    emit log("Can not get window size.");
     return -1;
 }
 QString TRSCore::GetAppRect(QString windowName)
 {
     if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
+        emit log("Invalid window name.");
         return QString();
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("GetAppRect Window:"+windowName+" not found.");
+        emit log("GetAppRect Window:"+windowName+" not found.");
         return QString();
     }
     RECT win_rect;
@@ -336,7 +338,7 @@ QString TRSCore::GetAppRect(QString windowName)
                      ",\"width\": "+QString::number(win_rect.right-win_rect.left)+",\"height\": "+QString::number(win_rect.bottom-win_rect.top)+"}");
         return rect;
     }
-    emit fail("Can not get window rect.");
+    emit log("Can not get window rect.");
     return QString();
 }
 
@@ -359,154 +361,163 @@ QString TRSCore::GetChildRect(QString windowName, QString childName) {
     }
     return "";
 }
-void TRSCore::SetAppPos(QString windowName, int x, int y) {
+bool TRSCore::SetAppPos(QString windowName, int x, int y) {
 	if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
-        return;
+        emit log("Invalid window name.");
+        return false;
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("SetAppPos Window:"+windowName+" not found.");
-        return;
+        emit log("SetAppPos Window:"+windowName+" not found.");
+        return false;
     }
 	if(!SetWindowPos(windowHandle, HWND_TOP, x, y, 0, 0, SWP_NOSIZE)) {
-		emit fail("Can not set window position.");
-        return;
+        emit log("Can not set window position.");
+        return false;
 	}
-	return;
+    return true;
 }
-void TRSCore::SetAppSize(QString windowName, int w, int h) {
+bool TRSCore::SetAppSize(QString windowName, int w, int h) {
 	if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
-        return;
+        emit log("Invalid window name.");
+        return false;
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("SetAppSize Window:"+windowName+" not found.");
-        return;
+        emit log("SetAppSize Window:"+windowName+" not found.");
+        return false;
     }
 	if(!SetWindowPos(windowHandle, HWND_TOP, 0, 0, w, h, SWP_NOMOVE)) {
-		emit fail("Can not set window size.");
-        return;
+        emit log("Can not set window size.");
+        return false;
 	}
-	return;
+    return true;
 }
-void TRSCore::SetAppRect(QString windowName, int x, int y, int w, int h) {
+bool TRSCore::SetAppRect(QString windowName, int x, int y, int w, int h) {
 	if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
-        return;
+        emit log("Invalid window name.");
+        return false;
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("SetAppRect Window:"+windowName+" not found.");
-        return;
+        emit log("SetAppRect Window:"+windowName+" not found.");
+        return false;
     }
     if(!SetWindowPos(windowHandle, HWND_TOP, x, y, w, h, SWP_SHOWWINDOW)) {
-		emit fail("Can not set window size.");
-        return;
+        emit log("Can not set window size.");
+        return false;
 	}
-	return;
+    return true;
 }
-void TRSCore::WindowMinimize(QString windowName)
+bool TRSCore::WindowMinimize(QString windowName)
 {
     if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
-        return;
+        emit log("Invalid window name.");
+        return false;
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("WindowMinimize Window:"+windowName+" not found.");
-        return;
+        emit log("WindowMinimize Window:"+windowName+" not found.");
+        return false;
     }
     if (!ShowWindow(windowHandle, SW_MINIMIZE)) {
-        emit fail("Can not minimaze window.");
-        return;
+        emit log("Can not minimaze window.");
+        return false;
     }
+    return true;
 }
 
-void TRSCore::WindowMaximize(QString windowName)
+bool TRSCore::WindowMaximize(QString windowName)
 {
     if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
-        return;
+        emit log("Invalid window name.");
+        return false;
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("WindowMaximize Window:"+windowName+" not found.");
-        return;
+        emit log("WindowMaximize Window:"+windowName+" not found.");
+        return false;
     }
     if (!ShowWindow(windowHandle, SW_MAXIMIZE)) {
-        emit fail("Can not maximize window.");
-        return;
+        emit log("Can not maximize window.");
+        return false;
     }
+    return true;
 }
 
-void TRSCore::WindowRestore(QString windowName)
+bool TRSCore::WindowRestore(QString windowName)
 {
     if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
-        return;
+        emit log("Invalid window name.");
+        return false;
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("WindowRestore Window:"+windowName+" not found.");
-        return;
+        emit log("WindowRestore Window:"+windowName+" not found.");
+        return false;
     }
     if (!ShowWindow(windowHandle, SW_RESTORE)) {
-        emit fail("Can not restore window.");
-        return;
+        emit log("Can not restore window.");
+        return false;
     }
+    return true;
 }
-void TRSCore::CloseWindow(QString windowName)
+bool TRSCore::CloseWindow(QString windowName)
 {
     if(windowName.isEmpty()) {
-        emit fail("Invalid window name.");
-        return;
+        emit log("Invalid window name.");
+        return false;
     }
     HWND windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit fail("CloseWindow Window:"+windowName+" not found.");
-        return;
+        emit log("CloseWindow Window:"+windowName+" not found.");
+        return false;
     }
     PostMessageA(windowHandle, WM_SYSCOMMAND, SC_CLOSE, 0);
+    return true;
 }
-void TRSCore::KeyDown(int dkey){
+bool TRSCore::KeyDown(int dkey){
     if(dkey<8) {
-        emit fail("Invalid key.");
-        return;
+        emit log("Invalid key.");
+        return false;
     }
     keybd_event(dkey, 0, 0, 0);
+    return true;
 }
-void TRSCore::KeyUp(int dkey){
+bool TRSCore::KeyUp(int dkey){
     if(dkey<8) {
-        emit fail("Invalid key.");
-        return;
+        emit log("Invalid key.");
+        return false;
     }
     keybd_event(dkey, 0, KEYEVENTF_KEYUP, 0);
+    return true;
 }
-void TRSCore::KeyPress(int dkey){
+bool TRSCore::KeyPress(int dkey){
     if(dkey<8) {
-        emit fail("Invalid key.");
-        return;
+        emit log("Invalid key.");
+        return false;
     }
     KeyDown(dkey);
     KeyUp(dkey);
+    return true;
 }
-void TRSCore::SetMousePos(int x, int y) {
+bool TRSCore::SetMousePos(int x, int y) {
     if(x<0 || y<0) {
-        emit fail("Invalid coordinates.");
-        return;
+        emit log("Invalid coordinates.");
+        return false;
     }
     current_pos.x = x;
     current_pos.y = y;
     if(!SetCursorPos(x, y)) {
-        emit fail("Can not set mouse at this position.");
+        emit log("Can not set mouse at this position.");
+        return false;
     }
+    return true;
 }
-void TRSCore::MouseMove(int x, int y, int pause) {
+bool TRSCore::MouseMove(int x, int y, int pause) {
     if(x<0 || y<0) {
-        emit fail("Invalid coordinates.");
-        return;
+        emit log("Invalid coordinates.");
+        return false;
     }
     int w=current_pos.x-x;
     int h=current_pos.y-y;
@@ -516,8 +527,8 @@ void TRSCore::MouseMove(int x, int y, int pause) {
             for (int i = current_pos.x; i > x; i--) {
                 Sleep(pause);
                 if(!SetCursorPos(i, fun(i))) {
-                    emit fail("Can not set mouse at this position.");
-                    return;
+                    emit log("Can not set mouse at this position.");
+                    return false;
                 }
             }
         }
@@ -526,8 +537,8 @@ void TRSCore::MouseMove(int x, int y, int pause) {
             for (int i = current_pos.x; i < x; i++) {
                 Sleep(pause);
                 if(!SetCursorPos(i, fun(i))) {
-                    emit fail("Can not set mouse at this position.");
-                    return;
+                    emit log("Can not set mouse at this position.");
+                    return false;
                 }
             }
         }
@@ -538,8 +549,8 @@ void TRSCore::MouseMove(int x, int y, int pause) {
             for (int i = current_pos.y; i > y; i--) {
                 Sleep(pause);
                 if(!SetCursorPos(fun(i), i)) {
-                    emit fail("Can not set mouse at this position.");
-                    return;
+                    emit log("Can not set mouse at this position.");
+                    return false;
                 }
             }
         }
@@ -548,21 +559,22 @@ void TRSCore::MouseMove(int x, int y, int pause) {
             for (int i = current_pos.y; i < y; i++) {
                 Sleep(pause);
                 if(!SetCursorPos(fun(i), i)) {
-                    emit fail("Can not set mouse at this position.");
-                    return;
+                    emit log("Can not set mouse at this position.");
+                    return false;
                 }
             }
         }
     }
     if(!GetCursorPos(&current_pos)) {
-        emit fail("Can not take cursor position.");
-        return;
+        emit log("Can not take cursor position.");
+        return false;
     }
+    return true;
 }
-void TRSCore::MouseDown(int button) {
+bool TRSCore::MouseDown(int button) {
     if(button!=0 && button!=1) {
-        emit fail("Invalid button.");
-        return;
+        emit log("Invalid button.");
+        return false;
     }
     if (button) {
         mouse_event(MOUSEEVENTF_RIGHTDOWN, current_pos.x, current_pos.y, 0, 0);
@@ -570,11 +582,12 @@ void TRSCore::MouseDown(int button) {
     else {
         mouse_event(MOUSEEVENTF_LEFTDOWN, current_pos.x, current_pos.y, 0, 0);
     }
+    return true;
 }
-void TRSCore::MouseUp(int button) {
+bool TRSCore::MouseUp(int button) {
     if(button!=0 && button!=1) {
-        emit fail("Invalid button.");
-        return;
+        emit log("Invalid button.");
+        return false;
     }
     if (button) {
         mouse_event(MOUSEEVENTF_RIGHTUP, current_pos.x, current_pos.y, 0, 0);
@@ -582,11 +595,12 @@ void TRSCore::MouseUp(int button) {
     else {
         mouse_event(MOUSEEVENTF_LEFTUP, current_pos.x, current_pos.y, 0, 0);
     }
+    return true;
 }
-void TRSCore::MouseClick(int button) {
+bool TRSCore::MouseClick(int button) {
     if(button!=0 && button!=1) {
-        emit fail("Invalid button.");
-        return;
+        emit log("Invalid button.");
+        return false;
     }
     if (button) {
         mouse_event(MOUSEEVENTF_RIGHTDOWN, current_pos.x, current_pos.y, 0, 0);
@@ -596,11 +610,17 @@ void TRSCore::MouseClick(int button) {
         mouse_event(MOUSEEVENTF_LEFTDOWN, current_pos.x, current_pos.y, 0, 0);
         mouse_event(MOUSEEVENTF_LEFTUP, current_pos.x, current_pos.y, 0, 0);
     }
+    return true;
 }
 
-void TRSCore::MouseClickA(int x, int y,int button){
-    SetMousePos(x,y);
-    MouseClick(button);
+bool TRSCore::MouseClickA(int x, int y,int button){
+    if(!SetMousePos(x,y)){
+        return false;
+    }
+    if(!MouseClick(button)){
+        return false;
+    }
+    return true;
 }
 
 void TRSCore::MouseWheelDown() {
@@ -615,25 +635,27 @@ void TRSCore::MouseWheelLeft() {
 void TRSCore::MouseWheelRight() {
     mouse_event(MOUSEEVENTF_HWHEEL, 0, 0, WHEEL_DELTA, 0);
 }
-void TRSCore::PrintScreen(QString file) {
+bool TRSCore::PrintScreen(QString file) {
     QPixmap originalPixmap;
     QScreen *screen = QGuiApplication::primaryScreen();
     originalPixmap = screen->grabWindow(0);
     if(!originalPixmap.save(file)) {
-        emit fail("Can not save image to file.");
-        return;
+        emit log("Can not save image to file.");
+        return false;
     }
+    return true;
 }
-void TRSCore::PrintScreenA(int x, int y, int w, int h, QString file){
+bool TRSCore::PrintScreenA(int x, int y, int w, int h, QString file){
     QPixmap originalPixmap;
     QScreen *screen = QGuiApplication::primaryScreen();
     originalPixmap = screen->grabWindow(0);
     QRect rect(x, y, w, h);
     QPixmap cropped = originalPixmap.copy(rect);
     if(!cropped.save(file)) {
-        emit fail("Can not save image to file.");
-        return;
+        emit log("Can not save image to file.");
+        return false;
     }
+    return true;
 }
 int TRSCore::exec(QString command) {
     return system(command.toStdString().c_str());
@@ -669,7 +691,7 @@ QStringList TRSCore::getFullList(QString path) {
 bool TRSCore::isFile(QString path) {
     QFileInfo file(path);
     if(!file.exists()) {
-        emit fail("Invalid path.");
+        emit log("Invalid path.");
         return false;
     }
     return file.isFile();
@@ -677,7 +699,7 @@ bool TRSCore::isFile(QString path) {
 bool TRSCore::isDir(QString path) {
     QFileInfo file(path);
     if(!file.exists()) {
-        emit fail("Invalid path.");
+        emit log("Invalid path.");
         return false;
     }
     return file.isDir();
@@ -685,7 +707,7 @@ bool TRSCore::isDir(QString path) {
 bool TRSCore::isExist(QString path) {
     QFileInfo file(path);
     if(!file.exists()) {
-        emit fail("Invalid path.");
+        emit log("Invalid path.");
         return false;
     }
     return file.exists();
@@ -693,7 +715,7 @@ bool TRSCore::isExist(QString path) {
 bool TRSCore::isReadOnly(QString path) {
     QFileInfo file(path);
     if(!file.exists()) {
-        emit fail("Invalid path.");
+        emit log("Invalid path.");
         return false;
     }
     return !file.isWritable();
@@ -702,7 +724,7 @@ qint64 TRSCore::getSize(QString path) {
     if(isFile(path)) {
         QFileInfo file(path);
         if(!file.exists()) {
-            emit fail("Invalid path.");
+            emit log("Invalid path.");
             return -1;
         }
         return file.size();
@@ -712,7 +734,7 @@ qint64 TRSCore::getSize(QString path) {
         QDirIterator it(path, QDirIterator::Subdirectories);
         QFileInfo file;
         if(!file.exists()) {
-            emit fail("Invalid path.");
+            emit log("Invalid path.");
             return -1;
         }
         while (it.hasNext()) {
@@ -730,7 +752,7 @@ qint64 TRSCore::getSize(QString path) {
 }
 bool TRSCore::delDir(QString path) {
     if(!QDir(path).exists()) {
-        emit fail("Invalid path.");
+        emit log("Invalid path.");
         return false;
     }
     QDir qd(path);
@@ -739,7 +761,7 @@ bool TRSCore::delDir(QString path) {
 }
 bool TRSCore::delFile(QString path) {
     if(!QFile(path).exists()) {
-        emit fail("Invalid path.");
+        emit log("Invalid path.");
         return false;
     }
     QFile file(path);
@@ -755,7 +777,7 @@ bool TRSCore::isKeyExist(QString key)
         return regSetting.contains(key.right(key.length()-key.lastIndexOf("\\")-1));
     }
     catch (...) {
-        emit fail("Key is not accessible.");
+        emit log("Key is not accessible.");
         return false;
     }
 }
@@ -768,7 +790,7 @@ QVariant TRSCore::getKeyValue(QString key)
         return regSetting.value(key.right(key.length()-key.lastIndexOf("\\")-1));
     }
     catch (...) {
-        emit fail("Key is not accessible.");
+        emit log("Key is not accessible.");
         return QVariant();
     }
 }
@@ -781,7 +803,7 @@ void TRSCore::setKeyValue(QString key, QVariant value)
         regSetting.setValue(key.right(key.length()-key.lastIndexOf("\\")-1), value);
     }
     catch (...) {
-        emit fail("Key is not accessible.");
+        emit log("Key is not accessible.");
     }
 }
 QString TRSCore::List(QString path)
@@ -803,7 +825,7 @@ QString TRSCore::List(QString path)
         return data;
     }
     catch (...) {
-        emit fail("Key is not accessible.");
+        emit log("Key is not accessible.");
         return QString();
     }
 

@@ -53,12 +53,12 @@ public slots:
      * @param waitForClose a bool argument
      * @param windowName a string argument
      */
-    void CloseApp(QString windowName, bool waitForClose=true);
+    bool CloseApp(QString windowName, bool waitForClose=true);
     /**
      * @brief SetOnTop: sets window with some name on top
      * @param windowName a string argument
      */
-    void SetOnTop(QString windowName);
+    bool SetOnTop(QString windowName);
     /**
      * @brief waitForStart: returns name of window that is on top
      */
@@ -73,7 +73,7 @@ public slots:
      * @brief Sleep: suspends current process
      * @param time an integer argument
      */
-    void Sleep(int time);
+    bool Sleep(int time);
 
     /**
      * @brief TimeElapsed: starts timer on test run
@@ -120,89 +120,89 @@ public slots:
      * @param x a integer argument
      * @param y a integer argument
      */
-    void SetAppPos(QString windowName, int x, int y);
+    bool SetAppPos(QString windowName, int x, int y);
 	/**
      * @brief SetAppSize: sets window size
      * @param windowName a string argument
      * @param w a integer argument
      * @param h a integer argument
      */
-    void SetAppSize(QString windowName, int w, int h);
+    bool SetAppSize(QString windowName, int w, int h);
 	/**
      * @brief SetAppRect: sets window rectangle
      * @param windowName a string argument
      * @param x a integer argument
      * @param y a integer argument
      */
-    void SetAppRect(QString windowName, int x, int y, int w, int h);
+    bool SetAppRect(QString windowName, int x, int y, int w, int h);
     /**
      * @brief WindowMinimize: minimaze window with some name
      * @param windowName a string argument
      */
-    void WindowMinimize(QString windowName);
+    bool WindowMinimize(QString windowName);
     /**
      * @brief WindowMaximize: maximaze window with some name
      * @param windowName a string argument
      */
-    void WindowMaximize(QString windowName);
+    bool WindowMaximize(QString windowName);
     /**
      * @brief WindowRestore: restore window with some name
      * @param windowName a string argument
      */
-    void WindowRestore(QString windowName);
+    bool WindowRestore(QString windowName);
     /**
      * @brief CloseWindow: closes window with some name
      * @param windowName a string argument
      */
-    void CloseWindow(QString windowName);
+    bool CloseWindow(QString windowName);
     /**
      * @brief KeyDown: simulates press down on keyboard button
      * @param dkey an integer argument
      */
-    void KeyDown(int dkey);
+    bool KeyDown(int dkey);
     /**
      * @brief KeyUp: simulates press up on keyboard button
      * @param dkey an integer argument
      */
-    void KeyUp(int dkey);
+    bool KeyUp(int dkey);
     /**
      * @brief KeyPress: simulates click on keyboard button
      * @param dkey an integer argument
      */
-    void KeyPress(int dkey);
+    bool KeyPress(int dkey);
     /**
      * @brief SetMousePos: sets mouse cursor to some position
      * @param x an integer argunemt
      * @param y an integer argunemt
      */
-    void SetMousePos(int x, int y);
+    bool SetMousePos(int x, int y);
     /**
      * @brief MouseMove: simulates mouse move to some position with some speed
      * @param x an integer argunemt
      * @param y an integer argunemt
      * @param pause an integer argunemt, pause between mouse position change
      */
-    void MouseMove(int x, int y, int pause);
+    bool MouseMove(int x, int y, int pause);
     /**
      * @brief MouseDown: simulates press down on mouse button
      * @param button an integer argument, o - left button, 1 - right button
      */
-    void MouseDown(int button);
+    bool MouseDown(int button);
     /**
      * @brief MouseUp: simulates press up on mouse button
      * @param button an integer argument, o - left button, 1 - right button
      */
-    void MouseUp(int button);
+    bool MouseUp(int button);
     /**
      * @brief MouseClick: simulates click on mouse button
      * @param button an integer argument, o - left button, 1 - right button
      */
-    void MouseClick(int button);
+    bool MouseClick(int button);
     /**
      * @brief MouseClickA: simulates click on mouse button
      * @param button an integer argument, o - left button, 1 - right button
      */
-    void MouseClickA(int x, int y,int button);
+    bool MouseClickA(int x, int y,int button);
     /**
      * @brief MouseWheelDown: simulates mouse scroll to right on 120 pixels
      */
@@ -223,7 +223,7 @@ public slots:
      * @brief PrintScreen: makes print screen and save to file
      * @param file a string argument
      */
-    void PrintScreen(QString file);
+    bool PrintScreen(QString file);
     /**
      * @brief PrintScreenA: makes print screen of current size and save to file
      * @param x an integer argunemt
@@ -232,7 +232,7 @@ public slots:
      * @param h an integer argunemt
      * @param file a string argument
      */
-    void PrintScreenA(int x, int y, int w, int h, QString file);
+    bool PrintScreenA(int x, int y, int w, int h, QString file);
     /**
      * @brief exec: executes user command in ShellExecute
      * @param command a string argument
@@ -329,7 +329,7 @@ public slots:
      * @param emitFail a bool argument, false as default
      * @return bool, true if the application is running
      */
-    bool isAlive(QString windowName, bool emitFail=false);
+    bool isAlive(QString windowName);
     /**
      * @brief isWin: checks if the current OS is Windows
      * @return bool, true if the OS Win
