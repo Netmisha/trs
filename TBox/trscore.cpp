@@ -90,12 +90,12 @@ QString TRSCore::getFileData(QString filePath){
 bool TRSCore::isAlive(QString windowName)
 {
     if(windowName.isEmpty()) {
-        emit log("Invalid window name.");
+        emit log("isAlive Invalid window name: "+windowName);
         return false;
     }
     windowHandle = FindWindow(NULL, (const wchar_t*) windowName.utf16());
     if(windowHandle==NULL) {
-        emit log("Application did not run.");
+        emit log("isAlive Application did not run for window: "+windowName);
         return false;
     }
     return true;
