@@ -46,32 +46,37 @@ public slots:
      * @brief StartApp: runs application
      * @param waitForStart a bool argument
      * @param path a string argument
+     * @return bool, on app started
      */
     bool StartApp(QString path, bool waitForStart=true);
     /**
      * @brief CloseApp: closes application
      * @param waitForClose a bool argument
      * @param windowName a string argument
+     * @return bool, on app closed
      */
     bool CloseApp(QString windowName, bool waitForClose=true);
     /**
      * @brief SetOnTop: sets window with some name on top
      * @param windowName a string argument
+     * @return bool, window set on top with some name
      */
     bool SetOnTop(QString windowName);
     /**
      * @brief waitForStart: returns name of window that is on top
+     * @return bool, window started with given name
      */
 
     bool waitForStart(QString windowName, ulong maxTime=0);
     /**
      * @brief GetTopWnd: returns name of window that is on top
-     * @return string, window name
+     * @return bool, window name
      */
     QString GetTopWnd();
     /**
      * @brief Sleep: suspends current process
      * @param time an integer argument
+     * @return bool, process suspended
      */
     bool Sleep(int time);
 
@@ -119,6 +124,7 @@ public slots:
      * @param windowName a string argument
      * @param x a integer argument
      * @param y a integer argument
+     * @return bool, window set on position
      */
     bool SetAppPos(QString windowName, int x, int y);
 	/**
@@ -126,6 +132,7 @@ public slots:
      * @param windowName a string argument
      * @param w a integer argument
      * @param h a integer argument
+     * @return bool, window size has been set
      */
     bool SetAppSize(QString windowName, int w, int h);
 	/**
@@ -133,47 +140,56 @@ public slots:
      * @param windowName a string argument
      * @param x a integer argument
      * @param y a integer argument
+     * @return bool, window rectangle has been set
      */
     bool SetAppRect(QString windowName, int x, int y, int w, int h);
     /**
      * @brief WindowMinimize: minimaze window with some name
      * @param windowName a string argument
+     * @return bool, window has been minimized with some name
      */
     bool WindowMinimize(QString windowName);
     /**
      * @brief WindowMaximize: maximaze window with some name
      * @param windowName a string argument
+     * @return bool, window has been maximized with some name
      */
     bool WindowMaximize(QString windowName);
     /**
      * @brief WindowRestore: restore window with some name
      * @param windowName a string argument
+     * @return bool, window has been restored with some name
      */
     bool WindowRestore(QString windowName);
     /**
      * @brief CloseWindow: closes window with some name
      * @param windowName a string argument
+     * @return bool, window with some name has been closed
      */
     bool CloseWindow(QString windowName);
     /**
      * @brief KeyDown: simulates press down on keyboard button
      * @param dkey an integer argument
+     * @return bool, simualtion of pressed down keyboard button was successful
      */
     bool KeyDown(int dkey);
     /**
      * @brief KeyUp: simulates press up on keyboard button
      * @param dkey an integer argument
+     * @return bool,simualtion of pressed up keyboard button was successful
      */
     bool KeyUp(int dkey);
     /**
      * @brief KeyPress: simulates click on keyboard button
      * @param dkey an integer argument
+     * @return bool,simualtion of pressed keyboard button was successful
      */
     bool KeyPress(int dkey);
     /**
      * @brief SetMousePos: sets mouse cursor to some position
      * @param x an integer argunemt
      * @param y an integer argunemt
+     * @return bool, mouse position has been set
      */
     bool SetMousePos(int x, int y);
     /**
@@ -181,26 +197,31 @@ public slots:
      * @param x an integer argunemt
      * @param y an integer argunemt
      * @param pause an integer argunemt, pause between mouse position change
+     * @return bool, mouse position has been changed with pause speed
      */
     bool MouseMove(int x, int y, int pause);
     /**
      * @brief MouseDown: simulates press down on mouse button
      * @param button an integer argument, o - left button, 1 - right button
+     * @return bool, mouse down button has been pressed
      */
     bool MouseDown(int button);
     /**
      * @brief MouseUp: simulates press up on mouse button
      * @param button an integer argument, o - left button, 1 - right button
+     * @return bool, mouse up button has been clicked
      */
     bool MouseUp(int button);
     /**
      * @brief MouseClick: simulates click on mouse button
      * @param button an integer argument, o - left button, 1 - right button
+     * @return bool, mouse button has been clicked
      */
     bool MouseClick(int button);
     /**
      * @brief MouseClickA: simulates click on mouse button
      * @param button an integer argument, o - left button, 1 - right button
+     * @return bool, mouse click A has been successful
      */
     bool MouseClickA(int x, int y,int button);
     /**
@@ -222,6 +243,7 @@ public slots:
     /**
      * @brief PrintScreen: makes print screen and save to file
      * @param file a string argument
+     * @return bool, print screen has been successful
      */
     bool PrintScreen(QString file);
     /**
