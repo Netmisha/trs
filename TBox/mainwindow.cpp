@@ -930,8 +930,9 @@ void MainTree::FailLog() {
     }
     curPath+="/Logs";
     QTime time=QTime::currentTime();
+    QDate date = QDate::currentDate();
     QVariant returnedValue;
-    QString fname=curPath+"/"+time.toString("hh.mm.ss.zzz")+"_"+currentTest->getParent()->getName()+"_"+currentTest->getName();
+    QString fname=curPath+"/"+date.toString("yyyy_MM_dd")+time.toString("(hh.mm.ss.zzz)")+"_"+currentTest->getName();
     dir.setPath(fname);
     if(!dir.exists()) {
         dir.mkdir(fname);
