@@ -70,7 +70,7 @@ public slots:
     bool waitForStart(QString windowName, ulong maxTime=0);
     /**
      * @brief GetTopWnd: returns name of window that is on top
-     * @return bool, window name
+     * @return string, window name
      */
     QString GetTopWnd();
     /**
