@@ -104,7 +104,9 @@ public slots:
     */
     Q_INVOKABLE bool isFirstRun();
     void setFirstRun(bool value);
+     Q_INVOKABLE void msg(QString msg);
 protected:
+    QString LoopMsg;
     QString currentPath;
     QString testName;
     bool defaultExit=true;

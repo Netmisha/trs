@@ -408,7 +408,10 @@ public slots:
      * @param type a bool argument
      */
     void setRunAll(bool type);
+
 private:
+
+
     QProcess *process;
     POINT current_pos;
     HWND windowHandle;
