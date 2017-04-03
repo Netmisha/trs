@@ -240,7 +240,6 @@ void MainTree::testFinished(QString msg) {
         if(dm.Get(currentTest->getFile()+"/suite/test/"+currentTest->getName()+"/important")=="true") {
             importantTestFail=true;
             if(runOne) {
-                currentTest->setAsFail();
                 runOne = false;
             }
             else {
@@ -401,20 +400,22 @@ void MainTree::Set(QString path, QString data) {
         it->setDisable(data=="true"?true:false);
     }
     if(path==tags_name::kPosition) {
-        it->setPosition(data.toInt());
-        if(it!=rootSuite){
-            auto obj=it;
-            obj->getParent()->getChildren().removeAll(obj);
-            int newRow=obj->getParent()->addChild(obj);
-            auto root=this->itemFromIndex(currentIndex)->parent();
-            int row=currentIndex.row();
-            auto items=root->takeRow(row);
-            root->insertRow(newRow, items);
-            row=0;
-            for(auto&it:obj->getParent()->getChildren()) {
-                it->setItem(root->child(row++)->index());
+        if(data.toInt()!=it->getPosition()) {
+            it->setPosition(data.toInt());
+            if(it!=rootSuite){
+                auto obj=it;
+                obj->getParent()->getChildren().removeAll(obj);
+                int newRow=obj->getParent()->addChild(obj);
+                auto root=this->itemFromIndex(currentIndex)->parent();
+                int row=currentIndex.row();
+                auto items=root->takeRow(row);
+                root->insertRow(newRow, items);
+                row=0;
+                for(auto&it:obj->getParent()->getChildren()) {
+                    it->setItem(root->child(row++)->index());
+                }
+                currentIndex=obj->getItem();
             }
-            currentIndex=obj->getItem();
         }
     }
 }
@@ -594,16 +595,16 @@ bool MainTree::RunOne(){
         WriteLog("Item not found.");
         return false;
     }
-    if (itemForRun->getType() == "test") {
+    if (itemForRun->getType() == tags_name::kTest) {
            runOne = true;
        itemForRun->setRepeat(0);
        CreateHtml(itemForRun);
        totalTestCount=1;
        return true;
             }
-    if (itemForRun->getType() == "suite"){
-        auto it = itemForRun->getNextTest();
+    if (itemForRun->getType() == tags_name::kSuite){
         totalTestCount=itemForRun->getTotalRuns();
+        auto it = itemForRun->getNextTest();
         if(it) {
             CreateHtml(it);
             return true;
@@ -716,7 +717,10 @@ QStandardItem * MainTree::AddItemToTree(TreeInfo *obj) {
         }
     }
     root->insertRow(row,item);
-    root->appendRows(items);
+    if(!items.empty())
+    {
+        root->appendRows(items);
+    }
     row=0;
     for(auto&it:suite->getChildren()) {
         it->setItem(root->child(row++)->index());
