@@ -28,7 +28,6 @@
 #include <databasemanager.h>
 #include <suiteinfo.h>
 #include <smtp.h>
-#include <QSystemTrayIcon>
 class MainTree;
 namespace Ui {
 class MainWindow;
@@ -42,15 +41,14 @@ public:
 public slots:
     void writeLog(QString);
     void AddStartCommand(QString);
+
 private:
     DataBase O;
     ExportHTML H;
     Ui::MainWindow *ui;
     QObject *object;
     QQuickView* qmlView;
-    QThread *IdleThread;
     SelectFolderDialog *selectFolder;
-    QString lockWindowTimer;
 };
 
 #endif // MAINWINDOW_H

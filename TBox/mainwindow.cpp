@@ -3,7 +3,6 @@
 #include <databasemanager.h>
 #include <QObject>
 #include <QTime>
-#include <qopengl.h>
 QWebView * view;
 QObject * contextObject;
 const int kDefaultPort=9876;
@@ -77,10 +76,8 @@ public:
     Q_INVOKABLE QStringList getHeaders(QString, QString);
     Q_INVOKABLE void WriteLog(QString);
     Q_INVOKABLE void FailLog();
-    Q_INVOKABLE void SuccessLog();
     Q_INVOKABLE void OpenInEditor(QString);
     Q_INVOKABLE void Terminate();
-    Q_INVOKABLE void setLockScreenTimer(QString time);
 private:
     void CreateHtml(TreeInfo *);
     void Parse(QString, TreeInfo *);
@@ -110,7 +107,6 @@ private:
     qint64 totalTestCount=0;
     qint64 finishedTestCount=0;
     qint64 failedTestCount=0;
-    QString timeToLockScreen;
 signals:
     void sendTestName(QString);
     void sendSuiteName(QString);
@@ -124,6 +120,7 @@ private slots:
     void sendMail();
     void mailSent(QString);
 };
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -157,9 +154,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlView->show();
     view->page()->setProperty("_q_webInspectorServerPort",kDefaultPort);
     QMetaObject::invokeMethod(object, "checkRootDir");
-
 }
-
 MainWindow::~MainWindow(){
     delete ui;
     view->deleteLater();
@@ -169,11 +164,6 @@ MainWindow::~MainWindow(){
 void MainWindow::writeLog(QString msg){
     QTime time=QTime::currentTime();
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
-}
-
-void MainTree::setLockScreenTimer(QString time){
-    timeToLockScreen = time;
-
 }
 void MainTree::setMailCredentials(QString Username, QString Password, QString mailTo){
     username = Username;
@@ -213,17 +203,10 @@ void MainTree::sendMail()
         QFile::copy(Path,folderPath+"ReportFile.html");
     }
 
-    Smtp* smtp = new Smtp(username,password,"smtp.gmail.com"); //smtp.gmail.com(Username Password fail)| smtp-ua.globallogic.com(Remote host closed the connection) |587-TLS | 465-SSL
+    Smtp* smtp = new Smtp(username,password,"smtp-ua.globallogic.com");
     connect(smtp, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
-    QStringList PP; //PP.append(folderPath+"ReportFile.html");
-    QFile file(folderPath+"ReportFile.html");
-    file.open(QIODevice::ReadOnly);
-    QString data;
-    QTextStream stream(&file);
-    data = stream.readAll();
-    data.insert(0,"<body>");
-    data.append("</body>");
-    smtp->sendMail(username,MailTo,"Report file",data,PP);
+    QStringList PP; PP.append(folderPath+"ReportFile.html");
+    smtp->sendMail(username,MailTo,"Report file","Report file",PP);
 
     QString folderRemove = folderPath;
     QDir direc;direc.remove(folderRemove+"ReportFile.html");
@@ -249,7 +232,6 @@ void MainTree::testFinished(QString msg) {
     WriteLog(msg);
     data_base_man.sessionEnd();
     run=false;
-    bool test_fail = false;
     delete view->page();
     QFile file(currentTest->getPath()+"/"+"test.html");
     file.remove();
@@ -270,8 +252,6 @@ void MainTree::testFinished(QString msg) {
         failedTestCount++;
         EmitMessage(true);
         FailLog();
-    }else if(msg.contains("success") && false == test_fail){
-        SuccessLog();
     }
     finishedTestCount++;
     QMetaObject::invokeMethod(contextObject, "setProgress", Q_ARG(QVariant, 100*finishedTestCount/totalTestCount));
@@ -942,35 +922,6 @@ void MainTree::WriteLog(QString msg) {
     qDebug() << time.toString()+":"+QString::number(time.msec())+" "+"Box: "+msg;
     QMetaObject::invokeMethod(contextObject, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
 }
-void MainTree::SuccessLog(){
-    QString curPath=QDir::currentPath();
-    QDir dir(curPath+"/Logs");
-    if(!dir.exists()) {
-        dir.mkdir(curPath+"/Logs");
-    }
-    curPath+="/Logs";
-    QTime time=QTime::currentTime();
-    QDate date = QDate::currentDate();
-    QVariant returnedValue;
-    QString fname=curPath+"/"+date.toString("yyyy_MM_dd")+time.toString("(hh.mm.ss.zzz)")+"_"+currentTest->getName();
-    dir.setPath(fname);
-    if(!dir.exists()) {
-        dir.mkdir(fname);
-    }
-    trscore->PrintScreen(fname+"/screenshot.jpg");
-    QString log_data;
-    QMetaObject::invokeMethod(contextObject, "getLog", Q_RETURN_ARG(QVariant, returnedValue));
-    QFile file(fname+"/log.html");
-    QTextStream file_stream(&file);
-    log_data = returnedValue.toString();
-    int i = log_data.indexOf("</body>");
-    log_data.insert(i,"<img src='screenshot.jpg' style= width:1366px;height:768px;>");
-    file.open(QIODevice::WriteOnly);
-    file_stream<<log_data;
-    file.close();
-    WriteLog("<html><style type=\"text/css\"></style><a href=\"file:///"+fname+"/screenshot.jpg"+"\">Screenshot</a></html>");
-
-}
 void MainTree::FailLog() {
     QString curPath=QDir::currentPath();
     QDir dir(curPath+"/Logs");
@@ -987,15 +938,10 @@ void MainTree::FailLog() {
         dir.mkdir(fname);
     }
     trscore->PrintScreen(fname+"/screenshot.jpg");
-    QString log_data;
     QMetaObject::invokeMethod(contextObject, "getLog", Q_RETURN_ARG(QVariant, returnedValue));
-    QFile file(fname+"/log.html");
-    QTextStream file_stream(&file);
-    log_data = returnedValue.toString();
-    int i = log_data.indexOf("</body>");
-    log_data.insert(i,"<img src='screenshot.jpg' style= width:1366px;height:768px;>");
+    QFile file(fname+"/log.txt");
     file.open(QIODevice::WriteOnly);
-    file_stream<<log_data;
+    file.write(returnedValue.toByteArray());
     file.close();
     WriteLog("<html><style type=\"text/css\"></style><a href=\"file:///"+fname+"/screenshot.jpg"+"\">Screenshot</a></html>");
 }
