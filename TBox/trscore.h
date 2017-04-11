@@ -46,21 +46,25 @@ public slots:
      * @brief StartApp: runs application
      * @param waitForStart a bool argument
      * @param path a string argument
+     * @return bool, on app started
      */
     bool StartApp(QString path, bool waitForStart=true);
     /**
      * @brief CloseApp: closes application
      * @param waitForClose a bool argument
      * @param windowName a string argument
+     * @return bool, on app closed
      */
-    void CloseApp(QString windowName, bool waitForClose=true);
+    bool CloseApp(QString windowName, bool waitForClose=true);
     /**
      * @brief SetOnTop: sets window with some name on top
      * @param windowName a string argument
+     * @return bool, window set on top with some name
      */
-    void SetOnTop(QString windowName);
+    bool SetOnTop(QString windowName);
     /**
      * @brief waitForStart: returns name of window that is on top
+     * @return bool, window started with given name
      */
 
     bool waitForStart(QString windowName, ulong maxTime=0);
@@ -72,12 +76,13 @@ public slots:
     /**
      * @brief Sleep: suspends current process
      * @param time an integer argument
+     * @return bool, process suspended
      */
-    void Sleep(int time);
+    bool Sleep(int time);
 
     /**
-     * @brief Sleep: suspends current process
-     * @param time an integer argument
+     * @brief TimeElapsed: starts timer on test run
+     * @return integer, elapsed time
      */
     int TimeElapsed();
     /**
@@ -109,8 +114,8 @@ public slots:
      */
     QString GetAppRect(QString windowName);
     /**
-     * @brief GetAppRect: returns rectangle of window with some name
-     * @param windowName a string argument
+     * @brief GetChildRect: returns child of rectangle of window with some name
+     * @param windowName a string argument, childName a string argument
      * @return QString, contains JSON obect
      */
     QString GetChildRect(QString windowName, QString childName);
@@ -119,90 +124,106 @@ public slots:
      * @param windowName a string argument
      * @param x a integer argument
      * @param y a integer argument
+     * @return bool, window set on position
      */
-    void SetAppPos(QString windowName, int x, int y);
+    bool SetAppPos(QString windowName, int x, int y);
 	/**
      * @brief SetAppSize: sets window size
      * @param windowName a string argument
      * @param w a integer argument
      * @param h a integer argument
+     * @return bool, window size has been set
      */
-    void SetAppSize(QString windowName, int w, int h);
+    bool SetAppSize(QString windowName, int w, int h);
 	/**
      * @brief SetAppRect: sets window rectangle
      * @param windowName a string argument
      * @param x a integer argument
      * @param y a integer argument
+     * @return bool, window rectangle has been set
      */
-    void SetAppRect(QString windowName, int x, int y, int w, int h);
+    bool SetAppRect(QString windowName, int x, int y, int w, int h);
     /**
      * @brief WindowMinimize: minimaze window with some name
      * @param windowName a string argument
+     * @return bool, window has been minimized with some name
      */
-    void WindowMinimize(QString windowName);
+    bool WindowMinimize(QString windowName);
     /**
      * @brief WindowMaximize: maximaze window with some name
      * @param windowName a string argument
+     * @return bool, window has been maximized with some name
      */
-    void WindowMaximize(QString windowName);
+    bool WindowMaximize(QString windowName);
     /**
      * @brief WindowRestore: restore window with some name
      * @param windowName a string argument
+     * @return bool, window has been restored with some name
      */
-    void WindowRestore(QString windowName);
+    bool WindowRestore(QString windowName);
     /**
      * @brief CloseWindow: closes window with some name
      * @param windowName a string argument
+     * @return bool, window with some name has been closed
      */
-    void CloseWindow(QString windowName);
+    bool CloseWindow(QString windowName);
     /**
      * @brief KeyDown: simulates press down on keyboard button
      * @param dkey an integer argument
+     * @return bool, simualtion of pressed down keyboard button was successful
      */
-    void KeyDown(int dkey);
+    bool KeyDown(int dkey);
     /**
      * @brief KeyUp: simulates press up on keyboard button
      * @param dkey an integer argument
+     * @return bool,simualtion of pressed up keyboard button was successful
      */
-    void KeyUp(int dkey);
+    bool KeyUp(int dkey);
     /**
      * @brief KeyPress: simulates click on keyboard button
      * @param dkey an integer argument
+     * @return bool,simualtion of pressed keyboard button was successful
      */
-    void KeyPress(int dkey);
+    bool KeyPress(int dkey);
     /**
      * @brief SetMousePos: sets mouse cursor to some position
      * @param x an integer argunemt
      * @param y an integer argunemt
+     * @return bool, mouse position has been set
      */
-    void SetMousePos(int x, int y);
+    bool SetMousePos(int x, int y);
     /**
      * @brief MouseMove: simulates mouse move to some position with some speed
      * @param x an integer argunemt
      * @param y an integer argunemt
      * @param pause an integer argunemt, pause between mouse position change
+     * @return bool, mouse position has been changed with pause speed
      */
-    void MouseMove(int x, int y, int pause);
+    bool MouseMove(int x, int y, int pause);
     /**
      * @brief MouseDown: simulates press down on mouse button
      * @param button an integer argument, o - left button, 1 - right button
+     * @return bool, mouse down button has been pressed
      */
-    void MouseDown(int button);
+    bool MouseDown(int button);
     /**
      * @brief MouseUp: simulates press up on mouse button
      * @param button an integer argument, o - left button, 1 - right button
+     * @return bool, mouse up button has been clicked
      */
-    void MouseUp(int button);
+    bool MouseUp(int button);
     /**
      * @brief MouseClick: simulates click on mouse button
      * @param button an integer argument, o - left button, 1 - right button
+     * @return bool, mouse button has been clicked
      */
-    void MouseClick(int button);
+    bool MouseClick(int button);
     /**
      * @brief MouseClickA: simulates click on mouse button
      * @param button an integer argument, o - left button, 1 - right button
+     * @return bool, mouse click A has been successful
      */
-    void MouseClickA(int x, int y,int button);
+    bool MouseClickA(int x, int y,int button);
     /**
      * @brief MouseWheelDown: simulates mouse scroll to right on 120 pixels
      */
@@ -222,17 +243,18 @@ public slots:
     /**
      * @brief PrintScreen: makes print screen and save to file
      * @param file a string argument
+     * @return bool, print screen has been successful
      */
-    void PrintScreen(QString file);
+    bool PrintScreen(QString file);
     /**
-     * @brief exec: makes print screen of current size and save to file
+     * @brief PrintScreenA: makes print screen of current size and save to file
      * @param x an integer argunemt
      * @param y an integer argunemt
      * @param w an integer argunemt
      * @param h an integer argunemt
      * @param file a string argument
      */
-    void PrintScreenA(int x, int y, int w, int h, QString file);
+    bool PrintScreenA(int x, int y, int w, int h, QString file);
     /**
      * @brief exec: executes user command in ShellExecute
      * @param command a string argument
@@ -329,7 +351,7 @@ public slots:
      * @param emitFail a bool argument, false as default
      * @return bool, true if the application is running
      */
-    bool isAlive(QString windowName, bool emitFail=false);
+    bool isAlive(QString windowName);
     /**
      * @brief isWin: checks if the current OS is Windows
      * @return bool, true if the OS Win
@@ -360,10 +382,36 @@ public slots:
      * @return bool, if user run all tests return true
      */
     bool isRunAll();
+    /**
+     * @brief isSingleRun: returns true if the run single button was pressed
+     * @return bool, if single run test returh true
+     */
+    bool isSingleRun();
+    /**
+     * @brief isImageEqual: returns true if two images are mostly equal
+     * @param path a string argument
+     * @param path a string argument
+     * @return bool, if images are mostly equal return true
+     */
     bool isImageEqual(QString path,QString path2);
+    /**
+     * @brief getQuantColor: returns number of
+     * @param path a string argument
+     * @param R an int argument
+     * @param G an int argument
+     * @param B an int argument
+     * @return unsigned int, return RGB color occurrence
+     */
     unsigned int getQuantColor(QString path,int R,int G,int B);
+    /**
+     * @brief setRunAll run All tests
+     * @param type a bool argument
+     */
     void setRunAll(bool type);
+
 private:
+
+
     QProcess *process;
     POINT current_pos;
     HWND windowHandle;

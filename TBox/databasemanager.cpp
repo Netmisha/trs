@@ -27,8 +27,8 @@ void DataBaseManager::sessionEnd(){
 
 void  DataBaseManager::calcTime(int msecs){
     hours = msecs/(1000*60*60);
-    minutes = (msecs%(1000*60*60))/(1000*60);//(msecs-(hours*1000*60*60))/(100*60);
-    seconds = (((msecs%(1000*60*60))%(1000*60))/1000);//(msecs-(minutes*1000*60)-(hours*1000*60*60))/100;
+    minutes = (msecs%(1000*60*60))/(1000*60);
+    seconds = (((msecs%(1000*60*60))%(1000*60))/1000);
     milliseconds = msecs-(seconds*1000)-(minutes*1000*60)-(hours*1000*60*60);
     session_execution.append(QString::number(hours)+":"+QString::number(minutes)+":"+QString::number(seconds)+":"+QString::number(milliseconds));
 }
@@ -43,6 +43,43 @@ void DataBaseManager::getTestMsg(QString msg){
   }else if(test_status == "fail"){
       test_status = "no";
   }*/
+}
+
+bool DataBaseManager::clearDataBase()
+{
+    if(!db.open()){
+        qDebug()<<"db is not open";
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        QDir DIR;
+        QStringList path = DIR.absolutePath().split("/");
+        QString path_for_db;
+        for(int i=0;i<path.size();i++){
+            path_for_db.append(path.at(i)+"\\\\");
+        }
+        path_for_db.append(FOLDER_DB_NAME);
+        if(!QDir().exists(path_for_db)){
+            QDir().mkdir(path_for_db);
+        }
+        path_for_db.append(DATABASE_NAME);
+        db.setDatabaseName(path_for_db);
+        db.setHostName(LOCALHOST);
+                  if(db.open()){
+                      qDebug()<<"Database: connection ok";
+                  }
+                  else{
+                      qDebug()<<db.lastError().text();
+                      return false;
+                  }
+        QSqlQuery *qu = new QSqlQuery(db);
+        bool res=qu->exec("delete from Info");
+        db.close();
+        return res;
+    }
+    query_ = new QSqlQuery(db);
+    bool res=query_->exec("delete from Info");
+    test_msg.clear();
+    db.close();
+    return res;
 }
 void DataBaseManager::InitDB(){
     //msecs =  test duration;

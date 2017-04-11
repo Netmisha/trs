@@ -13,7 +13,7 @@
 #include <QBoxLayout>
 #include <QTreeView>
 #include <QVector>
-#include "maintree.h"
+#include "TreeInfo.h"
 #include "trscore.h"
 #include "mainsetting.h"
 #include "datamanager.h"
@@ -28,6 +28,7 @@
 #include <databasemanager.h>
 #include <suiteinfo.h>
 #include <smtp.h>
+class MainTree;
 namespace Ui {
 class MainWindow;
 }

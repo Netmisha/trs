@@ -1,14 +1,16 @@
-#ifndef MAINTREE_H
-#define MAINTREE_H
+#ifndef TREEINFO_H
+#define TREEINFO_H
 #include <QStandardItemModel>
 #include <QList>
+#include "datamanager.h"
 class TreeInfo {
 public:
-    TreeInfo ():parent(nullptr){}
+    TreeInfo ():parent(nullptr){dm=new  DataManager();}
     TreeInfo (TreeInfo *parent, QString, QString, QString, int, QModelIndex);
     ~TreeInfo();
     QString getPath();
     QString getFile();
+    int getPosition();
     QString getName();
     QString getType();
     bool isDisable();
@@ -16,18 +18,17 @@ public:
     int getBaseRepeat();
     QModelIndex getItem();
     TreeInfo * getParent();
-    QList<TreeInfo *>& getChildTests();
-    QList<TreeInfo *>& getChildSuites();
+    QList<TreeInfo *>& getChildren();
     void setFile(QString);
     void setName(QString);
     void setType(QString);
+    void setPosition(int);
     void setDisable(bool);
     void setRepeat(int);
     void setBaseRepeat(int);
     void setItem(QModelIndex);
     void setParent(TreeInfo *);
-    void addChildTests(TreeInfo *);
-    void addChildSuites(TreeInfo *);
+    int addChild(TreeInfo *);
     bool DecreaseRepeat();
     void ResetRepeat();
     void ResetAllRepeat();
@@ -37,7 +38,8 @@ public:
     bool isValid();
     QStringList getSuites();
     TreeInfo * getNextTest();
-    void setAsFail();
+    int setAsFail();
+    int getTotalRuns();
     void setFirsRun(bool);
     bool isFirstRun();
 private:
@@ -48,10 +50,11 @@ private:
     int baseRepeat;
     bool disable;
     bool firstRun=false;
+    int position;
     QModelIndex item; // make class and add root dir
-    QList<TreeInfo *> childTests;
-    QList<TreeInfo *> childSuites;
-    TreeInfo * parent;
+    QList<TreeInfo *> children;
+    DataManager *dm;
+    TreeInfo * parent=nullptr;
 };
 #endif // MAINTREE_H
 

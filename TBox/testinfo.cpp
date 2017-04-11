@@ -20,6 +20,10 @@ QString TestInfo::getName() {
 QString TestInfo::getCurrentDir() {
     return QString(currentPath).replace("/suite.xml","");
 }
+void TestInfo::msg(QString msg){
+    LoopMsg.append(msg);
+    LoopMsg.append("|");
+}
 void TestInfo::setData(QString tag, QString data) {
     QDomDocument doc;
     QFile file(currentPath);
@@ -144,16 +148,18 @@ void TestInfo::ExitOnFinish(bool val) {
     defaultExit=val;
 }
 void TestInfo::FAIL(QString msg) {
+    LoopMsg.append(msg);
     if(!finished) {
         finished=true;
-        emit testFinish(" fail_ "+msg);
+        emit testFinish(" fail_ "+LoopMsg);
     }
 }
 void TestInfo::SUCCESS(QString msg) {
+    LoopMsg.append(msg);
     if(defaultExit) {
         if(!finished) {
             finished=true;
-            emit testFinish("success_ "+msg);
+            emit testFinish("success_ "+LoopMsg);
         }
     }
     else {

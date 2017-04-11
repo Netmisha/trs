@@ -68,7 +68,6 @@ public slots:
     */
     Q_INVOKABLE QString clearAllData();
     /**
-    /**
     * @brief isData: checks, whether data exist
      * @param tag a string argument
      * @return bool, result of checking data
@@ -105,7 +104,9 @@ public slots:
     */
     Q_INVOKABLE bool isFirstRun();
     void setFirstRun(bool value);
+     Q_INVOKABLE void msg(QString msg);
 protected:
+    QString LoopMsg;
     QString currentPath;
     QString testName;
     bool defaultExit=true;

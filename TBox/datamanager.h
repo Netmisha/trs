@@ -25,6 +25,8 @@ namespace tags_name {
     const QString kLicense = "license";
     const QString kInfo = "info";
     const QString kHeaders = "headers";
+    const QString kAlwaysRun = "alwaysrun";
+    const QString kPosition = "position";
     const QString kScr = "src";
 }
 class DataManager : public QObject
@@ -36,9 +38,9 @@ public:
 signals:
 public slots:
     void Set(QString, QString);
-    QString AddTest(QString, QString, QString, QString, QString, QString, QString, QString);
-    QString AddSuite(QString, QString, QString, QString, QString);
-    QString AddRoot(QString, QString, QString, QString, QString);
+    QString AddTest(QString, QString, QString, QString, QString, QString, QString, QString, QString, QString);
+    QString AddSuite(QString, QString, QString, QString, QString, QString);
+    QString AddRoot(QString, QString, QString, QString, QString, QString);
     QString RemoveTest(QString, QString);
     QString RemoveSuite(QString);
     QString Get(QString);

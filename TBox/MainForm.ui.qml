@@ -12,11 +12,12 @@ import QtQuick.Dialogs 1.2
 import FileSave 1.0
 import QtWebKit 3.0
 import Highlighter 1.0
+import QtWinExtras 1.0
+
 Item {
     property variant win;
     property  variant list_;
     property  variant db_list;
-
     id: root
     anchors.fill: parent
     Action {
@@ -39,6 +40,7 @@ Item {
                 consoleRect.enabled=true;
                 fontComboBox.visible=false;
                 fontComboBox.currentIndex=4;
+                mainTree
             }
         }
     }
@@ -67,20 +69,23 @@ Item {
         id: runJSAction
         shortcut: "Ctrl+R"
         onTriggered: {
-            stopTestButton.visible=true;
-            theModel.RunOne();
-            testRun.visible=false;
-            startButton.enabled=false;
-            refreshTree.enabled=false;
-            runTags.enabled=false;
-            reportsButton.enabled=false;
-            settingButton.enabled=false;
-            testStatus.enabled=false;
-            openFolder.enabled=false;
-            externalEditor.enabled=false;
-            testDelete.enabled=false;
-            testEdit.enabled=false;
-            testSetting.enabled=false;
+            if(theModel.RunOne()) {
+                stopTestButton.visible=true;
+                consoleText.text="";
+                testRun.visible=false;
+                startButton.enabled=false;
+                refreshTree.enabled=false;
+                runTags.enabled=false;
+                reportsButton.enabled=false;
+                settingButton.enabled=false;
+                testStatus.enabled=false;
+                openFolder.enabled=false;
+                externalEditor.enabled=false;
+                testDelete.enabled=false;
+                testEdit.enabled=false;
+                testSetting.enabled=false;
+
+            }
         }
     }
     Action {
@@ -150,6 +155,9 @@ Item {
             selectFolderDialog.show();
         }
     }
+    function setProgress(value) {
+        taskBar.progress.value=value;
+    }
     function setStopDisable(){
         stopAllTestsButton.visible=false;
         startButton.visible=true;
@@ -213,6 +221,9 @@ Item {
 
         consoleText.text=consoleText.text+msg+"\n";
     }
+    function getLog() {
+        return consoleText.text;
+    }
     function showItem (index) {
         theModel.setCurrentItem(index);
         lineRect.visible=false;
@@ -262,6 +273,7 @@ Item {
             textEditSName.text=theModel.Get("name");
             textEditSDiscr.text=theModel.Get("description");
             textEditSRepeat.text=theModel.Get("repeat");
+            textEditSPosition.text=theModel.Get("position");
             addSuiteLayout.visible=true;
             addSuiteLayout.enabled=false;
         }
@@ -379,6 +391,7 @@ Item {
                               height: 20
                               width: 20
                               Image {
+                                  id: itemImage
                                   height: 15
                                   width: 15
                                   verticalAlignment: Image.AlignVCenter
@@ -392,6 +405,7 @@ Item {
                                       }
                                   }
                               }
+
                           }
                           Text {
                               x:20
@@ -504,8 +518,10 @@ Item {
                                                     textEditTTag.text="";
                                                     textEditTExe.text="";
                                                     textEditTRepeat.text="1"
+                                                    textEditTPosition.text="10000"
                                                     testStatus.iconSource="icons/icons/turnon.png";
                                                     testImportant.checked=false;
+                                                    alwaysRun.checked=false;
                                                     testRun.visible=false;
                                                     newTest.visible=false;
                                                     newSuite.visible=false;
@@ -527,6 +543,7 @@ Item {
                                                     textEditSName.text="";
                                                     textEditSDiscr.text="";
                                                     textEditSRepeat.text="1";
+                                                    textEditSPosition.text="10000";
                                                     testRun.visible=false;
                                                     newTest.visible=false;
                                                     newSuite.visible=false;
@@ -593,6 +610,7 @@ Item {
                                                         textEditTTag.text=theModel.Get("tag");
                                                         textEditTExe.text=theModel.Get("execution");
                                                         textEditTRepeat.text=theModel.Get("repeat");
+                                                        textEditTPosition.text=theModel.Get("position");
                                                         if(theModel.Get("disable")=="false"){
                                                             testStatus.iconSource="icons/icons/turnon.png";
                                                         }
@@ -604,6 +622,12 @@ Item {
                                                         }
                                                         else {
                                                             testImportant.checked=false;
+                                                        }
+                                                        if(theModel.Get("alwaysrun")=="true"){
+                                                            alwaysRun.checked=true;
+                                                        }
+                                                        else {
+                                                            alwaysRun.checked=false;
                                                         }
                                                         centerRect.visible=false;
                                                         addTestLayout.visible=true;
@@ -624,6 +648,7 @@ Item {
                                                         textEditSName.text=theModel.Get("name");
                                                         textEditSDiscr.text=theModel.Get("description");
                                                         textEditSRepeat.text=theModel.Get("repeat");
+                                                        textEditSPosition.text=theModel.Get("position");
                                                         centerRect.visible=false;
                                                         addSuiteLayout.visible=true;
                                                         testRun.visible=false;
@@ -656,6 +681,7 @@ Item {
                                                         textEditTExe.text="";
                                                         textEditTTag.text="";
                                                         textEditTRepeat.text="1";
+                                                        textEditTPosition.text="10000";
                                                         addTestLayout.visible=false;
                                                         addSuiteLayout.visible=true;
                                                         addSuiteLayout.enabled=false;
@@ -675,6 +701,7 @@ Item {
                                                             textEditTExe.text="";
                                                             textEditTTag.text="";
                                                             textEditTRepeat.text="1";
+                                                            textEditTPosition.text="10000";
                                                             addTestLayout.visible=false;
                                                             centerRect.visible=true;
                                                             testEdit.visible=true;
@@ -706,7 +733,7 @@ Item {
                                                 onClicked: {
                                                     if(testName.text== "New Test") {
                                                         var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
-                                                        var res=theModel.AddNewTest(textEditTName.text,textEditTDiscr.text, textEditTExe.text, textEditTTag.text, textEditTRepeat.text, dis, testImportant.checked.toString());
+                                                        var res=theModel.AddNewTest(textEditTName.text,textEditTDiscr.text, textEditTExe.text, textEditTTag.text, textEditTRepeat.text, dis, testImportant.checked.toString(),alwaysRun.checked.toString(), textEditTPosition.text);
                                                         if(res!="") {
                                                             messageDialog.text=res;
                                                             messageDialog.open()
@@ -717,6 +744,7 @@ Item {
                                                         textEditTExe.text="";
                                                         textEditTTag.text="";
                                                         textEditTRepeat.text="1";
+                                                        textEditTPosition.text="10000";
                                                         addTestLayout.visible=false;
                                                         addSuiteLayout.visible=false;
                                                         addSuiteLayout.enabled=false;
@@ -727,7 +755,7 @@ Item {
                                                     }
                                                     else if(testName.text== "New Suite") {
                                                         var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
-                                                        var res=theModel.AddNewSuite(textEditSName.text,textEditSDiscr.text, textEditSRepeat.text, dis);
+                                                        var res=theModel.AddNewSuite(textEditSName.text,textEditSDiscr.text, textEditSRepeat.text, dis, textEditSPosition.text);
                                                         if(res!="") {
                                                             messageDialog.text=res;
                                                             messageDialog.open()
@@ -746,8 +774,10 @@ Item {
                                                                 theModel.Set("tag", textEditTTag.text);
                                                                 theModel.Set("execution", textEditTExe.text);
                                                                 theModel.Set("repeat", textEditTRepeat.text==""?"1":textEditTRepeat.text);
+                                                                theModel.Set("position", textEditTPosition.text==""?"10000":textEditTPosition.text);
                                                                 theModel.Set("disable", dis);
                                                                 theModel.Set("important", testImportant.checked.toString());
+                                                                theModel.Set("alwaysrun", alwaysRun.checked.toString());
                                                                 addTestLayout.visible=false;
                                                                 centerRect.visible=true;
                                                                 testEdit.visible=true;
@@ -766,6 +796,7 @@ Item {
                                                                 theModel.Set("name", textEditSName.text);
                                                                 theModel.Set("description", textEditSDiscr.text);
                                                                 theModel.Set("repeat", textEditSRepeat.text==""?"1":textEditSRepeat.text);
+                                                                theModel.Set("position", textEditSPosition.text==""?"10000":textEditSPosition.text);
                                                                 theModel.Set("disable", dis);
                                                                 newTest.visible=true;
                                                                 newSuite.visible=true;
@@ -794,7 +825,9 @@ Item {
                                                 iconSource: "icons/icons/jssave.png"
                                                 onClicked: {
                                                     var dis=testStatus.iconSource.toString().indexOf("turnon")!=-1?"false":"true";
-                                                    var res=theModel.AddRootSuite(textEditSName.text,textEditSDiscr.text, textEditSRepeat.text, dis);
+                                                    var rep=textEditSRepeat.text==""?"1":textEditSRepeat.text;
+                                                    var pos=textEditSPosition.text==""?"10000":textEditSPosition.text;
+                                                    var res=theModel.AddRootSuite(textEditSName.text,textEditSDiscr.text, rep, dis, pos);
                                                     if(res!="") {
                                                         messageDialog.text=res;
                                                         messageDialog.open()
@@ -803,6 +836,7 @@ Item {
                                                     textEditSName.text="";
                                                     textEditSDiscr.text="";
                                                     textEditSRepeat.text="1";
+                                                    textEditSPosition.text="10000";
                                                     addSuiteLayout.visible=false;
                                                     addSuiteLayout.enabled=true;
                                                     newTest.visible=true;
@@ -1033,7 +1067,6 @@ Item {
                                             font.pixelSize: 12
                                             verticalAlignment: Text.AlignVCenter
                                         }
-
                                         Rectangle {
                                             id:repeatSRect
                                             Layout.fillWidth: true
@@ -1056,6 +1089,48 @@ Item {
                                                                 repeatSRect.border.color = "#569ffd"
                                                             }else{
                                                                 repeatSRect.border.color = "lightgray"
+                                                            }
+                                                        }
+                                            }
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.rightMargin: 0
+                                        anchors.leftMargin: 0
+                                    }
+                                    RowLayout {
+                                        y: 0
+                                        height: 36
+                                        anchors.right: parent.right
+                                        Text {
+                                            width: 60
+                                            text: qsTr("Position")
+                                            font.pixelSize: 12
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                        Rectangle {
+                                            id:positionSRect
+                                            Layout.fillWidth: true
+                                            Layout.fillHeight: true
+                                            border.color: "lightgray"
+                                            border.width: 1
+                                            TextEdit {
+                                                id: textEditSPosition
+                                                text: "10000"
+                                                anchors.fill: parent
+                                                font.pixelSize: 12
+                                                Layout.fillWidth: true
+                                                anchors.rightMargin: 3
+                                                anchors.leftMargin: 3
+                                                selectByMouse: true
+                                                smooth: true
+                                                verticalAlignment: TextInput.AlignVCenter
+                                                onFocusChanged: {
+                                                            if(focus){
+                                                                positionSRect.border.color = "#569ffd"
+                                                            }else{
+                                                                positionSRect.border.color = "lightgray"
                                                             }
                                                         }
                                             }
@@ -1312,6 +1387,49 @@ Item {
                                         y: 0
                                         height: 36
                                         anchors.right: parent.right
+                                        Text {
+                                            width: 60
+                                            text: qsTr("Position")
+                                            font.pixelSize: 12
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+
+                                        Rectangle {
+                                            id:positionTRect
+                                            Layout.fillWidth: true
+                                            Layout.fillHeight: true
+                                            border.color: "lightgray"
+                                            border.width: 1
+                                            TextEdit {
+                                                id: textEditTPosition
+                                                text: "10000"
+                                                anchors.fill: parent
+                                                font.pixelSize: 12
+                                                Layout.fillWidth: true
+                                                anchors.rightMargin: 3
+                                                anchors.leftMargin: 3
+                                                selectByMouse: true
+                                                smooth: true
+                                                verticalAlignment: TextInput.AlignVCenter
+                                                onFocusChanged: {
+                                                            if(focus){
+                                                                positionTRect.border.color = "#569ffd"
+                                                            }else{
+                                                                positionTRect.border.color = "lightgray"
+                                                            }
+                                                        }
+                                            }
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.rightMargin: 0
+                                        anchors.leftMargin: 0
+                                    }
+                                    RowLayout {
+                                        y: 0
+                                        height: 36
+                                        anchors.right: parent.right
                                         CheckBox {
                                             id: testImportant
                                             style: CheckBoxStyle {
@@ -1333,6 +1451,41 @@ Item {
                                                 label:Text {
                                                     font.pixelSize: 12
                                                     text: qsTr("Important")
+                                                }
+                                            }
+                                            checked: false
+                                        }
+                                        transformOrigin: Item.Center
+                                        anchors.left: parent.left
+                                        spacing: 10
+                                        anchors.rightMargin: 0
+                                        anchors.leftMargin: 0
+                                    }
+                                    RowLayout {
+                                        y: 0
+                                        height: 36
+                                        anchors.right: parent.right
+                                        CheckBox {
+                                            id: alwaysRun
+                                            style: CheckBoxStyle {
+                                                indicator: Rectangle {
+                                                                implicitWidth: 16
+                                                                implicitHeight: 16
+                                                                radius: 3
+                                                                border.color: control.activeFocus ? "darkblue" : "gray"
+                                                                border.width: 1
+                                                                Rectangle {
+                                                                    visible: control.checked
+                                                                    color: "#555"
+                                                                    border.color: "#333"
+                                                                    radius: 1
+                                                                    anchors.margins: 4
+                                                                    anchors.fill: parent
+                                                                }
+                                                        }
+                                                label:Text {
+                                                    font.pixelSize: 12
+                                                    text: qsTr("Always Run")
                                                 }
                                             }
                                             checked: false
@@ -1400,11 +1553,13 @@ Item {
                                             }
                                         }
                                         ScrollView {
+                                            id: consoleScroll
                                             Layout.fillWidth: true
                                             Layout.fillHeight: true
                                             contentItem: TextEdit {
                                                 id: consoleText
                                                 Layout.fillWidth: true
+                                                textFormat: TextEdit.RichText
                                                 selectByMouse: true
                                                 readOnly: true
                                                 font.pixelSize: 12
@@ -1417,7 +1572,12 @@ Item {
                                                         consoleClear.enabled=true;
                                                         consoleSave.enabled=true;
                                                     }
+                                                    if(consoleScroll.flickableItem.contentHeight>consoleScroll.height) {
+                                                        consoleScroll.flickableItem.contentY = consoleScroll.flickableItem.contentHeight-consoleScroll.height;
+                                                    }
                                                 }
+                                                onLinkActivated: Qt.openUrlExternally(link)
+
                                             }
                                         }
                                     }
@@ -1448,6 +1608,13 @@ Item {
                 }
             }
         }
+    }
+    TaskbarButton {
+        id:taskBar
+        overlay.iconSource: "loading.png"
+        overlay.accessibleDescription: "Loading"
+        progress.visible: true
+        progress.value: 0
     }
     FileSaveDialog {
         id: saveFile
@@ -1634,7 +1801,32 @@ Item {
                     }
                 }
             }
-
+            RowLayout {
+                id: rowLayoutCache
+                width: 100
+                height: 100
+                clip: false
+                spacing: 10
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Text {
+                    id: textCache
+                    text: qsTr("Cache")
+                    font.pixelSize: 12
+                }
+                Item {
+                    Layout.fillWidth: true
+                }
+                Button {
+                    id: clearCache
+                    text: "Clear"
+                    width: 50
+                    onClicked:{
+                        messageDialogCache.open();
+                    }
+                }
+            }
             ColumnLayout{
                 id: mailLayout
                 Layout.alignment: Qt.AlignLeft
@@ -1816,6 +2008,17 @@ Item {
         }
     }
     MessageDialog {
+        id: messageDialogCache
+        width: 200;
+        modality: Qt.WindowModal
+        title: "Warning!"
+        icon: StandardIcon.Warning
+        text: "Are you sure?"
+        onAccepted: {
+            theModel.ClearCache();
+        }
+    }
+    MessageDialog {
         id: deleteConfirm
         width: 200;
         modality: Qt.WindowModal
@@ -1844,7 +2047,6 @@ Item {
             Qt.quit();
         }
     }
-
     Window{
         modality: Qt.WindowModal
         id: report_window_

@@ -18,7 +18,7 @@
 #include <QQmlApplicationEngine>
 #include <sessionwindowtable.h>
 #include <exporthtml.h>
-#include <lismodel.h>
+#include <listmodel.h>
 #include <QQuickView>
 class DataBase: public QObject // class for reading data from DB
 {

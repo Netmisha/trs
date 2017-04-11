@@ -54,6 +54,7 @@ void getDescTest(QString);
 void getSuiteInfo(QString,QString);
 void sessionNum();
 void getTestMsg(QString msg);
+bool clearDataBase();
 public:
     DataBaseManager();
     void sessionStart();
