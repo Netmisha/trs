@@ -28,7 +28,6 @@
 #include <databasemanager.h>
 #include <suiteinfo.h>
 #include <smtp.h>
-#include <QSystemTrayIcon>
 class MainTree;
 namespace Ui {
 class MainWindow;

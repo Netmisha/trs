@@ -1827,40 +1827,6 @@ Item {
                     }
                 }
             }
-            RowLayout {
-                id: rowLayout4
-                width: 100
-                height: 100
-                clip: false
-                spacing: 10
-                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                Text {
-                    id: lockScreenId
-                    text: qsTr("Timer to lock screen")
-                    font.pixelSize: 12
-                }
-                Rectangle {
-                    id: lockScreenIdRect
-                    width: 82
-                    height: 22
-                    border.color: "lightgray"
-                    border.width: 1
-                    Layout.fillWidth: true
-                    TextInput {
-                        id: lockScreenInput
-                        verticalAlignment: TextInput.AlignVCenter
-                        selectByMouse: true
-                        anchors.fill: parent
-                        anchors.rightMargin: 3
-                        anchors.leftMargin: 3
-                        smooth: true
-                    }
-                }
-            }
-
-
             //----------------------//
             ColumnLayout {
                 id: rowLayout13
@@ -1890,7 +1856,6 @@ Item {
                         textInput1.text="";
                         textInput2.text="";
                         textInput3.text="";
-
                     }else{
                         label1.visible = true;
                         label2.visible = true;
@@ -2027,7 +1992,6 @@ Item {
                     id: saveSetting
                     text: qsTr("Save")
                     onClicked: {
-                        DD.setTimerLockScreen(lockScreenInput.text);
                         if(checkBox1.checked == true){
                         theModel.setMailCredentials(textInput1.text,textInput3.text,textInput2.text);
                          }else{theModel.setMailCredentials("default","default","default");}

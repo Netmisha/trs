@@ -3,7 +3,6 @@
 #include <databasemanager.h>
 #include <QObject>
 #include <QTime>
-#include <qopengl.h>
 QWebView * view;
 QObject * contextObject;
 const int kDefaultPort=9876;
@@ -77,10 +76,8 @@ public:
     Q_INVOKABLE QStringList getHeaders(QString, QString);
     Q_INVOKABLE void WriteLog(QString);
     Q_INVOKABLE void FailLog();
-    Q_INVOKABLE void SuccessLog();
     Q_INVOKABLE void OpenInEditor(QString);
     Q_INVOKABLE void Terminate();
-    Q_INVOKABLE void setLockScreenTimer(QString time);
 private:
     void CreateHtml(TreeInfo *);
     void Parse(QString, TreeInfo *);
@@ -110,7 +107,6 @@ private:
     qint64 totalTestCount=0;
     qint64 finishedTestCount=0;
     qint64 failedTestCount=0;
-    QString timeToLockScreen;
 signals:
     void sendTestName(QString);
     void sendSuiteName(QString);
@@ -169,11 +165,6 @@ MainWindow::~MainWindow(){
 void MainWindow::writeLog(QString msg){
     QTime time=QTime::currentTime();
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
-}
-
-void MainTree::setLockScreenTimer(QString time){
-    timeToLockScreen = time;
-
 }
 void MainTree::setMailCredentials(QString Username, QString Password, QString mailTo){
     username = Username;
@@ -249,7 +240,6 @@ void MainTree::testFinished(QString msg) {
     WriteLog(msg);
     data_base_man.sessionEnd();
     run=false;
-    bool test_fail = false;
     delete view->page();
     QFile file(currentTest->getPath()+"/"+"test.html");
     file.remove();
@@ -270,8 +260,6 @@ void MainTree::testFinished(QString msg) {
         failedTestCount++;
         EmitMessage(true);
         FailLog();
-    }else if(msg.contains("success") && false == test_fail){
-        SuccessLog();
     }
     finishedTestCount++;
     QMetaObject::invokeMethod(contextObject, "setProgress", Q_ARG(QVariant, 100*finishedTestCount/totalTestCount));
@@ -941,35 +929,6 @@ void MainTree::WriteLog(QString msg) {
     QTime time=QTime::currentTime();
     qDebug() << time.toString()+":"+QString::number(time.msec())+" "+"Box: "+msg;
     QMetaObject::invokeMethod(contextObject, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
-}
-void MainTree::SuccessLog(){
-    QString curPath=QDir::currentPath();
-    QDir dir(curPath+"/Logs");
-    if(!dir.exists()) {
-        dir.mkdir(curPath+"/Logs");
-    }
-    curPath+="/Logs";
-    QTime time=QTime::currentTime();
-    QDate date = QDate::currentDate();
-    QVariant returnedValue;
-    QString fname=curPath+"/"+date.toString("yyyy_MM_dd")+time.toString("(hh.mm.ss.zzz)")+"_"+currentTest->getName();
-    dir.setPath(fname);
-    if(!dir.exists()) {
-        dir.mkdir(fname);
-    }
-    trscore->PrintScreen(fname+"/screenshot.jpg");
-    QString log_data;
-    QMetaObject::invokeMethod(contextObject, "getLog", Q_RETURN_ARG(QVariant, returnedValue));
-    QFile file(fname+"/log.html");
-    QTextStream file_stream(&file);
-    log_data = returnedValue.toString();
-    int i = log_data.indexOf("</body>");
-    log_data.insert(i,"<img src='screenshot.jpg' style= width:1366px;height:768px;>");
-    file.open(QIODevice::WriteOnly);
-    file_stream<<log_data;
-    file.close();
-    WriteLog("<html><style type=\"text/css\"></style><a href=\"file:///"+fname+"/screenshot.jpg"+"\">Screenshot</a></html>");
-
 }
 void MainTree::FailLog() {
     QString curPath=QDir::currentPath();
