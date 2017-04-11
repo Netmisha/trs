@@ -211,7 +211,7 @@ TreeInfo *TreeInfo::getNextTest()
     TreeInfo * nextTest=nullptr;
     for(auto&it:children) {
         if(it->getType()==tags_name::kTest) {
-            if(!it->isDisable() && it->DecreaseRepeat()) {
+            if(it->isDisable()==false && it->DecreaseRepeat()) {
                 nextTest=it;
                 qDebug()<<QString("Next test is ")+it->getName();
                 break;
@@ -239,7 +239,7 @@ int TreeInfo::setAsFail()
 {
     int repeats=0;
     for(auto&it:parent->getChildren()) {
-        if(it->getType()==tags_name::kTest) {
+        if(it->getType()==tags_name::kTest && it->disable == false) {
             QString req(it->getFile());
             req+="/"+it->getParent()->getName()+"/"+tags_name::kTest+"/"+it->getName()+"/"+tags_name::kAlwaysRun;
             if(dm->Get(req)!="true") {

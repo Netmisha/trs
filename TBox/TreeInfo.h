@@ -42,13 +42,13 @@ public:
     int getTotalRuns();
     void setFirsRun(bool);
     bool isFirstRun();
+    bool disable;
 private:
     QString file;
     QString name;
     QString type;
     int repeat;
     int baseRepeat;
-    bool disable;
     bool firstRun=false;
     int position;
     QModelIndex item; // make class and add root dir

@@ -9,6 +9,8 @@
 #include <QByteArray>
 #include <QFile>
 #include <QFileInfo>
+#include <QSslConfiguration>
+#include <QSslCertificate>
 class Smtp : public QObject
 {
     Q_OBJECT

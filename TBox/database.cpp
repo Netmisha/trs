@@ -161,6 +161,10 @@ void DataBase::defaultTableValue(QString start, QString end){
 
     it.clear();
 }
+void DataBase::setTimerLockScreen(QString timer){
+timerLockScreen = timer;
+emit TimerSet(timerLockScreen);
+}
  QList<QObject*> DataBase::setDataList(QList<QObject*> list){
      tempData = list;
  }

@@ -188,7 +188,7 @@ Item {
             settingFile.setRootDir(rootDir.text);
             if(theModel.IsFolderEmpty(folder)) {
                 showMenu.menuForSuite();
-				addSuiteLayout.enabled=true;
+                addSuiteLayout.enabled=true;
                 centerRect.visible=false;
                 addSuiteLayout.visible=true;
                 testName.text="New Suite";
@@ -252,7 +252,7 @@ Item {
          mainTree.selection.setCurrentIndex(idx, ItemSelectionModel.ClearAndSelect);
          root.showItem(idx);
     }
-	function startRun() {
+    function startRun() {
         if(theModel.Run()) {
             stopAllTestsButton.visible=true;
             consoleText.text="";
@@ -1694,7 +1694,7 @@ Item {
                             if(rootDir.text!="") {
                                 if(theModel.IsFolderEmpty(rootDir.text)) {
                                     showMenu.menuForSuite();
-									addSuiteLayout.enabled=true;
+                                    addSuiteLayout.enabled=true;
                                     centerRect.visible=false;
                                     addSuiteLayout.visible=true;
                                     testName.text="New Suite";
@@ -1827,9 +1827,48 @@ Item {
                     }
                 }
             }
-            ColumnLayout{
-                id: mailLayout
-                Layout.alignment: Qt.AlignLeft
+            RowLayout {
+                id: rowLayout4
+                width: 100
+                height: 100
+                clip: false
+                spacing: 10
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Text {
+                    id: lockScreenId
+                    text: qsTr("Timer to lock screen")
+                    font.pixelSize: 12
+                }
+                Rectangle {
+                    id: lockScreenIdRect
+                    width: 82
+                    height: 22
+                    border.color: "lightgray"
+                    border.width: 1
+                    Layout.fillWidth: true
+                    TextInput {
+                        id: lockScreenInput
+                        verticalAlignment: TextInput.AlignVCenter
+                        selectByMouse: true
+                        anchors.fill: parent
+                        anchors.rightMargin: 3
+                        anchors.leftMargin: 3
+                        smooth: true
+                    }
+                }
+            }
+
+
+            //----------------------//
+            ColumnLayout {
+                id: rowLayout13
+                width: 100
+                height: 100
+                clip: false
+                spacing: 10
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 CheckBox {
@@ -1845,6 +1884,9 @@ Item {
                         textInput1.visible = false;
                         textInput2.visible = false;
                         textInput3.visible = false;
+                        rectangleLayout1.visible = false;
+                        rectangleLayout2.visible = false;
+                        rectangleLayout3.visible = false;
                         textInput1.text="";
                         textInput2.text="";
                         textInput3.text="";
@@ -1856,70 +1898,121 @@ Item {
                         textInput1.visible = true;
                         textInput2.visible = true;
                         textInput3.visible = true;
+                        rectangleLayout1.visible = true;
+                        rectangleLayout2.visible = true;
+                        rectangleLayout3.visible = true;
                     }
                     }
                 }
-                RowLayout{
-                  ColumnLayout{
-                   Label {
-                       id: label1
-                       visible: false
-                       text: qsTr("Username")
-                   }
-                   Label {
-                       id: label2
-                       visible: false
-                       x: 17
-                       y: 158
-                       text: qsTr("E-mail")
-                   }
-                   Label {
-                       id: label3
-                       visible: false
-                       x: 23
-                       y: 190
-                       text: qsTr("Password ")
-                   }
-                  }
-                  ColumnLayout{
-                TextField {
 
-                    id: textInput1
-                    visible: false
-                    x: 78
-                    y: 116
-                    width: 117
-                    height: 20
-                    font.pixelSize: 12;
-                    placeholderText: qsTr("username")
-
-                }
-
-               TextField {
-                   id: textInput2
-                   visible: false
-                   x: 115
-                   y: 156
-                   width: 80
-                   height: 20
-                   placeholderText: qsTr("username@gmail.com")
-                   font.pixelSize: 12
-               }
-
-                TextField {
-                    id: textInput3
-                    visible: false
-                    x: 84
-                    y: 190
-                    width: 111
-                    height: 20
-                    echoMode: TextInput.Password
-                    placeholderText: qsTr("password")
-                    font.pixelSize: 12
-                }
-              }
-             }
             }
+
+            RowLayout {
+                id: rowLayout7
+                width: 100
+                height: 100
+                clip: false
+                spacing: 10
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Text {
+                    id: label1
+                    visible: false
+                    text: qsTr("Username")
+                }
+                Rectangle {
+                    id: rectangleLayout1
+                    width: 82
+                    height: 22
+                    visible: false
+                    border.color: "lightgray"
+                    border.width: 1
+                    Layout.fillWidth: true
+                    TextInput {
+                        id: textInput1
+                        visible: false
+                        verticalAlignment: TextInput.AlignVCenter
+                        selectByMouse: true
+                        anchors.fill: parent
+                        anchors.rightMargin: 3
+                        anchors.leftMargin: 3
+                        smooth: true
+                    }
+                }
+            }
+
+            RowLayout {
+                id: rowLayout8
+                width: 100
+                height: 100
+                clip: false
+                spacing: 10
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Text {
+                    id: label2
+                    visible: false
+                    text: qsTr("E-mail  ")
+                }
+                Rectangle {
+                    id: rectangleLayout2
+                    width: 82
+                    visible: false
+                    height: 22
+                    border.color: "lightgray"
+                    border.width: 1
+                    Layout.fillWidth: true
+                    TextInput {
+                        id: textInput2
+                        visible: false
+                        verticalAlignment: TextInput.AlignVCenter
+                        selectByMouse: true
+                        anchors.fill: parent
+                        anchors.rightMargin: 3
+                        anchors.leftMargin: 3
+                        smooth: true
+                    }
+                }
+            }
+            RowLayout {
+                id: rowLayout9
+                width: 100
+                height: 100
+                clip: false
+                spacing: 10
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Text {
+                    id: label3
+                    visible: false
+                    text: qsTr("Password")
+                }
+                Rectangle {
+                    id: rectangleLayout3
+                    width: 82
+                    height: 22
+                    visible: false
+                    border.color: "lightgray"
+                    border.width: 1
+                    Layout.fillWidth: true
+                    TextInput {
+                        id: textInput3
+                        visible: false
+                        verticalAlignment: TextInput.AlignVCenter
+                        selectByMouse: true
+                        anchors.fill: parent
+                        anchors.rightMargin: 3
+                        anchors.leftMargin: 3
+                        smooth: true
+                    }
+                }
+            }
+            //-----------------------//
+
+
             RowLayout {
                 id: rowLayout3
                 width: 100
@@ -1934,6 +2027,7 @@ Item {
                     id: saveSetting
                     text: qsTr("Save")
                     onClicked: {
+                        DD.setTimerLockScreen(lockScreenInput.text);
                         if(checkBox1.checked == true){
                         theModel.setMailCredentials(textInput1.text,textInput3.text,textInput2.text);
                          }else{theModel.setMailCredentials("default","default","default");}
@@ -1948,7 +2042,7 @@ Item {
                         settingFile.setRootDir(rootDir.text);
                         if(theModel.IsFolderEmpty(rootDir.text)) {
                             showMenu.menuForSuite();
-							addSuiteLayout.enabled=true;
+                            addSuiteLayout.enabled=true;
                             centerRect.visible=false;
                             addSuiteLayout.visible=true;
                             testName.text="New Suite";
