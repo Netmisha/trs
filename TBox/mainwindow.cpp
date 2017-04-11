@@ -120,6 +120,7 @@ private slots:
     void sendMail();
     void mailSent(QString);
 };
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -153,9 +154,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qmlView->show();
     view->page()->setProperty("_q_webInspectorServerPort",kDefaultPort);
     QMetaObject::invokeMethod(object, "checkRootDir");
-
 }
-
 MainWindow::~MainWindow(){
     delete ui;
     view->deleteLater();
@@ -204,17 +203,10 @@ void MainTree::sendMail()
         QFile::copy(Path,folderPath+"ReportFile.html");
     }
 
-    Smtp* smtp = new Smtp(username,password,"smtp.gmail.com"); //smtp.gmail.com(Username Password fail)| smtp-ua.globallogic.com(Remote host closed the connection) |587-TLS | 465-SSL
+    Smtp* smtp = new Smtp(username,password,"smtp-ua.globallogic.com");
     connect(smtp, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
-    QStringList PP; //PP.append(folderPath+"ReportFile.html");
-    QFile file(folderPath+"ReportFile.html");
-    file.open(QIODevice::ReadOnly);
-    QString data;
-    QTextStream stream(&file);
-    data = stream.readAll();
-    data.insert(0,"<body>");
-    data.append("</body>");
-    smtp->sendMail(username,MailTo,"Report file",data,PP);
+    QStringList PP; PP.append(folderPath+"ReportFile.html");
+    smtp->sendMail(username,MailTo,"Report file","Report file",PP);
 
     QString folderRemove = folderPath;
     QDir direc;direc.remove(folderRemove+"ReportFile.html");
@@ -946,15 +938,10 @@ void MainTree::FailLog() {
         dir.mkdir(fname);
     }
     trscore->PrintScreen(fname+"/screenshot.jpg");
-    QString log_data;
     QMetaObject::invokeMethod(contextObject, "getLog", Q_RETURN_ARG(QVariant, returnedValue));
-    QFile file(fname+"/log.html");
-    QTextStream file_stream(&file);
-    log_data = returnedValue.toString();
-    int i = log_data.indexOf("</body>");
-    log_data.insert(i,"<img src='screenshot.jpg' style= width:1366px;height:768px;>");
+    QFile file(fname+"/log.txt");
     file.open(QIODevice::WriteOnly);
-    file_stream<<log_data;
+    file.write(returnedValue.toByteArray());
     file.close();
     WriteLog("<html><style type=\"text/css\"></style><a href=\"file:///"+fname+"/screenshot.jpg"+"\">Screenshot</a></html>");
 }

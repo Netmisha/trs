@@ -38,9 +38,8 @@ signals:
    void sendExportPath(QString exp);
    void sendSummaryData(QStringList sum_data);
 public:
-   QString timerLockScreen;
    QVector<QStringList*> FullSuiteInfo;
-   QStringList *suite_info;
+    QStringList *suite_info;
    Q_INVOKABLE QStringList Sumary_data;
    Q_INVOKABLE void defaultTableValue(QString start, QString end);
    Q_INVOKABLE QString getTableSessionPath();
@@ -48,9 +47,9 @@ public:
    Q_INVOKABLE QString exportFilePath;
    Q_INVOKABLE QString TableSessionPath;
    Q_INVOKABLE QList<QObject*> datalist;
-   Q_INVOKABLE QList<QObject*> setDataList(QList<QObject*> list);
-   Q_INVOKABLE QList<QObject*> tempData;
-   QString test_msg;
+    Q_INVOKABLE QList<QObject*> setDataList(QList<QObject*> list);
+    Q_INVOKABLE QList<QObject*> tempData;
+    QString test_msg;
    Q_INVOKABLE QVector<QStringList*> table_data_e;
    Q_INVOKABLE int elements_e;
    Q_INVOKABLE QStringList summary_data_e;
@@ -59,7 +58,7 @@ public:
    Q_INVOKABLE QString current_session;
    Q_INVOKABLE int index;
    Q_INVOKABLE QString path_for_db;
-   Q_INVOKABLE void callBrowser();
+    Q_INVOKABLE void callBrowser();
    Q_INVOKABLE void test(){
        qDebug()<<"Inside";
        emit PassHTMLdata(session_data,elements_e,summary_data_e,test_r_e,suite_info_e,current_session);
@@ -70,12 +69,13 @@ public:
        }else{return "new";}
    }
     explicit DataBase(QObject *parent = 0);
-    QString date;
-    Q_INVOKABLE QString DateQML;
-    Q_INVOKABLE QString End_date;
-    Q_INVOKABLE QString row_selected(QString row);
-    Q_INVOKABLE QString row_;
-    struct row_data{
+     QString date;
+     Q_INVOKABLE QString DateQML;
+     Q_INVOKABLE QString End_date;
+     Q_INVOKABLE QString row_selected(QString row);
+     Q_INVOKABLE QString row_;
+
+     struct row_data{
         QString ID;
         QString Test_name;
         QString Test_Day;
@@ -83,13 +83,13 @@ public:
         QString Test_Year;
         QString Test_Passed;
      };
-    Q_INVOKABLE QStringList tn;
+     Q_INVOKABLE QStringList tn;
     Q_INVOKABLE QStringList *e;
-    Q_INVOKABLE QVector <QStringList*> session_data;
-    Q_INVOKABLE QVector<QVector<QStringList*>> pass;
-    Q_INVOKABLE  QVector<QStringList*> Suite_info;
-    QQuickView *engine;
-    Q_INVOKABLE void setEngi(QQuickView *e){
+     Q_INVOKABLE QVector <QStringList*> session_data;
+     Q_INVOKABLE QVector<QVector<QStringList*>> pass;
+     Q_INVOKABLE  QVector<QStringList*> Suite_info;
+     QQuickView *engine;
+     Q_INVOKABLE void setEngi(QQuickView *e){
              engine = e;
      }
     Q_INVOKABLE QStringList start_dates;
