@@ -203,11 +203,17 @@ void MainTree::sendMail()
         QFile::copy(Path,folderPath+"ReportFile.html");
     }
 
-    Smtp* smtp = new Smtp(username,password,"smtp-ua.globallogic.com");
+     Smtp* smtp = new Smtp(username,password,"smtp.gmail.com"); //smtp.gmail.com(Username Password fail)| smtp-ua.globallogic.com(Remote host closed the connection) |587-TLS | 465-SSL
     connect(smtp, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
-    QStringList PP; PP.append(folderPath+"ReportFile.html");
-    smtp->sendMail(username,MailTo,"Report file","Report file",PP);
-
+    QStringList PP; //PP.append(folderPath+"ReportFile.html");
+    QFile file(folderPath+"ReportFile.html");
+    file.open(QIODevice::ReadOnly);
+    QString data;
+    QTextStream stream(&file);
+    data = stream.readAll();
+    data.insert(0,"<body>");
+    data.append("</body>");
+    smtp->sendMail(username,MailTo,"Report file",data,PP);
     QString folderRemove = folderPath;
     QDir direc;direc.remove(folderRemove+"ReportFile.html");
     }

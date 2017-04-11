@@ -22,7 +22,6 @@
 #include <QQuickView>
 class DataBase: public QObject // class for reading data from DB
 {
-
 Q_OBJECT
     Q_PROPERTY(QString getDateQML READ getDateQML WRITE setDateQML NOTIFY DateChanged)
     Q_PROPERTY(QString get_EndDate READ get_EndDate WRITE setEndDateQML NOTIFY EndDateChanged)
@@ -35,8 +34,6 @@ signals:
 public slots:
     Q_INVOKABLE QStringList get_seesion_db( QString start, QString end);
    Q_INVOKABLE void Export_Clicked();
-
-
 signals:
    void sendExportPath(QString exp);
    void sendSummaryData(QStringList sum_data);
@@ -54,11 +51,10 @@ public:
     Q_INVOKABLE QList<QObject*> tempData;
     QString test_msg;
    Q_INVOKABLE QVector<QStringList*> table_data_e;
-    Q_INVOKABLE int elements_e;
-    Q_INVOKABLE QStringList summary_data_e;
-    Q_INVOKABLE QStringList test_r_e;
-    Q_INVOKABLE QVector<QStringList*> suite_info_e;
-
+   Q_INVOKABLE int elements_e;
+   Q_INVOKABLE QStringList summary_data_e;
+   Q_INVOKABLE QStringList test_r_e;
+   Q_INVOKABLE QVector<QStringList*> suite_info_e;
    Q_INVOKABLE QString current_session;
    Q_INVOKABLE int index;
    Q_INVOKABLE QString path_for_db;
@@ -72,7 +68,6 @@ public:
    return "Hello from func";
        }else{return "new";}
    }
-
     explicit DataBase(QObject *parent = 0);
      QString date;
      Q_INVOKABLE QString DateQML;
@@ -97,22 +92,19 @@ public:
      Q_INVOKABLE void setEngi(QQuickView *e){
              engine = e;
      }
-     //
-     Q_INVOKABLE QStringList start_dates;
-     Q_INVOKABLE  QStringList end_dates;
-     //
-     Q_INVOKABLE QStringList it;
-     Q_INVOKABLE QStringList list_from_ui;
-     QVector<QString> Years;
-     Q_INVOKABLE QString getDateQML(){
-        return DateQML;
+    Q_INVOKABLE QStringList start_dates;
+    Q_INVOKABLE  QStringList end_dates;
+    Q_INVOKABLE QStringList it;
+    Q_INVOKABLE QStringList list_from_ui;
+    QVector<QString> Years;
+    Q_INVOKABLE QString getDateQML(){
+       return DateQML;
     }
     Q_INVOKABLE void setDateQML(QString &arg){
         if (DateQML == arg) return;
         DateQML = arg;
         DateQML = ParseDateS(DateQML);
         emit DateChanged();
-
     }
     Q_INVOKABLE QString get_EndDate(){
          return End_date;
@@ -122,12 +114,10 @@ public:
          End_date = arg;
          End_date = ParseDateE(End_date);
          emit EndDateChanged();
-
      }
     Q_INVOKABLE QString ParseDateS(QString data);
       Q_INVOKABLE QString ParseDateE(QString data);
     QStringList Date_;
-
      struct row_fields{
          QString ID = "ID";
          QString Test_name="Test_Name";
@@ -151,7 +141,6 @@ public:
      Q_INVOKABLE void setListFromUI(QString list);
      //void setDataForDB();
  public:
-
      row_fields *rfO;
      row_data *rdO; // rdO = row_data Object
      QVariantList rc_dataV;
@@ -159,7 +148,6 @@ public:
      QSqlDatabase db;
      QSqlQuery *query;
      QStringList data;
-
  };
 
  #endif // DATABASE_H

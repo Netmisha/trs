@@ -21,12 +21,10 @@ private:
     QTime start_;
     QTime start_time;
     QTime end_time;
-
     QString test_name_;
     int session_num_;
     QString test_passed_;
     QString test_suite_;
-
     QString session_execution;
     QString start_time_;
     QString end_time_;

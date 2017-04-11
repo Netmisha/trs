@@ -1827,6 +1827,7 @@ Item {
                     }
                 }
             }
+
             ColumnLayout{
                 id: mailLayout
                 Layout.alignment: Qt.AlignLeft
@@ -1848,7 +1849,6 @@ Item {
                         textInput1.text="";
                         textInput2.text="";
                         textInput3.text="";
-
                     }else{
                         label1.visible = true;
                         label2.visible = true;
