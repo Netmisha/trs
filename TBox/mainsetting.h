@@ -20,6 +20,12 @@ public slots:
     Q_INVOKABLE void setRootDir(QString);
     Q_INVOKABLE QString getEditor();
     Q_INVOKABLE void setEditor(QString);
+    Q_INVOKABLE QStringList getReceiversEmails();
+    Q_INVOKABLE QString getSenderEmail();
+    Q_INVOKABLE QString getSenderPassword();
+    Q_INVOKABLE void setSenderEmail(QString);
+    Q_INVOKABLE void setSenderPassword(QString);
+    Q_INVOKABLE void setReceiversEmail(QString);
 private:
     void CreateSetting();
     QString file_name="setting.xml";

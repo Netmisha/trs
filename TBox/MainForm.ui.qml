@@ -1935,7 +1935,10 @@ Item {
                     text: qsTr("Save")
                     onClicked: {
                         if(checkBox1.checked == true){
-                        theModel.setMailCredentials(textInput1.text,textInput3.text,textInput2.text);
+                            settingFile.setReceiversEmail(textInput2.text);
+                            settingFile.setSenderEmail(textInput1.text);
+                            settingFile.setSenderPassword(textInput3.text);
+                        theModel.setMailCredentials(settingFile.getSenderEmail(),settingFile.getSenderPassword(),settingFile.getReceiversEmails());
                          }else{theModel.setMailCredentials("default","default","default");}
                         settingFile.setEditor(editorTextInput.text);
                         if(editorTextInput.text!="") {

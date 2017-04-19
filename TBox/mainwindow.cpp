@@ -55,7 +55,7 @@ public:
     Q_INVOKABLE bool RunOne();
     Q_INVOKABLE QStringList GetTags();
     Q_INVOKABLE void setRootDir(QString);
-    Q_INVOKABLE void setMailCredentials(QString username,QString password,QString MailTo);
+    Q_INVOKABLE void setMailCredentials(QString username,QString password,QStringList MailTo);
     Q_INVOKABLE QString AddNewTest(QString, QString, QString, QString, QString, QString, QString, QString, QString);
     Q_INVOKABLE QString AddNewSuite(QString, QString, QString, QString, QString);
     Q_INVOKABLE QString AddRootSuite(QString, QString, QString, QString, QString);
@@ -99,7 +99,7 @@ private:
     TRSCore* trscore=nullptr;
     QString username = "default";
     QString password="default";
-    QString MailTo="default";
+    QStringList MailTo;
     QString testFile;
     bool runOne = false;
     bool runAll = false;
@@ -165,59 +165,66 @@ void MainWindow::writeLog(QString msg){
     QTime time=QTime::currentTime();
     QMetaObject::invokeMethod(object, "writeLog", Q_ARG(QVariant, time.toString()+":"+QString::number(time.msec())+" "+msg));
 }
-void MainTree::setMailCredentials(QString Username, QString Password, QString mailTo){
+void MainTree::setMailCredentials(QString Username, QString Password, QStringList mailTo){
     username = Username;
     password = Password;
     MailTo = mailTo;
 }
 void MainTree::sendMail()
 {
-    if(!(username == "default" || password == "default" || MailTo == "default")){
-     QString T;
-     T.append(QDate::currentDate().toString("dd/MM/yyyy"));
-     QString T1;
-     T1.append(QDate::currentDate().toString("yyyy/MM/dd"));
-     DataBase O;
-    QQuickView *t = new QQuickView;
-    O.setEngi(t);
-    O.defaultTableValue(T1,T1);
-    QList <QObject*> obj = O.getReportList();
-    QString q = QString::number(O.getReportList().size());
-    O.row_selected("0");
-    QDir path_;
-    QString Path = path_.absolutePath();
-    QString tempPath;
-    QRegExp exp("/");
-    QStringList p;
-    p = Path.split(exp);
-    Path.clear();
-    for(int i=0;i<p.size();i++){
-        tempPath.append(p.at(i)+"//");
-    }
-    Path.append(tempPath+"WebViewSessionTable.html");
-    QString folderPath = tempPath+"SMTPSend//";
-    if(QDir("SMTPSend").exists()){
-        QFile::copy(Path,folderPath+"ReportFile.html");
-    }else{
-        QDir().mkdir("SMTPSend");
-        QFile::copy(Path,folderPath+"ReportFile.html");
-    }
+    qDebug()<<"username: "<<username<<"\n"<<"password: "<<password<<"\n"<<"MailTo: "<<MailTo;
+        if(!(username == "default" || password == "default" || MailTo.empty())){
+         QString T;
+         T.append(QDate::currentDate().toString("dd/MM/yyyy"));
+         QString T1;
+         T1.append(QDate::currentDate().toString("yyyy/MM/dd"));
+         DataBase O;
+        QQuickView *t = new QQuickView;
+        O.setEngi(t);
+        O.defaultTableValue(T1,T1);
+        QList <QObject*> obj = O.getReportList();
+        QString q = QString::number(O.getReportList().size());
+        O.row_selected("0");
+        QDir path_;
+        QString Path = path_.absolutePath();
+        QString tempPath;
+        QRegExp exp("/");
+        QStringList p;
+        p = Path.split(exp);
+        Path.clear();
+        for(int i=0;i<p.size();i++){
+            tempPath.append(p.at(i)+"//");
+        }
+        Path.append(tempPath+"WebViewSessionTable.html");
+        QString folderPath = tempPath+"SMTPSend//";
+        if(QDir("SMTPSend").exists()){
+            QFile::copy(Path,folderPath+"ReportFile.html");
+        }else{
+            QDir().mkdir("SMTPSend");
+            QFile::copy(Path,folderPath+"ReportFile.html");
+        }
 
-     Smtp* smtp = new Smtp(username,password,"smtp.gmail.com"); //smtp.gmail.com(Username Password fail)| smtp-ua.globallogic.com(Remote host closed the connection) |587-TLS | 465-SSL
-    connect(smtp, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
-    QStringList PP; //PP.append(folderPath+"ReportFile.html");
-    QFile file(folderPath+"ReportFile.html");
-    file.open(QIODevice::ReadOnly);
-    QString data;
-    QTextStream stream(&file);
-    data = stream.readAll();
-    data.insert(0,"<body>");
-    data.append("</body>");
-    smtp->sendMail(username,MailTo,"Report file",data,PP);
-    QString folderRemove = folderPath;
-    QDir direc;direc.remove(folderRemove+"ReportFile.html");
-    }
-
+         Smtp* smtp = new Smtp(username,password,"smtp.gmail.com"); //smtp.gmail.com(Username Password fail)| smtp-ua.globallogic.com(Remote host closed the connection) |587-TLS | 465-SSL
+        connect(smtp, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
+        QStringList PP; //PP.append(folderPath+"ReportFile.html");
+        QFile file(folderPath+"ReportFile.html");
+        file.open(QIODevice::ReadOnly);
+        QString data;
+        QTextStream stream(&file);
+        data = stream.readAll();
+        file.close();
+        data.insert(0,"<body>");
+        data.append("</body>");
+        smtp->sendMail(username,MailTo[0],"Report file",data,PP);
+        for(int i=1;i<MailTo.length(); ++i) {
+            Smtp* smtp1 = new Smtp(username,password,"smtp.gmail.com"); //smtp.gmail.com(Username Password fail)| smtp-ua.globallogic.com(Remote host closed the connection) |587-TLS | 465-SSL
+            connect(smtp1, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
+            smtp1->sendMail(username,MailTo[i],"Report file",data,PP);
+            QString folderRemove = folderPath;
+            QDir direc;
+            direc.remove(folderRemove+"ReportFile.html");
+        }
+      }
 }
 void MainTree::mailSent(QString status)
 {
